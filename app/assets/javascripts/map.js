@@ -170,7 +170,7 @@ function build_indicator_scale_styles() {
 		
 		// look at each scale and create the builder
 		for (var i=0; i<gon.indicator_scales.length; i++){
-
+			var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
 			var name = gon.indicator_scales[i].name;
 			var color = "";
 			// if the scale has a color, use it, otherwise use app color
@@ -210,7 +210,7 @@ function build_indicator_scale_styles() {
 				}
 			} else if (indexB >= 0) {
 				// set to between
-				rules.push(build_rule(color, OpenLayers.Filter.Comparison.BETWEEN, name.slice(0, indexB), name.slice(indexB+1)));
+				rules.push(build_rule(color, OpenLayers.Filter.Comparison.BETWEEN, name.slice(0, indexB), name.slice(indexB+1), isFirst));
 			} else {
 				// set to '='
 				rules.push(build_rule(color, OpenLayers.Filter.Comparison.EQUAL_TO, name));
@@ -223,7 +223,7 @@ function build_indicator_scale_styles() {
     return new OpenLayers.StyleMap({'default':theme, 'select': {'strokeColor': '#0000ff', 'fillColor': '#0000ff', 'strokeWidth': 2}});
 }
 
-function build_rule(color, type, value1, value2){
+function build_rule(color, type, value1, value2, isFirst){
 	if (value1 && parseInt(value1)) {
 	    value1 = parseInt(value1);
 	}
@@ -243,7 +243,8 @@ function build_rule(color, type, value1, value2){
 		                value: value2
 		            }),
 		            new OpenLayers.Filter.Comparison({
-		                type: OpenLayers.Filter.Comparison.GREATER_THAN,
+		                // if this is the first scale item, use >= to make sure the bottom value is included in the range
+						type: isFirst == true ? OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO : OpenLayers.Filter.Comparison.GREATER_THAN,
 		                property: "value",
 		                value: value1
 		            })
