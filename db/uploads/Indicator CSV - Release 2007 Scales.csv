@@ -1,0 +1,16 @@
+Event,Shape Type,en: Indicator Name,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name
+Release 2007,Region,Numbers of voters over 99 years old,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release 2007,Region,Number of voters between 85 and 99 years old,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release 2007,Region,Average age of voters,18-35,18-35,,35-45,35-45,,45-55,45-55,,55-65,55-65,,>65,>65
+Release 2007,Region,Number of voter duplications,0,0,,0-100,0-100,,100-200,100-200,,200-500,200-500,,500-1000,500-1000,,1000-2000,1000-2000,,>2000,>2000
+Release 2007,Region,Total Voters,0,0,,0-50000,0-50000,,50000-100000,50000-100000,,100000-150000,100000-150000,,150000-200000,150000-200000,,200000-300000,200000-300000,,300000-400000,300000-400000,,400000-500000,400000-500000,,>500000,>500000
+Release 2007,District,Numbers of voters over 99 years old,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release 2007,District,Number of voters between 85 and 99 years old,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release 2007,District,Average age of voters,18-35,18-35,,35-45,35-45,,45-55,45-55,,55-65,55-65,,>65,>65
+Release 2007,District,Number of voter duplications,0,0,,0-100,0-100,,100-200,100-200,,200-500,200-500,,500-1000,500-1000,,1000-2000,1000-2000,,>2000,>2000
+Release 2007,District,Total Voters,0,0,,0-5000,0-5000,,5000-10000,5000-10000,,10000-15000,10000-15000,,15000-20000,15000-20000,,20000-25000,20000-25000,,>25000,>25000
+Release 2007,Precinct,Numbers of voters over 99 years old,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release 2007,Precinct,Number of voters between 85 and 99 years old,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release 2007,Precinct,Average age of voters,18-35,18-35,,35-45,35-45,,45-55,45-55,,55-65,55-65,,>65,>65
+Release 2007,Precinct,Number of voter duplications,0,0,,0-100,0-100,,100-200,100-200,,200-500,200-500,,500-1000,500-1000,,1000-2000,1000-2000,,>2000,>2000
+Release 2007,Precinct,Total Voters,0,0,,0-500,0-500,,500-1000,500-1000,,1000-1500,1000-1500,,1500-2000,1500-2000,,2000-2500,2000-2500,,>2500,>2500

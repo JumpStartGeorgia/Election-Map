@@ -1,0 +1,3 @@
+#!/bin/bash
+enter ${release_path} # Not necessary but it makes me feel warm and fuzzy.
+sm unicorn restart

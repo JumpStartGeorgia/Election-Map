@@ -1,0 +1,4 @@
+#!/bin/bash
+enter "${stage_path}"
+command_exists bundle || gem install bundler --no-rdoc --no-ri
+bundle --without development,test

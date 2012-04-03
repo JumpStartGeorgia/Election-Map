@@ -162,7 +162,7 @@ function draw_legend()
 function build_indicator_scale_styles() {
 	var rules = [];
   var theme = new OpenLayers.Style({
-      fillColor: "#bfbe8d",
+      fillColor: "#cfce9d",
       strokeColor: "#777777",
       strokeWidth: 1
   });
