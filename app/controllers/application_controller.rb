@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+	require 'ostruct'
 
   before_filter :set_locale
   before_filter :set_election_types
@@ -16,9 +17,15 @@ class ApplicationController < ActionController::Base
   end
   
   def set_default_values
-    @default_shape_id = "175"
-		@default_event_id = "2"
-		@default_shape_type_id = "1"
+		@default_values = Array.new(2) {OpenStruct.new}
+		@default_values[0].event_type_id = "1"
+		@default_values[0].event_id = "2"
+		@default_values[0].shape_type_id = "1"
+		@default_values[0].shape_id = "175"
+		@default_values[1].event_type_id = "2"
+		@default_values[1].event_id = "1"
+		@default_values[1].shape_type_id = "1"
+		@default_values[1].shape_id = "175"
   end
   
   def set_shape_types

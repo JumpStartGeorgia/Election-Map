@@ -7,7 +7,7 @@
 # a more verbose configuration using more features.
 
 working_directory "/home/jasonaddie/Projects/Election-Map/"
-listen 2007 # by default Unicorn listens on port 8080
+listen 3000 # by default Unicorn listens on port 8080
 worker_processes 2 # this should be >= nr_cpus
 pid "/home/jasonaddie/Projects/Election-Map/tmp/pids/unicorn.pid"
 stderr_path "/home/jasonaddie/Projects/Election-Map/log/unicorn.log"

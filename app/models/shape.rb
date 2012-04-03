@@ -86,6 +86,14 @@ class Shape < ActiveRecord::Base
             # get the root shape
             root = Shape.where(:id => event.shape_id).first
         
+            # if the root shape already exists and deleteExistingRecord is true, delete the shape
+						#  if this is the root record (row[2] is nil)
+            if !root.nil? && deleteExistingRecord && (row[2].nil? || row[2].strip.length == 0)
+	logger.debug "+++ deleting existing root shape"
+                Shape.destroy(root.id)
+                root = nil
+            end
+
             if root.nil?
     logger.debug "root does not exist"
               if row[2].nil? || row[2].strip.length == 0

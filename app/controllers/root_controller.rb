@@ -15,18 +15,24 @@ class RootController < ApplicationController
 			end
 		end
 
+		# get default values for this event type
+		@default_values = get_event_type_defaults(event_type_id)
+		if @default_values.nil?
+#TODO - do what?
+		end
+
 		# get the events
 		@events = Event.where(:event_type_id => event_type_id)
 
 		# get the current event
-		params[:event_id] = @default_event_id	if (params[:event_id].nil?)
+		params[:event_id] = @default_values.event_id	if (params[:event_id].nil?)
 
 		# get the shape
-		shape_id = params[:shape_id].nil? ? @default_shape_id : params[:shape_id]
+		shape_id = params[:shape_id].nil? ? @default_values.shape_id : params[:shape_id]
 		@shape = Shape.get_shape_no_geometry(shape_id)
 
 		# get the shape type id that was clicked
-		parent_shape_type_id = params[:shape_type_id].nil? ? @default_shape_type_id : params[:shape_type_id]
+		parent_shape_type_id = params[:shape_type_id].nil? ? @default_values.shape_type_id : params[:shape_type_id]
 		# now get the shape type id that is the child
 		shape_type = ShapeType.find(parent_shape_type_id)
 		@shape_type_id = nil
@@ -119,6 +125,19 @@ logger.debug("indicator id = #{params[:indicator_id]}")
 
 private
 
+	# get the default values for the provided event type
+	def get_event_type_defaults(event_type_id)
+		if !@default_values.nil? && @default_values.length > 0
+			@default_values.each do |default|
+				if default.event_type_id == event_type_id.to_s
+					# found match, return the hash
+					return default
+				end
+			end
+		end
+	end
+
+	
   def set_gon_variables
     # shape json paths
 		# - only chilrend shape path needs the indicator id since that is the only layer that is clickable
@@ -135,8 +154,8 @@ private
     		if event.nil? || event.shape_id.nil?
     			# set default
           # no event selected or event does not have a shape assigned to it, using defaults for gon variables
-    			gon.shape_path = shape_path(:id => @default_shape_id)
-    			gon.children_shapes_path = children_shapes_path(:parent_id => @default_shape_id, :indicator_id => params[:indicator_id])
+    			gon.shape_path = shape_path(:id => @default_values.shape_id)
+    			gon.children_shapes_path = children_shapes_path(:parent_id => @default_values.shape_id, :indicator_id => params[:indicator_id])
     		else
     		  # found event, load its shape
     			gon.shape_path = shape_path(:id => event.shape_id)
@@ -144,8 +163,8 @@ private
     		end
       else
         # no event selected yet, use default shape
-  			gon.shape_path = shape_path(:id => @default_shape_id)
-  			gon.children_shapes_path = children_shapes_path(:parent_id => @default_shape_id, :indicator_id => params[:indicator_id])
+  			gon.shape_path = shape_path(:id => @default_values.shape_id)
+  			gon.children_shapes_path = children_shapes_path(:parent_id => @default_values.shape_id, :indicator_id => params[:indicator_id])
       end
     else
       # shape id is provided, use it
@@ -180,5 +199,7 @@ private
       end
     end
   end
+
+
 
 end
