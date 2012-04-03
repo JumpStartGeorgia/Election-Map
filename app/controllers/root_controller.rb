@@ -25,7 +25,7 @@ class RootController < ApplicationController
 		@events = Event.where(:event_type_id => params[:event_type_id])
 
 		# get the current event
-		params[:event_id] = @default_values.event_id	if (params[:event_id].nil?)
+		params[:event_id] = @default_values.event_id.to_s	if (params[:event_id].nil?)
 
 		# get the shape
 		shape_id = params[:shape_id].nil? ? @default_values.shape_id : params[:shape_id]
@@ -62,7 +62,7 @@ class RootController < ApplicationController
 					params[:indicator_id] = nil
 				else
 					# save the new value				
-					params[:indicator_id] = @child_indicator.first.id
+					params[:indicator_id] = @child_indicator.first.id.to_s
 					@indicator = @child_indicator.first
 				end
 			else
