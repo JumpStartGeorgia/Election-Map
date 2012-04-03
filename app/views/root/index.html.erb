@@ -41,10 +41,10 @@
 </section>
 
 <ul id="views" class="group">
-	<% if @shape_types.count > 0 %>
+	<% if @shape_types.length > 0 %>
 		<% @shape_types.each do |type| %>
-			<% if type.id == @shape_type_id || !type.descendant_ids.index(@shape_type_id).nil?%>
-				<li class="<%= type.id == @shape_type_id ? "active" : "not_active" %>">
+			<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
+				<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
 					<%= type.name %>
 <% 
 =begin 

@@ -7,47 +7,39 @@ class RootController < ApplicationController
 		# get the event type id
 		params[:event_type_id] = params[:event_type_id].nil? ? @event_types.first.id.to_s : params[:event_type_id]
 		
-		# get the event type name
-		@event_types.each do |type|
-			if type.id.to_s == params[:event_type_id]
-				@event_type_name = type.name
-				break
-			end
-		end
-
 		# get default values for this event type
 		@default_values = get_event_type_defaults(params[:event_type_id])
 		if @default_values.nil?
 #TODO - do what?
 		end
 
-		# get the events
+		# get the events for this event type
 		@events = Event.where(:event_type_id => params[:event_type_id])
 
 		# get the current event
 		params[:event_id] = @default_values.event_id.to_s	if (params[:event_id].nil?)
 
 		# get the shape
-		shape_id = params[:shape_id].nil? ? @default_values.shape_id : params[:shape_id]
-		@shape = Shape.get_shape_no_geometry(shape_id)
+		params[:shape_id] = params[:shape_id].nil? ? @default_values.shape_id : params[:shape_id]
+		@shape = Shape.get_shape_no_geometry(params[:shape_id])
 
 		# get the shape type id that was clicked
-		parent_shape_type_id = params[:shape_type_id].nil? ? @default_values.shape_type_id : params[:shape_type_id]
-		# now get the shape type id that is the child
-		shape_type = ShapeType.find(parent_shape_type_id)
-		@shape_type_id = nil
-		if (!shape_type.nil? && shape_type.has_children?)
+		params[:shape_type_id] = params[:shape_type_id].nil? ? @default_values.shape_type_id : params[:shape_type_id]
+		# now get the child shape type id
+		parent_shape_type = get_shape_type(params[:shape_type_id])
+		@child_shape_type_id = nil
+		if (!parent_shape_type.nil? && parent_shape_type.has_children?)
 			# found child, save id
-			@shape_type_id = shape_type.children.first.id
-
+			child_shape_type = get_child_shape_type(params[:shape_type_id])
+			@child_shape_type_id = child_shape_type.id
 			# set the map title
 			# format = children shape types of parent shape type
-			@map_title = shape_type.children.first.name.pluralize + " of " + shape_type.name + " " + Shape.get_shape_name(@shape.id).common_id
+			@map_title = child_shape_type.name.pluralize + " of " + parent_shape_type.name + " " + @shape.common_id
 		end
 
 		# get the indicators for the children shape_type
-		if !params[:event_id].nil? && !@shape_type_id.nil?
-			@indicators = Indicator.where(:event_id => params[:event_id], :shape_type_id => @shape_type_id)
+		if !params[:event_id].nil? && !@child_shape_type_id.nil?
+			@indicators = Indicator.where(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id)
 		end
 
 		# get the indicator
@@ -56,14 +48,14 @@ class RootController < ApplicationController
 			if !params[:shape_click].nil? && params[:shape_click] == "true"
 				# we know the parent indicator id and the new shape type
 				# - use that to find the new indicator id
-				@child_indicator = Indicator.find_new_id(params[:indicator_id], @shape_type_id, params[:locale])
-				if @child_indicator.nil? || @child_indicator.length == 0
+				child_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id, params[:locale])
+				if child_indicator.nil? || child_indicator.length == 0
 					# could not find a match, reset the indicator id
 					params[:indicator_id] = nil
 				else
 					# save the new value				
-					params[:indicator_id] = @child_indicator.first.id.to_s
-					@indicator = @child_indicator.first
+					params[:indicator_id] = child_indicator.first.id.to_s
+					@indicator = child_indicator.first
 				end
 			else
 				# get the selected indicator 
@@ -127,11 +119,45 @@ private
 
 	# get the default values for the provided event type
 	def get_event_type_defaults(event_type_id)
-		if !@default_values.nil? && @default_values.length > 0
+		if @default_values.nil? || @default_values.length == 0 || event_type_id.nil?
+      return nil
+    else
 			@default_values.each do |default|
 				if default.event_type_id == event_type_id
 					# found match, return the hash
 					return default
+				end
+			end
+		end
+	end
+
+	# get the shape type
+	def get_shape_type(shape_type_id)
+		if @shape_types.nil? || @shape_types.length == 0 || shape_type_id.nil?
+      return nil
+    else
+			@shape_types.each do |type|
+				if type.id.to_s == shape_type_id.to_s
+					# found match, return child
+				  return type
+				end
+			end
+		end
+	end
+
+	# get the child shape type
+	def get_child_shape_type(parent_shape_type_id)
+		if @shape_types.nil? || @shape_types.length == 0 || parent_shape_type_id.nil?
+      return nil
+    else
+			@shape_types.each do |type|
+				if type.id.to_s == parent_shape_type_id.to_s
+					# found match, return child
+					if type.has_children?
+					  return type.children.first
+					else
+					  return nil
+				  end
 				end
 			end
 		end
