@@ -32,8 +32,9 @@
    	<section id="splash" class="group"> 
 			<div class="wrap group"> 
 				<% @event_types.each do |type| %>
+					<% is_active = type.id.to_s == params[:event_type_id] ? "active" : "not_active" %>
 					<div class="mode group">
-						<%= link_to type.name, root_path(:event_type_id => type.id) %>
+						<%= link_to type.name, root_path(:event_type_id => type.id), :class => is_active %>
 					</div>
 				<% end %>
 		</section>
@@ -41,8 +42,6 @@
      </header>
 
 	<section id="container" class="wrap group">
-
-		<h2><%= yield(:title) %></h2>
 
   		<%= yield %>
 

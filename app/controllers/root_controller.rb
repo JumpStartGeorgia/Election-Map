@@ -5,24 +5,24 @@ class RootController < ApplicationController
   # GET /.json
 	def index
 		# get the event type id
-		event_type_id = params[:event_type_id].nil? ? @event_types.first.id : params[:event_type_id]
+		params[:event_type_id] = params[:event_type_id].nil? ? @event_types.first.id.to_s : params[:event_type_id]
 		
 		# get the event type name
 		@event_types.each do |type|
-			if type.id.to_s == event_type_id.to_s
+			if type.id.to_s == params[:event_type_id]
 				@event_type_name = type.name
 				break
 			end
 		end
 
 		# get default values for this event type
-		@default_values = get_event_type_defaults(event_type_id)
+		@default_values = get_event_type_defaults(params[:event_type_id])
 		if @default_values.nil?
 #TODO - do what?
 		end
 
 		# get the events
-		@events = Event.where(:event_type_id => event_type_id)
+		@events = Event.where(:event_type_id => params[:event_type_id])
 
 		# get the current event
 		params[:event_id] = @default_values.event_id	if (params[:event_id].nil?)
@@ -129,7 +129,7 @@ private
 	def get_event_type_defaults(event_type_id)
 		if !@default_values.nil? && @default_values.length > 0
 			@default_values.each do |default|
-				if default.event_type_id == event_type_id.to_s
+				if default.event_type_id == event_type_id
 					# found match, return the hash
 					return default
 				end
