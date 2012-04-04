@@ -14,7 +14,12 @@
 	<ul id="datasets" class="group">
 		<% @events.each_with_index do |event, i| %>
 			<% is_active = event.id.to_s == params[:event_id] ? "active" : "not_active" %>
-			<li id="<%= event.name.sub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.count-1%>class="last"<% end %> ><%= link_to event.name, root_path(request.parameters.merge({:event_id => event.id})), :title => event.name, :class => is_active %><span></span></li>
+			<li id="<%= event.name.sub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.count-1%>class="last"<% end %> >
+				<%= link_to event.name, root_path({
+					:event_id => event.id, :event_type_id => event.event_type_id, 
+					:shape_id => event.shape_id, :shape_type_id => event.shape.shape_type_id
+				}), :title => event.name, :class => is_active %><span></span>
+			</li>
 		<% end %>
 	</ul>
 <% end %>
