@@ -45,18 +45,11 @@
 		<% @shape_types.each do |type| %>
 			<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
 				<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
-					<%= type.name %>
-<% 
-=begin 
-%>
 					<% if type.has_children? %>
-						<%= link_to type.name, root_path(request.parameters.merge({:shape_type_id => type.id, :shape_id => get_shape_id(type.id)})), :title => type.name %>
+						<%= link_to type.name, root_path(request.parameters.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => true})), :title => type.name %>
 					<% else %>
 						<%= type.name %>
 					<% end %>
-<% 
-=end 
-%>					
 				</li>
 			<% end %>
 		<% end %>

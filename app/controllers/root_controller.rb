@@ -5,7 +5,7 @@ class RootController < ApplicationController
   # GET /.json
 	def index
 		# get the event type id
-		params[:event_type_id] = params[:event_type_id].nil? ? @event_types.first.id.to_s : params[:event_type_id]
+		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
 		
 		# get default values for this event type
 		@default_values = get_event_type_defaults(params[:event_type_id])
@@ -17,14 +17,15 @@ class RootController < ApplicationController
 		@events = Event.where(:event_type_id => params[:event_type_id])
 
 		# get the current event
-		params[:event_id] = @default_values.event_id.to_s	if (params[:event_id].nil?)
+		params[:event_id] = @default_values.event_id.to_s	if params[:event_id].nil?
 
 		# get the shape
-		params[:shape_id] = params[:shape_id].nil? ? @default_values.shape_id : params[:shape_id]
+		params[:shape_id] = @default_values.shape_id if params[:shape_id].nil?
 		@shape = Shape.get_shape_no_geometry(params[:shape_id])
 
 		# get the shape type id that was clicked
-		params[:shape_type_id] = params[:shape_type_id].nil? ? @default_values.shape_type_id : params[:shape_type_id]
+		params[:shape_type_id] = @default_values.shape_type_id if params[:shape_type_id].nil?
+		
 		# now get the child shape type id
 		parent_shape_type = get_shape_type(params[:shape_type_id])
 		@child_shape_type_id = nil
@@ -43,30 +44,31 @@ class RootController < ApplicationController
 		end
 
 		# get the indicator
-		# if a shape was clicked on, update the indicator_id to be valid for the new shape_type
+		# if the shape type changed, update the indicator_id to be valid for the new shape_type
 		if !params[:indicator_id].nil?
-			if !params[:shape_click].nil? && params[:shape_click] == "true"
-				# we know the parent indicator id and the new shape type
+			if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
+logger.debug "+++++ old indicator id = #{params[:indicator_id]}"
+
+				# we know the old indicator id and the new shape type
 				# - use that to find the new indicator id
-				child_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id, params[:locale])
-				if child_indicator.nil? || child_indicator.length == 0
+				new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id, params[:locale])
+				if new_indicator.nil? || new_indicator.length == 0
 					# could not find a match, reset the indicator id
 					params[:indicator_id] = nil
 				else
 					# save the new value				
-					params[:indicator_id] = child_indicator.first.id.to_s
-					@indicator = child_indicator.first
+					params[:indicator_id] = new_indicator.first.id.to_s
+					@indicator = new_indicator.first
 				end
+logger.debug "++++++ new indicator id = #{params[:indicator_id]}"
 			else
 				# get the selected indicator 
 				@indicator = Indicator.find(params[:indicator_id])
 			end
 		end
 
-		# reset the shape click parameter
-		# - used to indicate that the page is loading due to a shape being clicked on
-		params[:shape_click] = false
-
+		# reset the parameter that indicates if the shape type changed
+		params[:change_shape_type] = false
 
 		# set js variables
     set_gon_variables

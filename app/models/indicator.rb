@@ -19,18 +19,18 @@ class Indicator < ActiveRecord::Base
 
 	# the shape_type has changed, get the indicator that 
   # matches the indicator from the last shape type
-	def self.find_new_id(parent_indicator, child_shape_type, locale)
-		if (parent_indicator.nil? || child_shape_type.nil? || locale.nil?)
+	def self.find_new_id(old_indicator, new_shape_type, locale)
+		if (old_indicator.nil? || new_shape_type.nil? || locale.nil?)
 			return nil		
 		else
-			sql = "select ic.* "
-			sql << "from indicators as ip "
-			sql << "inner join indicators as ic on ip.event_id = ic.event_id  "
-			sql << "inner join indicator_translations as ipt on ip.id = ipt.indicator_id "
-			sql << "inner join indicator_translations as ict on ic.id = ict.indicator_id and ipt.name = ict.name and ipt.locale = ict.locale "
-			sql << "where ip.id = :parent_indicator and ic.shape_type_id = :child_shape_type and ipt.locale = :locale"
+			sql = "select inew.* "
+			sql << "from indicators as iold "
+			sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
+			sql << "inner join indicator_translations as itold on iold.id = itold.indicator_id "
+			sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name = itnew.name and itold.locale = itnew.locale "
+			sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
 		
-			find_by_sql([sql, :parent_indicator => parent_indicator, :child_shape_type => child_shape_type, :locale => locale])
+			find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
 		end
 	end
 

@@ -274,8 +274,8 @@ function click_handler (feature)
 		// add/update the shape_type_id parameter
 		url = update_query_parameter(url, "shape_type_id", feature.attributes.shape_type_id);
 
-		// add/update the parameter to indicate that the shape was clicked on
-		url = update_query_parameter(url, "shape_click", true);
+		// add/update the parameter to indicate that the shape type is changing
+		url = update_query_parameter(url, "change_shape_type", true);
 
 		// load the url
 		window.location.href = url;
