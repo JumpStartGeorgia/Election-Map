@@ -64,7 +64,7 @@ a.no-shadow
 
 a:hover
 {
-		background-color: transparent;
+	background-color: transparent;
     text-decoration: none;
 }
 
@@ -76,7 +76,8 @@ a:hover
 
 #container
 {
-    margin: 2.5em auto
+    margin: 0 auto;
+	margin-bottom: 2.5em;
 }
 
 /* Top */
@@ -99,7 +100,6 @@ a:hover
 
 #top .logo
 {
-
     float: right !important;
 }
 /* not used
@@ -123,7 +123,6 @@ a:hover
 
 #top #language_form
 {
-    margin-left: 5%;
     width: 30%;
 	height: 51px;
 	text-align: center;
@@ -139,14 +138,14 @@ a:hover
 #splash
 {
     background: url(<%=asset_path "splash-bg.png"%>) repeat-x;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     height: 87px;
 }
 
 #splash > .wrap
 {
     width: 75% !important;
-		text-align: center;
+	text-align: center;
 }
 
 #splash .mode
@@ -165,14 +164,19 @@ a:hover
     font-size: 200%;
     text-shadow: 2px 2px 0 #555;
     text-decoration: none;
+	padding: 7px 21px;
 }
 
 #splash .mode a.active,
 #splash .mode a:hover
 {
-    color: #fff;
-/*    text-shadow: 0 0 1px #FFF;*/
-		border-bottom: groove 5px #ddd;
+    color: #6E6E6E;
+    text-shadow: 0 0 1px #6E6E6E;
+/*	border-bottom: solid 4px #aaa;*/
+	background-color: #fff;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
 }
 
 #splash .mode a.active
@@ -193,7 +197,7 @@ a:hover
 /* Indicators */
 #indicators
 {
-    margin: 0 0 25px 225px
+    margin: 15px 0 15px 225px
 }
 
 #indicators > li
@@ -735,7 +739,7 @@ footer > a
 #container h2
 {
     display: block;
-    margin-bottom: 1.5em;
+    margin: 0.5em 0;
     color: #EEE;
     font-size: 200%;
     text-shadow: 0 0 25px #FFF;
