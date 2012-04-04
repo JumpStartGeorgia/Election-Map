@@ -336,5 +336,11 @@ function populate_map_box(title, indicator, value)
     }
 }
 
-
+$(function(){
+	$("#export-link").click(function(){
+		$.post("/export/svg",{"data":$("#map").find("svg:first").parent().html()},function(data){
+			window.location = "assets/map.svg"
+		});
+	});
+});
 
