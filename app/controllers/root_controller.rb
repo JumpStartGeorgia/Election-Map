@@ -1,6 +1,28 @@
 class RootController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes]
 
+  # GET /export
+  # read the svg file into the svg erb file
+  def export
+    @svg_map = ""
+    File.open(File.dirname(__FILE__)+"/../../public/assets/map.svg","r").each {|line| @svg_map << line }
+  end
+
+  # POST /create_svg_file
+  # the export link will post to this action and the svg layers will be written to file
+	def create_svg_file
+		svg_file = File.new(File.dirname(__FILE__)+"/../../public/assets/map.svg","w")					
+    # parse the svg info to remove the xml and svg tag
+    data = Nokogiri::XML(params[:parent_layer])
+    svg_file.puts(data.children().children())
+
+    data = Nokogiri::XML(params[:child_layer])
+    svg_file.puts(data.children().children())
+
+		svg_file.close
+		render :nothing => true						  
+	end	
+
   # GET /
   # GET /.json
 	def index
@@ -125,9 +147,23 @@ private
       return nil
     else
 			@default_values.each do |default|
-				if default.event_type_id == event_type_id
+				if default.event_type_id.to_s == event_type_id.to_s
 					# found match, return the hash
 					return default
+				end
+			end
+		end
+	end
+
+	# get the the current event
+	def get_event(event_id)
+		if @events.nil? || @events.length == 0 || event_id.nil?
+      return nil
+    else
+			@events.each do |event|
+				if event.id.to_s == event_id.to_s
+					# found match, return the hash
+					return event
 				end
 			end
 		end
@@ -215,6 +251,13 @@ private
 			gon.showing_indicators = false
 		end
 
+    # save the map title for export
+    # format: indicator for event in shape
+    gon.map_title = ""
+    gon.map_title << "#{@indicator.name} for " if !@indicator.nil? 
+    event = get_event(params[:event_id])
+    gon.map_title << "#{event.name} in " if !event.nil?
+    gon.map_title << @map_title
   end
 
   # build an array of indicator scales that will be used in js
