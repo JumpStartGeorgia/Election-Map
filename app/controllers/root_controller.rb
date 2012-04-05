@@ -1,15 +1,6 @@
 class RootController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :create_svg_file]
 
-  # GET /export
-  # read the svg file into the svg erb file
-  def export
-    @svg_map = ""
-		if !params[:datetime].nil?
-	    File.open("#{@svg_directory_path}#{params[:datetime]}.svg","r").each {|line| @svg_map << line }
-		end
-  end
-
   # POST /create_svg_file
   # the export link will post to this action and the svg layers will be written to file
 	def create_svg_file
@@ -37,6 +28,15 @@ class RootController < ApplicationController
 		end
 		render :nothing => true						  
 	end	
+
+  # GET /export
+  # read the svg file into the svg erb file
+  def export
+    @svg_map = ""
+		if !params[:datetime].nil?
+	    File.open("#{@svg_directory_path}#{params[:datetime]}.svg","r").each {|line| @svg_map << line }
+		end
+  end
 
   # GET /
   # GET /.json

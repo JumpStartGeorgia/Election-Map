@@ -9,7 +9,7 @@ ElectionMap::Application.routes.draw do
   match '/:locale/shape/:id', :to => 'root#shape', :as => :shape, :via => :get, :defaults => {:format => 'json'}
   match '/:locale/children_shapes/:parent_id', :to => 'root#children_shapes', :as => :children_shapes, :via => :get, :defaults => {:format => 'json'}
 
-  match '/root/export', :to => 'root#export', :via => :get, :defaults => {:format => 'svg'}
+  match '/root/export', :to => 'root#export', :as => :export, :via => :get, :defaults => {:format => 'svg'}
   match '/create_svg_file', :to => 'root#create_svg_file', :via => :post
 
   scope "/:locale" do
