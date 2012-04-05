@@ -1,25 +1,40 @@
 class RootController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes]
+  before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :create_svg_file]
 
   # GET /export
   # read the svg file into the svg erb file
   def export
     @svg_map = ""
-    File.open(File.dirname(__FILE__)+"/../../public/assets/map.svg","r").each {|line| @svg_map << line }
+		if !params[:datetime].nil?
+	    File.open("#{@svg_directory_path}#{params[:datetime]}.svg","r").each {|line| @svg_map << line }
+		end
   end
 
   # POST /create_svg_file
   # the export link will post to this action and the svg layers will be written to file
 	def create_svg_file
-		svg_file = File.new(File.dirname(__FILE__)+"/../../public/assets/map.svg","w")					
-    # parse the svg info to remove the xml and svg tag
-    data = Nokogiri::XML(params[:parent_layer])
-    svg_file.puts(data.children().children())
+		if (!params[:parent_layer].nil? && !params[:child_layer].nil? && !params[:datetime].nil?)
+			#house cleaning - remove files older than 2 days
+			Dir.glob("#{@svg_directory_path}*.svg"){ |name| 
+				file = File.new(name)
+				if file.mtime < 1.minute.ago
+					File.delete(name)
+				end
+				file.close
+			}
 
-    data = Nokogiri::XML(params[:child_layer])
-    svg_file.puts(data.children().children())
+			# write the svg data into the new svg file
+			svg_file = File.new("#{@svg_directory_path}#{params[:datetime]}.svg","w")
+		  # parse the svg info to remove the xml and svg tag
+		  data = Nokogiri::XML(params[:parent_layer])
+		  svg_file.puts(data.children().children())
 
-		svg_file.close
+		  data = Nokogiri::XML(params[:child_layer])
+		  svg_file.puts(data.children().children())
+
+			svg_file.close
+
+		end
 		render :nothing => true						  
 	end	
 

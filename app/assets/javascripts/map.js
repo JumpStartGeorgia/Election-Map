@@ -338,9 +338,13 @@ function populate_map_box(title, indicator, value)
 
 $(function(){
 	$("#export-link").click(function(){
+		// use the date to create a unique svg file
+		var date = new Date();
 		$.post("/create_svg_file",{"parent_layer":$("#map").find("svg:eq(0)").parent().html(),
-			"child_layer":$("#map").find("svg:eq(1)").parent().html()},function(){
-			window.open("/root/export.svg?map_title=" + gon.map_title);
+			"child_layer":$("#map").find("svg:eq(1)").parent().html(),
+			"datetime":date.getTime()
+			},function(){
+			window.location.href = "/root/export.svg?map_title=" + gon.map_title + "&datetime=" + date.getTime();
 		});
 	});
 });

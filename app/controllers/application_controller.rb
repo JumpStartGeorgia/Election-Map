@@ -21,11 +21,14 @@ class ApplicationController < ActionController::Base
 		@default_values[0].event_type_id = "1"
 		@default_values[0].event_id = "2"
 		@default_values[0].shape_type_id = "1"
-		@default_values[0].shape_id = "175"
+		@default_values[0].shape_id = "10753"
 		@default_values[1].event_type_id = "2"
 		@default_values[1].event_id = "1"
 		@default_values[1].shape_type_id = "1"
-		@default_values[1].shape_id = "175"
+		@default_values[1].shape_id = "10753"
+
+		@svg_file_name = "map"
+		@svg_directory_path = File.dirname(__FILE__)+"/../../public/assets/svg/"
   end
   
   def set_shape_types
