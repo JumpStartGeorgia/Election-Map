@@ -17,7 +17,7 @@ class RootController < ApplicationController
 			#house cleaning - remove files older than 2 days
 			Dir.glob("#{@svg_directory_path}*.svg"){ |name| 
 				file = File.new(name)
-				if file.mtime < 1.minute.ago
+				if file.mtime < 2.day.ago
 					File.delete(name)
 				end
 				file.close
