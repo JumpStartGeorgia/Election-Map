@@ -7,7 +7,7 @@ window.onload = map_init;
 // Define global variables which can be used in all functions
 var map, vector_base, vector_child;
 var scale_nodata = [];
-var color_nodata = "#cccccc";
+var color_nodata = "#CCCCCC";
 scale_nodata['name'] = "No Data";
 scale_nodata['color'] = color_nodata;
 
@@ -148,7 +148,7 @@ function draw_legend()
 				color = gon.indicator_scale_colors[i];
 			}
 
-        	legend.append('<li><span style="background: ' + color + '"></span> ' + gon.indicator_scales[i].name + '</li>');
+      legend.append('<li><span style="background: ' + color + '"></span> ' + gon.indicator_scales[i].name + '</li>');
 		}
 	} else {
 		// no legend
@@ -338,13 +338,30 @@ function populate_map_box(title, indicator, value)
 
 $(function(){
 	$("#export-link").click(function(){
-		// use the date to create a unique svg file
+		// use the date to create a unique svg file name
 		var date = new Date();
+		// get the indicator names and colors
+		var scales = [];
+		var colors = [];
+		for (i=0; i<gon.indicator_scales.length; i++){
+			scales[i] = gon.indicator_scales[i].name;
+			if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
+				colors[i] = gon.indicator_scales[i].color;
+			} else {
+				colors[i] = gon.indicator_scale_colors[i];
+			}
+		}
+		
 		$.post("/create_svg_file",{"parent_layer":$("#map").find("svg:eq(0)").parent().html(),
 			"child_layer":$("#map").find("svg:eq(1)").parent().html(),
 			"datetime":date.getTime()
 			},function(){
-			window.location.href = "/root/export.svg?map_title=" + gon.map_title + "&datetime=" + date.getTime();
+			window.location.href = "/root/export.svg?map_title=" + gon.map_title + 
+				"&indicator_name=" + gon.indicator_name +
+				"&event_name=" + gon.event_name +
+				"&scales=" + encodeURIComponent(scales.join("||")) + 
+				"&colors=" + encodeURIComponent(colors.join("||")) +
+ 				"&datetime=" + date.getTime();
 		});
 	});
 });

@@ -1,11 +1,30 @@
 <?xml version="1.0"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="600" viewBox="0 0 900 600">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="700" viewBox="0 0 900 700">
 
-  <text x="150" y="30" font-family="Verdana" font-size="18" fill="black" >
-    <%= params[:map_title] %>
+	<rect x="0" y="0" width="100%" height="100%" fill="white" />
+
+	<text x="150" y="30" style="fill:black; font-family:verdana; font-size:18;">
+		<%= params[:map_title] %>
+    <tspan x="150" y="55"><%= params[:indicator_name] %></tspan>
+    <tspan x="150" y="80"><%= params[:event_name] %></tspan>
   </text>
-	
+
 	<%= @svg_map.html_safe %>
+
+	<text x="0" y="600" style="fill:black; font-family:verdana; font-size:15;">
+		<% if !params[:scales].nil? && params[:scales].length > 0 %>
+			<% params[:scales].split("||").each_with_index do |scale, i| %>
+		    <tspan x="<%= 160*(i-5*(i/5))+38 %>" y="<%= i/5*25+625 %>"><%= scale %></tspan>
+			<% end %>
+		<% end %>
+  </text>
+
+	<% if !params[:colors].nil? && params[:colors].length > 0 %>
+		<% params[:colors].split("||").each_with_index do |color, i| %>
+			<rect x="<%= 160*(i-5*(i/5))+20 %>" y="<%= i/5*25+612 %>" width="15" height="15" 
+				style="fill:<%= color %>; stroke:black; stroke-width:1;" />
+		<% end %>
+	<% end %>
 
 </svg>

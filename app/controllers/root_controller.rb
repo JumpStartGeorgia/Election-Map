@@ -267,12 +267,9 @@ private
 		end
 
     # save the map title for export
-    # format: indicator for event in shape
-    gon.map_title = ""
-    gon.map_title << "#{@indicator.name} for " if !@indicator.nil? 
     event = get_event(params[:event_id])
-    gon.map_title << "#{event.name} in " if !event.nil?
-    gon.map_title << @map_title
+    gon.event_name = event.name if !event.nil?
+    gon.map_title = @map_title
   end
 
   # build an array of indicator scales that will be used in js
