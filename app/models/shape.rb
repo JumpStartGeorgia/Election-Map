@@ -30,9 +30,9 @@ class Shape < ActiveRecord::Base
 			if !shapes.nil? && shapes.length > 0
 				json = '{ "type": "FeatureCollection","features": ['
 				shapes.each_with_index do |shape, i|
-					json << '{ "type": "Feature", "geometry": {"type":"Polygon", "coordinates":'
+					json << '{ "type": "Feature", "geometry": '
 					json << shape.geometry
-					json << '}, "properties": {'
+					json << ', "properties": {'
 					json << '"id":"'
 					json << shape.id.to_s
 					json << '", "common_id":"'
@@ -70,6 +70,7 @@ class Shape < ActiveRecord::Base
 			    n += 1
 			    # SKIP: header i.e. first row OR blank row
 			    next if n == 1 or row.join.blank?
+    logger.debug "processing row #{n}"		
 
       		# get the event id
       		event = Event.find_by_name(row[0].strip)
@@ -77,7 +78,7 @@ class Shape < ActiveRecord::Base
       		shape_type = ShapeType.find_by_name(row[1].strip)
 
       		if event.nil? || shape_type.nil?
-      logger.debug "event or shape type was not found"		
+    logger.debug "event or shape type was not found"		
       		  msg = "Row #{n} - The event or shape type was not found."
 			      raise ActiveRecord::Rollback
             return msg
@@ -127,11 +128,12 @@ class Shape < ActiveRecord::Base
                 return msg
               end
             else
+      logger.debug "root already exists"
               # found root, continue
               # if this is row 2, see if this row is also a root and the same
               if n==2 && row[2].nil? && root.shape_type_id == shape_type.id && root.common_id == row[3].strip
           		  msg = "Row #{n} - This root record already exists."
-        logger.debug "**root record already exists!"
+      logger.debug "**root record already exists!"
                 raise ActiveRecord::Rollback
                 return msg
               else

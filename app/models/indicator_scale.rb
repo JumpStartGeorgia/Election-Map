@@ -67,6 +67,7 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
+    logger.debug "processing row #{n}"		
   
         # if the event or shape type are not provided, stop
         if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
