@@ -1,43 +1,6 @@
 class RootController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :create_svg_file]
 
-  # POST /create_svg_file
-  # the export link will post to this action and the svg layers will be written to file
-	def create_svg_file
-		if (!params[:parent_layer].nil? && !params[:child_layer].nil? && !params[:datetime].nil?)
-			#house cleaning - remove files older than 2 days
-			Dir.glob("#{@svg_directory_path}*.svg"){ |name| 
-				file = File.new(name)
-				if file.mtime < 2.day.ago
-					File.delete(name)
-				end
-				file.close
-			}
-
-			# write the svg data into the new svg file
-			svg_file = File.new("#{@svg_directory_path}#{params[:datetime]}.svg","w")
-		  # parse the svg info to remove the xml and svg tag
-		  data = Nokogiri::XML(params[:parent_layer])
-		  svg_file.puts(data.children().children())
-
-		  data = Nokogiri::XML(params[:child_layer])
-		  svg_file.puts(data.children().children())
-
-			svg_file.close
-
-		end
-		render :nothing => true						  
-	end	
-
-  # GET /export
-  # read the svg file into the svg erb file
-  def export
-    @svg_map = ""
-		if !params[:datetime].nil?
-	    File.open("#{@svg_directory_path}#{params[:datetime]}.svg","r").each {|line| @svg_map << line }
-		end
-  end
-
   # GET /
   # GET /.json
 	def index
@@ -132,8 +95,10 @@ logger.debug("indicator id = #{params[:indicator_id]}")
 
 		#get the parent shape
 		shape = Shape.where(:id => params[:parent_id])
-		
+logger.debug("found #{shape.length} shapes with the provided shape id")		
+
 		if !shape.nil? && shape.length > 0 && shape.first.has_children?
+logger.debug("building the json file")		
 			# get all of the children of the parent and format for json
 			geometries = Shape.build_json(shape.first.children, params[:indicator_id])
 		end
@@ -141,6 +106,43 @@ logger.debug("indicator id = #{params[:indicator_id]}")
     respond_to do |format|
       format.json { render json: geometries}
     end
+  end
+
+  # POST /create_svg_file
+  # the export link will post to this action and the svg layers will be written to file
+	def create_svg_file
+		if (!params[:parent_layer].nil? && !params[:child_layer].nil? && !params[:datetime].nil?)
+			#house cleaning - remove files older than 2 days
+			Dir.glob("#{@svg_directory_path}*.svg"){ |name| 
+				file = File.new(name)
+				if file.mtime < 2.day.ago
+					File.delete(name)
+				end
+				file.close
+			}
+
+			# write the svg data into the new svg file
+			svg_file = File.new("#{@svg_directory_path}#{params[:datetime]}.svg","w")
+		  # parse the svg info to remove the xml and svg tag
+		  data = Nokogiri::XML(params[:parent_layer])
+		  svg_file.puts(data.children().children())
+
+		  data = Nokogiri::XML(params[:child_layer])
+		  svg_file.puts(data.children().children())
+
+			svg_file.close
+
+		end
+		render :nothing => true						  
+	end	
+
+  # GET /export
+  # read the svg file into the svg erb file
+  def export
+    @svg_map = ""
+		if !params[:datetime].nil?
+	    File.open("#{@svg_directory_path}#{params[:datetime]}.svg","r").each {|line| @svg_map << line }
+		end
   end
 
   # GET /events/admin

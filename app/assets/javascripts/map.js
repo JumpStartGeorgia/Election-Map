@@ -118,7 +118,7 @@ function load_vector_base(resp){
       vector_base.addFeatures(features);
       map.zoomToExtent(bounds);
     } else {
-alert("no features");
+console.log('vector_base - no features found');
     }
 	}
 }
@@ -130,7 +130,7 @@ function load_vector_child(resp){
 	// now that the child vector is loaded, lets show the legend
     draw_legend();
   } else {
-alert("no features");
+console.log('vector_child - no features found');
   }
 }
 
