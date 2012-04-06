@@ -13,6 +13,8 @@ gem 'dynamic_form', '1.1.4' # to see form error messages
 gem 'ancestry', '1.2.5' # control parent/child relationships with shapes
 gem 'unicorn', '4.2.1' # http server
 gem 'nokogiri', '1.5.2' # xml parser
+gem 'exception_notification', '2.5.2' # send an email when exception occurs
+gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
 
 # for debugging
 # to get debugging to work, follow directions at:

@@ -56,5 +56,10 @@ module ElectionMap
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
+		config.middleware.use ExceptionNotifier,
+			:email_prefix => "[Election Map App Error] ",
+			:sender_address => %{<info@jumpstart.ge>},
+			:exception_recipients => %w{jason.addie@jumpstart.ge}
+
   end
 end

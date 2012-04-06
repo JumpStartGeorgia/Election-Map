@@ -126,6 +126,11 @@ class RootController < ApplicationController
     end
   end
 
+	# any mis-match routing errors are directed here
+	def routing_error
+		render_not_found(nil)
+	end
+
 
 private
 
