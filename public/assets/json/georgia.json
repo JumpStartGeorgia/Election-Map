@@ -1,1 +1,0 @@
-{ "type": "FeatureCollection","features": [{ "type": "Feature",	"geometry": {"type":"MultiPolygon","coordinates":[[[[41.55,42.41],[40,43.38],[42.85,43.18],[43.91,42.58],[44.93,42.76],[46.45,41.9],[46.52,41.05],[45.02,41.3],[43.46,41.11],[42.83,41.58],[41.53,41.52],[41.55,42.41]]]]}, "properties": {"common_id":"Georgia Test", "common_name":"Georgia"}}]}

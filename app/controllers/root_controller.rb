@@ -47,7 +47,6 @@ class RootController < ApplicationController
 		# if the shape type changed, update the indicator_id to be valid for the new shape_type
 		if !params[:indicator_id].nil?
 			if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
-logger.debug "+++++ old indicator id = #{params[:indicator_id]}"
 
 				# we know the old indicator id and the new shape type
 				# - use that to find the new indicator id
@@ -60,7 +59,6 @@ logger.debug "+++++ old indicator id = #{params[:indicator_id]}"
 					params[:indicator_id] = new_indicator.first.id.to_s
 					@indicator = new_indicator.first
 				end
-logger.debug "++++++ new indicator id = #{params[:indicator_id]}"
 			else
 				# get the selected indicator 
 				@indicator = Indicator.find(params[:indicator_id])
@@ -80,7 +78,6 @@ logger.debug "++++++ new indicator id = #{params[:indicator_id]}"
   # GET /events/shape/:id.json
   def shape
 		#get the parent shape
-logger.debug("indicator id = #{params[:indicator_id]}")
 		shape = Shape.where(:id => params[:id])
     respond_to do |format|
       format.json { render json: Shape.build_json(shape, params[:indicator_id]) }
@@ -90,15 +87,12 @@ logger.debug("indicator id = #{params[:indicator_id]}")
   # GET /events/children_shapes/:parent_id
   # GET /events/children_shapes/:parent_id.json
   def children_shapes
-logger.debug("indicator id = #{params[:indicator_id]}")
 		geometries = ''
 
 		#get the parent shape
 		shape = Shape.where(:id => params[:parent_id])
-logger.debug("found #{shape.length} shapes with the provided shape id")		
 
 		if !shape.nil? && shape.length > 0 && shape.first.has_children?
-logger.debug("building the json file")		
 			# get all of the children of the parent and format for json
 			geometries = Shape.build_json(shape.first.children, params[:indicator_id])
 		end
@@ -108,41 +102,18 @@ logger.debug("building the json file")
     end
   end
 
-  # POST /create_svg_file
-  # the export link will post to this action and the svg layers will be written to file
-	def create_svg_file
-		if (!params[:parent_layer].nil? && !params[:child_layer].nil? && !params[:datetime].nil?)
-			#house cleaning - remove files older than 2 days
-			Dir.glob("#{@svg_directory_path}*.svg"){ |name| 
-				file = File.new(name)
-				if file.mtime < 2.day.ago
-					File.delete(name)
-				end
-				file.close
-			}
-
-			# write the svg data into the new svg file
-			svg_file = File.new("#{@svg_directory_path}#{params[:datetime]}.svg","w")
-		  # parse the svg info to remove the xml and svg tag
-		  data = Nokogiri::XML(params[:parent_layer])
-		  svg_file.puts(data.children().children())
-
-		  data = Nokogiri::XML(params[:child_layer])
-		  svg_file.puts(data.children().children())
-
-			svg_file.close
-
-		end
-		render :nothing => true						  
-	end	
-
-  # GET /export
-  # read the svg file into the svg erb file
+  # POST /export
+	# generate the svg file
   def export
-    @svg_map = ""
-		if !params[:datetime].nil?
-	    File.open("#{@svg_directory_path}#{params[:datetime]}.svg","r").each {|line| @svg_map << line }
-		end
+		# create the file name: map title - indicator - event
+		filename = params[:hidden_form_map_title].sub(' ', '_')
+		filename << " - "
+		filename << params[:hidden_form_indicator_name_abbrv].sub(' ', '_')
+		filename << " - "
+		filename << params[:hidden_form_event_name].sub(' ', '_')
+
+		headers['Content-Type'] = "image/svg+xml" 
+    headers['Content-Disposition'] = "attachment; filename=\"#{filename}.svg\"" 
   end
 
   # GET /events/admin

@@ -89,13 +89,6 @@ function map_init(){
   map.addControls([select_child]);
   select_child.activate();
 
-	// if indicator values are loaded, show the export button
-	if (gon.indicator_name){
-		$('#map-export').show(0);
-	} else {
-		$('#map-export').hide(0);
-	}
-
 }
 
 // load the features and set the bound
@@ -127,8 +120,10 @@ console.log('vector_base - no features found');
 function load_vector_child(resp){
 	if (resp.success()){
     vector_child.addFeatures(resp.features);
-	// now that the child vector is loaded, lets show the legend
+		// now that the child vector is loaded, lets show the legend
     draw_legend();
+		// now load the values for the hidden form
+		load_hidden_form();
   } else {
 console.log('vector_child - no features found');
   }
@@ -336,33 +331,44 @@ function populate_map_box(title, indicator, value)
     }
 }
 
-$(function(){
-	$("#export-link").click(function(){
-		// use the date to create a unique svg file name
-		var date = new Date();
-		// get the indicator names and colors
-		var scales = [];
-		var colors = [];
-		for (i=0; i<gon.indicator_scales.length; i++){
-			scales[i] = gon.indicator_scales[i].name;
-			if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
-				colors[i] = gon.indicator_scales[i].color;
-			} else {
-				colors[i] = gon.indicator_scale_colors[i];
+// load the hidden form with the values so the export link works
+function load_hidden_form()
+{
+	if (gon.indicator_name){
+		$("#export-link").click(function(){
+			// get the indicator names and colors
+			var scales = [];
+			var colors = [];
+			for (i=0; i<gon.indicator_scales.length; i++){
+				scales[i] = gon.indicator_scales[i].name;
+				if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
+					colors[i] = gon.indicator_scales[i].color;
+				} else {
+					colors[i] = gon.indicator_scale_colors[i];
+				}
 			}
-		}
-		
-		$.post("/create_svg_file",{"parent_layer":$("#map").find("svg:eq(0)").parent().html(),
-			"child_layer":$("#map").find("svg:eq(1)").parent().html(),
-			"datetime":date.getTime()
-			},function(){
-			window.location.href = "/root/export.svg?map_title=" + gon.map_title + 
-				"&indicator_name=" + gon.indicator_name +
-				"&event_name=" + gon.event_name +
-				"&scales=" + encodeURIComponent(scales.join("||")) + 
-				"&colors=" + encodeURIComponent(colors.join("||")) +
- 				"&datetime=" + date.getTime();
+
+			$("#hidden_form_parent_layer").val($("#map").find("svg:eq(0)").parent().html());
+			$("#hidden_form_child_layer").val($("#map").find("svg:eq(1)").parent().html());
+      $("#hidden_form_map_title").val(gon.map_title);
+			$("#hidden_form_indicator_name").val(gon.indicator_name);
+			$("#hidden_form_indicator_name_abbrv").val(gon.indicator_name_abbrv);
+			$("#hidden_form_event_name").val(gon.event_name);
+			$("#hidden_form_scales").val(scales.join("||"));
+			$("#hidden_form_colors").val(colors.join("||"));
+			$("#hidden_form_datetime").val((new Date()).getTime());
+
+
+			// submit the hidden form
+			$('#hidden_form').submit();
 		});
-	});
-});
+
+		// show the export link
+		$('#map-export').show(0);
+
+	} else {
+		// hide the export link
+		$('#map-export').hide(0);
+	}
+}
 

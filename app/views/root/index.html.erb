@@ -66,3 +66,16 @@
 </ul>
 </section>
 
+<%= form_tag "/export.svg", :method => :post, :id => "hidden_form" do %>
+	<%=	hidden_field_tag "hidden_form_parent_layer" %>
+	<%= hidden_field_tag "hidden_form_child_layer" %>
+	<%=	hidden_field_tag "hidden_form_map_title" %>
+	<%=	hidden_field_tag "hidden_form_indicator_name" %>
+	<%=	hidden_field_tag "hidden_form_indicator_name_abbrv" %>
+	<%=	hidden_field_tag "hidden_form_event_name" %>
+	<%=	hidden_field_tag "hidden_form_scales" %>
+	<%=	hidden_field_tag "hidden_form_colors" %>
+	<%=	hidden_field_tag "hidden_form_datetime" %>
+<% end %>			
+
+

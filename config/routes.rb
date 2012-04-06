@@ -4,13 +4,11 @@ ElectionMap::Application.routes.draw do
 
   root :to => "root#index"
 
+  match '/export', :to => 'root#export', :as => :export, :via => :post, :defaults => {:format => 'svg'}
   match "/:locale" => "root#index", via: :get, :as => :root
   match '/:locale/admin', :to => 'root#admin', :as => :admin, :via => :get
   match '/:locale/shape/:id', :to => 'root#shape', :as => :shape, :via => :get, :defaults => {:format => 'json'}
   match '/:locale/children_shapes/:parent_id', :to => 'root#children_shapes', :as => :children_shapes, :via => :get, :defaults => {:format => 'json'}
-
-  match '/root/export', :to => 'root#export', :as => :export, :via => :get, :defaults => {:format => 'svg'}
-  match '/create_svg_file', :to => 'root#create_svg_file', :via => :post
 
   scope "/:locale" do
     resources :locales
