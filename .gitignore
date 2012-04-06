@@ -15,5 +15,5 @@
 /tmp
 
 # Ignore the svg folder under public/assets
-/public/assets/svg
+# /public/assets/svg
 
