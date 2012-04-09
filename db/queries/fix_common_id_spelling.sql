@@ -5,4 +5,4 @@ update data set common_name = 'Mtskheta-Mtianeti' where common_name = 'Mckheta-M
 update data set common_name = 'Racha-Lechkhumi and Kvemo Svaneti' where common_name = 'Racha-Lechkumi and Kvemo Svaneti';
 update data set common_name = 'Samtskhe-Javakheti' where common_name = 'Samckhe-Djavakheti';
 
-update shapes set common_name = 'Zestaponi' where common_id = 'Zastaponi';
+update shapes set common_name = 'Zestaponi' where common_name = 'Zastaponi';

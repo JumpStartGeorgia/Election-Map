@@ -1,0 +1,16 @@
+Event,Shape Type,en: Indicator Name,en: Indicator Abbrv,ka: Indicator Name,ka: Indicator Abbrv,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name,Scale Color,en: Scale Name,ka: Scale Name
+Release May 2008,Region,Numbers of voters over 99 years old,Above 100,ამომრჩეველთა რაოდენობა 99 წელს ზევით,100-ზე მეტი,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release May 2008,Region,Number of voters between 85 and 99 years old,85-99,ამომრჩეველთა რაოდენობა 85 და 99 წელს შორის,85-99,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release May 2008,Region,Average age of voters,Avg. Age,ამომრჩეველთა საშუალო ასაკი ,საშუალო ასაკი,18-35,18-35,,35-45,35-45,,45-55,45-55,,55-65,55-65,,>65,>65
+Release May 2008,Region,Number of voter duplications,Duplications,დუბლირებული ამომრჩევლის რაოდენობა,დუბლირება,0,0,,0-100,0-100,,100-200,100-200,,200-500,200-500,,500-1000,500-1000,,1000-2000,1000-2000,,>2000,>2000
+Release May 2008,Region,Total Voters,TV,სულ,სულ,0,0,,0-50000,0-50000,,50000-100000,50000-100000,,100000-150000,100000-150000,,150000-200000,150000-200000,,200000-300000,200000-300000,,300000-400000,300000-400000,,400000-500000,400000-500000,,>500000,>500000
+Release May 2008,District,Numbers of voters over 99 years old,Above 100,ამომრჩეველთა რაოდენობა 99 წელს ზევით,100-ზე მეტი,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release May 2008,District,Number of voters between 85 and 99 years old,85-99,ამომრჩეველთა რაოდენობა 85 და 99 წელს შორის,85-99,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release May 2008,District,Average age of voters,Avg. Age,ამომრჩეველთა საშუალო ასაკი ,საშუალო ასაკი,18-35,18-35,,35-45,35-45,,45-55,45-55,,55-65,55-65,,>65,>65
+Release May 2008,District,Number of voter duplications,Duplications,დუბლირებული ამომრჩევლის რაოდენობა,დუბლირება,0,0,,0-100,0-100,,100-200,100-200,,200-500,200-500,,500-1000,500-1000,,1000-2000,1000-2000,,>2000,>2000
+Release May 2008,District,Total Voters,TV,სულ,სულ,0,0,,0-5000,0-5000,,5000-10000,5000-10000,,10000-15000,10000-15000,,15000-20000,15000-20000,,20000-25000,20000-25000,,>25000,>25000
+Release May 2008,Precinct,Numbers of voters over 99 years old,Above 100,ამომრჩეველთა რაოდენობა 99 წელს ზევით,100-ზე მეტი,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release May 2008,Precinct,Number of voters between 85 and 99 years old,85-99,ამომრჩეველთა რაოდენობა 85 და 99 წელს შორის,85-99,0,0,,0-20,0-20,,20-50,20-50,,50-100,50-100,,100-200,100-200,,>200,>200
+Release May 2008,Precinct,Average age of voters,Avg. Age,ამომრჩეველთა საშუალო ასაკი ,საშუალო ასაკი,18-35,18-35,,35-45,35-45,,45-55,45-55,,55-65,55-65,,>65,>65
+Release May 2008,Precinct,Number of voter duplications,Duplications,დუბლირებული ამომრჩევლის რაოდენობა,დუბლირება,0,0,,0-100,0-100,,100-200,100-200,,200-500,200-500,,500-1000,500-1000,,1000-2000,1000-2000,,>2000,>2000
+Release May 2008,Precinct,Total Voters,TV,სულ,სულ,0,0,,0-500,0-500,,500-1000,500-1000,,1000-1500,1000-1500,,1500-2000,1500-2000,,2000-2500,2000-2500,,>2500,>2500
