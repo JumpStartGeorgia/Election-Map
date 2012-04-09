@@ -68,7 +68,7 @@ class Datum < ActiveRecord::Base
 									.where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
 										event.id, shape_type.id, row[i].strip)
 					
-								if indicator.nil?
+								if indicator.nil? || indicator.length == 0
 				logger.debug "++++indicator was not found"
 									msg = "Row #{n} - The indicator could not be found."
 									raise ActiveRecord::Rollback
