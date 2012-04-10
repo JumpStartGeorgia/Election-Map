@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120401060103) do
+ActiveRecord::Schema.define(:version => 20120410072009) do
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
   end
 
   add_index "data", ["common_id"], :name => "index_data_on_common_id"
+  add_index "data", ["common_name"], :name => "index_data_on_common_name"
   add_index "data", ["indicator_id"], :name => "index_data_on_indicator_id"
 
   create_table "event_translations", :force => true do |t|
@@ -35,6 +36,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
 
   add_index "event_translations", ["event_id"], :name => "index_event_translations_on_event_id"
   add_index "event_translations", ["locale"], :name => "index_event_translations_on_locale"
+  add_index "event_translations", ["name"], :name => "index_event_translations_on_name"
 
   create_table "event_type_translations", :force => true do |t|
     t.integer  "event_type_id"
@@ -46,6 +48,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
 
   add_index "event_type_translations", ["event_type_id"], :name => "index_event_type_translations_on_event_type_id"
   add_index "event_type_translations", ["locale"], :name => "index_event_type_translations_on_locale"
+  add_index "event_type_translations", ["name"], :name => "index_event_type_translations_on_name"
 
   create_table "event_types", :force => true do |t|
     t.datetime "created_at"
@@ -72,6 +75,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
 
   add_index "indicator_scale_translations", ["indicator_scale_id"], :name => "index_412234fdb185d426c004e05119f032969291aa2f"
   add_index "indicator_scale_translations", ["locale"], :name => "index_indicator_scale_translations_on_locale"
+  add_index "indicator_scale_translations", ["name"], :name => "index_indicator_scale_translations_on_name"
 
   create_table "indicator_scales", :force => true do |t|
     t.integer  "indicator_id"
@@ -93,6 +97,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
 
   add_index "indicator_translations", ["indicator_id"], :name => "index_indicator_translations_on_indicator_id"
   add_index "indicator_translations", ["locale"], :name => "index_indicator_translations_on_locale"
+  add_index "indicator_translations", ["name"], :name => "index_indicator_translations_on_name"
 
   create_table "indicators", :force => true do |t|
     t.integer  "event_id"
@@ -130,6 +135,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
   end
 
   add_index "shape_translations", ["locale"], :name => "index_shape_translations_on_locale"
+  add_index "shape_translations", ["name"], :name => "index_shape_translations_on_name"
   add_index "shape_translations", ["shape_id"], :name => "index_shape_translations_on_shape_id"
 
   create_table "shape_type_translations", :force => true do |t|
@@ -141,6 +147,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
   end
 
   add_index "shape_type_translations", ["locale"], :name => "index_shape_type_translations_on_locale"
+  add_index "shape_type_translations", ["name"], :name => "index_shape_type_translations_on_name"
   add_index "shape_type_translations", ["shape_type_id"], :name => "index_shape_type_translations_on_shape_type_id"
 
   create_table "shape_types", :force => true do |t|
@@ -163,6 +170,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
 
   add_index "shapes", ["ancestry"], :name => "index_shapes_on_ancestry"
   add_index "shapes", ["common_id"], :name => "index_shapes_on_common_id"
+  add_index "shapes", ["common_name"], :name => "index_shapes_on_common_name"
   add_index "shapes", ["shape_type_id"], :name => "index_shapes_on_shape_type_id"
 
   create_table "users", :force => true do |t|
@@ -178,6 +186,7 @@ ActiveRecord::Schema.define(:version => 20120401060103) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "confirmed_at"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
