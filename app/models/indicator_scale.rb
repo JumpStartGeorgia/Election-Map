@@ -1,6 +1,8 @@
 class IndicatorScale < ActiveRecord::Base
   translates :name
   require 'csv'
+  require 'scale_colors'
+  include ScaleColors
 
   belongs_to :indicator
   has_many :indicator_scale_translations, :dependent => :destroy
@@ -20,30 +22,14 @@ class IndicatorScale < ActiveRecord::Base
 	end
 
 	# get an array of colors to use with the scales
-	# colors are from http://colorbrewer2.org/
   def self.get_colors(indicator_id)
 		if !indicator_id.nil?
 			# get the number of scales for the provided indicator_id
 			num_levels = count_by_indicator(indicator_id)
 logger.debug "+++ num of indicator scales = #{num_levels}"
 			if !num_levels.nil?
-				colors = []
-				case num_levels
-				when 3
-					colors = ["#FEE8C8", "#FDBB84", "#E34A33"]
-				when 4
-					colors = ["#FEF0D9", "#FDCC8A", "#FC8D59", "#D7301F"]
-				when 5 
-					colors = ["#FEF0D9", "#FDCC8A", "#FC8D59", "#E34A33", "#B30000"]
-				when 6
-					colors = ["#FEF0D9", "#FDD49E", "#FDBB84", "#FC8D59", "#E34A33", "#B30000"]
-				when 7
-					colors = ["#FEF0D9", "#FDD49E", "#FDBB84", "#FC8D59", "#EF6548", "#D7301F", "#990000"]
-				when 8
-					colors = ["#FFF7EC", "#FEE8C8", "#FDD49E", "#FDBB84", "#FC8D59", "#EF6548", "#D7301F", "#990000"]
-				when 9
-					colors = ["#FFF7EC", "#FEE8C8", "#FDD49E", "#FDBB84", "#FC8D59", "#EF6548", "#D7301F", "#B30000", "#7F0000"]
-				end
+        colors = ScaleColors.get_colors("Oranges", num_levels)
+        colors = [] if colors.nil?
 				return colors
 			end
 		end

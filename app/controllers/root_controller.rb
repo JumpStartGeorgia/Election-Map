@@ -35,7 +35,7 @@ class RootController < ApplicationController
 			@child_shape_type_id = child_shape_type.id
 			# set the map title
 			# format = children shape types of parent shape type
-			@map_title = child_shape_type.name.pluralize + " of " + parent_shape_type.name + " " + @shape.common_id
+			@map_title = child_shape_type.name.pluralize + " of " + parent_shape_type.name + " " + @shape.common_name
 		end
 
 		# get the indicators for the children shape_type
