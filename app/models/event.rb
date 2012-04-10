@@ -1,7 +1,7 @@
 class Event < ActiveRecord::Base
   translates :name
 
-  has_many :event_translations
+  has_many :event_translations, :dependent => :destroy
   has_many :indicators
   belongs_to :shape
   belongs_to :event_type

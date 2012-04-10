@@ -54,6 +54,11 @@ ElectionMap::Application.routes.draw do
   end
   
   scope "/:locale" do
+    resources :pages
+  end
+  match '/:locale/pages/view/:name', :to => 'pages#view', :as => :view_pages, :via => :get
+
+  scope "/:locale" do
     resources :shapes do
 			collection do
         get :upload

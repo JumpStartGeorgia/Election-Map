@@ -5,7 +5,7 @@ class ShapeType < ActiveRecord::Base
 
   has_many :indicators
   has_many :shapes
-  has_many :shape_type_translations
+  has_many :shape_type_translations, :dependent => :destroy
   accepts_nested_attributes_for :shape_type_translations
   attr_accessible :ancestry, :shape_type_translations_attributes
   attr_accessor :locale

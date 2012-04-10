@@ -64,9 +64,9 @@
 			<%= link_to "Sign in", new_user_session_path %>  
 		  <% end %>  
 		<a>|</a>
-		<a href="#">About Project</a>
+		<%= link_to "About Project", view_pages_path(:name => "about") %>
 		<a>|</a>
-		<a href="#">Terms Of Use</a>
+		<%= link_to "Terms of Use", view_pages_path(:name => "terms") %>
 	</footer>
 	
 </body>
