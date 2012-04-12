@@ -34,6 +34,12 @@ GEM
     arel (2.2.3)
     bcrypt-ruby (3.0.1)
     builder (3.0.0)
+    capistrano (2.11.2)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
     daemons (1.1.8)
     devise (2.0.4)
       bcrypt-ruby (~> 3.0)
@@ -55,6 +61,7 @@ GEM
       actionpack (>= 2.3.0)
       json
     haml (3.1.4)
+    highline (1.6.11)
     hike (1.2.1)
     i18n (0.6.0)
     jquery-rails (1.0.19)
@@ -78,6 +85,13 @@ GEM
     mime-types (1.18)
     multi_json (1.1.0)
     mysql2 (0.3.11)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.3.0)
+    net-ssh-gateway (1.1.0)
+      net-ssh (>= 1.99.1)
     nokogiri (1.5.2)
     orm_adapter (0.0.7)
     paper_trail (2.6.2)
@@ -149,6 +163,7 @@ PLATFORMS
 
 DEPENDENCIES
   ancestry (= 1.2.5)
+  capistrano
   devise (= 2.0.4)
   dynamic_form (= 1.1.4)
   exception_notification (= 2.5.2)
