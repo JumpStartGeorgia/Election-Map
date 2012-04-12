@@ -13,3 +13,6 @@ set :user, "deployer"
 set :scm_username, "ericnbarrett"
 
 server "election-map.jumpstart.ge", :app, :web, :db, :primary => true
+
+set :default_environment, { 'PATH' => "/home/deployer/.rbenv/shims:/home/deployer/.rbenv/bin:$PATH" }
+set :bundle_flags, "--deployment --quiet --binstubs --shebang ruby-local-exec"
