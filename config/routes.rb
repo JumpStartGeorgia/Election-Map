@@ -41,6 +41,9 @@ ElectionMap::Application.routes.draw do
         get :upload
         post :upload
         get :export
+        get :change_name
+        post :change_name
+        get :export_name_change
 			end
 		end
   end

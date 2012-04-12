@@ -38,6 +38,10 @@ class Indicator < ActiveRecord::Base
     "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, ka: Indicator Name, ka: Indicator Abbrv, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
   end
 
+  def self.csv_change_name_header
+    "Event, Shape Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW ka: Indicator Name, NEW ka: Indicator Abbrv".split(",")
+  end
+
   def self.build_from_csv(file, deleteExistingRecord)
     infile = file.read
     n, msg = 0, ""
@@ -158,4 +162,85 @@ class Indicator < ActiveRecord::Base
   logger.debug "++++procssed #{n} rows in CSV file"
     return msg 
   end
+
+  def self.change_names_from_csv(file)
+    infile = file.read
+    n, msg = 0, ""
+    index_en_name = 3
+
+		Indicator.transaction do
+		  CSV.parse(infile) do |row|
+
+		    n += 1
+		    # SKIP: header i.e. first row OR blank row
+		    next if n == 1 or row.join.blank?
+    logger.debug "++++processing row #{n}"		
+
+        # if the event or shape type are not provided, stop
+        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
+  logger.debug "+++++++ event or shape type not provided"				
+    		  msg = "Row #{n} - The event or shape type was not found in the spreadsheet."
+  	      raise ActiveRecord::Rollback
+    		  return msg
+  			else
+  				# get the event id
+  				event = Event.find_by_name(row[0].strip)
+  				# get the shape type id
+  				shape_type = ShapeType.find_by_name(row[1].strip)
+
+  				if event.nil? || shape_type.nil?
+  	logger.debug "++++event or shape type was not found"				
+      		  msg = "Row #{n} - The event or shape type was not found."
+  		      raise ActiveRecord::Rollback
+      		  return msg
+  				else
+            # only conintue if all values are present
+            if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil?
+        		  msg = "Row #{n} - Data is missing that is required to save record."
+  logger.debug "+++++**missing data in row"
+              raise ActiveRecord::Rollback
+              return msg
+            else
+			logger.debug "++++found event and shape type, seeing if record already exists"
+							# see if indicator already exists for the provided event and shape_type
+							alreadyExists = Indicator.includes(:indicator_translations)
+							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+							    event.id, shape_type.id, row[2].strip)
+					
+							if !alreadyExists.nil? && alreadyExists.length > 0
+			logger.debug "++++found indicator record, populate obj"
+								# update record
+								ind = alreadyExists[0]
+							  # translations
+                ind.indicator_translations.each do |trans|
+                  i = trans.locale == 'en' ? index_en_name : index_en_name+2
+                  trans.name = row[i].strip
+                  trans.name_abbrv = row[i+1].strip
+                end
+
+	  		logger.debug "++++saving record"
+	  					  # Save if valid 
+	  				    if ind.valid?
+	  				      ind.save
+	  				    else
+	  				      # an error occurred, stop
+	  				      msg = "Row #{n} is not valid."
+	  				      raise ActiveRecord::Rollback
+	  				      return msg
+	  				    end
+							else
+				logger.debug "++++**record does not exist!"
+					      msg = "Row #{n} does not already exist in the database."
+					      raise ActiveRecord::Rollback
+					      return msg
+							end
+	  				end
+  				end
+  			end
+  		end
+		end
+  logger.debug "++++procssed #{n} rows in CSV file"
+    return msg 
+  end
+
 end

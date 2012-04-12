@@ -1,0 +1,29 @@
+<% title 'Upload a CSV file to Change Indicator Names' %>
+
+<%= form_tag change_name_indicators_path, :multipart => true do %>
+	<div>
+		<p>
+			<%= link_to "Download the CSV template file for changing Indicator names", export_name_change_indicators_path %>.
+		</p>
+		<p>
+			Important:
+		</p>
+		<ul>
+			<li>
+				You must provide the new Indicator name and Indicator Abbreviated name for both Georgian and English languages,
+				even if you are only changing one of the four names.
+		</ul>
+	</div>
+
+	<div>
+		<p>
+			CSV File to Upload
+			<%= file_field_tag 'file', :accept => 'text/csv,text/plain' %>
+		</p>
+	</div>
+	<div>
+	  <%= submit_tag "Process CSV File" %>
+	</div>
+<% end %>
+
+<%= link_to 'Back', admin_path %>

@@ -123,4 +123,39 @@ require 'csv'
       :disposition => "attachment; filename=#{filename}.csv"
   end 
 
+  # GET /indicators/change_name
+  # GET /indicators/change_name.json
+  def change_name
+		if request.post? && params[:file].present?
+			if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
+
+		    msg = Indicator.change_names_from_csv(params[:file])
+        if msg.nil? || msg.length == 0
+          # no errors, success!
+					flash[:notice] = "Your file was successfully processed!"
+		      redirect_to change_name_indicators_path #GET
+        else
+          # errors
+					flash[:notice] = "Errors were encountered and no records were saved.  The problem was the following: #{msg}"
+		      redirect_to change_name_indicators_path #GET
+        end 
+			else
+				flash[:notice] = "Your file must be a CSV or tab-delimited txt format."
+        redirect_to change_name_indicators_path #GET
+			end
+		end
+  end
+
+
+  # GET /indicators/export_name_change
+  def export_name_change
+    filename ="indicators_name_change_template"
+    csv_data = CSV.generate do |csv|
+      csv << Indicator.csv_change_name_header
+    end 
+    send_data csv_data,
+      :type => 'text/csv; charset=iso-8859-1; header=present',
+      :disposition => "attachment; filename=#{filename}.csv"
+  end 
+
 end
