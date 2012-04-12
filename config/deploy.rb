@@ -11,6 +11,7 @@ role :db,  "192.168.1.117", :primary => true
 set :deploy_to, "/home/deployer"
 set :user, "deployer"
 set :scm_username, "ericnbarrett"
+set :use_sudo, false
 
 server "192.168.1.117", :app, :web, :db, :primary => true
 
