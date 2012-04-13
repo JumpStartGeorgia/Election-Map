@@ -1,5 +1,12 @@
 source 'http://rubygems.org'
 
+group :assets do
+  gem 'therubyracer'
+  gem 'sass-rails', "  ~> 3.1.0"
+  gem 'coffee-rails', "~> 3.1.0"
+  gem 'uglifier'
+end
+
 gem 'rails', '3.1.3'
 gem "mysql2", "~> 0.3.11" # this gem works better with utf-8
 gem 'jquery-rails', '1.0.19'
