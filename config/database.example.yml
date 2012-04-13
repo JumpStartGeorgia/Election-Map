@@ -1,0 +1,25 @@
+development:
+    adapter:  mysql2 
+    database: 
+    username: 
+    password: 
+    encoding: utf8
+    host: localhost 
+    port: 
+    socket: /tmp/mysql.sock
+    reconnect: true
+    pool: 6
+
+production:
+    adapter:  mysql2
+    database: 
+    username: 
+    password: 
+    encoding: utf8
+    host: localhost 
+    port: 
+    host: 127.0.0.1
+    socket: /tmp/mysql.sock
+    reconnect: true
+    pool: 6
+
