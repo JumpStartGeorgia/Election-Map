@@ -16,4 +16,4 @@
 //= shape_types.js
 //= shapes.js
 //= openlayers.js
-//= map.js
+
