@@ -6,5 +6,5 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require map
 //= require_tree .
-//= map
