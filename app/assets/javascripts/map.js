@@ -1,7 +1,3 @@
-//= require openlayers
-//= require jquery
-//= require jquery_ujs
-
 window.onload = map_init;
 
 // Define global variables which can be used in all functions

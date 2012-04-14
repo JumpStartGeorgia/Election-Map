@@ -6,4 +6,14 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
+//= locales.js
+//= pages.js
+//= data.js
+//= event_types.js
+//= events.js
+//= indicator_scales.js
+//= indicators.js
+//= shape_types.js
+//= shapes.js
+//= openlayers.js
+//= map.js
