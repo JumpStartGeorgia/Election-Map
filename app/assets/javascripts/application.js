@@ -6,6 +6,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= openlayers.js
 //= locales.js
 //= pages.js
 //= data.js
@@ -15,5 +16,5 @@
 //= indicators.js
 //= shape_types.js
 //= shapes.js
-//= openlayers.js
+
 
