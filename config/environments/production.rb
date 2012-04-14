@@ -25,13 +25,13 @@ ElectionMap::Application.configure do
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
-  # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
+  config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
   # See everything in the log (default is :info)
-  # config.log_level = :debug
+  config.log_level = :debug
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
@@ -46,7 +46,7 @@ ElectionMap::Application.configure do
   # config.assets.precompile += %w( search.js )
 
   # Disable delivery errors, bad email addresses will be ignored
-  # config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = false
 
   # Enable threaded mode
   # config.threadsafe!
