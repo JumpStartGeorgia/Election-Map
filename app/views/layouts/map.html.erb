@@ -4,6 +4,8 @@
   <title><%= "#{yield (:title)} - Election Map" || "Election Map" %></title>
 	<%= include_gon %>
   <%= stylesheet_link_tag    "application" %>
+  <%= javascript_include_tag "application" %>
+  <%= javascript_include_tag "map" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
@@ -61,6 +63,6 @@
 		<%= link_to "Terms of Use", view_pages_path(:name => "terms") %>
 	</footer>
 	
-  <%= javascript_include_tag "map" %>
+  
 </body>
 </html>
