@@ -14,7 +14,7 @@
 /log/*.log
 /tmp
 
-# Ignore the svg folder under public/assets
-# /public/assets/svg
+# Ignore the compiled public/assets
+/public/assets
 
 /config/database.yml

@@ -16,12 +16,12 @@
      	<section id="top" class="group">
     
      		<div class="wrap group"> 
-				<div class="map"><a href="/"><%= image_tag "georgia.png", :size => '96x51', :alt => 'Election map logo', :title => 'Home' %></a></div> 
+				<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => 'Election map logo', :title => 'Home'), root_path(:locale => I18n.locale))%></div> 
 				<div id="language_form">
 					<ul>
 					<% @locales.each do |locale| %>
 						<% unless locale.language.to_s == I18n.locale.to_s %> 
-							<li><%= link_to locale.name, url_for(locale: locale.language) %></li>
+						<li><%= link_to locale.name, params.merge(:locale => locale.language) %></li>
 						<% end %>
 					<% end %>
 					</ul>

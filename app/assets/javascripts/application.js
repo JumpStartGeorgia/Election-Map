@@ -6,14 +6,13 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= openlayers.js
-//= locales.js
-//= pages.js
 //= data.js
 //= event_types.js
 //= events.js
 //= indicator_scales.js
 //= indicators.js
+//= locales.js
+//= pages.js
 //= shape_types.js
 //= shapes.js
 
