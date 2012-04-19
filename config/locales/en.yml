@@ -2,6 +2,11 @@
 en:
   layouts:
     application:
+      title: Election Map
+      logo_alt: Map of Georgia in different colors
+      logo_title: Home
+      ndi_alt: National Democratic Institute
+      ndi_title: National Democratic Institute
       signed_in: Signed in as
       admin: Admin
       sign_out: Sign Out
@@ -11,6 +16,11 @@ en:
       about: About Project
       terms: Terms of Use
     map:
+      title: Election Map
+      logo_alt: Map of Georgia in different colors
+      logo_title: Home
+      ndi_alt: National Democratic Institute
+      ndi_title: National Democratic Institute
       signed_in: Signed in as
       admin: Admin
       sign_out: Sign Out

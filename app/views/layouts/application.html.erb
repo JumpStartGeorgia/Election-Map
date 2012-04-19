@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title><%= "#{yield (:title)} - Election Map" || "Election Map" %></title>
+  <title><%= "#{yield (:title)} - #{t('.title')}" || t('.title') %></title>
   <%= stylesheet_link_tag    "application" %>
   <%= javascript_include_tag "application" %>
   
@@ -26,7 +26,7 @@
 					<% end %>
 					</ul>
 				</div>
-				<div class="logo"><a href="http://www.ndi.org/" target="_blank"><%= image_tag "logo.png", :size => '150x48', :alt => 'National Democratic Institute', :title => 'National Democratic Institute' %></a></div>
+				<div class="logo"><a href="http://www.ndi.org/" target="_blank"><%= image_tag "logo.png", :size => '150x48', :alt => t('.ndi_alt'), :title => t('.ndi_title') %></a></div>
     		</div>
     
    	</section>
