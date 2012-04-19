@@ -1,0 +1,36 @@
+# encoding: utf-8
+en:
+  layouts:
+    application:
+      signed_in: თქვენ ხართ
+      admin: ადმინისტრაცია
+      sign_out: გამოსვლა
+      sign_in: შესვლა
+      or: თუ
+      sign_up: რეგისტრაცია
+      about: პროექტის შესახებ
+      terms: წესები
+    map:
+      signed_in: თქვენ ხართ
+      admin: ადმინისტრაცია
+      sign_out: გამოსვლა
+      sign_in: შესვლა
+      or: თუ
+      sign_up: რეგისტრაცია
+      about: პროექტის შესახებ
+      terms: წესები
+  root:
+    admin:
+      title: ადმინისტრაცია განყოფილება
+      basic_header: ძირითადი
+      events: თარიღის სახელები
+      shape_types: ფორმის სახეები
+      event_types: თარიღის ტიპები
+      locales: ენები
+      pages: ძირითადი გვერდი
+      csv_header: ატვირთვა CSV ფაილი
+      indicators: მაჩვენებლები
+      change_indicator_names: შეცვლა მაჩვენებელი სახელები
+      change_indicator_scales: შეცვლა მაჩვენებელი სასწორები
+      data: მონაცემები
+      shapes: რუკა აყალიბებს

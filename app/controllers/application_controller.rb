@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
 protected 
 
   def set_locale
-    I18n.locale = params[:locale] if params[:locale]
+    I18n.locale = params[:locale] if params[:locale].present?
     @locales = Locale.all
   end
   

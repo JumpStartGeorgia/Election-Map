@@ -1,43 +1,43 @@
-<% title 'Administration Section' %>
+<% title t('.title') %>
 
 <div>
 	<div style="float: left; width: 45%;">
-		<h3>Basic Management</h3>
+		<h3><%= t('.basic_header')%></h3>
 		<ul>
 			<li>
-				<%= link_to 'Event Names', events_path %>
+				<%= link_to t('.events'), events_path %>
 			</li>
 			<li>
-				<%= link_to 'Shape Types', shape_types_path %>
+				<%= link_to t('.shape_types'), shape_types_path %>
 			</li>
 			<li>
-				<%= link_to 'Event Types', event_types_path %>
+				<%= link_to t('.event_types'), event_types_path %>
 			</li>
 			<li>
-				<%= link_to 'Locales', locales_path %>
+				<%= link_to t('.locales'), locales_path %>
 			</li>
 			<li>
-				<%= link_to 'Basic Pages', pages_path %>
+				<%= link_to t('.pages'), pages_path %>
 			</li>
 		</ul>
 	</div>
 	<div style="float: right; width: 45%;">
-		<h3>Upload CSV files</h3>
+		<h3><%= t('.csv_header')%></h3>
 		<ul>
 			<li>
-			<%= link_to 'Indicators', upload_indicators_path %>
+			<%= link_to t('.indicators'), upload_indicators_path %>
 			</li>
 			<li>
-			<%= link_to 'Change Indicator Names', change_name_indicators_path %>
+			<%= link_to t('.change_indicator_names'), change_name_indicators_path %>
 			</li>
 			<li>
-			<%= link_to 'Change Indicator Scales', upload_indicator_scales_path %>
+			<%= link_to t('.change_indicator_scales'), upload_indicator_scales_path %>
 			</li>
 			<li>
-			<%= link_to 'Data', upload_data_path %>
+			<%= link_to t('.data'), upload_data_path %>
 			</li>
 			<li>
-			<%= link_to 'Shapes', upload_shapes_path %>
+			<%= link_to t('.shapes'), upload_shapes_path %>
 			</li>
 		</ul>
 	</div>

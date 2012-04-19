@@ -1,5 +1,36 @@
-# Sample localization file for English. Add more files in this directory for other locales.
-# See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
-
+# encoding: utf-8
 en:
-  hello: "Hello world"
+  layouts:
+    application:
+      signed_in: Signed in as
+      admin: Admin
+      sign_out: Sign Out
+      sign_in: Sign In
+      or: or
+      sign_up: Sign Up
+      about: About Project
+      terms: Terms of Use
+    map:
+      signed_in: Signed in as
+      admin: Admin
+      sign_out: Sign Out
+      sign_in: Sign In
+      or: or
+      sign_up: Sign Up
+      about: About Project
+      terms: Terms of Use
+  root:
+    admin:
+      title: Administration Section
+      basic_header: Basic
+      events: Event Names
+      shape_types: Shape Types
+      event_types: Event Types
+      locales: Languages
+      pages: Basic Pages
+      csv_header: Upload CSV Files
+      indicators: Indicators
+      change_indicator_names: Change Indicator Names
+      change_indicator_scales: Change Indicator Scales
+      data: Data
+      shapes: Map Shapes

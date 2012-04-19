@@ -48,17 +48,18 @@
 	
 	<footer class="group" style="position: static; ">
 		  <% if user_signed_in? %>  
-			Signed in as <%= current_user.email %>. 
-			<%= link_to "Admin", admin_path %>  
-			<%= link_to "Sign out", destroy_user_session_path, :method => :delete %>  
+				<%= "#{t('.signed_in')} #{current_user.email}" %>. 
+				<%= link_to t('.admin'), admin_path %>  
+				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>  
 		  <% else %>  
-			<%= link_to "Sign up", new_user_registration_path %> or  
-			<%= link_to "Sign in", new_user_session_path %>  
+				<%= link_to t('.sign_up'), new_user_registration_path %>
+				<%= t('.or')%>  
+				<%= link_to t('.sign_in'), new_user_session_path %>  
 		  <% end %>  
 		<a>|</a>
-		<%= link_to "About Project", view_pages_path(:name => "about") %>
+		<%= link_to t('.about'), view_pages_path(:name => "about") %>
 		<a>|</a>
-		<%= link_to "Terms of Use", view_pages_path(:name => "terms") %>
+		<%= link_to t('.terms'), view_pages_path(:name => "terms") %>
 	</footer>
 	
 	<%= javascript_include_tag "map" %>
