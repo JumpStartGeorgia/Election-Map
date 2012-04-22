@@ -1,0 +1,7 @@
+excel queries to move election result values from one column for all parties to one column for each party
+
+=INDEX((INDIRECT(CONCATENATE("Raw_Majoritarian.$R",MATCH($E2,Raw_Majoritarian.$E$3:$E$18796,0)+2,":$R",MATCH($E3,Raw_Majoritarian.$E$3:$E$18796,0)+1))),MATCH(2,(INDIRECT(CONCATENATE("Raw_Majoritarian.$P",MATCH($E2,Raw_Majoritarian.$E$3:$E$18796,0)+2,":$P",MATCH($E3,Raw_Majoritarian.$E$3:$E$18796,0)+1))),0))
+
+
+use this one for the last row and change 18796 to the last row of records
+=INDEX((INDIRECT(CONCATENATE("Raw_Majoritarian.$R",MATCH($E3583,Raw_Majoritarian.$E$3:$E$18796,0)+2,":$R18796"))),MATCH(2,(INDIRECT(CONCATENATE("Raw_Majoritarian.$P", MATCH($E3583,Raw_Majoritarian.$E$3:$E$18796,0)+2,":$P18796"))),0))
