@@ -7,70 +7,72 @@ class RootController < ApplicationController
 		# get the event type id
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
 		
-		# get default values for this event type
-		@default_values = get_event_type_defaults(params[:event_type_id])
-		if @default_values.nil?
-#TODO - do what?
-		end
-
 		# get the events for this event type
-		@events = Event.where(:event_type_id => params[:event_type_id])
+    @events = Event.get_events_by_type(params[:event_type_id])
 
-		# get the current event
-		params[:event_id] = @default_values.event_id.to_s	if params[:event_id].nil?
+    if !@events.nil? && @events.length > 0
+  		# get the current event
+  		event = get_current_event(params[:event_id])
+  		# - if no exist, get first event with shape
+      params[:event_id] = event.id.to_s if params[:event_id].nil?
 
-		# get the shape
-		params[:shape_id] = @default_values.shape_id if params[:shape_id].nil?
-		@shape = Shape.get_shape_no_geometry(params[:shape_id])
+  		# get the shape
+  		params[:shape_id] = event.shape_id if params[:shape_id].nil?
+      logger.debug("shape id = #{params[:shape_id]}")
+  		@shape = Shape.get_shape_no_geometry(params[:shape_id])
 
-		# get the shape type id that was clicked
-		params[:shape_type_id] = @default_values.shape_type_id if params[:shape_type_id].nil?
-		
-		# now get the child shape type id
-		parent_shape_type = get_shape_type(params[:shape_type_id])
-		@child_shape_type_id = nil
-		if (!parent_shape_type.nil? && parent_shape_type.has_children?)
-			# found child, save id
-			child_shape_type = get_child_shape_type(params[:shape_type_id])
-			@child_shape_type_id = child_shape_type.id
-			# set the map title
-			# format = children shape types of parent shape type
-			@map_title = child_shape_type.name.pluralize + " of " + parent_shape_type.name + " " + @shape.common_name
-		end
+  		# get the shape type id that was clicked
+  		params[:shape_type_id] = @shape.shape_type_id if params[:shape_type_id].nil?
 
-		# get the indicators for the children shape_type
-		if !params[:event_id].nil? && !@child_shape_type_id.nil?
-			@indicators = Indicator.where(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id)
-		end
+  		# now get the child shape type id
+  		parent_shape_type = get_shape_type(params[:shape_type_id])
+  		@child_shape_type_id = nil
+  		if (!parent_shape_type.nil? && parent_shape_type.has_children?)
+  			# found child, save id
+  			child_shape_type = get_child_shape_type(params[:shape_type_id])
+  			@child_shape_type_id = child_shape_type.id
+  			# set the map title
+  			# format = children shape types of parent shape type
+  			@map_title = child_shape_type.name.pluralize + " of " + parent_shape_type.name + " " + @shape.common_name
+  		end
 
-		# get the indicator
-		# if the shape type changed, update the indicator_id to be valid for the new shape_type
-		if !params[:indicator_id].nil?
-			if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
+  		# get the indicators for the children shape_type
+  		if !params[:event_id].nil? && !@child_shape_type_id.nil?
+  			@indicators = Indicator.where(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id)
+  		end
 
-				# we know the old indicator id and the new shape type
-				# - use that to find the new indicator id
-				new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id, params[:locale])
-				if new_indicator.nil? || new_indicator.length == 0
-					# could not find a match, reset the indicator id
-					params[:indicator_id] = nil
-				else
-					# save the new value				
-					params[:indicator_id] = new_indicator.first.id.to_s
-					@indicator = new_indicator.first
-				end
-			else
-				# get the selected indicator 
-				@indicator = Indicator.find(params[:indicator_id])
-			end
-		end
+  		# get the indicator
+  		# if the shape type changed, update the indicator_id to be valid for the new shape_type
+  		if !params[:indicator_id].nil?
+  			if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
 
-		# reset the parameter that indicates if the shape type changed
-		params[:change_shape_type] = false
+  				# we know the old indicator id and the new shape type
+  				# - use that to find the new indicator id
+  				new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id, params[:locale])
+  				if new_indicator.nil? || new_indicator.length == 0
+  					# could not find a match, reset the indicator id
+  					params[:indicator_id] = nil
+  				else
+  					# save the new value				
+  					params[:indicator_id] = new_indicator.first.id.to_s
+  					@indicator = new_indicator.first
+  				end
+  			else
+  				# get the selected indicator 
+  				@indicator = Indicator.find(params[:indicator_id])
+  			end
+  		end
 
-		# set js variables
-    set_gon_variables
-    
+  		# reset the parameter that indicates if the shape type changed
+  		params[:change_shape_type] = false
+
+  		# set js variables
+      set_gon_variables
+
+    else
+
+    end
+
 		render :layout => 'map'
 	end
 
@@ -149,9 +151,16 @@ private
 	end
 
 	# get the the current event
-	def get_event(event_id)
-		if @events.nil? || @events.length == 0 || event_id.nil?
+	def get_current_event(event_id)
+		if @events.nil? || @events.length == 0
       return nil
+    elsif event_id.nil?
+      # no event select yet, find first with a shape id
+      @events.each do |e|
+        if !e.shape_id.nil?
+          return e
+        end
+      end
     else
 			@events.each do |event|
 				if event.id.to_s == event_id.to_s
@@ -198,36 +207,8 @@ private
   def set_gon_variables
     # shape json paths
 		# - only chilrend shape path needs the indicator id since that is the only layer that is clickable
-    if params[:shape_id].nil?
-      # shape id is not provided, find the shape assigned to the event
-  		event = nil
-  		if !params[:event_id].nil?
-    		@events.each do |ev|
-    			if ev.id.to_s == params[:event_id]
-    				event = ev 
-    				break
-    			end
-    		end
-    		if event.nil? || event.shape_id.nil?
-    			# set default
-          # no event selected or event does not have a shape assigned to it, using defaults for gon variables
-    			gon.shape_path = shape_path(:id => @default_values.shape_id)
-    			gon.children_shapes_path = children_shapes_path(:parent_id => @default_values.shape_id, :indicator_id => params[:indicator_id])
-    		else
-    		  # found event, load its shape
-    			gon.shape_path = shape_path(:id => event.shape_id)
-    			gon.children_shapes_path = children_shapes_path(:parent_id => event.shape_id, :indicator_id => params[:indicator_id])
-    		end
-      else
-        # no event selected yet, use default shape
-  			gon.shape_path = shape_path(:id => @default_values.shape_id)
-  			gon.children_shapes_path = children_shapes_path(:parent_id => @default_values.shape_id, :indicator_id => params[:indicator_id])
-      end
-    else
-      # shape id is provided, use it
-			gon.shape_path = shape_path(:id => params[:shape_id])
-			gon.children_shapes_path = children_shapes_path(:parent_id => params[:shape_id], :indicator_id => params[:indicator_id])
-    end
+		gon.shape_path = shape_path(:id => params[:shape_id])
+		gon.children_shapes_path = children_shapes_path(:parent_id => params[:shape_id], :indicator_id => params[:indicator_id])
 
 		# indicator name
 		if !@indicator.nil?
@@ -245,7 +226,7 @@ private
 		end
 
     # save the map title for export
-    event = get_event(params[:event_id])
+    event = get_current_event(params[:event_id])
     gon.event_name = event.name if !event.nil?
     gon.map_title = @map_title
   end

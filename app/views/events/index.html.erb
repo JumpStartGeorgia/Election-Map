@@ -4,6 +4,7 @@
   <tr>
     <th>Name</th>
 	<th>Event Type</th>
+	<th>Event Date</th>
     <th>Parent shape</th>
     <th></th>
     <th></th>
@@ -14,6 +15,7 @@
   <tr>
     <td><%= event.name %></td>
     <td><%= event.event_type.name %></td>
+    <td><%= event.event_date %></td>
     <td><%= event.shape_id %></td>
     <td><%= link_to 'Show', event %></td>
     <td><%= link_to 'Edit', edit_event_path(event) %></td>

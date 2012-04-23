@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120410121437) do
+ActiveRecord::Schema.define(:version => 20120423065550) do
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
@@ -60,6 +60,7 @@ ActiveRecord::Schema.define(:version => 20120410121437) do
     t.integer  "shape_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.date     "event_date"
   end
 
   add_index "events", ["event_type_id"], :name => "index_events_on_event_type_id"

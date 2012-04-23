@@ -32,16 +32,6 @@ protected
   end
   
   def set_default_values
-		@default_values = Array.new(2) {OpenStruct.new}
-		@default_values[0].event_type_id = "1"
-		@default_values[0].event_id = "2"
-		@default_values[0].shape_type_id = "1"
-		@default_values[0].shape_id = "1"
-		@default_values[1].event_type_id = "2"
-		@default_values[1].event_id = "1"
-		@default_values[1].shape_type_id = "1"
-		@default_values[1].shape_id = "1"
-
 		@svg_directory_path = File.dirname(__FILE__)+"/../../public/assets/svg/"
   end
   
