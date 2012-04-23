@@ -1,5 +1,5 @@
 class IndicatorTranslation < ActiveRecord::Base
-  attr_accessible :indicator_id, :name, :name_abbrv, :locale
+  attr_accessible :indicator_id, :name, :name_abbrv, :description, :locale
   belongs_to :indicator
 
   validates :name, :name_abbrv, :locale, :presence => true

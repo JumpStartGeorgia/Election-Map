@@ -1,6 +1,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require openlayers
+//= require jquery.simpletip-1.3.1.min
 
 window.onload = map_init;
 
@@ -149,8 +150,16 @@ function draw_legend()
 		// no legend
 		legend.innerHTML = "";
 	}
-//    $('#legend-container').fadeIn('slow');
-    $('#legend-container').show(0);
+
+	// show the indicator descritpion if provided
+	if (gon.indicator_description) {
+		$('#indicator-description').append(gon.indicator_description);
+	} else {
+		$('#indicator-description').innerHTML = "";
+	}
+
+  $('#legend-container').show(0);
+  $('#indicator-description').show(0);
 }
 
 // build the color mapping for the indicators
@@ -304,7 +313,8 @@ function update_query_parameter(url, name, value){
 // show the map box
 function hover_handler (feature)
 {
-	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv + ":", feature.attributes.value);
+	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv + ":", 
+		feature.attributes.value + gon.indicator_number_format);
 }
 
 // hide the map box

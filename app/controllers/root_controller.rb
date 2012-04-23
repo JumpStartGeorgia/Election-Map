@@ -214,6 +214,8 @@ private
 		if !@indicator.nil?
 			gon.indicator_name = @indicator.name
 			gon.indicator_name_abbrv = @indicator.name_abbrv
+			gon.indicator_number_format = @indicator.number_format.nil? ? "" : @indicator.number_format
+			gon.indicator_description = @indicator.description
 			gon.indicator_scale_colors = IndicatorScale.get_colors(@indicator.id)
 		end
 

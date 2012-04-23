@@ -1,5 +1,5 @@
 class Indicator < ActiveRecord::Base
-  translates :name, :name_abbrv
+  translates :name, :name_abbrv, :description
   require 'csv'
 
   has_many :indicator_translations, :dependent => :destroy
@@ -8,7 +8,7 @@ class Indicator < ActiveRecord::Base
   belongs_to :event
   belongs_to :shape_type
   accepts_nested_attributes_for :indicator_translations
-  attr_accessible :event_id, :shape_type_id , :indicator_translations_attributes
+  attr_accessible :event_id, :shape_type_id, :number_format, :indicator_translations_attributes
   attr_accessor :locale
 
   validates :event_id, :shape_type_id, :presence => true
@@ -35,17 +35,17 @@ class Indicator < ActiveRecord::Base
 	end
 
   def self.csv_header
-    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, ka: Indicator Name, ka: Indicator Abbrv, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
+    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional, e.g., %), en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
   end
 
   def self.csv_change_name_header
-    "Event, Shape Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW ka: Indicator Name, NEW ka: Indicator Abbrv".split(",")
+    "Event, Shape Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW en: Indicator Description, NEW ka: Indicator Name, NEW ka: Indicator Abbrv, NEW ka: Indicator Description, Number Format (optional, e.g., %)".split(",")
   end
 
   def self.build_from_csv(file, deleteExistingRecord)
     infile = file.read
     n, msg = 0, ""
-    index_first_scale = 6
+    index_first_scale = 9
     columns_per_scale = 3
 
 		Indicator.transaction do
@@ -76,7 +76,7 @@ class Indicator < ActiveRecord::Base
       		  return msg
   				else
             # only conintue if all values are present
-            if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil?
+            if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil? || row[7].nil?
         		  msg = "Row #{n} - Data is missing that is required to save record."
   logger.debug "+++++**missing data in row"
               raise ActiveRecord::Rollback
@@ -101,9 +101,12 @@ class Indicator < ActiveRecord::Base
 								ind = Indicator.new
 								ind.event_id = event.id
 								ind.shape_type_id = shape_type.id
+								ind.number_format = row[8].strip if !row[8].nil? && row[8].strip.length > 0
 							  # translations
-								ind.indicator_translations.build(:locale => 'en', :name => row[2].strip, :name_abbrv => row[3].strip)
-								ind.indicator_translations.build(:locale => 'ka', :name => row[4].strip, :name_abbrv => row[5].strip)
+								ind.indicator_translations.build(:locale => 'en', :name => row[2].strip, 
+										:name_abbrv => row[3].strip, :description => row[4].strip)
+								ind.indicator_translations.build(:locale => 'ka', :name => row[5].strip, 
+										:name_abbrv => row[6].strip, :description => row[7].strip)
 							  # scales
 							  finishedScales = false # keep looping until find empty cell
 							  i = index_first_scale # where first scale starts
@@ -195,7 +198,7 @@ class Indicator < ActiveRecord::Base
       		  return msg
   				else
             # only conintue if all values are present
-            if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil?
+            if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil? || row[7].nil? || row[8].nil?
         		  msg = "Row #{n} - Data is missing that is required to save record."
   logger.debug "+++++**missing data in row"
               raise ActiveRecord::Rollback
@@ -211,11 +214,17 @@ class Indicator < ActiveRecord::Base
 			logger.debug "++++found indicator record, populate obj"
 								# update record
 								ind = alreadyExists[0]
+								if !row[9].nil? && row[9].strip.length > 0
+									ind.number_format = row[9].strip 
+								else
+									ind.number_format = nil
+								end
 							  # translations
                 ind.indicator_translations.each do |trans|
-                  i = trans.locale == 'en' ? index_en_name : index_en_name+2
+                  i = trans.locale == 'en' ? index_en_name : index_en_name+3
                   trans.name = row[i].strip
                   trans.name_abbrv = row[i+1].strip
+                  trans.description = row[i+2].strip
                 end
 
 	  		logger.debug "++++saving record"
