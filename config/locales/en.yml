@@ -48,3 +48,5 @@ en:
       change_indicator_scales: Change Indicator Scales
       data: Data
       shapes: Map Shapes
+      download_header: Download CSV Files
+      download_indicators: Indicators

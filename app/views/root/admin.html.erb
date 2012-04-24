@@ -1,7 +1,7 @@
 <% title t('.title') %>
 
 <div>
-	<div style="float: left; width: 45%;">
+	<div style="float: left; width: 30%;">
 		<h3><%= t('.basic_header')%></h3>
 		<ul>
 			<li>
@@ -21,7 +21,7 @@
 			</li>
 		</ul>
 	</div>
-	<div style="float: right; width: 45%;">
+	<div style="float: left; width: 30%;">
 		<h3><%= t('.csv_header')%></h3>
 		<ul>
 			<li>
@@ -38,6 +38,14 @@
 			</li>
 			<li>
 			<%= link_to t('.shapes'), upload_shapes_path %>
+			</li>
+		</ul>
+	</div>
+	<div style="float: left; width: 30%;">
+		<h3><%= t('.download_header')%></h3>
+		<ul>
+			<li>
+			<%= link_to t('.download_indicators'), download_indicators_path %>
 			</li>
 		</ul>
 	</div>

@@ -26,4 +26,9 @@ class Event < ActiveRecord::Base
   		.order("event_date DESC, event_translations.name ASC")
     end
   end
+
+  def self.get_all_events
+    includes(:event_translations)
+  		.order("event_type_id ASC, event_date DESC, event_translations.name ASC")
+  end
 end

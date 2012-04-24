@@ -116,7 +116,7 @@ require 'csv'
   def export
     filename ="indicators_template"
     csv_data = CSV.generate do |csv|
-      csv << Indicator.csv_header
+      csv << Indicator.csv_all_header
     end 
     send_data csv_data,
       :type => 'text/csv; charset=iso-8859-1; header=present',
@@ -149,7 +149,7 @@ require 'csv'
 
   # GET /indicators/export_name_change
   def export_name_change
-    filename ="indicators_name_change_template"
+    filename ="indicators_name_template"
     csv_data = CSV.generate do |csv|
       csv << Indicator.csv_change_name_header
     end 
@@ -157,5 +157,56 @@ require 'csv'
       :type => 'text/csv; charset=iso-8859-1; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
   end 
+
+  # GET /indicators/download
+  # GET /indicators/download.json
+  def download
+    @events = Event.get_all_events
+    
+		if request.post?
+      event = nil
+      @events.each do |e|
+        if e.id.to_s == params[:event_id]
+          event = e
+          break
+        end
+      end
+
+      if event.nil?
+        # no matching event found
+				flash[:notice] = "The selected event could not be found."
+	      redirect_to download_indicators_path #GET
+      else
+        #get the data
+        csv_data = nil
+        case params[:download_option]
+        when "names"
+logger.debug "controller - getting indicator names only"
+          filename ="Indicator_Names_for_"
+          csv_data = Indicator.create_csv(params[:event_id], true)
+        when "scales"
+logger.debug "controller - getting scales names only"
+filename ="Indicator_Scales_for_"
+          csv_data = IndicatorScale.create_csv(params[:event_id])
+        when "both"
+logger.debug "controller - getting all info"
+filename ="Indicator_Names_Scales_for_"
+          csv_data = Indicator.create_csv(params[:event_id], false)
+        end
+
+        if csv_data.nil?
+  				flash[:notice] = "Errors were encountered and the csv file could not be created."
+  	      redirect_to download_indicators_path #GET
+        else
+          # send the file
+          filename << event.name.gsub(' ', '_')
+          send_data csv_data,
+            :type => 'text/csv; charset=iso-8859-1; header=present',
+            :disposition => "attachment; filename=#{filename}.csv"
+        end
+      end
+		end
+  end
+
 
 end

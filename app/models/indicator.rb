@@ -34,8 +34,16 @@ class Indicator < ActiveRecord::Base
 		end
 	end
 
-  def self.csv_header
-    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional, e.g., %), en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
+  def self.csv_all_header
+    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional: e.g. %), en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
+  end
+
+  def self.csv_scale_header
+    "en: Scale Name, ka: Scale Name, Scale Color".split(",")
+  end
+
+  def self.csv_name_header
+    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional: e.g. %)".split(",")
   end
 
   def self.csv_change_name_header
@@ -250,6 +258,104 @@ class Indicator < ActiveRecord::Base
 		end
   logger.debug "++++procssed #{n} rows in CSV file"
     return msg 
+  end
+
+  def self.create_csv(event_id, names_only)
+    if event_id.nil? || names_only.nil?
+logger.debug "not all params provided"
+      return nil
+    else
+      # get all of the indicators for this event
+      if names_only
+logger.debug "getting indicator names only"
+        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations)
+          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
+            :event_id => event_id, :locale => "en")
+          .order("shape_type_translations.name ASC, indicator_translations.locale ASC, indicator_translations.name ASC")
+      else 
+logger.debug "getting all indicator info"
+        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_scales => :indicator_scale_translations})
+          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
+            :event_id => event_id, :locale => "en")
+          .order("shape_type_translations.name ASC, indicator_translations.locale ASC, indicator_translations.name ASC, indicator_scales.id ASC, indicator_scale_translations.id ASC")
+      end
+      
+      if indicators.nil? || indicators.length == 0
+logger.debug "no indicators found"
+        return nil
+      else
+logger.debug "creating csv rows"
+        # create the csv data
+        rows =[]
+        max_num_scales = 0
+        indicators.each do |ind|
+          row = []
+          if ind.event.event_translations.nil? || ind.event.event_translations.length == 0
+logger.debug "no event translation found"
+            return nil
+          else
+            row << ind.event.event_translations[0].name
+          end
+          if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.length == 0
+logger.debug "no shape type translation found"
+            return nil
+          else
+            row << ind.shape_type.shape_type_translations[0].name
+          end
+          # get en
+          ind.indicator_translations.each do |trans|
+            if trans.locale == 'en'
+              row << trans.name
+              row << trans.name_abbrv
+              row << trans.description
+            end
+          end
+          # get ka
+          ind.indicator_translations.each do |trans|
+            if trans.locale == 'ka'
+              row << trans.name
+              row << trans.name_abbrv
+              row << trans.description
+            end
+          end
+
+          row << ind.number_format
+          
+          if !names_only
+            # add the scales
+            i = 0
+            ind.indicator_scales.each do |scale|
+              scale.indicator_scale_translations.each do |scale_trans|
+                row << scale_trans.name
+              end
+              row << scale.color
+              # update the max num of scales if necesssary
+              i=i+1
+              max_num_scales = i if i > max_num_scales
+            end
+          end
+          
+          # add the row to the rows array
+          rows << row
+        end
+        csv_data = CSV.generate do |csv|
+          # generate the header
+          header = []
+          header << csv_name_header
+          (1..max_num_scales).each do |i|
+            header << csv_scale_header
+          end
+          csv << header.flatten
+          
+          # add the rows
+          rows.each do |r|
+            csv << r
+          end
+        end
+
+        return csv_data
+      end
+    end
   end
 
 end

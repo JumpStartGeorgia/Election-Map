@@ -17,7 +17,7 @@
 		<% @events.each_with_index do |event, i| %>
 			<% if !event.shape_id.nil? 
 				 is_active = event.id.to_s == params[:event_id] ? "active" : "not_active" %>
-				<li id="<%= event.name.sub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.length-1%>class="last"<% end %> >
+				<li id="<%= event.name.gsub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.length-1%>class="last"<% end %> >
 					<%= link_to event.name, root_path({
 						:event_id => event.id, :event_type_id => event.event_type_id, 
 						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id
