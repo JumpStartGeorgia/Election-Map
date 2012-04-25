@@ -33,85 +33,92 @@ class Datum < ActiveRecord::Base
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
+	logger.debug "++++processing row #{n}"				
 
-		logger.debug "++++processing row #{n}"				
-				# get the event id
-				event = Event.find_by_name(row[0].strip)
-				# get the shape type id
-				shape_type = ShapeType.find_by_name(row[1].strip)
-
-				if event.nil? || shape_type.nil?
-		logger.debug "++++event or shape type was not found"				
-    		  msg = "Row #{n} - The event or shape type was not found."
+        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
+  logger.debug "++++event or shape type was not found in spreadsheet"
+    		  msg = "Row #{n} - The event or shape type was not found in the spreadsheet."
 		      raise ActiveRecord::Rollback
-    		  return msg
+          return msg
 				else
-		logger.debug "++++event and shape found, procesing indicators"
-					finishedIndicators = false
-					i = 4 # where first indicator starts
+					# get the event id
+					event = Event.find_by_name(row[0].strip)
+					# get the shape type id
+					shape_type = ShapeType.find_by_name(row[1].strip)
 
-					until finishedIndicators do
-					  if row[i].nil? || row[i+1].nil?
-		logger.debug "++++found empty cells, stopping processing for row"
-					    # found empty cell, stop
-					    finishedIndicators = true
-					  else
-              # only conintue if common id provided
-              if row[2].nil? || row[3].nil?
-          		  msg = "Row #{n} - Common ID is missing and is required to save record."
-    logger.debug "++++**missing data in row"
-                raise ActiveRecord::Rollback
-                return msg
-              else
-								# see if indicator already exists for the provided event and shape_type
-								indicator = Indicator.includes(:indicator_translations)
-									.where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
-										event.id, shape_type.id, row[i].strip)
+					if event.nil? || shape_type.nil?
+			logger.debug "++++event or shape type was not found"				
+		  		  msg = "Row #{n} - The event or shape type was not found."
+				    raise ActiveRecord::Rollback
+		  		  return msg
+					else
+			logger.debug "++++event and shape found, procesing indicators"
+						finishedIndicators = false
+						i = 4 # where first indicator starts
+
+						until finishedIndicators do
+							if row[i].nil? || row[i+1].nil?
+			logger.debug "++++found empty cells, stopping processing for row"
+							  # found empty cell, stop
+							  finishedIndicators = true
+							else
+		            # only conintue if common id provided
+		            if row[2].nil? || row[3].nil?
+		        		  msg = "Row #{n} - Common ID is missing and is required to save record."
+		  logger.debug "++++**missing data in row"
+		              raise ActiveRecord::Rollback
+		              return msg
+		            else
+									# see if indicator already exists for the provided event and shape_type
+									indicator = Indicator.includes(:indicator_translations)
+										.where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+											event.id, shape_type.id, row[i].strip)
 					
-								if indicator.nil? || indicator.length == 0
-				logger.debug "++++indicator was not found"
-									msg = "Row #{n} - The indicator could not be found."
-									raise ActiveRecord::Rollback
-									return msg
-								else
-				logger.debug "++++indicator found, checking if data exists"
-									# check if data already exists
-									alreadyExists = Datum.where(:indicator_id => indicator.first.id, 
-										:common_id => row[2].nil? ? row[2] : row[2].strip, 
-										:common_name => row[3].nil? ? row[3] : row[3].strip)
-					
-		              # if the datum already exists and deleteExistingRecord is true, delete the datum
-		              if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
-		  	logger.debug "+++++++ deleting existing datum"
-		                  Datum.destroy (alreadyExists[0].id)
-		                  alreadyExists = nil
-		              end
-
-									if alreadyExists.nil? || alreadyExists.length == 0
-				logger.debug "++++data does not exist, save it"
-										# populate record
-										datum = Datum.new
-										datum.indicator_id = indicator.first.id
-										datum.common_id = row[2].nil? ? row[2] : row[2].strip
-										datum.common_name = row[3].nil? ? row[3] : row[3].strip
-										datum.value = row[i+1].nil? ? row[i+1] : row[i+1].strip
-
-			logger.debug "++++saving record"
-										if datum.valid?
-											datum.save
-										else
-											# an error occurred, stop
-											errs = "Row #{n} is not valid."
-											raise ActiveRecord::Rollback
-											break
-										end
-
-										i+=2 # move on to the next set of indicator/value pairs
-									else
-			logger.debug "++++**record already exists!"
-										msg = "Row #{n} already exists in the database."
+									if indicator.nil? || indicator.length == 0
+					logger.debug "++++indicator was not found"
+										msg = "Row #{n} - The indicator could not be found."
 										raise ActiveRecord::Rollback
 										return msg
+									else
+					logger.debug "++++indicator found, checking if data exists"
+										# check if data already exists
+										alreadyExists = Datum.where(:indicator_id => indicator.first.id, 
+											:common_id => row[2].nil? ? row[2] : row[2].strip, 
+											:common_name => row[3].nil? ? row[3] : row[3].strip)
+					
+				            # if the datum already exists and deleteExistingRecord is true, delete the datum
+				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
+					logger.debug "+++++++ deleting existing datum"
+				                Datum.destroy (alreadyExists[0].id)
+				                alreadyExists = nil
+				            end
+
+										if alreadyExists.nil? || alreadyExists.length == 0
+					logger.debug "++++data does not exist, save it"
+											# populate record
+											datum = Datum.new
+											datum.indicator_id = indicator.first.id
+											datum.common_id = row[2].nil? ? row[2] : row[2].strip
+											datum.common_name = row[3].nil? ? row[3] : row[3].strip
+											datum.value = row[i+1].nil? ? row[i+1] : row[i+1].strip
+
+				logger.debug "++++saving record"
+											if datum.valid?
+												datum.save
+											else
+												# an error occurred, stop
+												errs = "Row #{n} is not valid."
+												raise ActiveRecord::Rollback
+												break
+											end
+
+											i+=2 # move on to the next set of indicator/value pairs
+										else
+				logger.debug "++++**record already exists!"
+											msg = "Row #{n} already exists in the database."
+											raise ActiveRecord::Rollback
+											return msg
+										end
 									end
 								end
 							end

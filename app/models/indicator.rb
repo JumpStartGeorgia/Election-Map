@@ -338,7 +338,16 @@ logger.debug "no shape type translation found"
           # add the row to the rows array
           rows << row
         end
-        csv_data = CSV.generate do |csv|
+
+				# enclose each item in the rows array in ""
+				# this is in case an item has a ',' in the text
+				rows.each do |r|
+					r.each do |c|
+						c = "#{c}"
+					end
+				end
+        
+				csv_data = CSV.generate(:col_sep=>',') do |csv|
           # generate the header
           header = []
           header << csv_name_header

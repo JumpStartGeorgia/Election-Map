@@ -112,11 +112,11 @@ class IndicatorScalesController < ApplicationController
     # GET /indicator_scales/export
     def export
       filename ="indicator_sacles_template"
-      csv_data = CSV.generate do |csv|
+      csv_data = CSV.generate(:col_sep=>',') do |csv|
         csv << IndicatorScale.csv_all_header
       end 
       send_data csv_data,
-        :type => 'text/csv; charset=iso-8859-1; header=present',
+        :type => 'text/csv; charset=utf-8; header=present',
         :disposition => "attachment; filename=#{filename}.csv"
     end 
 

@@ -114,11 +114,11 @@ class ShapesController < ApplicationController
   # GET /shapes/export
   def export
     filename ="shapes_template"
-    csv_data = CSV.generate do |csv|
+    csv_data = CSV.generate(:col_sep=>',') do |csv|
       csv << Shape.csv_header
     end 
     send_data csv_data,
-      :type => 'text/csv; charset=iso-8859-1; header=present',
+      :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
   end 
 end

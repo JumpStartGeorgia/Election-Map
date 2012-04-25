@@ -115,11 +115,11 @@ require 'csv'
   # GET /indicators/export
   def export
     filename ="indicators_template"
-    csv_data = CSV.generate do |csv|
+    csv_data = CSV.generate(:col_sep=>',') do |csv|
       csv << Indicator.csv_all_header
     end 
     send_data csv_data,
-      :type => 'text/csv; charset=iso-8859-1; header=present',
+      :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
   end 
 
@@ -150,11 +150,11 @@ require 'csv'
   # GET /indicators/export_name_change
   def export_name_change
     filename ="indicators_name_template"
-    csv_data = CSV.generate do |csv|
+    csv_data = CSV.generate(:col_sep=>',') do |csv|
       csv << Indicator.csv_change_name_header
     end 
     send_data csv_data,
-      :type => 'text/csv; charset=iso-8859-1; header=present',
+      :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
   end 
 
@@ -201,7 +201,7 @@ filename ="Indicator_Names_Scales_for_"
           # send the file
           filename << event.name.gsub(' ', '_')
           send_data csv_data,
-            :type => 'text/csv; charset=iso-8859-1; header=present',
+            :type => 'text/csv; charset=utf-8; header=present',
             :disposition => "attachment; filename=#{filename}.csv"
         end
       end
