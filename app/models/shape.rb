@@ -46,7 +46,7 @@ class Shape < ActiveRecord::Base
 					json << '", "value":"'
 					if !indicator_id.nil?
 						data = Datum.get_data_for_shape(shape.id, indicator_id)
-						(!data.nil? && data.length == 1) ? json << data[0].value : json << "No Data"
+						(!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null") ? json << data[0].value : json << "No Data"
 					end
 					json << '"}}'
 					json << ',' if i < shapes.length-1 # do not add comma for the last shape

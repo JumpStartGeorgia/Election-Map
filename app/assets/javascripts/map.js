@@ -154,12 +154,13 @@ function draw_legend()
 	// show the indicator descritpion if provided
 	if (gon.indicator_description) {
 		$('#indicator-description').append(gon.indicator_description);
+	  $('#indicator-description').show(0);
 	} else {
 		$('#indicator-description').innerHTML = "";
+	  $('#indicator-description').hide(0);
 	}
 
   $('#legend-container').show(0);
-  $('#indicator-description').show(0);
 }
 
 // build the color mapping for the indicators

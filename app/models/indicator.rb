@@ -27,7 +27,7 @@ class Indicator < ActiveRecord::Base
 			sql << "from indicators as iold "
 			sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
 			sql << "inner join indicator_translations as itold on iold.id = itold.indicator_id "
-			sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name = itnew.name and itold.locale = itnew.locale "
+			sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name_abbrv = itnew.name_abbrv and itold.locale = itnew.locale "
 			sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
 		
 			find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
