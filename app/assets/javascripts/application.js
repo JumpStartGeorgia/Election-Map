@@ -6,6 +6,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require fancybox
 //= data.js
 //= event_types.js
 //= events.js

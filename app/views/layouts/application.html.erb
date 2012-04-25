@@ -3,8 +3,6 @@
 <head>
   <title><%= "#{yield (:title)} - #{t('.title')}" || t('.title') %></title>
   <%= stylesheet_link_tag    "application" %>
-  <%= javascript_include_tag "application" %>
-  
   <%= csrf_meta_tags %>
   <!--[if IE 6]><%= stylesheet_link_tag 'ie6' %><![endif]-->
   <!--[if IE 7]><%= stylesheet_link_tag 'ie7' %><![endif]-->
@@ -70,6 +68,6 @@
 		<a>|</a>
 		<a href="http://jumpstart.ge" target="_blank" title="<%= t('.js_link_title')%>"><%= t('.js_link_text')%></a>
 	</footer>
-	<%= javascript_include_tag "map" %>
+  <%= javascript_include_tag "application" %>
 </body>
 </html>

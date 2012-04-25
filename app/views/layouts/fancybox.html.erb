@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Election Map</title>
+  <%= stylesheet_link_tag    "application" %>
+
+	<%= csrf_meta_tag %>
+</head>
+<body class="fancybox-content">
+	<section id="container" class="wrap group">
+
+		<h2><%= yield(:title) %></h2>
+
+		<section id="content" class="group">
+			<% flash.each do |key, msg| %>
+					<%= content_tag :div, msg, :class => [key, " message"], :id => "notice_ #{key}" %>
+			<% end %>
+
+	  	<%= yield %>
+		</section>
+	</section>
+
+
+  <%= javascript_include_tag "application" %>
+</body>
+</html>

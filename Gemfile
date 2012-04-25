@@ -24,6 +24,7 @@ gem 'exception_notification', '2.5.2' # send an email when exception occurs
 gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
 gem 'capistrano'
 gem 'therubyracer'
+gem 'fancybox-rails', '~> 0.1.4' # to open pop-up windows
 
 # for debugging
 # to get debugging to work, follow directions at:

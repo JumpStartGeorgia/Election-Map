@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="700" viewBox="0 0 900 700">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="800" viewBox="0 0 900 800">
 
 	<rect x="0" y="0" width="100%" height="100%" fill="white" />
 
@@ -13,17 +13,21 @@
 	<%= params[:hidden_form_parent_layer].html_safe %>
 	<%= params[:hidden_form_child_layer].html_safe %>
 
-	<text x="0" y="600" style="fill:black; font-family:verdana; font-size:15;">
+	<text x="50" y="600" style="fill:black; font-family:verdana; font-size:12;">
+		<%= params[:hidden_form_indicator_description] %>
+  </text>
+
+	<text x="0" y="650" style="fill:black; font-family:verdana; font-size:15;">
 		<% if !params[:hidden_form_scales].nil? && params[:hidden_form_scales].length > 0 %>
 			<% params[:hidden_form_scales].split("||").each_with_index do |scale, i| %>
-		    <tspan x="<%= 160*(i-5*(i/5))+38 %>" y="<%= i/5*25+625 %>"><%= scale %></tspan>
+		    <tspan x="<%= 160*(i-5*(i/5))+38 %>" y="<%= i/5*25+675 %>"><%= scale %></tspan>
 			<% end %>
 		<% end %>
   </text>
 
 	<% if !params[:hidden_form_colors].nil? && params[:hidden_form_colors].length > 0 %>
 		<% params[:hidden_form_colors].split("||").each_with_index do |color, i| %>
-			<rect x="<%= 160*(i-5*(i/5))+20 %>" y="<%= i/5*25+612 %>" width="15" height="15" 
+			<rect x="<%= 160*(i-5*(i/5))+20 %>" y="<%= i/5*25+662 %>" width="15" height="15" 
 				style="fill:<%= color %>; stroke:black; stroke-width:1;" />
 		<% end %>
 	<% end %>

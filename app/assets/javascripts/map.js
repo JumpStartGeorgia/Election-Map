@@ -1,7 +1,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require openlayers
-//= require jquery.simpletip-1.3.1.min
+//= require fancybox
 
 window.onload = map_init;
 
@@ -314,7 +314,7 @@ function update_query_parameter(url, name, value){
 function hover_handler (feature)
 {
 	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv + ":", 
-		feature.attributes.value + gon.indicator_number_format);
+		feature.attributes.value, gon.indicator_number_format);
 }
 
 // hide the map box
@@ -323,7 +323,7 @@ function mouseout_handler (feature)
 	$('#map-box').hide(0);
 }
 
-function populate_map_box(title, indicator, value)
+function populate_map_box(title, indicator, value, number_format)
 {
 		var box = $('#map-box');
     if (title)
@@ -333,7 +333,7 @@ function populate_map_box(title, indicator, value)
     if (indicator && value)
     {
         box.children('#map-box-content').children('#map-box-indicator').text(indicator);
-        box.children('#map-box-content').children('#map-box-value').text(value);
+        box.children('#map-box-content').children('#map-box-value').text(value + number_format);
     }
     if (title || (indicator && value))
     {
@@ -363,6 +363,7 @@ function load_hidden_form()
       $("#hidden_form_map_title").val(gon.map_title);
 			$("#hidden_form_indicator_name").val(gon.indicator_name);
 			$("#hidden_form_indicator_name_abbrv").val(gon.indicator_name_abbrv);
+			$("#hidden_form_indicator_description").val(gon.indicator_description);
 			$("#hidden_form_event_name").val(gon.event_name);
 			$("#hidden_form_scales").val(scales.join("||"));
 			$("#hidden_form_colors").val(colors.join("||"));
@@ -382,3 +383,7 @@ function load_hidden_form()
 	}
 }
 
+$(document).ready(function() {
+	// to load pop-up window for export help
+  $("a.fancybox").fancybox();
+});
