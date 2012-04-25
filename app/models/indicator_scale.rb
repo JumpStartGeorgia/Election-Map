@@ -51,7 +51,7 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
   def self.build_from_csv(file, deleteExistingRecord)
     infile = file.read
     n, msg = 0, ""
-    index_first_scale = 3
+    index_first_scale = 4
     columns_per_scale = 3
 
 		IndicatorScale.transaction do

@@ -195,7 +195,7 @@ filename ="Indicator_Names_Scales_for_"
         end
 
         if csv_data.nil?
-  				flash[:notice] = "Errors were encountered and the csv file could not be created."
+  				flash[:notice] = "Errors were encountered and the csv file for '#{event.name}' could not be created."
   	      redirect_to download_indicators_path #GET
         else
           # send the file
