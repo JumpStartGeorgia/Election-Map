@@ -7,14 +7,13 @@
 //= require jquery
 //= require jquery_ujs
 //= require fancybox
-//= data.js
-//= event_types.js
-//= events.js
-//= indicator_scales.js
-//= indicators.js
-//= locales.js
-//= pages.js
-//= shape_types.js
-//= shapes.js
+//= require data
+//= require event_types
+//= require events
+//= require indicator_scales
+//= require indicators
+//= require locales
+//= require pages
+//= require shape_types
 
 

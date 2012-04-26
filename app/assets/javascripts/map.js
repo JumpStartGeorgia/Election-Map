@@ -2,6 +2,7 @@
 //= require jquery_ujs
 //= require openlayers
 //= require fancybox
+//= require vendor_map
 
 window.onload = map_init;
 

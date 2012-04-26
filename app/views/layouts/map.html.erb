@@ -4,6 +4,7 @@
   <title><%= "#{yield (:title)} - #{t('.title')}" || t('.title') %></title>
 	<%= include_gon %>
   <%= stylesheet_link_tag    "application" %>
+	<%= javascript_include_tag "vendor_html5" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
