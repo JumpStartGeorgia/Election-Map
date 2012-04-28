@@ -40,9 +40,9 @@
 	</div>
 
 	<div id="map-export">
-		<a href="javascript:;" id="export-link"><%= image_tag "export-button.png", :alt => 'Export map', :title => 'Export map' %></a>
+		<a href="javascript:;" id="export-link"><%= image_tag "export-button.png", :alt => t('.export_link_text'), :title => t('.export_link_text') %></a>
 		&nbsp;
-		<%= link_to(image_tag("question.png", :alt => 'Export Help', :title => 'Export Help', :size => '15x15'), view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
+		<%= link_to(image_tag("question.png", :alt => t('.export_help_text'), :title => t('.export_help_text'), :size => '15x15'), view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
 	</div>
 
 	<div id="indicator-description">

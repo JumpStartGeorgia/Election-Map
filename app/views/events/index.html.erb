@@ -1,11 +1,11 @@
-<% title 'Listing events' %>
+<% title t('.title') %>
 
 <table>
   <tr>
-    <th>Name</th>
-	<th>Event Type</th>
-	<th>Event Date</th>
-    <th>Parent shape</th>
+    <th><%= t('app.common.name') %></th>
+    <th><%= t('app.common.event_type') %></th>
+    <th><%= t('app.common.event_date') %></th>
+    <th><%= t('app.common.parent_shape') %></th>
     <th></th>
     <th></th>
     <th></th>
@@ -17,13 +17,13 @@
     <td><%= event.event_type.name %></td>
     <td><%= event.event_date %></td>
     <td><%= event.shape_id %></td>
-    <td><%= link_to 'Show', event %></td>
-    <td><%= link_to 'Edit', edit_event_path(event) %></td>
-    <td><%= link_to 'Destroy', event, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= link_to t('app.buttons.show'), event %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_event_path(event) %></td>
+    <td><%= link_to t('app.buttons.delete'), event, link_to t('app.msgs.delete_confirm'), method: :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Event', new_event_path %>
+<%= link_to t('app.buttons.new_events'), new_event_path %>

@@ -1,25 +1,29 @@
-<% title 'Event Details' %>
+<% title t('.title') %>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
 
 <p>
-  <b>Name:</b>
+  <b><%= t('app.common.name') %>:</b>
   <%= @event.name %>
 </p>
 
 <p>
-  <b>Event Type:</b>
+  <b><%= t('app.common.event_type') %>:</b>
   <%= @event.event_type.name %>
 </p>
 
 <p>
-  <b>Event Date:</b>
+  <b><%= t('app.common.event_date') %>:</b>
   <%= @event.event_date %>
 </p>
 
 <p>
-  <b>Parent shape:</b>
+  <b><%= t('app.common.parent_shape') %>:</b>
   <%= @event.shape_id %>
 </p>
 
 
-<%= link_to 'Edit', edit_event_path(@event) %> |
-<%= link_to 'Back', events_path %>
+<%= link_to t('app.buttons.edit'), edit_event_path(@event) %> |
+<%= link_to t('app.buttons.list'), events_path %>

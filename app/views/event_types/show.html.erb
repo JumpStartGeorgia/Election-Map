@@ -1,10 +1,10 @@
-<% title 'Event Type Details' %>
+<% title t('.title') %>
 
 <p>
-  <b>Name:</b>
+  <b><%= t('app.common.name') %></b>
   <%= @event_type.name %>
 </p>
 
 
-<%= link_to 'Edit', edit_event_type_path(@event_type) %> |
-<%= link_to 'Back', event_types_path %>
+<%= link_to t('app.buttons.edit'), edit_event_type_path(@event_type) %> |
+<%= link_to t('app.buttons.list'), event_types_path %>

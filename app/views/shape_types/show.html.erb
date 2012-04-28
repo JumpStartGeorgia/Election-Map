@@ -1,10 +1,10 @@
-<% title 'Shape Type Details' %>
+<% title t('.title') %>
 
 <p>
-  <b>Name:</b>
+  <b><%= t('app.common.name')%>:</b>
   <%= @shape_type.name %>
 </p>
 
 
-<%= link_to 'Edit', edit_shape_type_path(@shape_type) %> |
-<%= link_to 'Back', shape_types_path %>
+<%= link_to t('app.buttons.edit'), edit_shape_type_path(@shape_type) %> |
+<%= link_to t('app.buttons.list'), shape_types_path %>

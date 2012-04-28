@@ -1,15 +1,15 @@
-<% title 'Locale Details' %>
+<% title t('.title') %>
 
 <p>
-  <b>Language:</b>
+  <b><%= t('app.common.language')%>:</b>
   <%= @locale.language %>
 </p>
 
 <p>
-  <b>Name:</b>
+  <b><%= t('app.common.name')%>:</b>
   <%= @locale.name %>
 </p>
 
 
-<%= link_to 'Edit', edit_locale_path(@locale) %> |
-<%= link_to 'Back', locales_path %>
+<%= link_to t('app.buttons.edit'), edit_locale_path(@locale) %> |
+<%= link_to t('app.buttons.list'), locales_path %>

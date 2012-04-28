@@ -1,6 +1,6 @@
-<% title 'Editing locale' %>
+<% title t('.title') %>
 
 <%= render 'form' %>
 
-<%= link_to 'Show', @locale %> |
-<%= link_to 'Back', locales_path %>
+<%= link_to t('app.buttons.show'), @locale %> |
+<%= link_to t('app.buttons.list'), locales_path %>

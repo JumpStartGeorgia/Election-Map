@@ -1,8 +1,8 @@
-<% title 'Listing shape_types' %>
+<% title t('.title') %>
 
 <table>
   <tr>
-    <th>Name</th>
+    <th><%= t('app.common.name')%></th>
     <th></th>
     <th></th>
     <th></th>
@@ -11,13 +11,13 @@
 <% @shape_types.each do |shape_type| %>
   <tr>
     <td><%= shape_type.name %></td>
-    <td><%= link_to 'Show', shape_type %></td>
-    <td><%= link_to 'Edit', edit_shape_type_path(shape_type) %></td>
-    <td><%= link_to 'Destroy', shape_type, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= link_to t('app.buttons.show'), shape_type %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_shape_type_path(shape_type) %></td>
+    <td><%= link_to t('app.buttons.delete'), shape_type, link_to t('app.msgs.delete_confirm'), method: :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Shape type', new_shape_type_path %>
+<%= link_to t('app.buttons.new_shape_types'), new_shape_type_path %>

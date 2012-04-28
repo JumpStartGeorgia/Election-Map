@@ -1,8 +1,8 @@
-<% title 'Listing event_types' %>
+<% title t('.title') %>
 
 <table>
   <tr>
-    <th>Name</th>
+    <th><%= t('app.common.name') %></th>
     <th></th>
     <th></th>
     <th></th>
@@ -11,13 +11,13 @@
 <% @event_types.each do |event_type| %>
   <tr>
     <td><%= event_type.name %></td>
-    <td><%= link_to 'Show', event_type %></td>
-    <td><%= link_to 'Edit', edit_event_type_path(event_type) %></td>
-    <td><%= link_to 'Destroy', event_type, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= link_to t('app.buttons.show'), event_type %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_event_type_path(event_type) %></td>
+    <td><%= link_to t('app.buttons.delete'), event_type, confirm: 'Are you sure?', method: :delete %></td>
   </tr>
 <% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Event type', new_event_type_path %>
+<%= link_to t('app.buttons.new_event_types'), new_event_type_path %>

@@ -1,69 +1,65 @@
-<% title 'Upload a CSV File of Indicators' %>
+<% title t('.title') %>
 
 <%= form_tag upload_indicators_path, :multipart => true do %>
 	<div>
 		<p>
-			<%= link_to "Download the CSV template file for Indicators", export_indicators_path %>.
-			Please note that you can add as many 'Scale Name' columns as you need.
+			<%= link_to t('download_link_text'), export_indicators_path %>.
+			<%= t('.instructions')%>
 		</p>
 		<p>
-			Important if you are including scales:
+			<%= t('.important')%>:
 		</p>
 		<ul>
 			<li>
-				You can provide your own colors or use the application colors.  
+				<%= t('.help_1')%>
 				<ul>
 					<li>
-						If you provide your own colors, each indicator scale must have a color.
+						<%= t('.help_1_1')%>
 					</li>
 					<li>
-						If you are using the application colors, leave the Scale Color columns empty.
+						<%= t('.help_1_2')%>
 					</li>
 					<li>
-						If you are using the application colors, you must have between 3 and 9 scales for an indicator.
+						<%= t('.help_1_3')%>
 					</li>
 				</ul>
 			</li>
 			<li>
-				Scales must be entered in order from smallest to biggest.
+				<%= t('.help_2')%>
 			</li>
 			<li>
-				If the scale includes a large number, do not include a comma in the number (e.g., 250,000  should be entered as 250000)
+				<%= t('.help_3')%>
 			</li>
 			<li>
-				If the scale covers a range (e.g., 100-200, 200-300, etc): 
+				<%= t('.help_4')%>:
 				<ul>
 					<li>
-						The application will apply the following rule: for a scale of x-y, x &lt; number &lt;= y.
+						<%= t('.help_4_1')%>:
 					</li>
 					<li>
-						Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that
-						the previous range ended with.  
-						If you use the following scale of 1-100, 101-200, 201-300, etc, 
-						a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, 
-						and, therefore, will not appear in the application.
+						<%= t('.help_4_2')%>:
 					</li>
 				</ul>
 			</li>
 			<li>
-				You do not need to include a scale item for 'No Data'.  That is automatically added for you.
+				<%= t('.help_5')%>
 			</li>
 		</ul>
 	</div>
 
 	<div>
 		<p>
-			CSV File to Upload
+			<%= t('app.common.file_upload')%>
 			<%= file_field_tag 'file', :accept => 'text/csv,text/plain' %>
 		</p>
 		<p>
 			<%= check_box_tag(:delete_records) %>
-			<%= label_tag(:delete_records, "Delete existing indicators and their data records on file for the provided Event and Shape Type(s)") %>
+			<%= label_tag(:delete_records, t('.delete_records')) %>
 		</p>
 	</div>
 	<div>
-	  <%= submit_tag "Process CSV File" %>
+	  <%= submit_tag t("app.buttons.upload_csv") %>
 	</div>
 <% end %>
 
-<%= link_to 'Back', admin_path %>
+<%= link_to t('app.buttons.admin'), admin_path %>

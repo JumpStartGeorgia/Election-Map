@@ -1,25 +1,25 @@
-<% title 'Download a CSV File of Indicators' %>
+<% title t('.title') %>
 
 <%= form_tag download_indicators_path do %>
 	<div>
 		<p>
-			Event
+			<%= t('app.common.event') %>
 			<%= select_tag "event_id", options_from_collection_for_select(@events, "id", "name") %>
 		</p>
 		<p>
-			Which indicator data do you want to download?
+			<%= t('.which_download') %>
 			<br />
 			<%= radio_button_tag 'download_option', 'names' %>
-			<%= label_tag 'download_option_names', 'Names Only'%>
+			<%= label_tag 'download_option_names', t('.name_label') %>
 			<%= radio_button_tag 'download_option', 'scales' %>
-			<%= label_tag 'download_option_scales', 'Scales Only'%>
+			<%= label_tag 'download_option_scales', t('.scale_label')%>
 			<%= radio_button_tag 'download_option', 'both', true %>
-			<%= label_tag 'download_option_both', 'Names and Scales'%>
+			<%= label_tag 'download_option_both', t('.both_label')%>
 		</p>
 	</div>
 	<div>
-	  <%= submit_tag "Download CSV File" %>
+	  <%= submit_tag t("app.buttons.download_csv") %>
 	</div>
 <% end %>
 
-<%= link_to 'Back', admin_path %>
+<%= link_to t('app.buttons.admin'), admin_path %>
