@@ -13,7 +13,7 @@
     <td><%= shape_type.name %></td>
     <td><%= link_to t('app.buttons.show'), shape_type %></td>
     <td><%= link_to t('app.buttons.edit'), edit_shape_type_path(shape_type) %></td>
-    <td><%= link_to t('app.buttons.delete'), shape_type, link_to t('app.msgs.delete_confirm'), method: :delete %></td>
+    <td><%= link_to t('app.buttons.delete'), shape_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>

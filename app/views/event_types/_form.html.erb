@@ -4,7 +4,9 @@
 		
 		<% formLocale = @locales[i-1].language %>
 		
-		<div id="form-<%= formLocale %>" class="multilanguage" style="<%= 'display:none;' if formLocale.to_s != params[:locale] %>">
+		<div id="form-<%= formLocale %>" class="multilanguage">
+			<h3><%= @locales[i-1].name %></h3>
+
 			<%= event_type_translation.input :name %>
 			<%= event_type_translation.hidden_field :locale , :value => formLocale %>
 		</div>

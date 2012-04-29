@@ -13,7 +13,7 @@
     <td><%= event_type.name %></td>
     <td><%= link_to t('app.buttons.show'), event_type %></td>
     <td><%= link_to t('app.buttons.edit'), edit_event_type_path(event_type) %></td>
-    <td><%= link_to t('app.buttons.delete'), event_type, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= link_to t('app.buttons.delete'), event_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>

@@ -15,7 +15,7 @@
     <td><%= locale.name %></td>
     <td><%= link_to t('app.buttons.show'), locale %></td>
     <td><%= link_to t('app.buttons.edit'), edit_locale_path(locale) %></td>
-    <td><%= link_to t('app.buttons.delete'), locale, link_to t('app.msgs.delete_confirm'), method: :delete %></td>
+    <td><%= link_to t('app.buttons.delete'), locale, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>

@@ -19,7 +19,7 @@
     <td><%= event.shape_id %></td>
     <td><%= link_to t('app.buttons.show'), event %></td>
     <td><%= link_to t('app.buttons.edit'), edit_event_path(event) %></td>
-    <td><%= link_to t('app.buttons.delete'), event, link_to t('app.msgs.delete_confirm'), method: :delete %></td>
+    <td><%= link_to t('app.buttons.delete'), event, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>

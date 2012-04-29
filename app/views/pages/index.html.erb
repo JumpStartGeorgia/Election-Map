@@ -17,7 +17,7 @@
     <td><%= page.description %></td>
     <td><%= link_to t('app.buttons.show'), page %></td>
     <td><%= link_to t('app.buttons.edit'), edit_page_path(page) %></td>
-    <td><%= link_to t('app.buttons.delete'), page, link_to t('app.msgs.delete_confirm'), method: :delete %></td>
+    <td><%= link_to t('app.buttons.delete'), page, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>
