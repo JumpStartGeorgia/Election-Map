@@ -99,8 +99,10 @@ class Indicator < ActiveRecord::Base
 		          # if the indicator already exists and deleteExistingRecord is true, delete the indicator
 		          if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
 		logger.debug "+++++++ deleting existing indicator"
-		              Indicator.destroy (alreadyExists[0].id)
-		              alreadyExists = nil
+                alreadyExists.each do |exists|
+		              Indicator.destroy (exists.id)
+		            end
+		            alreadyExists = nil
 		          end
 					
 							if alreadyExists.nil? || alreadyExists.length == 0

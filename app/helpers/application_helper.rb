@@ -3,7 +3,7 @@ module ApplicationHelper
   def title(page_title)
     content_for(:title) { page_title }
   end
-=beging
+=begin
   def multi_language_form(destination)
      destination = controller.controller_name.to_s + '/' + destination 
      html = ""

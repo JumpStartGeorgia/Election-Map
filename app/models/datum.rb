@@ -88,8 +88,10 @@ class Datum < ActiveRecord::Base
 					
 				            # if the datum already exists and deleteExistingRecord is true, delete the datum
 				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
-					logger.debug "+++++++ deleting existing datum"
-				                Datum.destroy (alreadyExists[0].id)
+					logger.debug "+++++++ deleting existing #{alreadyExists.length} datum records "
+					              alreadyExists.each do |exists|
+				                  Datum.destroy (exists.id)
+                        end
 				                alreadyExists = nil
 				            end
 

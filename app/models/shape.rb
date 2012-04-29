@@ -156,8 +156,10 @@ class Shape < ActiveRecord::Base
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
 		                if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
-		    	logger.debug "+++++++ deleting existing shape"
-		                    Shape.destroy (alreadyExists[0].id)
+			logger.debug "+++++++ deleting existing #{alreadyExists.length} shape records "
+                        alreadyExists.each do |exists|
+  		                    Shape.destroy (exists.id)
+                        end
 		                    alreadyExists = nil
 		                end
 

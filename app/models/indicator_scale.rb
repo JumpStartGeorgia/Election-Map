@@ -97,7 +97,9 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 		          # if the indicator already exists and deleteExistingRecord is true, delete the indicator scales
 		          if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
 		logger.debug "+++ deleting existing indicator scales"
-		              IndicatorScale.destroy_all (["indicator_id = ?", alreadyExists[0].id])
+                  alreadyExists.each do |exists|
+  		              IndicatorScale.destroy_all (["indicator_id = ?", exists.id])
+                  end
 		              alreadyExists[0].indicator_scales = []
 		          end
 
