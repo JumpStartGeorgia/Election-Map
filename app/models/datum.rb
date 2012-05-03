@@ -37,7 +37,7 @@ class Datum < ActiveRecord::Base
 
         if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
   logger.debug "++++event or shape type was not found in spreadsheet"
-    		  msg = "Row #{n} - The event or shape type was not found in the spreadsheet."
+    		  msg = I18n.t('models.datum.msgs.no_event_shape_spreadsheet', :row_num => n)
 		      raise ActiveRecord::Rollback
           return msg
 				else
@@ -48,7 +48,7 @@ class Datum < ActiveRecord::Base
 
 					if event.nil? || shape_type.nil?
 			logger.debug "++++event or shape type was not found"				
-		  		  msg = "Row #{n} - The event or shape type was not found."
+		  		  msg = I18n.t('models.datum.msgs.no_event_shape_db', :row_num => n)
 				    raise ActiveRecord::Rollback
 		  		  return msg
 					else
@@ -62,9 +62,9 @@ class Datum < ActiveRecord::Base
 							  # found empty cell, stop
 							  finishedIndicators = true
 							else
-		            # only conintue if common id provided
+		            # only conintue if required fields provided
 		            if row[2].nil? || row[3].nil?
-		        		  msg = "Row #{n} - Common ID is missing and is required to save record."
+		        		  msg = I18n.t('models.datum.msgs.missing_data_spreadsheet', :row_num => n)
 		  logger.debug "++++**missing data in row"
 		              raise ActiveRecord::Rollback
 		              return msg
@@ -76,7 +76,7 @@ class Datum < ActiveRecord::Base
 					
 									if indicator.nil? || indicator.length == 0
 					logger.debug "++++indicator was not found"
-										msg = "Row #{n} - The indicator could not be found."
+										msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
 										raise ActiveRecord::Rollback
 										return msg
 									else
@@ -109,15 +109,15 @@ class Datum < ActiveRecord::Base
 												datum.save
 											else
 												# an error occurred, stop
-												errs = "Row #{n} is not valid."
-												raise ActiveRecord::Rollback
-												break
+										    msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)
+										    raise ActiveRecord::Rollback
+										    return msg
 											end
 
 											i+=2 # move on to the next set of indicator/value pairs
 										else
 				logger.debug "++++**record already exists!"
-											msg = "Row #{n} already exists in the database."
+											msg = I18n.t('models.datum.msgs.already_exists', :row_num => n)
 											raise ActiveRecord::Rollback
 											return msg
 										end

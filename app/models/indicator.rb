@@ -68,7 +68,7 @@ class Indicator < ActiveRecord::Base
         # if the event or shape type are not provided, stop
         if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
   logger.debug "+++++++ event or shape type not provided"				
-    		  msg = "Row #{n} - The event or shape type was not found in the spreadsheet."
+    		  msg = I18n.t('models.indicator.msgs.no_event_shape_spreadsheet', :row_num => n)
   	      raise ActiveRecord::Rollback
     		  return msg
   			else
@@ -79,13 +79,13 @@ class Indicator < ActiveRecord::Base
 
   				if event.nil? || shape_type.nil?
   	logger.debug "++++event or shape type was not found"				
-      		  msg = "Row #{n} - The event or shape type was not found."
+		  		  msg = I18n.t('models.indicator.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
             # only conintue if all values are present
             if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil? || row[7].nil?
-        		  msg = "Row #{n} - Data is missing that is required to save record."
+        		  msg = I18n.t('models.indicator.msgs.missing_data_spreadsheet', :row_num => n)
   logger.debug "+++++**missing data in row"
               raise ActiveRecord::Rollback
               return msg
@@ -151,19 +151,19 @@ class Indicator < ActiveRecord::Base
 		  				      ind.save
 		  				    else
 		  				      # an error occurred, stop
-		  				      msg = "Row #{n} is not valid."
+								    msg = I18n.t('models.indicator.msgs.not_valid', :row_num => n)
 		  				      raise ActiveRecord::Rollback
 		  				      return msg
 		  				    end
 						    else
 						      # scales out of range, stop
-						      msg = "Row #{n} must have between 3 and 9 indicator scales."
+						      msg = I18n.t('models.indicator.msgs.scales_out_range', :row_num => n)
 						      raise ActiveRecord::Rollback
 						      return msg
 						    end
 							else
 				logger.debug "++++**record already exists!"
-					      msg = "Row #{n} already exists in the database."
+								msg = I18n.t('models.indicator.msgs.already_exists', :row_num => n)
 					      raise ActiveRecord::Rollback
 					      return msg
 							end
@@ -192,7 +192,7 @@ class Indicator < ActiveRecord::Base
         # if the event or shape type are not provided, stop
         if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
   logger.debug "+++++++ event or shape type not provided"				
-    		  msg = "Row #{n} - The event or shape type was not found in the spreadsheet."
+    		  msg = I18n.t('models.indicator.msgs.no_event_shape_spreadsheet', :row_num => n)
   	      raise ActiveRecord::Rollback
     		  return msg
   			else
@@ -203,13 +203,13 @@ class Indicator < ActiveRecord::Base
 
   				if event.nil? || shape_type.nil?
   	logger.debug "++++event or shape type was not found"				
-      		  msg = "Row #{n} - The event or shape type was not found."
+		  		  msg = I18n.t('models.indicator.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
             # only conintue if all values are present
             if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil? || row[7].nil? || row[8].nil?
-        		  msg = "Row #{n} - Data is missing that is required to save record."
+        		  msg = I18n.t('models.indicator.msgs.missing_data_spreadsheet', :row_num => n)
   logger.debug "+++++**missing data in row"
               raise ActiveRecord::Rollback
               return msg
@@ -243,13 +243,13 @@ class Indicator < ActiveRecord::Base
 	  				      ind.save
 	  				    else
 	  				      # an error occurred, stop
-	  				      msg = "Row #{n} is not valid."
+							    msg = I18n.t('models.indicator.msgs.not_valid', :row_num => n)
 	  				      raise ActiveRecord::Rollback
 	  				      return msg
 	  				    end
 							else
 				logger.debug "++++**record does not exist!"
-					      msg = "Row #{n} does not already exist in the database."
+								msg = I18n.t('models.indicator.msgs.already_exists', :row_num => n)
 					      raise ActiveRecord::Rollback
 					      return msg
 							end
@@ -263,9 +263,14 @@ class Indicator < ActiveRecord::Base
   end
 
   def self.create_csv(event_id, names_only)
+		obj = OpenStruct.new
+		obj.csv_data = nil
+		obj.msg = nil
+
     if event_id.nil? || names_only.nil?
 logger.debug "not all params provided"
-      return nil
+			obj.msg = I18n.t('models.indicator.msgs.missing_paramters')
+      return obj
     else
       # get all of the indicators for this event
       if names_only
@@ -284,7 +289,8 @@ logger.debug "getting all indicator info"
       
       if indicators.nil? || indicators.length == 0
 logger.debug "no indicators found"
-        return nil
+				obj.msg = I18n.t('models.indicator.msgs.no_indicators')
+        return obj
       else
 logger.debug "creating csv rows"
         # create the csv data
@@ -294,13 +300,15 @@ logger.debug "creating csv rows"
           row = []
           if ind.event.event_translations.nil? || ind.event.event_translations.length == 0
 logger.debug "no event translation found"
-            return nil
+						obj.msg = I18n.t('models.indicator.msgs.no_event_trans')
+            return obj
           else
             row << ind.event.event_translations[0].name
           end
           if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.length == 0
 logger.debug "no shape type translation found"
-            return nil
+						obj.msg = I18n.t('models.indicator.msgs.no_shpae_type_trans')
+            return obj
           else
             row << ind.shape_type.shape_type_translations[0].name
           end
@@ -349,7 +357,7 @@ logger.debug "no shape type translation found"
 					end
 				end
         
-				csv_data = CSV.generate(:col_sep=>',') do |csv|
+					obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
           # generate the header
           header = []
           header << csv_name_header
@@ -364,7 +372,7 @@ logger.debug "no shape type translation found"
           end
         end
 
-        return csv_data
+        return obj
       end
     end
   end

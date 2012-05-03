@@ -74,7 +74,7 @@ class Shape < ActiveRecord::Base
 
 	        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
     logger.debug "++++event or shape type was not found in spreadsheet"
-      		  msg = "Row #{n} - The event or shape type was not found in the spreadsheet."
+      		  msg = I18n.t('models.shape.msgs.no_event_shape_spreadsheet', :row_num => n)
 			      raise ActiveRecord::Rollback
             return msg
 					else
@@ -85,7 +85,7 @@ class Shape < ActiveRecord::Base
 
 		    		if event.nil? || shape_type.nil?
 		  logger.debug "++++event or shape type was not found"		
-		    		  msg = "Row #{n} - The event or shape type was not found."
+		    		  msg = I18n.t('models.shape.msgs.no_event_shape_db', :row_num => n)
 					    raise ActiveRecord::Rollback
 		          return msg
 		    		else
@@ -114,21 +114,21 @@ class Shape < ActiveRecord::Base
 		                success = event.update_attribute :shape_id, shape.id
 		                if !success
 		                  # could not update event record
-		            		  msg = "Row #{n} - The event could not be updated to indicate this row is the root."
+		            		  msg = I18n.t('models.shape.msgs.not_update_event', :row_num => n)
 		  logger.debug "++++event could not be updated to indicate this is the root"
 		      			      raise ActiveRecord::Rollback
 		            		  return msg
 		                end
 		              else
 		                # could not create shape
-		          		  msg = "Row #{n} - The record for this root row could not be saved."
+		          		  msg = I18n.t('models.shape.msgs.root_not_valid', :row_num => n)
 		  logger.debug "++++root row could not be saved"
 		    			      raise ActiveRecord::Rollback
 		          		  return msg
 		              end
 		            else
 		              # no root exists and this row is not root -> stop
-		        		  msg = "Row #{n} - The root shape for this event was not found."
+		        		  msg = I18n.t('models.shape.msgs.root_shape_not_found', :row_num => n)
 		    logger.debug "++++root shape for this event was not found"
 		              raise ActiveRecord::Rollback
 		              return msg
@@ -136,19 +136,20 @@ class Shape < ActiveRecord::Base
 		          else
 		    logger.debug "++++root already exists"
 		            # found root, continue
-		            # if this is row 2, see if this row is also a root and the same
-		            if n==2 && row[2].nil? && root.shape_type_id == shape_type.id && root.common_id == row[3].strip
-		        		  msg = "Row #{n} - This root record already exists."
-		    logger.debug "++++**root record already exists!"
-		              raise ActiveRecord::Rollback
-		              return msg
-		            else
-		              # only conintue if all values are present
-		              if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil?
-		          		  msg = "Row #{n} - Data is missing that is required to save record."
-		    logger.debug "++++**missing data in row"
-		                raise ActiveRecord::Rollback
-		                return msg
+	              # only conintue if all values are present
+	              if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil?
+	          		  msg = I18n.t('models.shape.msgs.missing_data_spreadsheet', :row_num => n)
+	    logger.debug "++++**missing data in row"
+	                raise ActiveRecord::Rollback
+	                return msg
+			          else
+			            # if this is row 2, see if this row is also a root and the same
+				          if n==2 && row[2].nil? && root.shape_type_id == shape_type.id && 
+											root.common_id == row[3].strip && root.common_name == row[4].strip
+				      		  msg = I18n.t('models.shape.msgs.root_already_exists', :row_num => n)
+				  logger.debug "++++**root record already exists!"
+				            raise ActiveRecord::Rollback
+				            return msg
 		              else
 		    logger.debug "++++chekcing if row already in db"
 		                alreadyExists = root.descendants.where ({:shape_type_id => shape_type.id, 
@@ -170,7 +171,7 @@ class Shape < ActiveRecord::Base
 		                  parent_shape_type = shape_type.parent
 		                  if parent_shape_type.nil?
 		                    # did not find parent shape type
-		              		  msg = "Row #{n} - The parent shape type could not be found."
+		              		  msg = I18n.t('models.shape.msgs.parent_shape_type_not_found', :row_num => n)
 		        logger.debug "++++**could not find parent shape type"
 		                    raise ActiveRecord::Rollback
 		                    return msg
@@ -198,7 +199,7 @@ class Shape < ActiveRecord::Base
 		        logger.debug "++++parent = #{parent}"
 		                    if parent.nil?
 		                      # did not find parent shape
-		                		  msg = "Row #{n} - The parent shape could not be found."
+			              		  msg = I18n.t('models.shape.msgs.parent_shape_not_found', :row_num => n)
 		          logger.debug "++++**could not find parent shape"
 		                      raise ActiveRecord::Rollback
 		                      return msg
@@ -210,7 +211,7 @@ class Shape < ActiveRecord::Base
 
 		                      if !shape.valid?
 		                        # could not create shape
-		                  		  msg = "Row #{n} - The record for this row could not be saved."
+		                  		  msg =I18n.t('models.shape.msgs.not_valid', :row_num => n)
 		          logger.debug "++++row could not be saved"
 		                        raise ActiveRecord::Rollback
 		                        return msg
@@ -219,7 +220,7 @@ class Shape < ActiveRecord::Base
 		                  end
 		                else
 		                  # record already exists
-		            		  msg = "Row #{n} - This record already exists."
+		            		  msg = I18n.t('models.shape.msgs.already_exists', :row_num => n)
 		          logger.debug "++++**record already exists!"
 		                  raise ActiveRecord::Rollback
 		                  return msg

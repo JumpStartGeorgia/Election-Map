@@ -1,5 +1,55 @@
 # encoding: utf-8
 ka:
+  models:
+    datum:
+      msgs:
+        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
+        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
+        indicator_not_found: Row %{row_num} - The indicator could not be found.
+        not_valid: Row %{row_num} is not valid.
+        already_exists: Row %{row_num} already exists in the database.
+    indicator:
+      msgs:
+        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
+        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
+        indicator_not_found: Row %{row_num} - The indicator could not be found.
+        not_valid: Row %{row_num} is not valid.
+        already_exists: Row %{row_num} already exists in the database.
+        scales_out_range: Row %{row_num} must have between 3 and 9 indicator scales.
+        missing_paramters: Not all parameters were provided to create the download.
+        no_indicators: No Indicators where found for the selected event.
+        no_event_trans: No translation records for the Event name were found.
+        no_shape_type_trans: No translations records for the Shape Types were found.
+    indicator_scale:
+      msgs:
+        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
+        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        missing_data_spreadsheet: Row %{row_num} - Indicator Name is missing and is required to save the record.
+        indicator_not_found: Row %{row_num} - The indicator could not be found.
+        not_valid: Row %{row_num} is not valid.
+        colors_scales_out_range: "Row %{row_num} must have colors for every scale or, if no color provided, can only have between 3 and 9 indicator scales."
+        already_exists: Row %{row_num} already exists in the database.
+        missing_paramters: Not all parameters were provided to create the download.
+        no_indicators: No Indicators where found for the selected event.
+        no_event_trans: No translation records for the Event name were found.
+        no_shape_type_trans: No translations records for the Shape Types were found.
+    shape:
+      msgs:
+        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
+        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
+        not_update_event: Row %{row_num} - The event could not be updated to indicate this row is the root.
+        indicator_not_found: Row %{row_num} - The indicator could not be found.
+        root_not_valid: Row %{row_num} - The record for the root row could not be saved.
+        root_shape_not_exist: Row %{row_num} - The root shape for this event was not found.
+        root_already_exists: Row %{row_num} - The root record already exists.
+        parent_shape_not_found: Row %{row_num} - The parent shape could not be found.
+        parent_shape_type_not_found: Row %{row_num} - The parent shape type could not be found.
+        not_valid: Row %{row_num} is not valid.
+        already_exists: Row %{row_num} already exists in the database.
+        
   app:
     buttons:
       back: Back
@@ -13,7 +63,7 @@ ka:
       new_events: New Event
       new_indicator_scales: New Indicator Scale
       new_indicators: New Indicator
-      new_locales: New Locale
+      new_Languages: New Language
       new_pages: New Page
       new_shape_types: New Shape Type
       new_shapes: New Shape
@@ -21,6 +71,15 @@ ka:
       download_csv: Download CSV File
     msgs:
       delete_confirm: "Are you sure?"
+      upload:
+        no_file: You must select a file to upload.
+        success: Your file '%{file_name}' was successfully processed!
+        error: "Errors were encountered with '%{file_name}' and no records were saved.  The problem was the following: %{msg}"
+        wrong_format: Your file '%{file_name}' must be a CSV or tab-delimited txt format.
+      download:
+        unknow_event: The selected event could not be found.
+        no_records: No Indicator data was found for the event '%{event_name}'.
+        error: "Errors were encountered creating the download file for the event '%{event_name}'.  The problem was the following: %{msg}"
     common:
       important: Important
       indicator: Indicator
@@ -76,7 +135,7 @@ ka:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
-      locales: Languages
+      Languages: Languages
       pages: Basic Pages
       csv_header: Upload CSV Files
       indicators: Indicators
@@ -144,7 +203,7 @@ ka:
       title: Download a CSV File of Indicators
       which_download: Which indicator data do you want to download?
       name_label: Names Only
-      scale_label: Sacles Only
+      scale_label: Scales Only
       both_label: Names and Scales
     export:
       title: Export Indicator CSV Template File
@@ -166,15 +225,15 @@ ka:
       help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
       help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
       delete_records: Delete existing indicators and their data records on file for the provided Event and Shape Type(s)
-  locales:
+  Languages:
     edit:
-      title: Editing Locale
+      title: Editing Language
     index:
-      title: Locales
+      title: Languages
     new:
-      title: New Locale
+      title: New Language
     show:
-      title: Locale Details
+      title: Language Details
   pages:
     edit:
       title: Editing Page
@@ -183,7 +242,7 @@ ka:
     new:
       title: New Page
     show:
-      title: Locale Details
+      title: Page Details
     view:
       title:
   shape_types:
