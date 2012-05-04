@@ -31,18 +31,18 @@ module ElectionMap
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
-    config.i18n.default_locale = :en
+    config.i18n.default_locale = :ka
 
     # rails will fallback to config.i18n.default_locale translation
     config.i18n.fallbacks = true
     
     # rails will fallback to en, no matter what is set as config.i18n.default_locale
-    config.i18n.fallbacks = [:en]
+    config.i18n.fallbacks = [:ka]
     
     # fallbacks value can also be a hash - a map of fallbacks if you will
     # missing translations of es and fr languages will fallback to english
     # missing translations in german will fallback to french ('de' => 'fr')
-    config.i18n.fallbacks = {'ka' => 'en'}
+    config.i18n.fallbacks = {'en' => 'ka'}
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"

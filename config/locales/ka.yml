@@ -17,7 +17,7 @@ ka:
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
         already_exists: Row %{row_num} already exists in the database.
-        scales_out_range: Row %{row_num} must have between 3 and 9 indicator scales.
+        scales_out_range: Row %{row_num} must have between 3 and 13 indicator scales.
         missing_paramters: Not all parameters were provided to create the download.
         no_indicators: No Indicators where found for the selected event.
         no_event_trans: No translation records for the Event name were found.
@@ -29,7 +29,7 @@ ka:
         missing_data_spreadsheet: Row %{row_num} - Indicator Name is missing and is required to save the record.
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
-        colors_scales_out_range: "Row %{row_num} must have colors for every scale or, if no color provided, can only have between 3 and 9 indicator scales."
+        colors_scales_out_range: "Row %{row_num} must have colors for every scale or, if no color provided, can only have between 3 and 13 indicator scales."
         already_exists: Row %{row_num} already exists in the database.
         missing_paramters: Not all parameters were provided to create the download.
         no_indicators: No Indicators where found for the selected event.
@@ -49,14 +49,13 @@ ka:
         parent_shape_type_not_found: Row %{row_num} - The parent shape type could not be found.
         not_valid: Row %{row_num} is not valid.
         already_exists: Row %{row_num} already exists in the database.
-        
   app:
     buttons:
-      back: Back
-      list: View All
+      back: უკან დაბრუნება
+      list: ყველას ნახვა
       admin: Admin Section
-      delete: Delete
-      edit: Edit
+      delete: წაშლა
+      edit: დამუშავება
       show: Show
       new_data: New Datum
       new_event_types: New Event Type
@@ -106,7 +105,7 @@ ka:
       signed_in: Signed in as
       admin: Admin
       sign_out: Sign Out
-      sign_in: Sign In
+      sign_in: შესვლა
       or: or
       sign_up: Sign Up
       about: About Project
@@ -121,8 +120,8 @@ ka:
       ndi_title: National Democratic Institute
       signed_in: Signed in as
       admin: Admin
-      sign_out: Sign Out
-      sign_in: Sign In
+      sign_out: გამოსვლა
+      sign_in: შესვლა
       or: or
       sign_up: Sign Up
       about: About Project
@@ -186,7 +185,7 @@ ka:
       help_1: You can provide your own colors or use the application colors.  
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
-      help_1_3: "If you are using the application colors, you must have between 3 and 9 scales for an indicator."
+      help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
       help_2: Scales must be entered in order from smallest to biggest.
       help_3: "If the scale includes a large number, do not include a comma in the number (e.g., 250,000  should be entered as 250000)"
       help_4: "If the scale covers a range (e.g., 100-200, 200-300, etc)"
@@ -218,7 +217,7 @@ ka:
       help_1: You can provide your own colors or use the application colors.  
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
-      help_1_3: "If you are using the application colors, you must have between 3 and 9 scales for an indicator."
+      help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
       help_2: Scales must be entered in order from smallest to biggest.
       help_3: "If the scale includes a large number, do not include a comma in the number (e.g., 250,000  should be entered as 250000)"
       help_4: "If the scale covers a range (e.g., 100-200, 200-300, etc)"
@@ -262,3 +261,4 @@ ka:
       title: Upload a CSV File of Shapes
       download_link_text: Download the CSV template file for Shapes
       delete_records: Delete existing shapes on file for the provided Event and Shape Type(s)
+
