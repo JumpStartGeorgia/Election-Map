@@ -26,7 +26,7 @@ class ShapesController < ApplicationController
 				end
 			else
 				flash[:notice] = I18n.t('app.msgs.upload.no_file')
-	      redirect_to upload_data_path #GET
+	      redirect_to upload_shapes_path #GET
 			end
 		end
   end

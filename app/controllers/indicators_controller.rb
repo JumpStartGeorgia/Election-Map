@@ -25,7 +25,7 @@ require 'csv'
 				end
 			else
 				flash[:notice] = I18n.t('app.msgs.upload.no_file')
-	      redirect_to upload_data_path #GET
+	      redirect_to upload_indicators_path #GET
 			end
 		end
   end
@@ -52,19 +52,19 @@ require 'csv'
 		      if msg.nil? || msg.length == 0
 		        # no errors, success!
 						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
-				    redirect_to upload_indicators_path #GET
+				    redirect_to change_name_indicators_path #GET
 		      else
 		        # errors
 						flash[:notice] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
-				    redirect_to upload_indicators_path #GET
+				    redirect_to change_name_indicators_path #GET
 		      end 
 				else
 					flash[:notice] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
-		      redirect_to upload_indicators_path #GET
+		      redirect_to change_name_indicators_path #GET
 				end
 			else
 				flash[:notice] = I18n.t('app.msgs.upload.no_file')
-	      redirect_to upload_data_path #GET
+	      redirect_to change_name_indicators_path #GET
 			end
 		end
   end

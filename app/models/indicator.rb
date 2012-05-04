@@ -35,7 +35,7 @@ class Indicator < ActiveRecord::Base
 	end
 
   def self.csv_all_header
-    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional: e.g. %), en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
+    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional - e.g. %), en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
   end
 
   def self.csv_scale_header
@@ -43,11 +43,11 @@ class Indicator < ActiveRecord::Base
   end
 
   def self.csv_name_header
-    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional: e.g. %)".split(",")
+    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional - e.g. %)".split(",")
   end
 
   def self.csv_change_name_header
-    "Event, Shape Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW en: Indicator Description, NEW ka: Indicator Name, NEW ka: Indicator Abbrv, NEW ka: Indicator Description, Number Format (optional, e.g., %)".split(",")
+    "Event, Shape Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW en: Indicator Description, NEW ka: Indicator Name, NEW ka: Indicator Abbrv, NEW ka: Indicator Description, Number Format (optional - e.g., %)".split(",")
   end
 
   def self.build_from_csv(file, deleteExistingRecord)
