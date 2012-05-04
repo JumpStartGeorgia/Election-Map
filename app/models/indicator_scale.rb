@@ -8,7 +8,7 @@ class IndicatorScale < ActiveRecord::Base
   belongs_to :indicator
   has_many :indicator_scale_translations, :dependent => :destroy
   accepts_nested_attributes_for :indicator_scale_translations
-  attr_accessible :indicator_id, :color, :indicator_scale_translations_attributes
+  attr_accessible :indicator_id, :color, :color_old, :indicator_scale_translations_attributes
   attr_accessor :locale
 
   scope :l10n , joins(:indicator_scale_translations).where('locale = ?',I18n.locale)
