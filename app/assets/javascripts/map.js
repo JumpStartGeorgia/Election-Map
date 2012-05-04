@@ -9,8 +9,8 @@ window.onload = map_init;
 // Define global variables which can be used in all functions
 var map, vector_base, vector_child;
 var scale_nodata = [];
-var color_nodata = "#CCCCCC";
-scale_nodata['name'] = "No Data";
+var color_nodata = gon.no_data_color;
+scale_nodata['name'] = gon.no_data_text;
 scale_nodata['color'] = color_nodata;
 
 // Function called from body tag
@@ -144,7 +144,6 @@ function draw_legend()
 			} else {
 				color = gon.indicator_scale_colors[i];
 			}
-
       legend.append('<li><span style="background: ' + color + '"></span> ' + gon.indicator_scales[i].name + '</li>');
 		}
 	} else {

@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_election_types
   before_filter :set_shape_types
   before_filter :set_default_values
+	before_filter :set_gon_data
   
 	unless Rails.application.config.consider_all_requests_local
 		rescue_from Exception,
@@ -57,6 +58,12 @@ protected
   def default_url_options(options={})
     { :locale => I18n.locale }
   end
+
+	def set_gon_data
+		# set no data label text and color for legend
+		gon.no_data_text = I18n.t('app.msgs.no_data')
+		gon.no_data_color = "#CCCCCC"
+	end
 
 
 	def render_not_found(exception)

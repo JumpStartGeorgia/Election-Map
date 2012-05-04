@@ -70,6 +70,7 @@ ka:
       upload_csv: Process CSV File
       download_csv: Download CSV File
     msgs:
+      no_data: მონაცემები არ
       delete_confirm: "Are you sure?"
       upload:
         no_file: You must select a file to upload.
