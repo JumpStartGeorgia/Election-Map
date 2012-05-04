@@ -278,13 +278,13 @@ logger.debug "getting indicator names only"
         indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations)
           .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
             :event_id => event_id, :locale => "en")
-          .order("shape_type_translations.name ASC, indicator_translations.locale ASC, indicator_translations.name ASC")
+          .order("shape_type_translations.name ASC, indicators.id ASC")
       else 
 logger.debug "getting all indicator info"
         indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_scales => :indicator_scale_translations})
           .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
             :event_id => event_id, :locale => "en")
-          .order("shape_type_translations.name ASC, indicator_translations.locale ASC, indicator_translations.name ASC, indicator_scales.id ASC, indicator_scale_translations.id ASC")
+          .order("shape_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
       end
       
       if indicators.nil? || indicators.length == 0
