@@ -223,15 +223,18 @@ class Indicator < ActiveRecord::Base
 							if !alreadyExists.nil? && alreadyExists.length > 0
 			logger.debug "++++found indicator record, populate obj"
 								# update record
-								ind = alreadyExists[0]
+								# - alreadyExists only has en translation record, need to have all translations
+								ind = Indicator.find(alreadyExists[0].id)
 								if !row[9].nil? && row[9].strip.length > 0
 									ind.number_format = row[9].strip 
 								else
 									ind.number_format = nil
 								end
 							  # translations
+	  		logger.debug "++++ ind has #{ind.indicator_translations.length} translations"
                 ind.indicator_translations.each do |trans|
                   i = trans.locale == 'en' ? index_en_name : index_en_name+3
+	  		logger.debug "++++ name = #{row[i].strip}, abbrv = #{row[i+1].strip}, desc = #{row[i+2].strip}"
                   trans.name = row[i].strip
                   trans.name_abbrv = row[i+1].strip
                   trans.description = row[i+2].strip
@@ -240,7 +243,9 @@ class Indicator < ActiveRecord::Base
 	  		logger.debug "++++saving record"
 	  					  # Save if valid 
 	  				    if ind.valid?
+    		logger.debug "++++ - about to save"
 	  				      ind.save
+	  		logger.debug "++++ - saved"
 	  				    else
 	  				      # an error occurred, stop
 							    msg = I18n.t('models.indicator.msgs.not_valid', :row_num => n)

@@ -20,7 +20,7 @@ update `2008 election parl major - raw` as raw, `2008 election parl major - stag
 set raw.`4 - Labor party` = stage.num_party_votes
 where
 raw.district_id = stage.district_id and raw.precinct_id = stage.precinct_id
-and stage.party_num = 5;
+and stage.party_num = 4;
 
 update `2008 election parl major - raw` as raw, `2008 election parl major - staging` as stage
 set raw.`5 - United National Movement` = stage.num_party_votes
