@@ -20,7 +20,8 @@
 				<li id="<%= event.name.gsub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.length-1%>class="last"<% end %> >
 					<%= link_to event.name, root_path({
 						:event_id => event.id, :event_type_id => event.event_type_id, 
-						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id
+						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
+						:parent_shape_clickable => true
 					}), :title => event.name, :class => is_active %><span></span>
 				</li>
 			<% end %>
@@ -61,7 +62,7 @@
 			<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
 				<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
 					<% if type.has_children? %>
-						<%= link_to type.name, root_path(request.parameters.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => true})), :title => type.name %>
+						<%= link_to type.name, root_path(request.parameters.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => true, :parent_shape_clickable => type.is_root?})), :title => type.name %>
 					<% else %>
 						<%= type.name %>
 					<% end %>

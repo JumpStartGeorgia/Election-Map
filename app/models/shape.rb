@@ -25,7 +25,7 @@ class Shape < ActiveRecord::Base
 	end
 
 		# create the properly formatted json string
-		def self.build_json(shapes, indicator_id)
+		def self.build_json(shapes, indicator_id=nil)
 			json = ''
 			if !shapes.nil? && shapes.length > 0
 				json = '{ "type": "FeatureCollection","features": ['

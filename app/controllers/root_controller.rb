@@ -13,8 +13,6 @@ class RootController < ApplicationController
     if !@events.nil? && @events.length > 0
   		# get the current event
   		event = get_current_event(params[:event_id])
-  		# - if no exist, get first event with shape
-      params[:event_id] = event.id.to_s if params[:event_id].nil?
 
 			if !event.shape_id.nil?
 				# get the shape
@@ -29,7 +27,18 @@ class RootController < ApplicationController
 					# now get the child shape type id
 					parent_shape_type = get_shape_type(params[:shape_type_id])
 					@child_shape_type_id = nil
-					if !parent_shape_type.nil? && parent_shape_type.has_children?
+
+          # if the parent shape is the root and the parent_shape_clickable is set to true,
+          # make the parent shape also be the child shape
+          if parent_shape_type.is_root? && !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+						child_shape_type = parent_shape_type
+						@child_shape_type_id = child_shape_type.id
+						# set the map title
+						# format = parent shape type shape name
+						@map_title = parent_shape_type.name + " " + @shape.common_name
+					elsif !parent_shape_type.nil? && parent_shape_type.has_children?
+					  # this is not the root, so reset parent shape clickable
+					  params[:parent_shape_clickable] = false
 						# found child, save id
 						child_shape_type = get_child_shape_type(params[:shape_type_id])
 						@child_shape_type_id = child_shape_type.id
@@ -86,7 +95,7 @@ class RootController < ApplicationController
 		#get the parent shape
 		shape = Shape.where(:id => params[:id])
     respond_to do |format|
-      format.json { render json: Shape.build_json(shape, params[:indicator_id]) }
+      format.json { render json: Shape.build_json(shape) }
     end
   end
 
@@ -98,9 +107,14 @@ class RootController < ApplicationController
 		#get the parent shape
 		shape = Shape.where(:id => params[:parent_id])
 
-		if !shape.nil? && shape.length > 0 && shape.first.has_children?
-			# get all of the children of the parent and format for json
-			geometries = Shape.build_json(shape.first.children, params[:indicator_id])
+		if !shape.nil? && shape.length > 0
+      if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+  			# get the parent shape and format for json
+  			geometries = Shape.build_json(shape, params[:indicator_id])
+		  elsif shape.first.has_children?
+  			# get all of the children of the parent and format for json
+  			geometries = Shape.build_json(shape.first.children, params[:indicator_id])
+		  end
 		end
 
     respond_to do |format|
@@ -140,32 +154,26 @@ class RootController < ApplicationController
 
 private
 
-	# get the default values for the provided event type
-	def get_event_type_defaults(event_type_id)
-		if @default_values.nil? || @default_values.length == 0 || event_type_id.nil?
-      return nil
-    else
-			@default_values.each do |default|
-				if default.event_type_id.to_s == event_type_id.to_s
-					# found match, return the hash
-					return default
-				end
-			end
-		end
-	end
-
 	# get the the current event
 	def get_current_event(event_id)
+logger.debug "getting current event for id #{event_id}"
 		if @events.nil? || @events.length == 0
+logger.debug " - no events on record"
       return nil
     elsif event_id.nil?
-      # no event select yet, find first with a shape id
+logger.debug " - event id not provided, looking for first event"
+      # no event selected yet, find first with a shape id
       @events.each do |e|
         if !e.shape_id.nil?
+logger.debug " - found event, saving id and parent clickable to true"
+        	# - save event_id and indicate that the root shape is to be clickable
+          params[:event_id] = e.id.to_s
+          params[:parent_shape_clickable] = true
           return e
         end
       end
     else
+logger.debug " - event id provided"
 			@events.each do |event|
 				if event.id.to_s == event_id.to_s
 					# found match, return the hash
@@ -210,10 +218,11 @@ private
 	
   def set_gon_variables
     # shape json paths
-		# - only chilrend shape path needs the indicator id since that is the only layer that is clickable
+		# - only children shape path needs the indicator id since that is the only layer that is clickable
 		if !params[:shape_id].nil?
 			gon.shape_path = shape_path(:id => params[:shape_id])
-			gon.children_shapes_path = children_shapes_path(:parent_id => params[:shape_id], :indicator_id => params[:indicator_id])
+			gon.children_shapes_path = children_shapes_path(:parent_id => params[:shape_id], 
+			  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
 		end
 
 		# indicator name
@@ -236,6 +245,7 @@ private
     # save the map title for export
 		if !params[:event_id].nil?
 		  event = get_current_event(params[:event_id])
+		  gon.event_id = event.id if !event.nil?
 		  gon.event_name = event.name if !event.nil?
 		  gon.map_title = @map_title
 	  end

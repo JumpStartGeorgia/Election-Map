@@ -169,7 +169,8 @@ function build_indicator_scale_styles() {
   var theme = new OpenLayers.Style({
       fillColor: "#cfce9d",
       strokeColor: "#777777",
-      strokeWidth: 1
+      strokeWidth: 1,
+      cursor: "pointer"
   });
 	if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 		
@@ -225,7 +226,7 @@ function build_indicator_scale_styles() {
     theme.addRules(rules);
 	}
 
-    return new OpenLayers.StyleMap({'default':theme, 'select': {'strokeColor': '#0000ff', 'fillColor': '#0000ff', 'strokeWidth': 2}});
+    return new OpenLayers.StyleMap({'default':theme, 'select': {'strokeColor': '#5c81a3', 'fillColor': '#5c81a3', 'strokeWidth': 2}});
 }
 
 function build_rule(color, type, value1, value2, isFirst){
@@ -279,8 +280,18 @@ function click_handler (feature)
 		// add/update the shape_type_id parameter
 		url = update_query_parameter(url, "shape_type_id", feature.attributes.shape_type_id);
 
+		// add/update the event_id parameter
+		// - when switching between event types, the event id is not set in the url 
+		//   so it needs to be added
+		var url = update_query_parameter(url, "event_id", gon.event_id);
+
 		// add/update the parameter to indicate that the shape type is changing
 		url = update_query_parameter(url, "change_shape_type", true);
+
+		// update the parameter to indicate that the parent shape is clickable
+		// clicking on the map should reset this value for it should only be true
+		// when clicking on the menu navigation
+		url = update_query_parameter(url, "parent_shape_clickable", false);
 
 		// load the url
 		window.location.href = url;

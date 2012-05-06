@@ -9,7 +9,7 @@ ElectionMap::Application.routes.draw do
   match "/:locale" => "root#index", via: :get, :as => :root
   match '/:locale/admin', :to => 'root#admin', :as => :admin, :via => :get
   match '/:locale/shape/:id', :to => 'root#shape', :as => :shape, :via => :get, :defaults => {:format => 'json'}
-  match '/:locale/children_shapes/:parent_id', :to => 'root#children_shapes', :as => :children_shapes, :via => :get, :defaults => {:format => 'json'}
+  match '/:locale/children_shapes/:parent_id(/:parent_shape_clickable(/:indicator_id))', :to => 'root#children_shapes', :as => :children_shapes, :via => :get, :defaults => {:format => 'json'}
 
   scope "/:locale" do
     resources :locales
