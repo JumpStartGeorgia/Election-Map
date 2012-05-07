@@ -136,6 +136,23 @@ class RootController < ApplicationController
     headers['Content-Disposition'] = "attachment; filename=\"#{filename}.svg\"" 
   end
 
+  # GET /indicators/download
+  # GET /indicators/download.json
+  def download
+		if !params[:event_id].nil? && !params[:shape_type_id].nil?
+      #get the data
+      data = Datum.create_csv(params[:event_id], params[:shape_type_id], params[:indicator_id])
+
+			if !data.nil && !data.csv_data.nil?
+		    # send the file
+		    filename = "data"
+		    send_data data.csv_data,
+		      :type => 'text/csv; charset=utf-8; header=present',
+		      :disposition => "attachment; filename=#{filename}.csv"
+			end
+		end
+  end
+
   # GET /events/admin
   # GET /events/admin.json
   def admin

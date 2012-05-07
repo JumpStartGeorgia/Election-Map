@@ -362,7 +362,7 @@ logger.debug "no shape type translation found"
 					end
 				end
         
-					obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
+				obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
           # generate the header
           header = []
           header << csv_name_header
