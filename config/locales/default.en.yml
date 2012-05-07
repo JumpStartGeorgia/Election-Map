@@ -102,9 +102,9 @@ en:
     format: ! '%{attribute} %{message}'
     messages:
       accepted: must be accepted
-      blank: can't be blank
-      confirmation: doesn't match confirmation
-      empty: can't be empty
+      blank: "can't be blank"
+      confirmation: "doesn't match confirmation"
+      empty: "can't be empty"
       equal_to: must be equal to %{count}
       even: must be even
       exclusion: is reserved
@@ -152,7 +152,7 @@ en:
         unit: $
     format:
       delimiter: ! ','
-      precision: 3
+      precision: "3"
       separator: .
       significant: false
       strip_insignificant_zeros: false

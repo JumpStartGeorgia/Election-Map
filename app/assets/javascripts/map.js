@@ -1,3 +1,5 @@
+//= require i18n
+//= require i18n/translations
 //= require jquery
 //= require jquery_ujs
 //= require openlayers
@@ -13,9 +15,14 @@ var color_nodata = gon.no_data_color;
 scale_nodata['name'] = gon.no_data_text;
 scale_nodata['color'] = color_nodata;
 
+// define number formatting for data values
+var numFormat = new NumberFormat();
+numFormat.setInputDecimal(I18n.t("number.format.separator"));
+numFormat.setSeparators(true, I18n.t("number.format.delimiter"));
+numFormat.setPlaces(I18n.t("number.format.precision"), false);
+
 // Function called from body tag
 function map_init(){
-
 	// add no data to scales
 	if (gon.indicator_scale_colors && gon.indicator_scales){
 		gon.indicator_scale_colors.splice(0,0,color_nodata);
@@ -144,7 +151,8 @@ function draw_legend()
 			} else {
 				color = gon.indicator_scale_colors[i];
 			}
-      legend.append('<li><span style="background: ' + color + '"></span> ' + gon.indicator_scales[i].name + '</li>');
+
+      legend.append('<li><span style="background: ' + color + '"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
 		}
 	} else {
 		// no legend
@@ -345,7 +353,13 @@ function populate_map_box(title, indicator, value, number_format)
     if (indicator && value)
     {
         box.children('#map-box-content').children('#map-box-indicator').text(indicator);
-        box.children('#map-box-content').children('#map-box-value').text(value + number_format);
+				// make the number pretty
+				var x = format_number(value);
+				// if the value is a number, apply the number_format
+				if (!isNaN(x) && number_format){
+					x += number_format;
+				}
+        box.children('#map-box-content').children('#map-box-value').text(x);
     }
     if (title || (indicator && value))
     {
@@ -362,7 +376,7 @@ function load_hidden_form()
 			var scales = [];
 			var colors = [];
 			for (i=0; i<gon.indicator_scales.length; i++){
-				scales[i] = gon.indicator_scales[i].name;
+				scales[i] = format_number(gon.indicator_scales[i].name);
 				if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
 					colors[i] = gon.indicator_scales[i].color;
 				} else {
@@ -392,6 +406,56 @@ function load_hidden_form()
 	} else {
 		// hide the export link
 		$('#map-export').hide(0);
+	}
+}
+
+function format_number(value){
+	var x = "";
+	// look in the name for >, <, or -
+	var indexG = value.indexOf(">");
+	var indexL = value.indexOf("<");
+	var indexB = value.indexOf("-");
+	if (indexG >= 0) {
+		if (indexG == 0){
+			x += value.slice(0, 1);
+			x += format_number2(value.slice(1));
+		}
+		else if (indexG == value.length-1) {
+			x += format_number2(value.slice(0, indexG-1));
+			x += value.slice(indexG-1, 1);
+		}
+		else {
+			// > is in middle of string.  can not handle
+		}
+	} else if (indexL >= 0) {
+		if (indexL == 0){
+			x += value.slice(0, 1);
+			x += format_number2(value.slice(1));
+		}
+		else if (indexL == value.length-1) {
+			x += format_number2(value.slice(0, indexL-1));
+			x += value.slice(indexL-1, indexL);
+		}
+		else {
+			// > is in middle of string.  can not handle
+		}
+	} else if (indexB >= 0) {
+		x += format_number2(value.slice(0, indexB));
+		x += value.slice(indexB,indexB+1);
+		x += format_number2(value.slice(indexB+1));
+	} else {
+		x += format_number2(value);
+	}
+	return x;
+}
+
+// format the number to look pretty
+function format_number2(value) {
+	if (isNaN(value)){
+		return value;
+	} else {
+		numFormat.setNumber(value); 
+		return numFormat.toFormatted();
 	}
 }
 

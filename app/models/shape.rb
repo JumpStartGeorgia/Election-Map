@@ -56,24 +56,6 @@ class Shape < ActiveRecord::Base
 				if !indicator_id.nil?
 					data = Datum.get_data_for_shape(shape.id, indicator_id)
 					(!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null") ? json << data[0].value : json << I18n.t('app.msgs.no_data')
-=begin					
-was trying to add formatting to numbers, but will have to update all indicator scales to include the same formatting
-					if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
-						if !data[0].number_format.nil? && data[0].number_format.length > 0 && data[0].number_format == "%"
-							json << helpers.number_to_percentage(data[0].value, :locale => I18n.locale, 
-								:precision => I18n.t('number.format.precision'), 
-								:delimiter => I18n.t('number.format.delimiter'), 
-								:strip_insignificant_zeros => true, :raise => false)
-						elsif 
-							json << helpers.number_with_precision(data[0].value, :locale => I18n.locale, 
-								:precision => I18n.t('number.format.precision'), 
-								:delimiter => I18n.t('number.format.delimiter'), 
-								:strip_insignificant_zeros => true, :raise => false)
-						end
-					else
-						json << I18n.t('app.msgs.no_data')
-					end
-=end
 				end
 				json << '"}}'
 				json << ',' if i < shapes.length-1 # do not add comma for the last shape

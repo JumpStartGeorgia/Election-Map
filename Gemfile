@@ -25,6 +25,7 @@ gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
 gem 'capistrano'
 gem 'therubyracer'
 gem 'fancybox-rails', '~> 0.1.4' # to open pop-up windows
+gem "i18n-js", "~> 2.1.2" # to show translations in javascript
 
 # for debugging
 # to get debugging to work, follow directions at:
