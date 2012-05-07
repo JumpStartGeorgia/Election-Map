@@ -24,37 +24,64 @@ class Shape < ActiveRecord::Base
 		return shape_id.nil? ? "" : select("id, shape_type_id, common_id, common_name, ancestry").where(:id => shape_id).first
 	end
 
-		# create the properly formatted json string
-		def self.build_json(shapes, indicator_id=nil)
-			json = ''
-			if !shapes.nil? && shapes.length > 0
-				json = '{ "type": "FeatureCollection","features": ['
-				shapes.each_with_index do |shape, i|
-					json << '{ "type": "Feature", "geometry": '
-					json << shape.geometry
-					json << ', "properties": {'
-					json << '"id":"'
-					json << shape.id.to_s
-					json << '", "common_id":"'
-					json << shape.common_id
-					json << '", "common_name":"'
-				  json << shape.common_name if !shape.common_name.nil?
-					json << '", "has_children":"'
-					json << shape.has_children?.to_s
-					json << '", "shape_type_id":"'
-					json << shape.shape_type_id.to_s
-					json << '", "value":"'
-					if !indicator_id.nil?
-						data = Datum.get_data_for_shape(shape.id, indicator_id)
-						(!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null") ? json << data[0].value : json << I18n.t('app.msgs.no_data')
+	# need this so can access ActionView::Helpers::NumberHelper helpers to format numbers in build_json
+	def self.helpers
+		ActionController::Base.helpers
+	end
+	# need this to access the number_format value in build_json
+  def number_format
+    attributes['number_format']
+  end
+
+	# create the properly formatted json string
+	def self.build_json(shapes, indicator_id=nil)
+		json = ''
+		if !shapes.nil? && shapes.length > 0
+			json = '{ "type": "FeatureCollection","features": ['
+			shapes.each_with_index do |shape, i|
+				json << '{ "type": "Feature", "geometry": '
+				json << shape.geometry
+				json << ', "properties": {'
+				json << '"id":"'
+				json << shape.id.to_s
+				json << '", "common_id":"'
+				json << shape.common_id
+				json << '", "common_name":"'
+			  json << shape.common_name if !shape.common_name.nil?
+				json << '", "has_children":"'
+				json << shape.has_children?.to_s
+				json << '", "shape_type_id":"'
+				json << shape.shape_type_id.to_s
+				json << '", "value":"'
+				if !indicator_id.nil?
+					data = Datum.get_data_for_shape(shape.id, indicator_id)
+					(!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null") ? json << data[0].value : json << I18n.t('app.msgs.no_data')
+=begin					
+was trying to add formatting to numbers, but will have to update all indicator scales to include the same formatting
+					if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
+						if !data[0].number_format.nil? && data[0].number_format.length > 0 && data[0].number_format == "%"
+							json << helpers.number_to_percentage(data[0].value, :locale => I18n.locale, 
+								:precision => I18n.t('number.format.precision'), 
+								:delimiter => I18n.t('number.format.delimiter'), 
+								:strip_insignificant_zeros => true, :raise => false)
+						elsif 
+							json << helpers.number_with_precision(data[0].value, :locale => I18n.locale, 
+								:precision => I18n.t('number.format.precision'), 
+								:delimiter => I18n.t('number.format.delimiter'), 
+								:strip_insignificant_zeros => true, :raise => false)
+						end
+					else
+						json << I18n.t('app.msgs.no_data')
 					end
-					json << '"}}'
-					json << ',' if i < shapes.length-1 # do not add comma for the last shape
+=end
 				end
-				json << ']}'
+				json << '"}}'
+				json << ',' if i < shapes.length-1 # do not add comma for the last shape
 			end
-			return json
+			json << ']}'
 		end
+		return json
+	end
 
     def self.csv_header
       "Event, Shape Type, Parent ID, Common ID, Common Name, Geometry".split(",")
