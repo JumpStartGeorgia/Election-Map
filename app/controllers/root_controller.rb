@@ -1,5 +1,5 @@
 class RootController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :create_svg_file]
+  before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :download]
 
   # GET /
   # GET /.json
@@ -126,11 +126,11 @@ class RootController < ApplicationController
 	# generate the svg file
   def export
 		# create the file name: map title - indicator - event
-		filename = params[:hidden_form_map_title].sub(' ', '_')
-		filename << " - "
-		filename << params[:hidden_form_indicator_name_abbrv].sub(' ', '_')
-		filename << " - "
-		filename << params[:hidden_form_event_name].sub(' ', '_')
+		filename = params[:hidden_form_map_title].gsub(' ', '_')
+		filename << "-"
+		filename << params[:hidden_form_indicator_name_abbrv].gsub(' ', '_')
+		filename << "-"
+		filename << params[:hidden_form_event_name].gsub(' ', '_')
 
 		headers['Content-Type'] = "image/svg+xml" 
     headers['Content-Disposition'] = "attachment; filename=\"#{filename}.svg\"" 
@@ -139,13 +139,20 @@ class RootController < ApplicationController
   # GET /indicators/download
   # GET /indicators/download.json
   def download
-		if !params[:event_id].nil? && !params[:shape_type_id].nil?
+		if !params[:event_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
       #get the data
-      data = Datum.create_csv(params[:event_id], params[:shape_type_id], params[:indicator_id])
+      data = Datum.create_csv(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
 
 			if !data.nil && !data.csv_data.nil?
+				# create file name using event name and map title that were passed in
+				if params[:event_name].nil? || params[:map_title].nil?
+			    filename = "data"
+				else
+			    filename = params[:map_title].gsub(' ', '_')
+					filename << "-"
+					filename << params[:event_name].gsub(' ', '_')
+				end
 		    # send the file
-		    filename = "data"
 		    send_data data.csv_data,
 		      :type => 'text/csv; charset=utf-8; header=present',
 		      :disposition => "attachment; filename=#{filename}.csv"

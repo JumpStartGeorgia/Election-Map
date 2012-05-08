@@ -162,13 +162,13 @@ function draw_legend()
 	// show the indicator descritpion if provided
 	if (gon.indicator_description) {
 		$('#indicator-description').append(gon.indicator_description);
-	  $('#indicator-description').show(0);
+	  $('#indicator-description').show(500);
 	} else {
 		$('#indicator-description').innerHTML = "";
 	  $('#indicator-description').hide(0);
 	}
 
-  $('#legend-container').show(0);
+  $('#legend-container').show(500);
 }
 
 // build the color mapping for the indicators
@@ -371,7 +371,11 @@ function populate_map_box(title, indicator, value, number_format)
 function load_hidden_form()
 {
 	if (gon.indicator_name){
-		$("#export-link").click(function(){
+		// update the url for the download data link
+		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "event_name", gon.event_name));
+		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "map_title", gon.map_title));
+
+		$("#export-map").click(function(){
 			// get the indicator names and colors
 			var scales = [];
 			var colors = [];
@@ -400,11 +404,11 @@ function load_hidden_form()
 			$('#hidden_form').submit();
 		});
 
-		// show the export link
-		$('#map-export').show(0);
+		// show the export links
+		$('#map-export').show(500);
 
 	} else {
-		// hide the export link
+		// hide the export links
 		$('#map-export').hide(0);
 	}
 }

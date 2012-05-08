@@ -138,109 +138,119 @@ class Datum < ActiveRecord::Base
   end
 
 
-	def self.create_csv(event_id, shape_type_id, indicator_id=nil)
+	def self.create_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
 		obj = OpenStruct.new
 		obj.csv_data = nil
 		obj.msg = nil
 
 		# parameters must be provided
-    if event_id.nil? || shape_type_id.nil?
+    if event_id.nil? || shape_type_id.nil? || shape_id.nil?
 logger.debug "not all params provided"
 			return nil
     else
-			# get the data for the provided parameters
-			if indicator_id.nil?
-				# get data for all indicators
-        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, :data)
-          .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale ", 
-            :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale)
-          .order("indicators.id ASC, data.common_name asc")
-			else
-				# get data for provided indicator
-        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, :data)
-          .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale ", 
-            :indicator_id => indicator_id, :locale => I18n.locale)
-          .order("indicators.id ASC, data.common_name asc")
-			end
+			# get the shapes we need data for
+			shapes = Shape.get_shapes_for_download(shape_id, shape_type_id)
 
-      if indicators.nil? || indicators.length == 0
-logger.debug "no indicators or data found"
-        return nil
-      else
-        # create the csv data
-        rows =[]
-				row_starter = []
-        indicators.each_with_index do |ind, index|
-					if index == 0
-						#event
-		        if ind.event.event_translations.nil? || ind.event.event_translations.length == 0
-	logger.debug "no event translation found"
+			if shapes.nil? || shapes.length == 0
+logger.debug "no shapes were found"
+				return nil
+		  else
+				# get the data for the provided parameters
+				if indicator_id.nil?
+					# get data for all indicators
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, :data)
+		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and data.common_id in (:common_ids) and data.common_name in (:common_names)", 
+		          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale, 
+							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
+		        .order("indicators.id ASC, data.id asc")
+				else
+					# get data for provided indicator
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, :data)
+		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and data.common_id in (:common_ids) and data.common_name in (:common_names)", 
+		          :indicator_id => indicator_id, :locale => I18n.locale, 
+							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
+		        .order("indicators.id ASC, data.id asc")
+				end
+
+		    if indicators.nil? || indicators.length == 0
+	logger.debug "no indicators or data found"
+		      return nil
+		    else
+		      # create the csv data
+		      rows =[]
+					row_starter = []
+		      indicators.each_with_index do |ind, index|
+						if index == 0
+							#event
+				      if ind.event.event_translations.nil? || ind.event.event_translations.length == 0
+		logger.debug "no event translation found"
+				        return nil
+				      else
+				        row_starter << ind.event.event_translations[0].name
+				      end
+							# shape type
+				      if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.length == 0
+		logger.debug "no shape type translation found"
+				        return nil
+				      else
+				        row_starter << ind.shape_type.shape_type_translations[0].name
+				      end
+						end 
+
+						if ind.data.nil? || ind.data.length == 0
+	logger.debug "no data"
 		          return nil
-		        else
-		          row_starter << ind.event.event_translations[0].name
-		        end
-						# shape type
-		        if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.length == 0
-	logger.debug "no shape type translation found"
-		          return nil
-		        else
-		          row_starter << ind.shape_type.shape_type_translations[0].name
-		        end
-					end 
+						else
+							ind.data.each_with_index do |d, dindex|
+								if index > 0
+									# this is not the first indicator, so get existing row and add to it
+					        row = rows[dindex]
+								else
+									# this is first indicator, create rows
+									row = []
+									# add first couple columns of row (event and shape type)
+									row << row_starter
+									# common id
+									row << d.common_id
+									# common name
+									row << d.common_name
+								end
+								# data
+								row << d.value
 
-					if ind.data.nil? || ind.data.length == 0
-logger.debug "no data"
-            return nil
-					else
-						ind.data.each_with_index do |d, dindex|
-							if index > 0
-								# this is not the first indicator, so get existing row and add to it
-			          row = rows[dindex]
-							else
-								# this is first indicator, create rows
-								row = []
-								# add first couple columns of row (event and shape type)
-								row << row_starter
-								# common id
-								row << d.common_id
-								# common name
-								row << d.common_name
-							end
-							# data
-							row << d.value
-
-							# only add the row if it is new
-							if index == 0
-						    # add the row to the rows array
-						    rows << row.flatten
+								# only add the row if it is new
+								if index == 0
+								  # add the row to the rows array
+								  rows << row.flatten
+								end
 							end
 						end
-					end
-        end
+		      end
 
-				# enclose each item in the rows array in ""
-				# this is in case an item has a ',' in the text
-				rows.each do |r|
-					r.each do |c|
-						c = "#{c}"
+					# enclose each item in the rows array in ""
+					# this is in case an item has a ',' in the text
+					rows.each do |r|
+						r.each do |c|
+							c = "#{c}"
+						end
 					end
-				end
-        
-				obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
-		      # generate the header
-		      header = []
-		      header << download_header
-		      indicators.each do |i|
-		        header << i.name
-		      end
-		      csv << header.flatten
 		      
-		      # add the rows
-		      rows.each do |r|
-		        csv << r
-		      end
+					obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
+				    # generate the header
+				    header = []
+				    header << download_header
+				    indicators.each do |i|
+				      header << i.name
+				    end
+				    csv << header.flatten
+				    
+				    # add the rows
+				    rows.each do |r|
+				      csv << r
+				    end
+					end
+		      return obj
 				end
-        return obj
 			end
 		end
 	end

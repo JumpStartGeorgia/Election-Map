@@ -360,7 +360,7 @@ a:hover
     font-size: 200%;
     font-weight: bold;
     background: #385A80;
-    z-index: 99999;
+    z-index: 999;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
@@ -375,11 +375,13 @@ a:hover
 */
 
 #map-export { 
+	display: none;
 	position: absolute; 
 	right: 0px; 
-	top: 575px; 
-	z-index: 9999; 
-	background: #6E6E6E; 
+	top: 579px; 
+	z-index: 999; 
+	background: transparent; 
+/*
 	cursor: pointer; 
 	font-size: 12px; 
 	padding: 5px; 
@@ -391,15 +393,14 @@ a:hover
   border-top-left-radius: 3px;
   -webkit-border-bottom-right-radius: 3px;
   -moz-border-radius-bottomright: 3px;
-  border-bottom-right-radius: 3px;
-	display: none;
+  border-bottom-right-radius: 3px;*/
 }
 
 #indicator-description { 
 	position: absolute; 
 	left: 0px; 
 	top: 575px; 
-	z-index: 9999; 
+	z-index: 999; 
   min-width: 200px;
 	background: #6E6E6E; 
   padding: 5px 10px 6px;
@@ -422,7 +423,7 @@ a:hover
     position: absolute;
     left: 0;
     top: 0;
-		z-index: 9999; 
+		z-index: 999; 
     min-width: 200px;
     padding: 5px 10px 6px;
     background: #A6A6A6;
@@ -452,7 +453,7 @@ a:hover
     -webkit-border-top-right-radius: 3px;
     -moz-border-radius-topright: 3px;
     border-top-right-radius: 3px;
-    z-index: 99999;
+    z-index: 999;
 }
 
 #map-box > h1
