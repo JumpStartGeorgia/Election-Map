@@ -25,7 +25,7 @@ class Datum < ActiveRecord::Base
   end
 
   def self.download_header
-    "Event, Shape Type, Common ID, Common Name".split(",")
+    "Event, Map Level, [Level] ID, [Level] Name".split(",")
   end
 
   def self.build_from_csv(file, deleteExistingRecord)
@@ -238,7 +238,9 @@ logger.debug "no shapes were found"
 					obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
 				    # generate the header
 				    header = []
-				    header << download_header
+						# replace the [Level] placeholder in download_header with the name of the map level
+						# that is located in the row_starter array
+				    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
 				    indicators.each do |i|
 				      header << i.name
 				    end
