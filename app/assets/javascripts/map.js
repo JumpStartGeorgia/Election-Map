@@ -405,11 +405,11 @@ function load_hidden_form()
 		});
 
 		// show the export links
-		$('#map-export').show(500);
+		$('#export').show(500);
 
 	} else {
 		// hide the export links
-		$('#map-export').hide(0);
+		$('#export').hide(0);
 	}
 }
 

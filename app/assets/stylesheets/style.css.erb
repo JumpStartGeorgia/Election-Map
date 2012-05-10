@@ -374,13 +374,14 @@ a:hover
 
 */
 
-#map-export { 
+#export { 
 	display: none;
 	position: absolute; 
 	right: 0px; 
 	top: 579px; 
 	z-index: 999; 
 	background: transparent; 
+	letter-spacing: -3px;
 /*
 	cursor: pointer; 
 	font-size: 12px; 
@@ -393,9 +394,19 @@ a:hover
   border-top-left-radius: 3px;
   -webkit-border-bottom-right-radius: 3px;
   -moz-border-radius-bottomright: 3px;
-  border-bottom-right-radius: 3px;*/
+  border-bottom-right-radius: 3px;
+	*/
 }
 
+#export img { 
+opacity:0.7;
+filter:alpha(opacity=70); /* For IE8 and earlier */
+}
+#export img:hover { 
+opacity:1.0;
+filter:alpha(opacity=100); /* For IE8 and earlier */
+
+}
 #indicator-description { 
 	position: absolute; 
 	left: 0px; 
