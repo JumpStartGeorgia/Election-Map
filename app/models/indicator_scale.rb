@@ -36,6 +36,15 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 		end
 		return nil
 	end
+
+	# get all indicator scales for an indicator
+	def self.find_by_indicator_id(indicator_id)
+		if !indicator_id.nil?
+			Rails.cache.fetch("indicator_scales_by_indicator_#{indicator_id}") {
+				where(:indicator_id => indicator_id)
+			}
+		end
+	end
 	
   def self.csv_all_header
     "Event, Shape Type, en: Indicator Name, ka: Indicator Name, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")

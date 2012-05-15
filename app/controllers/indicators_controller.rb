@@ -1,6 +1,7 @@
 class IndicatorsController < ApplicationController
-require 'csv'
+	require 'csv'
   before_filter :authenticate_user!
+	cache_sweeper :indicator_sweeper, :only => [:upload, :change_name]
 
   # GET /indicators/upload
   # GET /indicators/upload.json

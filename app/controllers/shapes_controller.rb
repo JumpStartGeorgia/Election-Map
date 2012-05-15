@@ -14,6 +14,8 @@ class ShapesController < ApplicationController
 		      if msg.nil? || msg.length == 0
 		        # no errors, success!
 						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						expire_action :controller => :root, :action => :shape
+						expire_action :controller => :root, :action => :children_shapes
 				    redirect_to upload_shapes_path #GET
 		      else
 		        # errors

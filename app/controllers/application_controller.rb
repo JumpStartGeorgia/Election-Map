@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 	require 'ostruct'
 
   before_filter :set_locale
-  before_filter :set_election_types
+  before_filter :set_event_types
   before_filter :set_shape_types
   before_filter :set_default_values
 	before_filter :set_gon_data
@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
 protected 
 
   def set_locale
-    @locales = Locale.order("language asc")
+    @locales = Rails.cache.fetch("locales") {Locale.order("language asc")}
 		# see if locale is valid
 		valid = false
 		if !params[:locale].nil?
@@ -43,16 +43,16 @@ protected
 		end
   end
   
-  def set_election_types
-    @event_types = EventType.all
+  def set_event_types
+    @event_types = Rails.cache.fetch("event_types") {EventType.all}
+  end
+  
+  def set_shape_types
+    @shape_types = Rails.cache.fetch("shape_types") {ShapeType.all}
   end
   
   def set_default_values
 		@svg_directory_path = File.dirname(__FILE__)+"/../../public/assets/svg/"
-  end
-  
-  def set_shape_types
-    @shape_types = ShapeType.all
   end
   
   def default_url_options(options={})

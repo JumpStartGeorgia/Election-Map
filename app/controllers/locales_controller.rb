@@ -1,5 +1,6 @@
 class LocalesController < ApplicationController
   before_filter :authenticate_user!
+	cache_sweeper :locale_sweeper, :only => [:create, :update, :destroy]
 
   # GET /locales
   # GET /locales.json

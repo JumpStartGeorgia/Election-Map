@@ -1,7 +1,7 @@
 class DataController < ApplicationController
-require 'csv'
-
+	require 'csv'
   before_filter :authenticate_user!
+	cache_sweeper :datum_sweeper, :only => [:upload]
 
   # GET /data/upload
   # GET /data/upload.json

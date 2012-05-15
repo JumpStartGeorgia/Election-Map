@@ -15,7 +15,7 @@ class Datum < ActiveRecord::Base
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "left join shapes as s on d.common_id = s.common_id and d.common_name = s.common_name and i.shape_type_id = s.shape_type_id "
 			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id"
-		
+	
 			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id])
 		end
 	end

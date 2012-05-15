@@ -1,5 +1,6 @@
 class EventsController < ApplicationController
   before_filter :authenticate_user!
+	cache_sweeper :event_sweeper, :only => [:create, :update, :destroy]
 
   # GET /events
   # GET /events.json

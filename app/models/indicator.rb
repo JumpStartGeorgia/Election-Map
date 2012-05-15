@@ -23,14 +23,26 @@ class Indicator < ActiveRecord::Base
 		if (old_indicator.nil? || new_shape_type.nil? || locale.nil?)
 			return nil		
 		else
-			sql = "select inew.* "
-			sql << "from indicators as iold "
-			sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
-			sql << "inner join indicator_translations as itold on iold.id = itold.indicator_id "
-			sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name_abbrv = itnew.name_abbrv and itold.locale = itnew.locale "
-			sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
+			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}_#{locale}") {
+				sql = "select inew.* "
+				sql << "from indicators as iold "
+				sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
+				sql << "inner join indicator_translations as itold on iold.id = itold.indicator_id "
+				sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name_abbrv = itnew.name_abbrv and itold.locale = itnew.locale "
+				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
 		
-			find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
+				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
+			}
+		end
+	end
+
+	def self.find_by_event_shape_type(event_id, shape_type_id)
+		if event_id.nil? || shape_type_id.nil?
+			return nil		
+		else
+			Rails.cache.fetch("indicators_by_event_#{event_id}_shape_type_#{shape_type_id}") {
+				where(:event_id => event_id, :shape_type_id => shape_type_id)
+			}
 		end
 	end
 

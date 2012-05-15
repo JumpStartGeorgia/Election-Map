@@ -1,5 +1,6 @@
 class EventTypesController < ApplicationController
   before_filter :authenticate_user!
+	cache_sweeper :event_type_sweeper, :only => [:create, :update, :destroy]
 
   # GET /event_types
   # GET /event_types.json

@@ -1,5 +1,6 @@
 class ShapeTypesController < ApplicationController
   before_filter :authenticate_user!
+	cache_sweeper :shape_type_sweeper, :only => [:create, :update, :destroy]
 
   # GET /shape_types
   # GET /shape_types.json

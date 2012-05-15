@@ -1,5 +1,6 @@
 class RootController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :download]
+	caches_action :shape, :children_shapes, :cache_path => Proc.new { |c| c.params }
 
   # GET /
   # GET /.json
@@ -49,7 +50,7 @@ class RootController < ApplicationController
 
 					# get the indicators for the children shape_type
 					if !params[:event_id].nil? && !@child_shape_type_id.nil?
-						@indicators = Indicator.where(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id)
+						@indicators = Indicator.find_by_event_shape_type(params[:event_id],@child_shape_type_id)
 					end
 
 					# get the indicator
@@ -279,7 +280,7 @@ logger.debug " - event id provided"
   def build_indicator_scale_array
     if !params[:indicator_id].nil?
       # get the scales
-      scales = IndicatorScale.where(:indicator_id => params[:indicator_id])
+      scales = IndicatorScale.find_by_indicator_id(params[:indicator_id])
       if !scales.nil? && scales.length > 0
         gon.indicator_scales = scales
       end
