@@ -43,7 +43,9 @@ class LocalesController < ApplicationController
   # POST /locales
   # POST /locales.json
   def create
-    @locale = Locale.new(params[:locale])
+		# the params[:locale] is being used to keep track of the current users locale value
+		# so we have to populate the new locale object by hand
+    @locale = Locale.new({:language => params[:language], :name => params[:name]})
 
     respond_to do |format|
       if @locale.save
@@ -62,7 +64,9 @@ class LocalesController < ApplicationController
     @locale = Locale.find(params[:id])
 
     respond_to do |format|
-      if @locale.update_attributes(params[:locale])
+			# the params[:locale] is being used to keep track of the current users locale value
+			# so we have to populate the existing locale object by hand
+      if @locale.update_attributes({:language => params[:language], :name => params[:name]})
         format.html { redirect_to @locale, notice: 'Locale was successfully updated.' }
         format.json { head :ok }
       else
