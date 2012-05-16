@@ -139,6 +139,7 @@ ka:
       event_types: Event Types
       locales: Languages
       pages: Basic Pages
+      cache: Clear Cache
       csv_header: Upload CSV Files
       indicators: Indicators
       change_indicator_names: Change Indicator Names
@@ -150,6 +151,9 @@ ka:
     index:
       export_link_text: Export Map
       export_help_text: Export Help
+    clear_cache:
+      title: Cache
+      cleared: The cache has been cleared.
   data:
     export:
       title: Export Data CSV Template File

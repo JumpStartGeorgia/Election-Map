@@ -8,6 +8,7 @@ ElectionMap::Application.routes.draw do
   match '/routing_error', :to => 'root#routing_error'
   match "/:locale" => "root#index", via: :get, :as => :root
   match '/:locale/admin', :to => 'root#admin', :as => :admin, :via => :get
+  match '/:locale/clear_cache', :to => 'root#clear_cache', :as => :clear_cache, :via => :get
   match '/:locale/shape/:id', :to => 'root#shape', :as => :shape, :via => :get, :defaults => {:format => 'json'}
   match '/:locale/children_shapes/:parent_id(/:parent_shape_clickable(/:indicator_id))', :to => 'root#children_shapes', :as => :children_shapes, :via => :get, :defaults => {:format => 'json'}
   match '/:locale/download/:event_id/:shape_type_id/:shape_id(/:indicator_id)', :to => 'root#download', :as => :download_data, :via => :get

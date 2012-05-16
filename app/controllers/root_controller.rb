@@ -1,6 +1,6 @@
 class RootController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :download]
-	caches_action :shape, :children_shapes, :cache_path => Proc.new { |c| c.params }
+#	caches_action :shape, :children_shapes, :layout => false, :cache_path => Proc.new { |c| c.params }
 
   # GET /
   # GET /.json
@@ -93,31 +93,36 @@ class RootController < ApplicationController
   # GET /events/shape/:id
   # GET /events/shape/:id.json
   def shape
-		#get the parent shape
-		shape = Shape.where(:id => params[:id])
+		geometries = Rails.cache.fetch("shape_json_#{params[:id]}") {
+			#get the parent shape
+			shape = Shape.where(:id => params[:id])
+			Shape.build_json(shape)
+		}
     respond_to do |format|
-      format.json { render json: Shape.build_json(shape) }
+      format.json { render json: geometries }
     end
   end
 
   # GET /events/children_shapes/:parent_id
   # GET /events/children_shapes/:parent_id.json
   def children_shapes
-		geometries = ''
+		geometries = Rails.cache.fetch("children_shapes_json_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
+			geo = ''
+			#get the parent shape
+			shape = Shape.where(:id => params[:parent_id])
 
-		#get the parent shape
-		shape = Shape.where(:id => params[:parent_id])
+			if !shape.nil? && shape.length > 0
+		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+					# get the parent shape and format for json
+					geo = Shape.build_json(shape, params[:indicator_id])
+				elsif shape.first.has_children?
+					# get all of the children of the parent and format for json
+					geo = Shape.build_json(shape.first.children, params[:indicator_id])
+				end
+			end
 
-		if !shape.nil? && shape.length > 0
-      if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-  			# get the parent shape and format for json
-  			geometries = Shape.build_json(shape, params[:indicator_id])
-		  elsif shape.first.has_children?
-  			# get all of the children of the parent and format for json
-  			geometries = Shape.build_json(shape.first.children, params[:indicator_id])
-		  end
-		end
-
+			geo
+		}
     respond_to do |format|
       format.json { render json: geometries}
     end
@@ -169,6 +174,11 @@ class RootController < ApplicationController
       format.html # show.html.erb
       format.json { render json: @event }
     end
+  end
+
+  # GET /events/clear_cache
+  def clear_cache
+		Rails.cache.clear
   end
 
 	# any mis-match routing errors are directed here
