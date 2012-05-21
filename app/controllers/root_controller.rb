@@ -200,10 +200,9 @@ logger.debug " - event id not provided, looking for first event"
       # no event selected yet, find first with a shape id
       @events.each do |e|
         if !e.shape_id.nil?
-logger.debug " - found event, saving id and parent clickable to true"
-        	# - save event_id and indicate that the root shape is to be clickable
+logger.debug " - found event, saving id"
+        	# - save event_id 
           params[:event_id] = e.id.to_s
-          params[:parent_shape_clickable] = true
           return e
         end
       end
