@@ -21,6 +21,11 @@ numFormat.setInputDecimal(I18n.t("number.format.separator"));
 numFormat.setSeparators(true, I18n.t("number.format.delimiter"));
 numFormat.setPlaces(I18n.t("number.format.precision"), false);
 
+// World Geodetic System 1984 projection
+var WGS84 = new OpenLayers.Projection("EPSG:4326");
+// WGS84 Google Mercator projection
+var WGS84_google_mercator = new OpenLayers.Projection("EPSG:900913");
+
 // Function called from body tag
 function map_init(){
 	// add no data to scales
@@ -30,8 +35,12 @@ function map_init(){
 	}
 
 	var options = {
-		theme: null,
-        controls: []  // Remove all controls
+    projection: WGS84_google_mercator,
+    units: 'm',
+    maxResolution: 156543.0339,
+    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
+    theme: null,
+    controls: []  // Remove all controls
   };
 
 	var baseStyle = new OpenLayers.StyleMap({
@@ -55,7 +64,7 @@ function map_init(){
 		url: gon.shape_path,
 		format: new OpenLayers.Format.GeoJSON({
       'internalProjection': map.baseLayer.projection,
-      'externalProjection': new OpenLayers.Projection('EPSG:900913')
+      'externalProjection': WGS84_google_mercator
 		})
 	});
 
@@ -74,7 +83,7 @@ function map_init(){
 		url: gon.children_shapes_path,
 		format: new OpenLayers.Format.GeoJSON({
       'internalProjection': map.baseLayer.projection,
-      'externalProjection': new OpenLayers.Projection('EPSG:900913')
+      'externalProjection': WGS84_google_mercator
 		})
 	});
 
