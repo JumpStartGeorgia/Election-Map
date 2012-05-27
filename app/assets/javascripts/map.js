@@ -14,6 +14,7 @@ var scale_nodata = [];
 var color_nodata = gon.no_data_color;
 scale_nodata['name'] = gon.no_data_text;
 scale_nodata['color'] = color_nodata;
+var opacity = "1.0";
 
 // define number formatting for data values
 var numFormat = new NumberFormat();
@@ -36,6 +37,7 @@ function map_init(){
 
 	var options = {
     projection: WGS84_google_mercator,
+    displayProjection: WGS84,
     units: 'm',
     maxResolution: 156543.0339,
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
@@ -43,21 +45,26 @@ function map_init(){
     controls: []  // Remove all controls
   };
 
-	var baseStyle = new OpenLayers.StyleMap({
+	var vectorBaseStyle = new OpenLayers.StyleMap({
       "default": new OpenLayers.Style({
           fillColor: "#bfbe8d",
           strokeColor: "#777777",
-          strokeWidth: 1
+          strokeWidth: 1,
+          fillOpacity: opacity
       })
   });
 
   map = new OpenLayers.Map('map', options);
 
-  vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: baseStyle});
+	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true});
+
+  vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
+//  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
   map.addLayers([vector_base, vector_child]);
+//  map.addLayers([map_layer, vector_base, vector_child]);
 
 	// load the base layer
 	var prot = new OpenLayers.Protocol.HTTP({
@@ -187,7 +194,8 @@ function build_indicator_scale_styles() {
       fillColor: "#cfce9d",
       strokeColor: "#777777",
       strokeWidth: 1,
-      cursor: "pointer"
+      cursor: "pointer",
+      fillOpacity: opacity
   });
 	if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 		
@@ -243,7 +251,7 @@ function build_indicator_scale_styles() {
     theme.addRules(rules);
 	}
 
-    return new OpenLayers.StyleMap({'default':theme, 'select': {'strokeColor': '#5c81a3', 'fillColor': '#5c81a3', 'strokeWidth': 2}});
+    return new OpenLayers.StyleMap({'default':theme, 'select': {'strokeColor': '#5c81a3', 'fillColor': '#5c81a3', 'fillOpacity': opacity, 'strokeWidth': 2}});
 }
 
 function build_rule(color, type, value1, value2, isFirst){
@@ -273,7 +281,7 @@ function build_rule(color, type, value1, value2, isFirst){
 		            })
 		        ]
 		        }),
-	        symbolizer: {"Polygon": {'fillColor': color, 'fillOpacity': 1}}
+	        symbolizer: {"Polygon": {'fillColor': color, 'fillOpacity': opacity}}
 	    });
 	} else if (type && value1){
 	    return new OpenLayers.Rule({
@@ -282,7 +290,7 @@ function build_rule(color, type, value1, value2, isFirst){
 		        type: type,
 		        property: "value",
 		        value: value1 }),
-	        symbolizer: {"Polygon": {'fillColor': color, 'fillOpacity': 1}}
+	        symbolizer: {"Polygon": {'fillColor': color, 'fillOpacity': opacity}}
 	    });
 	}
 }
