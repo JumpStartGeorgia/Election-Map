@@ -61,10 +61,10 @@ module ElectionMap
 		# store cache in memory
 		config.cache_store = :memory_store
 
-#		config.middleware.use ExceptionNotifier,
-#			:email_prefix => "[Election Map App Error] ",
-#			:sender_address => %{<info@jumpstart.ge>},
-#			:exception_recipients => %w{jason.addie@jumpstart.ge}
+		config.middleware.use ExceptionNotifier,
+			:email_prefix => "[Election Map App Error] ",
+			:sender_address => %{<info@jumpstart.ge>},
+			:exception_recipients => %w{jason.addie@jumpstart.ge}
 
   end
 end

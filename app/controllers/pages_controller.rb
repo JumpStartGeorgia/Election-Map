@@ -6,14 +6,18 @@ class PagesController < ApplicationController
   # GET /pages/view/:name.json
   def view
     @page = Page.find_by_name(params[:name])
-
-    if !params[:layout].nil?
-		  render :layout => params[:layout]
-    else
-      respond_to do |format|
-        format.html # show.html.erb
-        format.json { render json: @page }
-      end
+		if @page.nil?
+			# no page was found, send back to home
+			redirect_to root_path
+		else
+		  if !params[:layout].nil?
+				render :layout => params[:layout]
+		  else
+		    respond_to do |format|
+		      format.html # show.html.erb
+		      format.json { render json: @page }
+		    end
+			end
 		end
   end
 
