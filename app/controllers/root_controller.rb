@@ -95,7 +95,7 @@ class RootController < ApplicationController
   # GET /events/shape/:id
   # GET /events/shape/:id.json
   def shape
-		geometries = Rails.cache.fetch("shape_json_#{params[:id]}") {
+		geometries = Rails.cache.fetch("shape_json_#{I18n.locale}_#{params[:id]}") {
 			#get the parent shape
 			shape = Shape.where(:id => params[:id])
 			Shape.build_json(shape)
@@ -108,7 +108,7 @@ class RootController < ApplicationController
   # GET /events/children_shapes/:parent_id
   # GET /events/children_shapes/:parent_id.json
   def children_shapes
-		geometries = Rails.cache.fetch("children_shapes_json_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
+		geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
 			geo = ''
 			#get the parent shape
 			shape = Shape.where(:id => params[:parent_id])

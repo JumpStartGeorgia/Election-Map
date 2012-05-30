@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120504071938) do
+ActiveRecord::Schema.define(:version => 20120530070910) do
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
@@ -140,6 +140,16 @@ ActiveRecord::Schema.define(:version => 20120504071938) do
 
   add_index "pages", ["name"], :name => "index_pages_on_name"
 
+  create_table "regions_districts", :id => false, :force => true do |t|
+    t.string  "region"
+    t.integer "district_id"
+    t.string  "district_name"
+    t.integer "precinct_id"
+    t.string  "precinct_name"
+  end
+
+  add_index "regions_districts", ["district_id", "precinct_id"], :name => "district_id"
+
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
     t.text     "data"
@@ -150,16 +160,22 @@ ActiveRecord::Schema.define(:version => 20120504071938) do
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
+  create_table "shape_names", :primary_key => "en", :force => true do |t|
+    t.string "ka", :null => false
+  end
+
   create_table "shape_translations", :force => true do |t|
     t.integer  "shape_id"
     t.string   "locale"
-    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "common_id"
+    t.string   "common_name"
   end
 
+  add_index "shape_translations", ["common_id"], :name => "index_shape_translations_on_common_id"
+  add_index "shape_translations", ["common_name"], :name => "index_shape_translations_on_common_name"
   add_index "shape_translations", ["locale"], :name => "index_shape_translations_on_locale"
-  add_index "shape_translations", ["name"], :name => "index_shape_translations_on_name"
   add_index "shape_translations", ["shape_id"], :name => "index_shape_translations_on_shape_id"
 
   create_table "shape_type_translations", :force => true do |t|
@@ -184,17 +200,15 @@ ActiveRecord::Schema.define(:version => 20120504071938) do
 
   create_table "shapes", :force => true do |t|
     t.integer  "shape_type_id"
-    t.string   "common_id"
-    t.text     "geometry",      :limit => 2147483647
+    t.string   "common_id_old"
+    t.text     "geometry",        :limit => 2147483647
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "ancestry"
-    t.string   "common_name"
+    t.string   "common_name_old"
   end
 
   add_index "shapes", ["ancestry"], :name => "index_shapes_on_ancestry"
-  add_index "shapes", ["common_id"], :name => "index_shapes_on_common_id"
-  add_index "shapes", ["common_name"], :name => "index_shapes_on_common_name"
   add_index "shapes", ["shape_type_id"], :name => "index_shapes_on_shape_type_id"
 
   create_table "users", :force => true do |t|

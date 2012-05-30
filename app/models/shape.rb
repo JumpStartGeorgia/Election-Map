@@ -1,34 +1,36 @@
 class Shape < ActiveRecord::Base
-  translates :name
+  translates :common_id, :common_name
   has_ancestry
   require 'csv'
 
   has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type
   accepts_nested_attributes_for :shape_translations
-  attr_accessible :shape_type_id, :common_id, :common_name, :geometry, :shape_translations_attributes
+  attr_accessible :shape_type_id, :geometry, :shape_translations_attributes
   attr_accessor :locale
 
-  validates :shape_type_id, :common_id, :geometry, :presence => true
+  validates :shape_type_id, :geometry, :presence => true
   
-  scope :l10n , joins(:shape_translations).where('locale = ?',I18n.locale)
-  scope :by_name , order('name').l10n
-
 	# get the name of the shape (common_id)
 	def self.get_shape_name(shape_id)
-		return shape_id.nil? ? "" : select("common_id").where(:id => shape_id).first
+		return shape_id.nil? ? "" : select("common_id")
+				.joins(:shape_translations)
+				.where(:shapes => {:id => shape_id}, :shape_translations => {:locale => I18n.locale}).first
 	end
 
 	# get the name of the shape (common_id)
 	def self.get_shape_no_geometry(shape_id)
-		return shape_id.nil? ? "" : select("id, shape_type_id, common_id, common_name, ancestry").where(:id => shape_id).first
+		return shape_id.nil? ? "" : select("shapes.id, shape_type_id, common_id, common_name, ancestry")
+					.joins(:shape_translations)
+					.where(:shapes => {:id => shape_id}, :shape_translations => {:locale => I18n.locale}).first
 	end
 
 	# get the list of shapes for data download
 	def self.get_shapes_for_download(shape_id, shape_type_id)
-		return shape_id.nil? || shape_type_id.nil? ? nil : select("id, shape_type_id, common_id, common_name, ancestry")
-			.where("shapes.shape_type_id = :shape_type_id and ((shapes.shape_type_id = 1 and shapes.id = :shape_id) or (shapes.shape_type_id = 2 and shapes.ancestry = :shape_id) or (shapes.ancestry like :shape_id_like))", 
-			:shape_id => shape_id, :shape_type_id => shape_type_id, :shape_id_like => "%/#{shape_id}")
+		return shape_id.nil? || shape_type_id.nil? ? nil : select("shapes.id, shape_type_id, common_id, common_name, ancestry")
+					.joins(:shape_translations)
+					.where("shapes.shape_type_id = :shape_type_id and shape_translations.locale = :locale and ((shapes.shape_type_id = 1 and shapes.id = :shape_id) or (shapes.shape_type_id = 2 and shapes.ancestry = :shape_id) or (shapes.ancestry like :shape_id_like))", 
+			:shape_id => shape_id, :shape_type_id => shape_type_id, :shape_id_like => "%/#{shape_id}", :locale => I18n.locale)
 	end
 
 	# need this so can access ActionView::Helpers::NumberHelper helpers to format numbers in build_json
@@ -107,7 +109,7 @@ class Shape < ActiveRecord::Base
 		    		else
 		  logger.debug "++++found event and shape type, get root shape"
 		          # get the root shape
-		          root = Shape.where(:id => event.shape_id).first
+		          root = Shape.joins(:shape_translations).where(:shapes => {:id => event.shape_id}, :shape_translations => {:locale => 'en'}).first
 		      
 		          # if the root shape already exists and deleteExistingRecord is true, delete the shape
 							#  if this is the root record (row[2] is nil)
@@ -122,8 +124,12 @@ class Shape < ActiveRecord::Base
 		            if row[2].nil? || row[2].strip.length == 0
 		              # no root exists in db, but this is the root, so add it
 		  logger.debug "++++adding root shape"
-		              shape = Shape.create :shape_type_id => shape_type.id, :common_id => row[3].strip, 
-										:common_name => row[4].strip, :geometry => row[5].strip
+                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[5].strip
+									# add translations
+									I18n.available_locales.each do |locale|
+										shape.shape_translations.create(:locale => locale, :common_id => row[3].strip, :common_name => row[4].strip)
+									end
+
 		              if shape.valid?
 		                # update the event to have this as the root
 		  logger.debug "++++updating event to map to this root shape"
@@ -168,8 +174,7 @@ class Shape < ActiveRecord::Base
 				            return msg
 		              else
 		    logger.debug "++++chekcing if row already in db"
-		                alreadyExists = root.descendants.where ({:shape_type_id => shape_type.id, 
-												:common_id => row[3].strip, :common_name => row[4].strip, :geometry => row[5].strip})
+		                alreadyExists = root.descendants.joins(:shape_translations).where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[5].strip}, :shape_translations => {:locale => 'en', :common_id => row[3].strip, :common_name => row[4].strip})
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
 		                if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -197,7 +202,7 @@ class Shape < ActiveRecord::Base
 		                    # have to check the root object by iteself and then check for through the descendants
 		                    parentRoot = root.shape_type_id == parent_shape_type.id && root.common_id == row[2].strip ? root : nil
 		                    if root.has_children?
-		                      parentChild = root.descendants.where ({:shape_type_id => parent_shape_type.id, :common_id => row[2].strip})
+		                      parentChild = root.descendants.joins(:shape_translations).where(:shapes => {:shape_type_id => parent_shape_type.id}, :shape_translations => {:locale => 'en', :common_id => row[2].strip})
 		                    end
 		                
 		                    # see if a parent node was found
@@ -222,8 +227,11 @@ class Shape < ActiveRecord::Base
 		                    else
 		                      # found parent, add child
 		      logger.debug "++++found parent, saving this row"
-		                      shape = parent.children.create :shape_type_id => shape_type.id, :common_id => row[3].strip, 
-														:common_name => row[4].strip, :geometry => row[5].strip
+		                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[5].strip
+													# add translations
+													I18n.available_locales.each do |locale|
+														shape.shape_translations.create(:locale => locale, :common_id => row[3].strip, :common_name => row[4].strip)
+													end
 
 		                      if !shape.valid?
 		                        # could not create shape
