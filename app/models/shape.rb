@@ -112,8 +112,8 @@ class Shape < ActiveRecord::Base
 		          # if the root shape already exists and deleteExistingRecord is true, delete the shape
 							#  if this is the root record (row[2] is nil)
 		          if !root.nil? && deleteExistingRecord && (row[2].nil? || row[2].strip.length == 0)
-		logger.debug "+++++++ deleting existing root shape"
-		              Shape.destroy(root.id)
+		logger.debug "+++++++ deleting existing root shape and all of its descendants"
+		              Shape.destroy_all(["id in (?)", root.subtree_ids])
 		              root = nil
 		          end
 
@@ -173,9 +173,9 @@ class Shape < ActiveRecord::Base
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
 		                if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
-			logger.debug "+++++++ deleting existing #{alreadyExists.length} shape records "
+			logger.debug "+++++++ deleting existing #{alreadyExists.length} shape record and all of its descendants "
                         alreadyExists.each do |exists|
-  		                    Shape.destroy (exists.id)
+						              Shape.destroy_all(["id in (?)", exists.subtree_ids])
                         end
 		                    alreadyExists = nil
 		                end

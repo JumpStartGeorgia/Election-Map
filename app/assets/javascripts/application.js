@@ -16,4 +16,9 @@
 //= require pages
 //= require shape_types
 
+// set focus to first text box on page
+$(document).ready(function(){
+  $("input:visible:first").focus();
+});
+
 
