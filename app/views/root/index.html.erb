@@ -48,29 +48,30 @@
 	<div id="indicator-description">
 	</div>
 
-	<div id="legend-container">
+	<div id="legend-container" class="clear">
 		<ul id="legend">
 		</ul>
 	</div>
 
-</section>
-
-<ul id="views" class="group">
-	<% if @shape_types.length > 0 %>
-		<% @shape_types.each do |type| %>
-			<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
-				<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
-					<% if type.has_children? %>
-						<%= link_to type.name, root_path(request.parameters.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => true, :parent_shape_clickable => type.is_root?})), :title => type.name %>
-					<% else %>
-						<%= type.name %>
-					<% end %>
-				</li>
+	<ul id="shape_layer_navigation" class="group clear">
+		<% if @shape_types.length > 0 %>
+			<% @shape_types.each do |type| %>
+				<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
+					<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
+						<% if type.has_children? %>
+							<%= link_to type.name, root_path(request.parameters.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => true, :parent_shape_clickable => type.is_root?})), :title => type.name %>
+						<% else %>
+							<%= type.name %>
+						<% end %>
+					</li>
+				<% end %>
 			<% end %>
 		<% end %>
-	<% end %>
-</ul>
+	</ul>
+
 </section>
+
+
 
 <%= form_tag "/export.svg", :method => :post, :id => "hidden_form" do %>
 	<%=	hidden_field_tag "hidden_form_parent_layer" %>

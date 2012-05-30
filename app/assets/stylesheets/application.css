@@ -9,6 +9,17 @@
  *= require_tree . 
 */
 
+/* clear floats */
+.clearfix:after, .clear:after {
+    visibility: hidden;
+    display: block;
+    content: "";
+    clear: both;
+    height: 0;
+}
+* html .clearfix, * html .clear	{ zoom: 1; } /* IE6 */
+*:first-child+html .clearfix, *:first-child+html .clear { zoom: 1; } /* IE7 */
+
 /* Multi language tabs*/
 
 ul.select-form-language { 
