@@ -1,9 +1,13 @@
 class Datum < ActiveRecord::Base
+  translates :common_id, :common_name
+
   belongs_to :indicator
+  has_many :datum_translations, :dependent => :destroy
+  accepts_nested_attributes_for :datum_translations
 
-  attr_accessible :indicator_id, :common_id, :common_name, :value
+  attr_accessible :indicator_id, :value, :datum_translations_attributes
 
-  validates :indicator_id, :common_id, :common_name, :value, :presence => true
+  validates :indicator_id, :value, :presence => true
 
 
 	# get the data value for a specific shape
@@ -12,10 +16,11 @@ class Datum < ActiveRecord::Base
 			return nil		
 		else
 			sql = "SELECT d.id, d.value, i.number_format FROM data as d "
+			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "left join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "left join shape_translations as st on s.id = st.shape_id and d.common_id = st.common_id and d.common_name = st.common_name "
-			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND st.locale = :locale"
+			sql << "left join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
+			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND dt.locale = :locale AND st.locale = :locale"
 	
 			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id, :locale => I18n.locale])
 		end
@@ -87,9 +92,12 @@ class Datum < ActiveRecord::Base
 									else
 					logger.debug "++++indicator found, checking if data exists"
 										# check if data already exists
-										alreadyExists = Datum.where(:indicator_id => indicator.first.id, 
-											:common_id => row[2].nil? ? row[2] : row[2].strip, 
-											:common_name => row[3].nil? ? row[3] : row[3].strip)
+										alreadyExists = Datum.joins(:datum_translations)
+											.where(:data => {:indicator_id => indicator.first.id}, 
+												:datum_translations => {
+													:locale => 'en',
+													:common_id => row[2].nil? ? row[2] : row[2].strip, 
+													:common_name => row[3].nil? ? row[3] : row[3].strip})
 					
 				            # if the datum already exists and deleteExistingRecord is true, delete the datum
 				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -105,9 +113,15 @@ class Datum < ActiveRecord::Base
 											# populate record
 											datum = Datum.new
 											datum.indicator_id = indicator.first.id
-											datum.common_id = row[2].nil? ? row[2] : row[2].strip
-											datum.common_name = row[3].nil? ? row[3] : row[3].strip
 											datum.value = row[i+1].nil? ? row[i+1] : row[i+1].strip
+
+											# add translations
+											I18n.available_locales.each do |locale|
+												datum.datum_translations.build(:locale => locale, 
+													:common_id => row[2].nil? ? row[2] : row[2].strip, 
+													:common_name => row[3].nil? ? row[3] : row[3].strip)
+											end
+
 
 				logger.debug "++++saving record"
 											if datum.valid?
@@ -159,15 +173,15 @@ logger.debug "no shapes were found"
 				# get the data for the provided parameters
 				if indicator_id.nil?
 					# get data for all indicators
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, :data)
-		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and data.common_id in (:common_ids) and data.common_name in (:common_names)", 
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:data => :datum_translations})
+		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
 		          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale, 
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")
 				else
 					# get data for provided indicator
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, :data)
-		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and data.common_id in (:common_ids) and data.common_name in (:common_names)", 
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:data => :datum_translations})
+		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
 		          :indicator_id => indicator_id, :locale => I18n.locale, 
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")

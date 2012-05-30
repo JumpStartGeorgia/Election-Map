@@ -11,20 +11,32 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120530070910) do
+ActiveRecord::Schema.define(:version => 20120530110736) do
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
-    t.string   "common_id"
+    t.string   "common_id_old"
     t.text     "value"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "common_name"
+    t.string   "common_name_old"
   end
 
-  add_index "data", ["common_id"], :name => "index_data_on_common_id"
-  add_index "data", ["common_name"], :name => "index_data_on_common_name"
   add_index "data", ["indicator_id"], :name => "index_data_on_indicator_id"
+
+  create_table "datum_translations", :force => true do |t|
+    t.integer  "datum_id"
+    t.string   "locale"
+    t.string   "common_id"
+    t.string   "common_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "datum_translations", ["common_id"], :name => "index_datum_translations_on_common_id"
+  add_index "datum_translations", ["common_name"], :name => "index_datum_translations_on_common_name"
+  add_index "datum_translations", ["datum_id"], :name => "index_datum_translations_on_datum_id"
+  add_index "datum_translations", ["locale"], :name => "index_datum_translations_on_locale"
 
   create_table "event_translations", :force => true do |t|
     t.integer  "event_id"

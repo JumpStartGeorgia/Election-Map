@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class RootController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :download]
 #	caches_action :shape, :children_shapes, :layout => false, :cache_path => Proc.new { |c| c.params }
@@ -154,11 +156,14 @@ class RootController < ApplicationController
 			if !data.nil && !data.csv_data.nil?
 				# create file name using event name and map title that were passed in
 				if params[:event_name].nil? || params[:map_title].nil?
-			    filename = "data"
+			    filename = "data_download"
 				else
 			    filename = params[:map_title].gsub(' ', '_')
 					filename << "-"
 					filename << params[:event_name].gsub(' ', '_')
+
+					#remove bad characters
+					filename.gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
 				end
 		    # send the file
 		    send_data data.csv_data,
