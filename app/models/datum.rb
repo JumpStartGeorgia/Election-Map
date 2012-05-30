@@ -13,10 +13,11 @@ class Datum < ActiveRecord::Base
 		else
 			sql = "SELECT d.id, d.value, i.number_format FROM data as d "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
-			sql << "left join shapes as s on d.common_id = s.common_id and d.common_name = s.common_name and i.shape_type_id = s.shape_type_id "
-			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id"
+			sql << "left join shapes as s on i.shape_type_id = s.shape_type_id "
+			sql << "left join shape_translations as st on s.id = st.shape_id and d.common_id = st.common_id and d.common_name = st.common_name "
+			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND st.locale = :locale"
 	
-			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id])
+			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id, :locale => I18n.locale])
 		end
 	end
 
