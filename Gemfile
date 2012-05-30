@@ -21,11 +21,14 @@ gem 'ancestry', '1.2.5' # control parent/child relationships with shapes
 gem 'unicorn', '4.2.1' # http server
 gem 'nokogiri', '1.5.2' # xml parser
 gem 'exception_notification', '2.5.2' # send an email when exception occurs
-gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
 gem 'capistrano'
 gem 'therubyracer'
 gem 'fancybox-rails', '~> 0.1.4' # to open pop-up windows
 gem "i18n-js", "~> 2.1.2" # to show translations in javascript
+
+group :development do
+	gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
+end
 
 # for debugging
 # to get debugging to work, follow directions at:
