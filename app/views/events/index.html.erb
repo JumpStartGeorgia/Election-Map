@@ -8,22 +8,21 @@
     <th><%= t('app.common.parent_shape') %></th>
     <th></th>
     <th></th>
-    <th></th>
   </tr>
 
 <% @events.each do |event| %>
   <tr>
-    <td><%= event.name %></td>
+    <td><%= link_to event.name, event %></td>
     <td><%= event.event_type.name %></td>
     <td><%= event.event_date %></td>
     <td><%= event.shape_id %></td>
-    <td><%= link_to t('app.buttons.show'), event %></td>
     <td><%= link_to t('app.buttons.edit'), edit_event_path(event) %></td>
     <td><%= link_to t('app.buttons.delete'), event, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>
 
-<br />
-
-<%= link_to t('app.buttons.new_events'), new_event_path %>
+<div class="admin_nav">
+	<%= link_to t('app.buttons.new_events'), new_event_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>

@@ -68,3 +68,34 @@ abbr {
 	font-size:125%;
 }
 
+/* admin section navigation */
+div.admin_nav {
+	padding: 0.5em;
+	background-color: #aaa;
+	margin-top: 1em;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+div.admin_nav a, div.admin_nav a:visited {
+	padding 0.5em;
+	color: #333;
+	background-color: #eee;
+	border: solid 2px #333;
+	text-decoration: none;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+div.admin_nav a:hover {
+	padding 0.5em;
+	color: #222 !important;
+	background-color: #ddd;
+	border: solid 2px #222;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+

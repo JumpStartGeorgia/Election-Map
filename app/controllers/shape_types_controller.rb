@@ -48,14 +48,23 @@ class ShapeTypesController < ApplicationController
   def create
     @shape_type = ShapeType.new(params[:shape_type])
 
+		# get the parent shape type
+		parent = ShapeType.find(params[:parent_shape])
+
     respond_to do |format|
-      if @shape_type.save
-        format.html { redirect_to @shape_type, notice: 'Shape type was successfully created.' }
-        format.json { render json: @shape_type, status: :created, location: @shape_type }
-      else
+			if parent.nil?
         format.html { render action: "new" }
         format.json { render json: @shape_type.errors, status: :unprocessable_entity }
-      end
+			else
+				# add the new shape type to the parent
+		    if parent.children.create(params[:shape_type])
+		      format.html { redirect_to @shape_type, notice: 'Shape type was successfully created.' }
+		      format.json { render json: @shape_type, status: :created, location: @shape_type }
+		    else
+		      format.html { render action: "new" }
+		      format.json { render json: @shape_type.errors, status: :unprocessable_entity }
+		    end
+	    end
     end
   end
 
@@ -64,14 +73,33 @@ class ShapeTypesController < ApplicationController
   def update
     @shape_type = ShapeType.find(params[:id])
 
+		# get the parent shape type
+		parent = ShapeType.find(params[:parent_shape])
+
     respond_to do |format|
-      if @shape_type.update_attributes(params[:shape_type])
-        format.html { redirect_to @shape_type, notice: 'Shape type was successfully updated.' }
-        format.json { head :ok }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @shape_type.errors, status: :unprocessable_entity }
-      end
+			if parent.nil?
+	      format.html { render action: "edit" }
+	      format.json { render json: @shape_type.errors, status: :unprocessable_entity }
+			else
+				# see if the parent shape changed
+				anc_ary = @shape_type.ancestry.split("/")
+				if (anc_ary.length == 1 && parent.id.to_s == anc_ary[0]) || parent.id.to_s == anc_ary[anc_ary.length-1]
+					# parent shape did not change, do nothing
+				else
+					# parent shape did change.  update the ancestry value
+					new_anc = parent.ancestor_ids.join("/")
+					new_anc += "/" + parent.id.to_s
+					params[:shape_type][:ancestry] = new_anc
+				end
+
+		    if @shape_type.update_attributes(params[:shape_type])
+		      format.html { redirect_to @shape_type, notice: 'Shape type was successfully updated.' }
+		      format.json { head :ok }
+		    else
+		      format.html { render action: "edit" }
+		      format.json { render json: @shape_type.errors, status: :unprocessable_entity }
+		    end
+	    end
     end
   end
 

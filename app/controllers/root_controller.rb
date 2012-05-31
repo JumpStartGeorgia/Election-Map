@@ -39,7 +39,7 @@ class RootController < ApplicationController
 						@child_shape_type_id = child_shape_type.id
 						# set the map title
 						# format = parent shape type shape name
-						@map_title = parent_shape_type.name + " " + @shape.common_name
+						@map_title = parent_shape_type.name_singular + ": " + @shape.common_name
 					elsif !parent_shape_type.nil? && parent_shape_type.has_children?
 				    logger.debug("parent shape type is not root or it should not be clickable")
 					  # this is not the root, so reset parent shape clickable
@@ -49,7 +49,7 @@ class RootController < ApplicationController
 						@child_shape_type_id = child_shape_type.id
 						# set the map title
 						# format = children shape types of parent shape type
-						@map_title = child_shape_type.name.pluralize + " of " + parent_shape_type.name + " " + @shape.common_name
+						@map_title = parent_shape_type.name_singular + ": " + @shape.common_name + " - " + child_shape_type.name_plural
 					end
 
 					# get the indicators for the children shape_type

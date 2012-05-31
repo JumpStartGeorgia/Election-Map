@@ -89,6 +89,8 @@ ka:
       common_name: Common Name
       value: Value
       name: Name
+      name_singular: Singular Name
+      name_plural: Plural Name
       title: Title
       description: Description
       event: Event

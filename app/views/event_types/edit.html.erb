@@ -2,5 +2,9 @@
 
 <%= render 'form' %>
 
-<%= link_to t('app.buttons.show'), @event_type %> |
-<%= link_to t('app.buttons.list'), event_types_path %>
+<div class="admin_nav">
+	<%= link_to t('app.buttons.show'), @event_type %>
+	<%= link_to t('app.buttons.list'), event_types_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>
+

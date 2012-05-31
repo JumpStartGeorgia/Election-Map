@@ -6,10 +6,22 @@
 		<div id="form-<%= formLocale %>" class="multilanguage">
 			<h3><%= @locales[i-1].name %></h3>
 
-			<%= shape_type_translation.input :name %>
+			<%= shape_type_translation.input :name_singular %>
+			<%= shape_type_translation.input :name_plural %>
 			<%= shape_type_translation.hidden_field :locale , :value => formLocale %>
 		</div>
 
+	<% end %>
+
+	<fieldset class="inputs"><ol>
+<li class="string input required stringish">
+  <%= label_tag "parent_shape", t("app.common.parent_shape"), :class => "label" %>
+  <%= select_tag "parent_shape", options_from_collection_for_select(@shape_types, "id", "name_singular", @shape_type.parent_id) %>
+</li>
+</ol></fieldset>
+
+	<%= f.inputs do %>
+		<%= f.hidden_field :ancestry %>
 	<% end %>
 
 	<%= f.actions :submit, :reset, :cancel %>

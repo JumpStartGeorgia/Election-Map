@@ -10,6 +10,10 @@
   <%= @locale.name %>
 </p>
 
+<div class="admin_nav">
+	<%= link_to t('app.buttons.edit'), edit_locale_path(@locale) %>
+	<%= link_to t('app.buttons.list'), locales_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>
 
-<%= link_to t('app.buttons.edit'), edit_locale_path(@locale) %> |
-<%= link_to t('app.buttons.list'), locales_path %>
+

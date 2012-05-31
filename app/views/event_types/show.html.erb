@@ -5,6 +5,9 @@
   <%= @event_type.name %>
 </p>
 
+<div class="admin_nav">
+	<%= link_to t('app.buttons.edit'), edit_event_type_path(@event_type) %>
+	<%= link_to t('app.buttons.list'), event_types_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>
 
-<%= link_to t('app.buttons.edit'), edit_event_type_path(@event_type) %> |
-<%= link_to t('app.buttons.list'), event_types_path %>

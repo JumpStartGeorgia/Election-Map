@@ -2,5 +2,9 @@
 
 <%= render 'form' %>
 
-<%= link_to t('app.buttons.show'), @locale %> |
-<%= link_to t('app.buttons.list'), locales_path %>
+<div class="admin_nav">
+	<%= link_to t('app.buttons.show'), @locale %>
+	<%= link_to t('app.buttons.list'), locales_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>
+

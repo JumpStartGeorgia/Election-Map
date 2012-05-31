@@ -20,6 +20,8 @@
 <% end %>
 </table>
 
-<br />
+<div class="admin_nav">
+	<%= link_to t('app.buttons.new_locales'), new_locale_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>
 
-<%= link_to t('app.buttons.new_locales'), new_locale_path %>

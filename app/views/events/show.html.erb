@@ -24,6 +24,10 @@
   <%= @event.shape_id %>
 </p>
 
+<div class="admin_nav">
+	<%= link_to t('app.buttons.edit'), edit_event_path(@event) %>
+	<%= link_to t('app.buttons.list'), events_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>
 
-<%= link_to t('app.buttons.edit'), edit_event_path(@event) %> |
-<%= link_to t('app.buttons.list'), events_path %>
+

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120530110736) do
+ActiveRecord::Schema.define(:version => 20120531062834) do
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
@@ -193,13 +193,15 @@ ActiveRecord::Schema.define(:version => 20120530110736) do
   create_table "shape_type_translations", :force => true do |t|
     t.integer  "shape_type_id"
     t.string   "locale"
-    t.string   "name"
+    t.string   "name_singular"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "name_plural"
   end
 
   add_index "shape_type_translations", ["locale"], :name => "index_shape_type_translations_on_locale"
-  add_index "shape_type_translations", ["name"], :name => "index_shape_type_translations_on_name"
+  add_index "shape_type_translations", ["name_plural"], :name => "index_shape_type_translations_on_name_plural"
+  add_index "shape_type_translations", ["name_singular"], :name => "index_shape_type_translations_on_name_singular"
   add_index "shape_type_translations", ["shape_type_id"], :name => "index_shape_type_translations_on_shape_type_id"
 
   create_table "shape_types", :force => true do |t|

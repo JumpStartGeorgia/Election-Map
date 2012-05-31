@@ -59,9 +59,9 @@
 				<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
 					<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
 						<% if type.has_children? %>
-							<%= link_to type.name, root_path(request.parameters.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => true, :parent_shape_clickable => type.is_root?})), :title => type.name %>
+							<%= link_to type.name_plural, root_path(request.parameters.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => true, :parent_shape_clickable => type.is_root?})), :title => type.name_plural %>
 						<% else %>
-							<%= type.name %>
+							<%= type.name_plural %>
 						<% end %>
 					</li>
 				<% end %>
