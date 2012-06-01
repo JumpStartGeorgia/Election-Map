@@ -45,7 +45,8 @@ class RootController < ApplicationController
 					  # this is not the root, so reset parent shape clickable
 					  params[:parent_shape_clickable] = false
 						# found child, save id
-						child_shape_type = get_child_shape_type(params[:shape_type_id])
+#						child_shape_type = get_child_shape_type(params[:shape_type_id])
+						child_shape_type = get_child_shape_type(@shape)
 						@child_shape_type_id = child_shape_type.id
 						# set the map title
 						# format = children shape types of parent shape type
@@ -256,8 +257,22 @@ logger.debug " - event id provided"
 		end
 	end
 
+	# get the child shape type of the current shape
+	def get_child_shape_type(shape)
+		if shape.nil?
+      return nil
+    else
+      if shape.has_children?
+        # shape has children, get the shape type of children
+        return shape.children.first.shape_type
+      else
+        return nil
+      end
+		end
+	end
+
 	# get the child shape type
-	def get_child_shape_type(parent_shape_type_id)
+	def get_child_shape_type_old(parent_shape_type_id)
 		if @shape_types.nil? || @shape_types.length == 0 || parent_shape_type_id.nil?
       return nil
     else

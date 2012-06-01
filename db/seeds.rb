@@ -29,12 +29,12 @@ st.shape_type_translations.create(:locale=>"en", :name_singular=>"District", :na
 st = ShapeType.create(:id => 4, :ancestry => '1/2/3')
 st.shape_type_translations.create(:locale=>"ka", :name_singular=>"საუბნო", :name_plural=>"საუბნოები")
 st.shape_type_translations.create(:locale=>"en", :name_singular=>"Precinct", :name_plural=>"Precincts")
-st = ShapeType.create(:id => 5, :ancestry => '1/2')
+st = ShapeType.create(:id => 5, :ancestry => '1/2/3')
 st.shape_type_translations.create(:locale=>"ka", :name_singular=>"მაჟორიტარიული ოლქი", :name_plural=>"მაჟორიტარიული ოლქები")
 st.shape_type_translations.create(:locale=>"en", :name_singular=>"Majoritarian District", :name_plural=>"Majoritarian Districts")
-st = ShapeType.create(:id => 6, :ancestry => '1/2/5')
-st.shape_type_translations.create(:locale=>"ka", :name_singular=>"საუბნო", :name_plural=>"საუბნოები")
-st.shape_type_translations.create(:locale=>"en", :name_singular=>"Precinct", :name_plural=>"Precincts")
+st = ShapeType.create(:id => 6, :ancestry => '1/2/3/5')
+st.shape_type_translations.create(:locale=>"ka", :name_singular=>"მაჟორიტარიული საუბნო", :name_plural=>"მაჟორიტარიული საუბნოები")
+st.shape_type_translations.create(:locale=>"en", :name_singular=>"Majoritarian Precinct", :name_plural=>"Majoritarian Precincts")
 
 
 

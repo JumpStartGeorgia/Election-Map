@@ -1,6 +1,7 @@
 class ShapesController < ApplicationController
   require 'csv'
   before_filter :authenticate_user!
+	cache_sweeper :shape_type_sweeper, :only => [:upload]
 
 
   # GET /shapes/upload
@@ -13,6 +14,8 @@ class ShapesController < ApplicationController
 		      msg = Shape.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 		      if msg.nil? || msg.length == 0
 		        # no errors, success!
+            # clear the cache
+            Rails.cache.clear
 						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to upload_shapes_path #GET
 		      else
