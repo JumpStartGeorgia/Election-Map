@@ -29,8 +29,9 @@ class Event < ActiveRecord::Base
     end
   end
 
-  def self.get_all_events
+  def self.get_all_events(locale = I18n.locale)
     includes(:event_translations)
+			.where(["event_translations.locale = ?", locale])
   		.order("event_type_id ASC, event_date DESC, event_translations.name ASC")
   end
 end

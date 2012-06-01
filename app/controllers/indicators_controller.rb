@@ -87,7 +87,8 @@ class IndicatorsController < ApplicationController
   # GET /indicators/download
   # GET /indicators/download.json
   def download
-    @events = Event.get_all_events
+		# must get event names in english for cannot have georgian letters in file name
+    @events = Event.get_all_events("en")
     
 		if request.post?
       event = nil
@@ -130,7 +131,8 @@ logger.debug "msg = #{obj.msg}"
   	      redirect_to download_indicators_path #GET
         else
           # send the file
-          filename << event.name.gsub(' ', '_')
+					# make sure we get the english file name
+          filename << event.event_translations[0].name.gsub(' ', '_')
 					#remove bad characters
 					filename.gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
           send_data obj.csv_data,

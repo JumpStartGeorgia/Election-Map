@@ -144,15 +144,23 @@ logger.debug "+++++++++ no events exist for this event type"
   # POST /export
 	# generate the svg file
   def export
-		# create the file name: map title - indicator - event
-		filename = params[:hidden_form_map_title].gsub(' ', '_')
-		filename << "-"
-		filename << params[:hidden_form_indicator_name_abbrv].gsub(' ', '_')
-		filename << "-"
-		filename << params[:hidden_form_event_name].gsub(' ', '_')
+		# cannot use georgian characters in file name
+		if I18n.locale.to_s == "ka"
+	    filename = "election_map_svg-#{Time.now}".gsub(' ', '_')
+		else
+			# create the file name: map title - indicator - event
+			filename = params[:hidden_form_map_title]
+			filename << "-"
+			filename << params[:hidden_form_indicator_name_abbrv]
+			filename << "-"
+			filename << params[:hidden_form_event_name]
 
-		headers['Content-Type'] = "image/svg+xml" 
-    headers['Content-Disposition'] = "attachment; filename=\"#{filename}.svg\"" 
+			#remove bad characters
+			filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
+		end
+
+		headers['Content-Type'] = "image/svg+xml; charset=utf-8" 
+    headers['Content-Disposition'] = "attachment; filename=#{filename}.svg" 
   end
 
   # GET /indicators/download
@@ -164,15 +172,16 @@ logger.debug "+++++++++ no events exist for this event type"
 
 			if !data.nil && !data.csv_data.nil?
 				# create file name using event name and map title that were passed in
-				if params[:event_name].nil? || params[:map_title].nil?
-			    filename = "data_download"
+				# cannot use georgian characters in file name
+				if I18n.locale.to_s == "ka" || params[:event_name].nil? || params[:map_title].nil?
+			    filename = "election_map_data-#{Time.now}".gsub(' ', '_')
 				else
-			    filename = params[:map_title].gsub(' ', '_')
+			    filename = params[:map_title]
 					filename << "-"
-					filename << params[:event_name].gsub(' ', '_')
+					filename << params[:event_name]
 
 					#remove bad characters
-					filename.gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
+					filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
 				end
 		    # send the file
 		    send_data data.csv_data,
