@@ -83,7 +83,7 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
   				# get the event id
   				event = Event.find_by_name(row[0].strip)
   				# get the shape type id
-  				shape_type = ShapeType.find_by_name(row[1].strip)
+  				shape_type = ShapeType.find_by_name_singular(row[1].strip)
 
   				if event.nil? || shape_type.nil?
   	logger.debug "+++ event or shape type was not found"				
@@ -191,7 +191,7 @@ logger.debug "getting all indicator info"
       indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_scales => :indicator_scale_translations})
         .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
           :event_id => event_id, :locale => "en")
-        .order("shape_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
+        .order("shape_type_translations.name_singular ASC, indicators.id ASC, indicator_scales.id ASC")
 
       if indicators.nil? || indicators.length == 0
 logger.debug "no indicators found"
@@ -216,7 +216,7 @@ logger.debug "no shape type translation found"
 						obj.msg = I18n.t('models.indicator_scale.msgs.no_shpae_type_trans')
             return obj
           else
-            row << ind.shape_type.shape_type_translations[0].name
+            row << ind.shape_type.shape_type_translations[0].name_singular
           end
           # get en
           ind.indicator_translations.each do |trans|

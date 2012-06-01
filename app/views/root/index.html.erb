@@ -3,7 +3,7 @@
 <% if !@indicators.nil? && @indicators.length > 0 %>
 	<ul id="indicators" class="group">
 		<% @indicators.each do |indicator| %>
-			<% is_active = indicator.id.to_s == params[:indicator_id] ? "active" : "not_active" %>
+			<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
 			<li>
 				<%= link_to indicator.name_abbrv, root_path(request.parameters.merge({:indicator_id => indicator.id})), 
 					:title => indicator.name, :class => is_active %>
@@ -16,7 +16,7 @@
 	<ul id="events" class="group">
 		<% @events.each_with_index do |event, i| %>
 			<% if !event.shape_id.nil? 
-				 is_active = event.id.to_s == params[:event_id] ? "active" : "not_active" %>
+				 is_active = event.id.to_s == params[:event_id].to_s ? "active" : "not_active" %>
 				<li id="<%= event.name.gsub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.length-1%>class="last"<% end %> >
 					<%= link_to event.name, root_path({
 						:event_id => event.id, :event_type_id => event.event_type_id, 

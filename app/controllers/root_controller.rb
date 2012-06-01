@@ -57,9 +57,17 @@ class RootController < ApplicationController
 						@indicators = Indicator.find_by_event_shape_type(params[:event_id],@child_shape_type_id)
 					end
 
-					# get the indicator
-					# if the shape type changed, update the indicator_id to be valid for the new shape_type
-					if !params[:indicator_id].nil?
+					if @indicators.nil? || @indicators.empty?
+						# no indicators exist for this event and shape type
+logger.debug "+++++++++ no indicators exist for this event and shape type"
+					else
+						# if an indicator is not selected, select the first one in the list
+						if params[:indicator_id].nil?
+							params[:indicator_id] = @indicators[0].id
+						end
+
+						# get the indicator
+						# if the shape type changed, update the indicator_id to be valid for the new shape_type
 						if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
 
 							# we know the old indicator id and the new shape type
@@ -88,7 +96,8 @@ class RootController < ApplicationController
       set_gon_variables
 
     else
-
+			# no events exist for this event type
+logger.debug "+++++++++ no events exist for this event type"
     end
 
 		render :layout => 'map'
@@ -209,7 +218,7 @@ logger.debug " - event id not provided, looking for first event"
         if !e.shape_id.nil?
 logger.debug " - found event, saving id"
         	# - save event_id 
-          params[:event_id] = e.id.to_s
+          params[:event_id] = e.id
           return e
         end
       end

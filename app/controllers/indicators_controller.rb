@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class IndicatorsController < ApplicationController
 	require 'csv'
   before_filter :authenticate_user!
@@ -129,6 +131,8 @@ logger.debug "msg = #{obj.msg}"
         else
           # send the file
           filename << event.name.gsub(' ', '_')
+					#remove bad characters
+					filename.gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
           send_data obj.csv_data,
             :type => 'text/csv; charset=utf-8; header=present',
             :disposition => "attachment; filename=#{filename}.csv"

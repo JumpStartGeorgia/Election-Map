@@ -99,7 +99,7 @@ class Shape < ActiveRecord::Base
 		    		# get the event id
 		    		event = Event.find_by_name(row[0].strip)
 		    		# get the shape type id
-		    		shape_type = ShapeType.find_by_name(row[1].strip)
+		    		shape_type = ShapeType.find_by_name_singular(row[1].strip)
 
 		    		if event.nil? || shape_type.nil?
 		  logger.debug "++++event or shape type was not found"		
