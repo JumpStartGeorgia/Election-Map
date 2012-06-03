@@ -6,3 +6,5 @@ update data set common_name = 'Racha-Lechkhumi and Kvemo Svaneti' where common_n
 update data set common_name = 'Samtskhe-Javakheti' where common_name = 'Samckhe-Djavakheti';
 
 update shapes set common_name = 'Zestaponi' where common_name = 'Zastaponi';
+
+update shape_translations set common_name = 'Tsalenjikha' where common_name = 'Tsalendjikha';

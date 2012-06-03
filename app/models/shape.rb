@@ -75,7 +75,7 @@ class Shape < ActiveRecord::Base
 	end
 
     def self.csv_header
-      "Event, Shape Type, Parent ID, Common ID, Common Name, Geometry".split(",")
+      "Event, Shape Type, Parent ID, Parent Name, Common ID, Common Name, Geometry".split(",")
     end
 
     def self.build_from_csv(file, deleteExistingRecord)
@@ -109,7 +109,8 @@ class Shape < ActiveRecord::Base
 		    		else
 		  logger.debug "++++found event and shape type, get root shape"
 		          # get the root shape
-		          root = Shape.joins(:shape_translations).where(:shapes => {:id => event.shape_id}, :shape_translations => {:locale => 'en'}).first
+		          root = Shape.joins(:shape_translations)
+		                  .where(:shapes => {:id => event.shape_id}, :shape_translations => {:locale => 'en'}).first
 		      
 		          # if the root shape already exists and deleteExistingRecord is true, delete the shape
 							#  if this is the root record (row[2] is nil)
@@ -124,10 +125,10 @@ class Shape < ActiveRecord::Base
 		            if row[2].nil? || row[2].strip.length == 0
 		              # no root exists in db, but this is the root, so add it
 		  logger.debug "++++adding root shape"
-                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[5].strip
+                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[6].strip
 									# add translations
 									I18n.available_locales.each do |locale|
-										shape.shape_translations.create(:locale => locale, :common_id => row[3].strip, :common_name => row[4].strip)
+										shape.shape_translations.create(:locale => locale, :common_id => row[4].strip, :common_name => row[5].strip)
 									end
 
 		              if shape.valid?
@@ -159,7 +160,7 @@ class Shape < ActiveRecord::Base
 		    logger.debug "++++root already exists"
 		            # found root, continue
 	              # only conintue if all values are present
-	              if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil?
+	              if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil?
 	          		  msg = I18n.t('models.shape.msgs.missing_data_spreadsheet', :row_num => n)
 	    logger.debug "++++**missing data in row"
 	                raise ActiveRecord::Rollback
@@ -167,14 +168,16 @@ class Shape < ActiveRecord::Base
 			          else
 			            # if this is row 2, see if this row is also a root and the same
 				          if n==2 && row[2].nil? && root.shape_type_id == shape_type.id && 
-											root.common_id == row[3].strip && root.common_name == row[4].strip
+											root.common_id == row[4].strip && root.common_name == row[5].strip
 				      		  msg = I18n.t('models.shape.msgs.root_already_exists', :row_num => n)
 				  logger.debug "++++**root record already exists!"
 				            raise ActiveRecord::Rollback
 				            return msg
 		              else
 		    logger.debug "++++chekcing if row already in db"
-		                alreadyExists = root.descendants.joins(:shape_translations).where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[5].strip}, :shape_translations => {:locale => 'en', :common_id => row[3].strip, :common_name => row[4].strip})
+		                alreadyExists = root.descendants.joins(:shape_translations)
+		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[6].strip}, 
+		                    :shape_translations => {:locale => 'en', :common_id => row[4].strip, :common_name => row[5].strip})
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
 		                if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -200,9 +203,12 @@ class Shape < ActiveRecord::Base
 		      logger.debug "++++getting parent shape"
 		                    # check if the root has descendants
 		                    # have to check the root object by iteself and then check for through the descendants
-		                    parentRoot = root.shape_type_id == parent_shape_type.id && root.common_id == row[2].strip ? root : nil
+		                    parentRoot = root.shape_type_id == parent_shape_type.id && 
+		                      root.common_id == row[2].strip && root.common_name == row[3].strip ? root : nil
 		                    if root.has_children?
-		                      parentChild = root.descendants.joins(:shape_translations).where(:shapes => {:shape_type_id => parent_shape_type.id}, :shape_translations => {:locale => 'en', :common_id => row[2].strip})
+		                      parentChild = root.descendants.joins(:shape_translations)
+		                        .where(:shapes => {:shape_type_id => parent_shape_type.id}, 
+		                        :shape_translations => {:locale => 'en', :common_id => row[2].strip, :common_name => row[3].strip})
 		                    end
 		                
 		                    # see if a parent node was found
@@ -227,10 +233,10 @@ class Shape < ActiveRecord::Base
 		                    else
 		                      # found parent, add child
 		      logger.debug "++++found parent, saving this row"
-		                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[5].strip
+		                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[6].strip
 													# add translations
 													I18n.available_locales.each do |locale|
-														shape.shape_translations.create(:locale => locale, :common_id => row[3].strip, :common_name => row[4].strip)
+														shape.shape_translations.create(:locale => locale, :common_id => row[4].strip, :common_name => row[5].strip)
 													end
 
 		                      if !shape.valid?

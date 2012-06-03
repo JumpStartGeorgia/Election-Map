@@ -73,13 +73,14 @@ div.admin_nav {
 	padding: 1em;
 	background-color: #aaa;
 	margin-top: 1em;
+	font-size: 10pt;
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
 }
 
 div.admin_nav a, div.admin_nav a:visited {
-	padding: 0.5em;
+	padding: 0.3em;
 	color: #333;
 	background-color: #eee;
 	border: solid 2px #333;
@@ -90,7 +91,7 @@ div.admin_nav a, div.admin_nav a:visited {
 }
 
 div.admin_nav a:hover {
-	padding: 0.5em;
+	padding: 0.3em;
 	color: #222 !important;
 	background-color: #ddd;
 	border: solid 2px #222;

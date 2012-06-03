@@ -75,12 +75,12 @@ ka:
       delete_confirm: "Are you sure?"
       upload:
         no_file: You must select a file to upload.
-        success: Your file '%{file_name}' was successfully processed!
+        success: "Your file '%{file_name}' was successfully processed!"
         error: "Errors were encountered with '%{file_name}' and no records were saved.  The problem was the following: %{msg}"
-        wrong_format: Your file '%{file_name}' must be a CSV or tab-delimited txt format.
+        wrong_format: "Your file '%{file_name}' must be a CSV or tab-delimited txt format."
       download:
         unknow_event: The selected event could not be found.
-        no_records: No Indicator data was found for the event '%{event_name}'.
+        no_records: "No Indicator data was found for the event '%{event_name}'."
         error: "Errors were encountered creating the download file for the event '%{event_name}'.  The problem was the following: %{msg}"
     common:
       important: Important
