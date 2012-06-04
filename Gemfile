@@ -19,10 +19,10 @@ gem 'gon', '2.2.2' # push data into js
 gem 'dynamic_form', '1.1.4' # to see form error messages
 gem 'ancestry', '1.2.5' # control parent/child relationships with shapes
 gem 'unicorn', '4.2.1' # http server
-gem 'rvm-capistrano'
 gem 'nokogiri', '1.5.2' # xml parser
 gem 'exception_notification', '2.5.2' # send an email when exception occurs
 gem 'capistrano'
+gem 'rvm-capistrano'
 gem 'therubyracer'
 gem 'fancybox-rails', '~> 0.1.4' # to open pop-up windows
 gem "i18n-js", "~> 2.1.2" # to show translations in javascript
