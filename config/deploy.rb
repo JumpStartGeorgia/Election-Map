@@ -1,10 +1,10 @@
 require "bundler/capistrano"
 
-server "deda.jumpstart.ge", :web, :app, :db, primary: true
+server "alpha.jumpstart.ge", :web, :app, :db, primary: true
 
 set :application, "Election-Map"
-set :user, "deployer"
-set :deploy_to, "/home/#{user}/apps/#{application}"
+set :user, "electiondata"
+set :deploy_to, "/home/#{user}/#{application}"
 set :deploy_via, :remote_cache
 set :use_sudo, false
 

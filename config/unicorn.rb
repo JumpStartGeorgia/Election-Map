@@ -1,4 +1,4 @@
-root = "/home/deployer/apps/Election-Map/current"
+root = "/home/electiondata/Election-Map/current"
 working_directory root
 pid "#{root}/tmp/pids/unicorn.pid"
 stderr_path "#{root}/log/unicorn.log"
