@@ -117,6 +117,7 @@ class Datum < ActiveRecord::Base
 
 											# add translations
 											I18n.available_locales.each do |locale|
+			logger.debug "++++ - adding translations for #{locale}"
 												datum.datum_translations.build(:locale => locale, 
 													:common_id => row[2].nil? ? row[2] : row[2].strip, 
 													:common_name => row[3].nil? ? row[3] : row[3].strip)
