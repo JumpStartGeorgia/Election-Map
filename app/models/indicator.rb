@@ -266,7 +266,7 @@ class Indicator < ActiveRecord::Base
 	  				    end
 							else
 				logger.debug "++++**record does not exist!"
-								msg = I18n.t('models.indicator.msgs.already_exists', :row_num => n)
+								msg = I18n.t('models.indicator.msgs.indicator_not_found', :row_num => n)
 					      raise ActiveRecord::Rollback
 					      return msg
 							end
