@@ -56,7 +56,7 @@ function map_init(){
 
   map = new OpenLayers.Map('map', options);
 
-	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true});
+//	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true});
 
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
 //  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
