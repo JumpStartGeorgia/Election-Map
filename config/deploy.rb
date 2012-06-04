@@ -1,5 +1,9 @@
 require "bundler/capistrano"
 
+set :rvm_ruby_string, ENV['GEM_HOME'].gsub(/.*\//,"") # Read from local system
+
+require "rvm/capistrano"                               # Load RVM's capistrano plugin.
+
 server "alpha.jumpstart.ge", :web, :app, :db, primary: true
 
 set :application, "Election-Map"
