@@ -21,11 +21,16 @@ class Event < ActiveRecord::Base
     if event_type_id.nil?
       return nil
     else
+=begin
 			Rails.cache.fetch("events_by_type_#{event_type_id}") {
 				includes(:event_translations)
 				.where(:event_type_id => event_type_id)
 				.order("event_date DESC, event_translations.name ASC")
 			}
+=end			
+      includes(:event_translations)
+      .where(:event_type_id => event_type_id)
+      .order("event_date DESC, event_translations.name ASC")
     end
   end
 

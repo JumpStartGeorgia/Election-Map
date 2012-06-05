@@ -107,11 +107,17 @@ logger.debug "+++++++++ no events exist for this event type"
   # GET /events/shape/:id
   # GET /events/shape/:id.json
   def shape
+=begin
 		geometries = Rails.cache.fetch("shape_json_#{I18n.locale}_#{params[:id]}") {
 			#get the parent shape
 			shape = Shape.where(:id => params[:id])
 			Shape.build_json(shape)
 		}
+=end
+    #get the parent shape
+    shape = Shape.where(:id => params[:id])
+    geometries = Shape.build_json(shape)
+
     respond_to do |format|
       format.json { render json: geometries }
     end
@@ -120,6 +126,7 @@ logger.debug "+++++++++ no events exist for this event type"
   # GET /events/children_shapes/:parent_id
   # GET /events/children_shapes/:parent_id.json
   def children_shapes
+=begin
 		geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
 			geo = ''
 			#get the parent shape
@@ -137,6 +144,21 @@ logger.debug "+++++++++ no events exist for this event type"
 
 			geo
 		}
+=end
+    geometries = nil
+    #get the parent shape
+    shape = Shape.where(:id => params[:parent_id])
+
+    if !shape.nil? && shape.length > 0
+      if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+    		# get the parent shape and format for json
+    		geometries = Shape.build_json(shape, params[:indicator_id])
+    	elsif shape.first.has_children?
+    		# get all of the children of the parent and format for json
+    		geometries = Shape.build_json(shape.first.children, params[:indicator_id])
+    	end
+    end
+
     respond_to do |format|
       format.json { render json: geometries}
     end
