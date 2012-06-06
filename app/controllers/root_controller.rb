@@ -7,23 +7,39 @@ class RootController < ApplicationController
   # GET /
   # GET /.json
 	def index
+		# set flag indicating that a param is missing or data could not be found
+		# which will cause user to go back to home page
+		flag_redirect = false
+
 		# get the event type id
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
 		
 		# get the events for this event type
     @events = Event.get_events_by_type(params[:event_type_id])
 
-    if !@events.nil? && @events.length > 0
+		if @events.nil? || @events.empty?
+			# no events could be found
+logger.debug "+++++++++ no events could be found"
+			flag_redirect = true
+		else
   		# get the current event
   		event = get_current_event(params[:event_id])
 
-			if !event.shape_id.nil?
+			if event.nil? || event.shape_id.nil?
+				# event could not be found or the selected event does not have a shape assigned to it
+logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
+				flag_redirect = true
+			else
 				# get the shape
 				params[:shape_id] = event.shape_id if params[:shape_id].nil?
 		    logger.debug("shape id = #{params[:shape_id]}")
 				@shape = Shape.get_shape_no_geometry(params[:shape_id])
 
-				if !@shape.nil?
+				if @shape.nil?
+					# parent shape could not be found
+logger.debug "+++++++++ parent shape could not be found"
+					flag_redirect = true
+				else
 					# get the shape type id that was clicked
 					params[:shape_type_id] = @shape.shape_type_id if params[:shape_type_id].nil?
 
@@ -61,6 +77,7 @@ class RootController < ApplicationController
 					if @indicators.nil? || @indicators.empty?
 						# no indicators exist for this event and shape type
 logger.debug "+++++++++ no indicators exist for this event and shape type"
+						flag_redirect = true
 					else
 						# if an indicator is not selected, select the first one in the list
 						if params[:indicator_id].nil?
@@ -95,13 +112,15 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 
   		# set js variables
       set_gon_variables
-
-    else
-			# no events exist for this event type
-logger.debug "+++++++++ no events exist for this event type"
     end
 
-		render :layout => 'map'
+    if flag_redirect
+			# either data could not be found or param is missing and page could not be loaded
+logger.debug "+++++++++ either data could not be found or param is missing and page could not be loaded, redirecting to home page"
+			redirect_to root_path
+		else
+			render :layout => 'map'
+		end
 	end
 
   # GET /events/shape/:id
@@ -240,7 +259,7 @@ private
 	# get the the current event
 	def get_current_event(event_id)
 logger.debug "getting current event for id #{event_id}"
-		if @events.nil? || @events.length == 0
+		if @events.nil? || @events.empty?
 logger.debug " - no events on record"
       return nil
     elsif event_id.nil?
@@ -262,6 +281,9 @@ logger.debug " - event id provided"
 					return event
 				end
 			end
+			# if get to here then no matching event was found
+logger.debug " - no matching event found!"
+			return nil
 		end
 	end
 
