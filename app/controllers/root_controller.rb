@@ -90,7 +90,7 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 
 							# we know the old indicator id and the new shape type
 							# - use that to find the new indicator id
-							new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id, params[:locale])
+							new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
 							if new_indicator.nil? || new_indicator.length == 0
 								# could not find a match, reset the indicator id
 								params[:indicator_id] = nil
@@ -126,17 +126,16 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
   # GET /events/shape/:id
   # GET /events/shape/:id.json
   def shape
-=begin
 		geometries = Rails.cache.fetch("shape_json_#{I18n.locale}_#{params[:id]}") {
 			#get the parent shape
 			shape = Shape.where(:id => params[:id])
 			Shape.build_json(shape)
 		}
-=end
+=begin
     #get the parent shape
     shape = Shape.where(:id => params[:id])
     geometries = Shape.build_json(shape)
-
+=end
     respond_to do |format|
       format.json { render json: geometries }
     end
@@ -145,7 +144,6 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
   # GET /events/children_shapes/:parent_id
   # GET /events/children_shapes/:parent_id.json
   def children_shapes
-=begin
 		geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
 			geo = ''
 			#get the parent shape
@@ -163,7 +161,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 
 			geo
 		}
-=end
+=begin
     geometries = nil
     #get the parent shape
     shape = Shape.where(:id => params[:parent_id])
@@ -177,7 +175,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
     		geometries = Shape.build_json(shape.first.children, params[:indicator_id])
     	end
     end
-
+=end
     respond_to do |format|
       format.json { render json: geometries}
     end

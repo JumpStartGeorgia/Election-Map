@@ -40,12 +40,10 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 	# get all indicator scales for an indicator
 	def self.find_by_indicator_id(indicator_id)
 		if !indicator_id.nil?
-=begin
 			Rails.cache.fetch("indicator_scales_by_indicator_#{indicator_id}") {
 				where(:indicator_id => indicator_id)
 			}
-=end
-      where(:indicator_id => indicator_id)
+#      where(:indicator_id => indicator_id)
 		end
 	end
 	

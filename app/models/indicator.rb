@@ -19,12 +19,11 @@ class Indicator < ActiveRecord::Base
 
 	# the shape_type has changed, get the indicator that 
   # matches the indicator from the last shape type
-	def self.find_new_id(old_indicator, new_shape_type, locale)
-		if (old_indicator.nil? || new_shape_type.nil? || locale.nil?)
+	def self.find_new_id(old_indicator, new_shape_type)
+		if (old_indicator.nil? || new_shape_type.nil?)
 			return nil		
 		else
-=begin
-			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}_#{locale}") {
+			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}_#{I18n.locale}") {
 				sql = "select inew.* "
 				sql << "from indicators as iold "
 				sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
@@ -32,9 +31,9 @@ class Indicator < ActiveRecord::Base
 				sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name_abbrv = itnew.name_abbrv and itold.locale = itnew.locale "
 				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
 		
-				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
+				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => I18n.locale])
 			}
-=end
+=begin
       sql = "select inew.* "
       sql << "from indicators as iold "
       sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
@@ -43,6 +42,7 @@ class Indicator < ActiveRecord::Base
       sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
 
       find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
+=end
 
 		end
 	end
@@ -51,12 +51,12 @@ class Indicator < ActiveRecord::Base
 		if event_id.nil? || shape_type_id.nil?
 			return nil		
 		else
-=begin
-			Rails.cache.fetch("indicators_by_event_#{event_id}_shape_type_#{shape_type_id}") {
-				where(:event_id => event_id, :shape_type_id => shape_type_id)
+			Rails.cache.fetch("indicators_by_event_#{event_id}_shape_type_#{shape_type_id}_#{I18n.locale}") {
+				includes(:indicator_translations)
+				.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id}, 
+							:indicator_translations => {:locale => I18n.locale})
 			}
-=end			
-      where(:event_id => event_id, :shape_type_id => shape_type_id)
+#      where(:event_id => event_id, :shape_type_id => shape_type_id)
 		end
 	end
 

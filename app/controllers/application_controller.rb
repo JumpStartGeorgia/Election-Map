@@ -24,8 +24,8 @@ class ApplicationController < ActionController::Base
 protected 
 
   def set_locale
-#    @locales = Rails.cache.fetch("locales") {Locale.order("language asc")}
-    @locales = Locale.order("language asc")
+    @locales = Rails.cache.fetch("locales") {Locale.all}
+#    @locales = Locale.order("language asc")
 		# see if locale is valid
 		valid = false
 		if !params[:locale].nil?
@@ -45,13 +45,13 @@ protected
   end
   
   def set_event_types
-#    @event_types = Rails.cache.fetch("event_types") {EventType.all}
-    @event_types = EventType.all
+    @event_types = Rails.cache.fetch("event_types") {EventType.all}
+#    @event_types = EventType.all
   end
   
   def set_shape_types
-#    @shape_types = Rails.cache.fetch("shape_types") {ShapeType.all}
-    @shape_types = ShapeType.all
+    @shape_types = Rails.cache.fetch("shape_types") {ShapeType.all}
+#    @shape_types = ShapeType.all
   end
   
   def set_default_values
