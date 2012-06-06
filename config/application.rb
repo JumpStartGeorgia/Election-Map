@@ -61,10 +61,14 @@ module ElectionMap
 		# store cache in memory
 		config.cache_store = :memory_store
 
+		# how to send email
+		config.action_mailer.delivery_method = :smtp
+
+		# options for exception notification gem
 		config.middleware.use ExceptionNotifier,
 			:email_prefix => "[Election Map App Error] ",
-			:sender_address => %{<info@jumpstart.ge>},
-			:exception_recipients => %w{jason.addie@jumpstart.ge}
+			:sender_address => %{<jumpstart.app.error.logs@gmail.com>},
+			:exception_recipients => %w{jumpstart.app.error.logs@gmail.com}
 
   end
 end
