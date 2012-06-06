@@ -23,6 +23,7 @@ class Indicator < ActiveRecord::Base
 		if (old_indicator.nil? || new_shape_type.nil? || locale.nil?)
 			return nil		
 		else
+=begin
 			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}_#{locale}") {
 				sql = "select inew.* "
 				sql << "from indicators as iold "
@@ -33,6 +34,16 @@ class Indicator < ActiveRecord::Base
 		
 				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
 			}
+=end
+      sql = "select inew.* "
+      sql << "from indicators as iold "
+      sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
+      sql << "inner join indicator_translations as itold on iold.id = itold.indicator_id "
+      sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name_abbrv = itnew.name_abbrv and itold.locale = itnew.locale "
+      sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
+
+      find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
+
 		end
 	end
 
@@ -40,9 +51,12 @@ class Indicator < ActiveRecord::Base
 		if event_id.nil? || shape_type_id.nil?
 			return nil		
 		else
+=begin
 			Rails.cache.fetch("indicators_by_event_#{event_id}_shape_type_#{shape_type_id}") {
 				where(:event_id => event_id, :shape_type_id => shape_type_id)
 			}
+=end			
+      where(:event_id => event_id, :shape_type_id => shape_type_id)
 		end
 	end
 
@@ -266,7 +280,7 @@ class Indicator < ActiveRecord::Base
 	  				    end
 							else
 				logger.debug "++++**record does not exist!"
-								msg = I18n.t('models.indicator.msgs.already_exists', :row_num => n)
+								msg = I18n.t('models.indicator.msgs.indicator_not_found', :row_num => n)
 					      raise ActiveRecord::Rollback
 					      return msg
 							end

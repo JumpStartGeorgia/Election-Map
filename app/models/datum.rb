@@ -117,6 +117,7 @@ class Datum < ActiveRecord::Base
 
 											# add translations
 											I18n.available_locales.each do |locale|
+			logger.debug "++++ - adding translations for #{locale}"
 												datum.datum_translations.build(:locale => locale, 
 													:common_id => row[2].nil? ? row[2] : row[2].strip, 
 													:common_name => row[3].nil? ? row[3] : row[3].strip)
@@ -147,6 +148,15 @@ class Datum < ActiveRecord::Base
 					end
 				end
 			end
+
+  logger.debug "++++updating ka records with ka text in shape_names"
+			# ka translation is hardcoded as en in the code above
+			# update all ka records with the apropriate ka translation
+			# update common ids
+			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_id = sn.ka where dt.locale = 'ka' and dt.common_id = sn.en")
+			# update common names
+			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_name = sn.ka where dt.locale = 'ka' and dt.common_name = sn.en")
+
 		end
   logger.debug "++++procssed #{n} rows in CSV file"
     return msg 
