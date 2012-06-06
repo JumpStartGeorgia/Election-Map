@@ -82,6 +82,7 @@ ka:
         unknow_event: The selected event could not be found.
         no_records: "No Indicator data was found for the event '%{event_name}'."
         error: "Errors were encountered creating the download file for the event '%{event_name}'.  The problem was the following: %{msg}"
+      message_sent: Your message has been sent! Thank you for contacting us.
     common:
       important: Important
       indicator: Indicator
@@ -99,6 +100,8 @@ ka:
       parent_shape: Parent Shape
       locale: Language
       file_upload: CSV File to Upload
+  contact_mailer:
+    subject: Election Map Contact Form
   layouts:
     application:
       title: Election Map
@@ -113,6 +116,7 @@ ka:
       or: or
       sign_up: Sign Up
       about: About Project
+      contact: Contact Us
       terms: Terms of Use
       js_link_title: Visit JumpStart Georgia`s website
       js_link_text: Built by JumpStart Georgia
@@ -128,6 +132,7 @@ ka:
       sign_in: შესვლა
       or: or
       sign_up: Sign Up
+      contact: Contact Us
       about: About Project
       terms: Terms of Use
       js_link_title: Visit JumpStart Georgia`s website
@@ -269,4 +274,15 @@ ka:
       title: Upload a CSV File of Shapes
       download_link_text: Download the CSV template file for Shapes
       delete_records: Delete existing shapes on file for the provided Event and Shape Type(s)
+  messages:
+    new:
+      title: Contact Us
+      send: Send
+      reset: Reset
+      cancel: Cancel
+      name: Name
+      email: Email Address
+      message: Message
+    success:
+      title: Contact Us
 

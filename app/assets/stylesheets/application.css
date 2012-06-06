@@ -68,6 +68,12 @@ abbr {
 	font-size:125%;
 }
 
+/* admin panels */
+div.admin_panel {
+	float: left; 
+	width: 30%;
+}
+
 /* admin section navigation */
 div.admin_nav {
 	padding: 1em;

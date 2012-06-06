@@ -881,6 +881,7 @@ textarea
 }
 
 .error,
+.errorExplanation,
 .alert,
 .notice,
 .success,
@@ -891,12 +892,18 @@ textarea
     border: 2px solid #ddd;
 }
 
-.error, .alert
+.error, .alert, .errorExplanation
 {
     background: #fbe3e4;
     color: #8a1f11;
     border-color: #fbc2c4;
 }
+
+.errorExplanation h2
+{
+    color: #8a1f11 !important;
+}
+
 
 .notice
 {
@@ -919,7 +926,7 @@ textarea
     border-color: #92cae4;
 }
 
-.error a, .alert a
+.error a, .alert a, .errorExplanation a
 {
     color: #8a1f11;
 }

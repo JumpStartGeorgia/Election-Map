@@ -1,0 +1,27 @@
+<% title t('.title') %>
+
+<% if @email_sent %>
+
+<p>
+<%= t("app.msgs.message_sent") %>
+</p>
+
+<% else %>
+
+	<%= semantic_form_for @message, :url => contact_path do |f| %>
+		<%= f.error_messages %>
+
+		<%= f.inputs do %>
+			<%= f.input :name, :label => t(".name") %>
+			<%= f.input :email, :label => t(".email") %>
+			<%= f.input :message, :label => t(".message"), :as => :text, :input_html => {:rows => 5} %>
+		<% end %>
+
+		<%= f.actions do %>
+			<%= f.action :submit, :label => t(".send") %>
+			<%= f.action :reset, :label => t(".reset")  %>
+			<%= f.action :cancel, :label => t(".cancel")  %>
+		<% end %>
+
+	<% end %>
+<% end %>

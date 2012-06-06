@@ -13,6 +13,10 @@ ElectionMap::Application.routes.draw do
   match '/:locale/children_shapes/:parent_id(/:parent_shape_clickable(/:indicator_id))', :to => 'root#children_shapes', :as => :children_shapes, :via => :get, :defaults => {:format => 'json'}
   match '/:locale/download/:event_id/:shape_type_id/:shape_id(/:indicator_id)', :to => 'root#download', :as => :download_data, :via => :get
 
+	match '/:locale/contact' => 'messages#new', :as => 'contact', :via => :get
+	match '/:locale/contact' => 'messages#create', :as => 'contact', :via => :post
+	match '/:locale/contact_success' => 'messages#success', :as => 'contact_success', :via => :get
+
   scope "/:locale" do
     resources :locales
   end
