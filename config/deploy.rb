@@ -1,15 +1,16 @@
 set :stages, %w(production staging)
-set :default_stage, "staging" # if run cap deploy the staging environment will be used
+set :default_stage, "staging" # if just run 'cap deploy'' the staging environment will be used
+
+# these variables have to be set before the multistage can start, but they are overriden in the deploy/env.rb file
+set :user, "placeholder" 
+set :application, "placeholder"
+
 require 'capistrano/ext/multistage' # so we can deploy to staging and production servers
 require "bundler/capistrano" # Load Bundler's capistrano plugin.
 
 set :deploy_to, "/home/#{user}/#{application}"
 set :deploy_via, :remote_cache
 set :use_sudo, false
-
-# these are set in the deploy/env.rb files
-#set :user, "electiondata"
-#set :application, "Election-Map"
 
 set :scm, "git"
 set :repository, "git@github.com:JumpStartGeorgia/#{application}.git"
