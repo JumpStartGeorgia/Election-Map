@@ -1,12 +1,15 @@
+set :stages, %w(production staging)
+set :default_stage, "staging" # if run cap deploy the staging environment will be used
+require 'capistrano/ext/multistage' # so we can deploy to staging and production servers
 require "bundler/capistrano" # Load Bundler's capistrano plugin.
 
-server "alpha.jumpstart.ge", :web, :app, :db, primary: true
-
-set :application, "Election-Map"
-set :user, "electiondata"
 set :deploy_to, "/home/#{user}/#{application}"
 set :deploy_via, :remote_cache
 set :use_sudo, false
+
+# these are set in the deploy/env.rb files
+#set :user, "electiondata"
+#set :application, "Election-Map"
 
 set :scm, "git"
 set :repository, "git@github.com:JumpStartGeorgia/#{application}.git"
@@ -26,8 +29,8 @@ namespace :deploy do
   end
 
   task :setup_config, roles: :app do
-    sudo "ln -nfs #{current_path}/config/nginx.conf /etc/nginx/sites-enabled/#{application}"
-    sudo "ln -nfs #{current_path}/config/unicorn_init.sh /etc/init.d/unicorn_#{application}"
+    sudo "ln -nfs #{current_path}/config/#{ngnix_conf_file_loc} /etc/nginx/sites-enabled/#{application}"
+    sudo "ln -nfs #{current_path}/config/#{unicorn_init_file_loc} /etc/init.d/unicorn_#{application}"
     run "mkdir -p #{shared_path}/config"
     put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
     puts "Now edit the config files in #{shared_path}."

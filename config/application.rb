@@ -64,8 +64,8 @@ module ElectionMap
 		# options for exception notification gem
 		config.middleware.use ExceptionNotifier,
 			:email_prefix => "[Election Map App Error] ",
-			:sender_address => %{<jumpstart.app.error.logs@gmail.com>},
-			:exception_recipients => %w{jumpstart.app.error.logs@gmail.com}
+			:sender_address => %{ENV['APPLICATION_ERROR_FROM_EMAIL']},
+			:exception_recipients => %w{ENV['APPLICATION_ERROR_TO_EMAIL']}
 
   end
 end

@@ -101,7 +101,7 @@ ka:
       locale: Language
       file_upload: CSV File to Upload
   contact_mailer:
-    subject: Election Map Contact Form
+    subject: "[Election Map] Contact Form"
   layouts:
     application:
       title: Election Map
