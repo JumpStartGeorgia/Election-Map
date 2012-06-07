@@ -8,13 +8,14 @@ require "bundler/capistrano" # Load Bundler's capistrano plugin.
 #set :user, "placeholder" 
 #set :application, "placeholder"
 
-set (:deploy_to) {"/home/#{user}/#{application}"}
+set(:deploy_to) {"/home/#{user}/#{application}"}
+
 set :deploy_via, :remote_cache
 set :use_sudo, false
 
 set :scm, "git"
-set (:repository) {"git@github.com:JumpStartGeorgia/#{git_project_name}.git"}
 set :branch, "master"
+set(:repository) {"git@github.com:JumpStartGeorgia/#{git_project_name}.git"}
 
 default_run_options[:pty] = true
 ssh_options[:forward_agent] = true
