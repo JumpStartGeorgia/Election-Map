@@ -1,25 +1,26 @@
 set :stages, %w(production staging)
 set :default_stage, "staging" # if just run 'cap deploy'' the staging environment will be used
 
-# these variables have to be set before the multistage can start, but they are overriden in the deploy/env.rb file
-set :user, "placeholder" 
-set :application, "placeholder"
-
 require 'capistrano/ext/multistage' # so we can deploy to staging and production servers
 require "bundler/capistrano" # Load Bundler's capistrano plugin.
 
-set :deploy_to, "/home/#{user}/#{application}"
+# these vars are set in deploy/env.rb
+#set :user, "placeholder" 
+#set :application, "placeholder"
+
+set (:deploy_to) {"/home/#{user}/#{application}"}
 set :deploy_via, :remote_cache
 set :use_sudo, false
 
 set :scm, "git"
-set :repository, "git@github.com:JumpStartGeorgia/#{application}.git"
+set (:repository) {"git@github.com:JumpStartGeorgia/#{git_project_name}.git"}
 set :branch, "master"
 
 default_run_options[:pty] = true
 ssh_options[:forward_agent] = true
 
 after "deploy", "deploy:cleanup" # keep only the last 5 releases
+
 
 namespace :deploy do
   %w[start stop restart].each do |command|
@@ -31,7 +32,7 @@ namespace :deploy do
 
   task :setup_config, roles: :app do
     sudo "ln -nfs #{current_path}/config/#{ngnix_conf_file_loc} /etc/nginx/sites-enabled/#{application}"
-    sudo "ln -nfs #{current_path}/config/#{unicorn_init_file_loc} /etc/init.d/unicorn_#{application}"
+    sudo "ln -nfs #{current_path}/config/deploy/#{unicorn_init_file_loc} /etc/init.d/unicorn_#{application}"
     run "mkdir -p #{shared_path}/config"
     put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
     puts "Now edit the config files in #{shared_path}."
