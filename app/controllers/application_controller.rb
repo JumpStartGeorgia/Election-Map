@@ -76,6 +76,11 @@ protected
 		admin_path
 	end
 
+	# remove bad characters from file name
+	def clean_filename(filename)
+		filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
+	end
+
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier
 		  .exception_notification(request.env, exception)

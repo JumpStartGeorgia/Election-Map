@@ -61,11 +61,6 @@ module ElectionMap
 		# how to send email
 		config.action_mailer.delivery_method = :smtp
 
-		# options for exception notification gem
-		config.middleware.use ExceptionNotifier,
-			:email_prefix => "[Election Map App Error] ",
-			:sender_address => %{ENV['APPLICATION_ERROR_FROM_EMAIL']},
-			:exception_recipients => %w{ENV['APPLICATION_ERROR_TO_EMAIL']}
 
   end
 end

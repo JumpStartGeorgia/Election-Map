@@ -252,15 +252,15 @@ logger.debug "no shapes were found"
 						end
 		      end
 
-					# enclose each item in the rows array in ""
-					# this is in case an item has a ',' in the text
+					# remove any line returns for excel does not like them
 					rows.each do |r|
 						r.each do |c|
-							c = "#{c}"
+							c.gsub(/\r?\n/, ' ').strip!
 						end
 					end
 		      
-					obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
+					# use tab as separator for excel does not like ','
+					obj.csv_data = CSV.generate(:col_sep => "\t", :force_quotes => true) do |csv|
 				    # generate the header
 				    header = []
 						# replace the [Level] placeholder in download_header with the name of the map level
@@ -275,7 +275,14 @@ logger.debug "no shapes were found"
 				    rows.each do |r|
 				      csv << r
 				    end
+
 					end
+
+					# convert to utf-8
+					# the bom is used to indicate utf-16le which excel requires
+				  bom = "\xEF\xBB\xBF".force_encoding("UTF-8") #Byte Order Mark UTF-8
+					obj.csv_data = (bom + obj.csv_data).force_encoding("UTF-8")
+					
 		      return obj
 				end
 			end

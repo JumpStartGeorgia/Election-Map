@@ -186,7 +186,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
   def export
 		# cannot use georgian characters in file name
 		if I18n.locale.to_s == "ka"
-	    filename = "election_map_svg-#{Time.now}".gsub(' ', '_')
+	    filename = "election_map_svg"
 		else
 			# create the file name: map title - indicator - event
 			filename = params[:hidden_form_map_title]
@@ -194,13 +194,11 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 			filename << params[:hidden_form_indicator_name_abbrv]
 			filename << "-"
 			filename << params[:hidden_form_event_name]
-
-			#remove bad characters
-			filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
 		end
+			filename << "-#{l Time.now, :format => :file}"
 
 		headers['Content-Type'] = "image/svg+xml; charset=utf-8" 
-    headers['Content-Disposition'] = "attachment; filename=#{filename}.svg" 
+    headers['Content-Disposition'] = "attachment; filename=#{clean_filename(filename)}.svg" 
   end
 
   # GET /indicators/download
@@ -214,19 +212,18 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 				# create file name using event name and map title that were passed in
 				# cannot use georgian characters in file name
 				if I18n.locale.to_s == "ka" || params[:event_name].nil? || params[:map_title].nil?
-			    filename = "election_map_data-#{Time.now}".gsub(' ', '_')
+			    filename = "election_map_data"
 				else
 			    filename = params[:map_title]
 					filename << "-"
 					filename << params[:event_name]
-
-					#remove bad characters
-					filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
 				end
+				filename << "-#{l Time.now, :format => :file}"
+
 		    # send the file
 		    send_data data.csv_data,
-		      :type => 'text/csv; charset=utf-8; header=present',
-		      :disposition => "attachment; filename=#{filename}.csv"
+		      :type => 'text/tab-separated-values; header=present',
+		      :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
 			end
 		end
   end
