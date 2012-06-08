@@ -5,6 +5,6 @@ stderr_path "#{root}/log/unicorn.log"
 stdout_path "#{root}/log/unicorn.log"
 
 listen "/tmp/unicorn.Election-Map.sock"
-listen 8082, :tcp_nopush => true # must be unique port # for each app
+listen 8081, :tcp_nopush => true # must be unique port # for each app
 worker_processes 2
 timeout 30
