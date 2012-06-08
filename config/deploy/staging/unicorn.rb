@@ -1,10 +1,17 @@
-root = "/home/electiondata-staging/Election-Map-Staging/current"
+##################################
+##### SET THESE VARIABLES ########
+##################################
+root = "/home/electiondata-staging/Election-Map-Staging/current" # path to application current folder
+sock_name = "unicorn_Election-Map-Staging" # must be unique name with no '.' 
+port_num = 8082 # must be a unique port number for this application
+##################################
+
 working_directory root
 pid "#{root}/tmp/pids/unicorn.pid"
 stderr_path "#{root}/log/unicorn.log"
 stdout_path "#{root}/log/unicorn.log"
 
-listen "/tmp/unicorn_Election-Map-Staging.sock"
-listen 8082, :tcp_nopush => true # must be unique port # for each app
+listen "/tmp/%{sock_name}.sock"
+listen port_num, :tcp_nopush => true
 worker_processes 2
 timeout 30

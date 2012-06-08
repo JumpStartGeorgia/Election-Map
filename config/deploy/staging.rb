@@ -1,8 +1,12 @@
-server "alpha.jumpstart.ge", :web, :app, :db, primary: true
-set :application, "Election-Map-Staging"
-set :user, "electiondata-staging"
-set :ngnix_conf_file_loc, "staging/nginx.conf"
-set :unicorn_init_file_loc, "staging/unicorn_init.sh"
-set :git_project_name, "Election-Map"
-set :rails_env, "staging" 
+##################################
+##### SET THESE VARIABLES ########
+##################################
+server "alpha.jumpstart.ge", :web, :app, :db, primary: true # server where app is located
+set :application, "Election-Map-Staging" # unique name of application
+set :user, "electiondata-staging" # name of user on server
+set :ngnix_conf_file_loc, "staging/nginx.conf" # location of nginx conf file
+set :unicorn_init_file_loc, "staging/unicorn_init.sh" # location of unicor init shell file
+set :git_project_name, "Election-Map" # name of git repo
+set :rails_env, "staging" # name of environment: production, staging, ...
+##################################
 

@@ -1,12 +1,17 @@
 #!/bin/sh
 set -e
 
-# Feel free to change any of the following variables for your app:
-TIMEOUT=${TIMEOUT-60}
-APP_ROOT=/home/electiondata/Election-Map/current
-PID=$APP_ROOT/tmp/pids/unicorn.pid
+##################################
+##### SET THESE VARIABLES ########
+##################################
+AS_USER=electiondata # name of user on server
+APP_ROOT=/home/electiondata/Election-Map/current # path to application current folder
+# update the name of the enviroment at '-E _____' to production, staging, etc
 CMD="cd $APP_ROOT; bundle exec unicorn -D -c $APP_ROOT/config/deploy/production/unicorn.rb -E production"
-AS_USER=electiondata
+##################################
+
+PID=$APP_ROOT/tmp/pids/unicorn.pid
+TIMEOUT=${TIMEOUT-60}
 set -u
 
 OLD_PIN="$PID.oldbin"
