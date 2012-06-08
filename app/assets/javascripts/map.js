@@ -300,23 +300,23 @@ function click_handler (feature)
 	// if the feature has children, continue
 	if (feature.attributes.has_children == "true"){
 		// add/update the shape_id parameter
-		var url = update_query_parameter(window.location.href, "shape_id", feature.attributes.id);
+		var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
 
 		// add/update the shape_type_id parameter
-		url = update_query_parameter(url, "shape_type_id", feature.attributes.shape_type_id);
+		url = update_query_parameter(url, "shape_type_id", "shape_type", feature.attributes.shape_type_id);
 
 		// add/update the event_id parameter
 		// - when switching between event types, the event id is not set in the url 
 		//   so it needs to be added
-		var url = update_query_parameter(url, "event_id", gon.event_id);
+		url = update_query_parameter(url, "event_id", "event", gon.event_id);
 
 		// add/update the parameter to indicate that the shape type is changing
-		url = update_query_parameter(url, "change_shape_type", true);
+		url = update_query_parameter(url, "change_shape_type", "change_shape", true);
 
 		// update the parameter to indicate that the parent shape is clickable
 		// clicking on the map should reset this value for it should only be true
 		// when clicking on the menu navigation
-		url = update_query_parameter(url, "parent_shape_clickable", false);
+		url = update_query_parameter(url, "parent_shape_clickable", "parent_clickable", false);
 
 		// load the url
 		window.location.href = url;
@@ -324,12 +324,13 @@ function click_handler (feature)
 }
 
 // add/update the query paramter with the provided name and value
-function update_query_parameter(url, name, value){
+function update_query_parameter(url, name, name2, value){
 	// get the current url
 	var index = url.indexOf(name + "=");
-	var name_length = name.length+1; // use +1 to account for the '='
+	var index2 = url.indexOf(name2 + "/");
 	if (index > 0){
-		// found it, now need to replace the value
+		// found 'name=', now need to replace the value
+		var name_length = name.length+1; // use +1 to account for the '='
 		var indexAfter = url.indexOf("&", index+name_length);
 		if (indexAfter > 0){
 			// there is another paramter after this one
@@ -337,6 +338,17 @@ function update_query_parameter(url, name, value){
 		}else {
 			// no more parameters after this one
 			url = url.slice(0, index+name_length) + value;
+		}
+	}else if (index2 > 0) {
+		// found 'name/', now need to replace the value
+		var name_length = name2.length+1; // use +1 to account for the '='
+		var indexAfter = url.indexOf("/", index2+name_length);
+		if (indexAfter > 0){
+			// there is another paramter after this one
+			url = url.slice(0, index2+name_length) + value + url.slice(indexAfter);
+		}else {
+			// no more parameters after this one
+			url = url.slice(0, index2+name_length) + value;
 		}
 	}else {
 		// not in query string yet, add it
@@ -389,8 +401,8 @@ function load_hidden_form()
 {
 	if (gon.indicator_name){
 		// update the url for the download data link
-		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "event_name", gon.event_name));
-		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "map_title", gon.map_title));
+		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "event_name", "event_name", gon.event_name));
+		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "map_title", "map_title", gon.map_title));
 
 		$("#export-map").click(function(){
 			// get the indicator names and colors

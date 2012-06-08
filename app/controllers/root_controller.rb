@@ -1,4 +1,5 @@
 # encoding: utf-8
+#require 'csv_tsv_renderer'
 
 class RootController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :download]
@@ -59,7 +60,7 @@ logger.debug "+++++++++ parent shape could not be found"
 					elsif !parent_shape_type.nil? && parent_shape_type.has_children?
 				    logger.debug("parent shape type is not root or it should not be clickable")
 					  # this is not the root, so reset parent shape clickable
-					  params[:parent_shape_clickable] = false
+					  params[:parent_shape_clickable] = nil
 						# found child, save id
 #						child_shape_type = get_child_shape_type(params[:shape_type_id])
 						child_shape_type = get_child_shape_type(@shape)
@@ -108,7 +109,7 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 			end
 
   		# reset the parameter that indicates if the shape type changed
-  		params[:change_shape_type] = false
+  		params[:change_shape_type] = nil
 
   		# set js variables
       set_gon_variables
@@ -225,6 +226,15 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 		      :type => 'text/tab-separated-values; header=present',
 		      :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
 			end
+
+=begin
+# code for testing csv download that works in excel
+      data = Datum.test_csv(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
+		  respond_to do |format|
+				format.csv  { send_data data.to_csv(), :filename => "nice_filename.csv" }
+				format.tsv  { send_data data.to_tsv(), :filename => "nice_filename.tsv" }
+		  end
+=end
 		end
   end
 

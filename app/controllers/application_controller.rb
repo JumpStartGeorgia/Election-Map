@@ -26,6 +26,7 @@ protected
   def set_locale
     @locales = Rails.cache.fetch("locales") {Locale.all}
 #    @locales = Locale.order("language asc")
+=begin
 		# see if locale is valid
 		valid = false
 		if !params[:locale].nil?
@@ -42,8 +43,18 @@ protected
 			  params[:locale] = I18n.default_locale
 			end
 		end
+=end
+    if params[:locale] and I18n.available_locales.include?(params[:locale].to_sym)
+      I18n.locale = params[:locale]
+    else
+      I18n.locale = I18n.default_locale
+    end
   end
   
+  def default_url_options(options={})
+    { :locale => I18n.locale }
+  end
+
   def set_event_types
     @event_types = Rails.cache.fetch("event_types") {EventType.all}
 #    @event_types = EventType.all
@@ -58,10 +69,6 @@ protected
 		@svg_directory_path = File.dirname(__FILE__)+"/../../public/assets/svg/"
   end
   
-  def default_url_options(options={})
-    { :locale => I18n.locale }
-  end
-
 	def set_gon_data
 		# set no data label text and color for legend
 		gon.no_data_text = I18n.t('app.msgs.no_data')

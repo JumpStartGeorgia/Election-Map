@@ -288,5 +288,30 @@ logger.debug "no shapes were found"
 			end
 		end
 	end
+=begin
+# code for testing csv download that works in excel
+	def as_csv(options = {})
+		csv = {
+		  common_id: self.common_id,
+		  common_name: self.common_name,
+		  value: self.value
+		}
+	end
+
+	def self.test_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
+
+			shapes = Shape.get_shapes_for_download(shape_id, shape_type_id)
+      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:data => :datum_translations})
+        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
+          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale, 
+					:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
+        .order("indicators.id ASC, data.id asc")
+
+			if !indicators.empty?
+				return indicators.first.data
+			end		
+
+	end
+=end
 
 end
