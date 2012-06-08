@@ -20,7 +20,7 @@
 		<%= f.actions do %>
 			<%= f.action :submit, :label => t(".send") %>
 			<%= f.action :reset, :label => t(".reset")  %>
-			<%= f.action :cancel, :label => t(".cancel")  %>
+			<%= f.action :cancel, :url => root_path, :label => t(".cancel")  %>
 		<% end %>
 
 	<% end %>
