@@ -1,3 +1,7 @@
+####################################################################
+##### SET ALL VARIABLES UNDER config/deploy/env.rb             #####
+####################################################################
+
 set :stages, %w(production staging)
 set :default_stage, "staging" # if just run 'cap deploy'' the staging environment will be used
 
@@ -15,7 +19,7 @@ set :use_sudo, false
 
 set :scm, "git"
 set :branch, "master"
-set(:repository) {"git@github.com:JumpStartGeorgia/#{git_project_name}.git"}
+set(:repository) {"git@github.com:#{github_account_name}/#{github_repo_name}.git"}
 
 default_run_options[:pty] = true
 ssh_options[:forward_agent] = true
