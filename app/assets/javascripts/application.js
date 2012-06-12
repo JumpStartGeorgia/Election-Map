@@ -12,7 +12,6 @@
 //= require events
 //= require indicator_scales
 //= require indicators
-//= require locales
 //= require pages
 //= require shape_types
 
