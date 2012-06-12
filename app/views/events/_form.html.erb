@@ -2,10 +2,10 @@
 	<%= f.error_messages %>
 	<%= f.inputs :for => :event_translations do |event_translation, i| %>
 		
-		<% formLocale = @locales[i-1].language %>
+		<% formLocale = I18n.available_locales[i-1] %>
 		
 		<div id="form-<%= formLocale %>" class="multilanguage">
-			<h3><%= @locales[i-1].name %></h3>
+			<h3><%= t("app.language.#{formLocale}") %></h3>
 
 			<%= event_translation.input :name %>
 			<%= event_translation.hidden_field :locale , :value => formLocale %>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120531062834) do
+ActiveRecord::Schema.define(:version => 20120612065405) do
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
@@ -124,13 +124,6 @@ ActiveRecord::Schema.define(:version => 20120531062834) do
 
   add_index "indicators", ["event_id"], :name => "index_indicators_on_event_id"
   add_index "indicators", ["shape_type_id"], :name => "index_indicators_on_shape_type_id"
-
-  create_table "locales", :force => true do |t|
-    t.string   "language"
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "page_translations", :force => true do |t|
     t.integer  "page_id"

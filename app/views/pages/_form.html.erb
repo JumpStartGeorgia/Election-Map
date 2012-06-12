@@ -7,10 +7,10 @@
 
 	<%= f.inputs :for => :page_translations do |page_translation, i| %>
 		
-		<% formLocale = @locales[i-1].language %>
+		<% formLocale = I18n.available_locales[i-1] %>
 		
 		<div id="form-<%= formLocale %>" class="multilanguage">
-			<h3><%= @locales[i-1].name %></h3>
+			<h3><%= t("app.language.#{formLocale}") %></h3>
 
 			<%= page_translation.input :title %>
 			<%= page_translation.input :description, :as => :text %>

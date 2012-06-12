@@ -50,6 +50,9 @@ ka:
         not_valid: Row %{row_num} is not valid.
         already_exists: Row %{row_num} already exists in the database.
   app:
+    language:
+      en: English
+      ka: ქართული
     buttons:
       back: უკან დაბრუნება
       list: ყველას ნახვა

@@ -17,11 +17,11 @@
 					<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => t('.logo_alt'), :title => t('.logo_title')), root_path(:locale => I18n.locale))%></div> 
 				<div id="language_form">
 					<ul>
-					<% @locales.each do |locale| %>
-						<% unless locale.language.to_s == I18n.locale.to_s %> 
-						<li><%= link_to locale.name, params.merge(:locale => locale.language) %></li>
+						<% I18n.available_locales.each do |locale| %>
+							<% if locale != I18n.locale %>
+								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+							<% end %>
 						<% end %>
-					<% end %>
 					</ul>
 				</div>
 				<div class="logo"><a href="http://www.ndi.org/" target="_blank"><%= image_tag "logo.png", :size => '150x48', :alt => t('.ndi_alt'), :title => t('.ndi_title') %></a></div>

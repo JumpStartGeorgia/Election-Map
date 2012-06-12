@@ -24,26 +24,6 @@ class ApplicationController < ActionController::Base
 protected 
 
   def set_locale
-    @locales = Rails.cache.fetch("locales") {Locale.all}
-#    @locales = Locale.order("language asc")
-=begin
-		# see if locale is valid
-		valid = false
-		if !params[:locale].nil?
-			@locales.each do |l|
-				if l.language.downcase == params[:locale].downcase
-					valid = true
-					break
-				end
-			end
-			if valid
-			  I18n.locale = params[:locale] if params[:locale]
-			else
-			  I18n.locale = I18n.default_locale
-			  params[:locale] = I18n.default_locale
-			end
-		end
-=end
     if params[:locale] and I18n.available_locales.include?(params[:locale].to_sym)
       I18n.locale = params[:locale]
     else

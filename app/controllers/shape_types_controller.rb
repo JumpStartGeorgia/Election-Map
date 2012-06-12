@@ -30,7 +30,7 @@ class ShapeTypesController < ApplicationController
     @shape_type = ShapeType.new
     # create the translation object for however many locales there are
     # so the form will properly create all of the nested form fields
-    @locales.length.times {@shape_type.shape_type_translations.build}
+    I18n.available_locales.length.times {@shape_type.shape_type_translations.build}
 
     respond_to do |format|
       format.html # new.html.erb
