@@ -4,4 +4,8 @@
 
 require File.expand_path('../config/application', __FILE__)
 
+require 'bundler'
+require 'rake/dsl_definition'
+require 'rake'
+
 ElectionMap::Application.load_tasks
