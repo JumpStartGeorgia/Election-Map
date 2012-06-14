@@ -78,7 +78,7 @@ div.admin_panel {
 div.admin_nav {
 	padding: 1em;
 	background-color: #aaa;
-	margin-top: 1em;
+	margin-top: 3em;
 	font-size: 10pt;
   border-radius: 3px;
   -moz-border-radius: 3px;
@@ -87,9 +87,9 @@ div.admin_nav {
 
 div.admin_nav a, div.admin_nav a:visited {
 	padding: 0.3em;
-	color: #333;
-	background-color: #eee;
-	border: solid 2px #333;
+	color: #fff !important;
+	background-color: #305178;
+	border: solid 2px #fff;
 	text-decoration: none;
   border-radius: 3px;
   -moz-border-radius: 3px;

@@ -27,6 +27,7 @@ protected
     if params[:locale] and I18n.available_locales.include?(params[:locale].to_sym)
       I18n.locale = params[:locale]
     else
+			# param not set
       I18n.locale = I18n.default_locale
     end
   end
@@ -34,6 +35,7 @@ protected
   def default_url_options(options={})
     { :locale => I18n.locale }
   end
+
 
   def set_event_types
     @event_types = Rails.cache.fetch("event_types") {EventType.all}

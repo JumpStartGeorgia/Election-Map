@@ -22,7 +22,7 @@ ka:
       default: "%a, %d %b %Y %H:%M:%S %z"
       short: "%d %b %H:%M"
       long: "%d %b %Y %H:%M"
-      file: "%d %m %H:%M"
+      file: "%Y %m %d %H:%M:%S"
     am: "am"
     pm: "pm"
 
