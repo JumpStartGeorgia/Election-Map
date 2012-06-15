@@ -2,7 +2,7 @@
 #require 'csv_tsv_renderer'
 
 class RootController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :export, :download]
+  before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :grandchildren_shapes, :export, :download]
 #	caches_action :shape, :children_shapes, :layout => false, :cache_path => Proc.new { |c| c.params }
 
   # GET /
@@ -174,6 +174,64 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
     	elsif shape.first.has_children?
     		# get all of the children of the parent and format for json
     		geometries = Shape.build_json(shape.first.children, params[:indicator_id])
+    	end
+    end
+=end
+    respond_to do |format|
+      format.json { render json: geometries}
+    end
+  end
+
+  # GET /events/grandchildren_shapes/:parent_id
+  # GET /events/grandchildren_shapes/:parent_id.json
+  def grandchildren_shapes
+
+		geometries = Rails.cache.fetch("grandchildren_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
+			geo = ''
+			#get the parent shape
+			shape = Shape.where(:id => params[:parent_id])
+
+		  if !shape.nil? && shape.length > 0
+		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+		  		# get the parent shape and format for json
+		  		geo = Shape.build_json(shape, params[:indicator_id])
+		  	elsif shape.first.has_children?
+		  		# get all of the grandchildren of the parent, and format for json
+					shapes = []
+					shape.first.children.each do |child|
+						if child.has_children?
+							shapes << child.children
+						end
+					end
+					# flatten all of the nested arrays into just one array
+					shapes.flatten!
+		  		geo = Shape.build_json(shapes, params[:indicator_id])
+		  	end
+		  end
+
+			geo
+		}
+
+=begin
+    geometries = nil
+    #get the parent shape
+    shape = Shape.where(:id => params[:parent_id])
+
+    if !shape.nil? && shape.length > 0
+      if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+    		# get the parent shape and format for json
+    		geometries = Shape.build_json(shape, params[:indicator_id])
+    	elsif shape.first.has_children?
+    		# get all of the grandchildren of the parent, and format for json
+				shapes = []
+				shape.first.children.each do |child|
+					if child.has_children?
+						shapes << child.children
+					end
+				end
+				# flatten all of the nested arrays into just one array
+				shapes.flatten!
+    		geometries = Shape.build_json(shapes, params[:indicator_id])
     	end
     end
 =end
