@@ -18,7 +18,7 @@ set :deploy_via, :remote_cache
 set :use_sudo, false
 
 set :scm, "git"
-set :branch, "master"
+set(:branch) {"#{git_branch_name}"}
 set(:repository) {"git@github.com:#{github_account_name}/#{github_repo_name}.git"}
 
 default_run_options[:pty] = true
