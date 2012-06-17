@@ -1,0 +1,2 @@
+module IndicatorTypesHelper
+end

@@ -48,11 +48,11 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 	end
 	
   def self.csv_all_header
-    "Event, Shape Type, en: Indicator Name, ka: Indicator Name, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
+    "Event, Shape Type, Indicatory Type, en: Indicator Name, ka: Indicator Name, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
   end
 
   def self.csv_start_header
-    "Event, Shape Type, en: Indicator Name, ka: Indicator Name".split(",")
+    "Event, Shape Type, Indicator Type, en: Indicator Name, ka: Indicator Name".split(",")
   end
 
   def self.csv_scale_header
@@ -62,7 +62,12 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
   def self.build_from_csv(file, deleteExistingRecord)
     infile = file.read
     n, msg = 0, ""
-    index_first_scale = 4
+    idx_event = 0
+    idx_shape_type = 1
+    idx_indicator_type = 2
+    idx_en_ind_name = 3
+    idx_ka_ind_name = 4
+    index_first_scale = 5
     columns_per_scale = 3
 
 		IndicatorScale.transaction do
@@ -75,25 +80,28 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
     logger.debug "processing row #{n}"		
   
         # if the event or shape type are not provided, stop
-        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
-	logger.debug "+++ event or shape type not provided"				
+        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0 ||
+            row[idx_indicator_type].nil? || row[idx_indicator_type].strip.length == 0
+  logger.debug "+++++++ event or shape type or indicator type not provided"				
     		  msg = I18n.t('models.indicator_scale.msgs.no_event_shape_spreadsheet', :row_num => n)
 		      raise ActiveRecord::Rollback
     		  return msg
 				else
   				# get the event id
-  				event = Event.find_by_name(row[0].strip)
+  				event = Event.find_by_name(row[idx_event].strip)
   				# get the shape type id
-  				shape_type = ShapeType.find_by_name_singular(row[1].strip)
+  				shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
+  				# get the indicator type id
+  				indicator_type = IndicatorType.find_by_name(row[idx_indicator_type].strip)
 
-  				if event.nil? || shape_type.nil?
-  	logger.debug "+++ event or shape type was not found"				
+  				if event.nil? || shape_type.nil? || indicator_type.nil?
+  	logger.debug "++++event or shape type or indicator type was not found"				
       		  msg = I18n.t('models.indicator_scale.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
             # only conintue if all values are present
-            if row[2].nil?
+            if row[idx_en_ind_name].nil?
         		  msg = I18n.t('models.indicator_scale.msgs.missing_data_spreadsheet', :row_num => n)
   logger.debug "++++**missing data in row"
               raise ActiveRecord::Rollback
@@ -101,9 +109,9 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
             else
 			logger.debug "+++ found event and shape type, seeing if indicator record exists"
 							# see if indicator exists for the provided event and shape_type
-							alreadyExists = Indicator.includes(:indicator_translations)
-								.where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
-									event.id, shape_type.id, row[2].strip)
+							alreadyExists = Indicator.includes(:indicator_translations, )
+								.where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+									event.id, shape_type.id, indicator_type.id, row[idx_en_ind_name].strip)
 					
 		          # if the indicator already exists and deleteExistingRecord is true, delete the indicator scales
 		          if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -115,55 +123,63 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 		          end
 
 							if !alreadyExists.nil? && alreadyExists.length > 0
-			logger.debug "+++ indicator record exists, populate scales"
+			logger.debug "+++ indicator record exists, checking if indicator already has scales"
 			          indicator = alreadyExists[0]
+                
+                if indicator.indicator_scales.nil? || indicator.indicator_scales.empty?
+			logger.debug "+++ indicator record has no scales, adding"
+  								# populate record
+  							  finishedScales = false # keep looping until find empty cell
+  							  i = index_first_scale # where first scale starts
+  							  until finishedScales do
+  							    if row[i].nil? || row[i+1].nil?
+  							      # found empty cell, stop
+  							      finishedScales = true
+  							    else
+  							      # found scale, add it
+  							      scale = indicator.indicator_scales.build
+  		    					  scale.color = row[i+2].strip if (!row[i+2].nil? && row[i+2].strip.length > 0)
+  										scale.indicator_scale_translations.build(:locale => 'en', :name => row[i].strip)
+  										scale.indicator_scale_translations.build(:locale => 'ka', :name => row[i+1].strip)
 
-								# populate record
-							  finishedScales = false # keep looping until find empty cell
-							  i = index_first_scale # where first scale starts
-							  until finishedScales do
-							    if row[i].nil? || row[i+1].nil?
-							      # found empty cell, stop
-							      finishedScales = true
-							    else
-							      # found scale, add it
-							      scale = indicator.indicator_scales.build
-		    					  scale.color = row[i+2].strip if (!row[i+2].nil? && row[i+2].strip.length > 0)
-										scale.indicator_scale_translations.build(:locale => 'en', :name => row[i].strip)
-										scale.indicator_scale_translations.build(:locale => 'ka', :name => row[i+1].strip)
+  		                # remember if a color was found
+  		                num_colors_found_for_indicator+=1 if (!row[i+2].nil? && row[i+2].strip.length > 0)
 
-		                # remember if a color was found
-		                num_colors_found_for_indicator+=1 if (!row[i+2].nil? && row[i+2].strip.length > 0)
-
-										i+=columns_per_scale # move on to the next set of indicator scales
-							    end
-							  end
-							  # save scales if color provided for all scales or 
-							  #  there were between 3 and 13 scales and no color
-		  		logger.debug "+++ num of colors found for this row: #{num_colors_found_for_indicator} and scale length = #{indicator.indicator_scales.length}"
-		  		logger.debug "+++ i = #{i}, lower bound = #{(3*columns_per_scale + index_first_scale)}, upper bound = #{(13*columns_per_scale + index_first_scale)}"
-							  if ((num_colors_found_for_indicator > 0 && num_colors_found_for_indicator == indicator.indicator_scales.length) || 
-							      (i >= (3*columns_per_scale + index_first_scale) && i <= (13*columns_per_scale + index_first_scale)))
+  										i+=columns_per_scale # move on to the next set of indicator scales
+  							    end
+  							  end
+  							  # save scales if color provided for all scales or 
+  							  #  there were between 3 and 13 scales and no color
+  		  		logger.debug "+++ num of colors found for this row: #{num_colors_found_for_indicator} and scale length = #{indicator.indicator_scales.length}"
+  		  		logger.debug "+++ i = #{i}, lower bound = #{(3*columns_per_scale + index_first_scale)}, upper bound = #{(13*columns_per_scale + index_first_scale)}"
+  							  if ((num_colors_found_for_indicator > 0 && num_colors_found_for_indicator == indicator.indicator_scales.length) || 
+  							      (i >= (3*columns_per_scale + index_first_scale) && i <= (13*columns_per_scale + index_first_scale)))
 							  
-		  		logger.debug "+++ saving record"
-		  					  # Save if valid 
-		  				    if indicator.valid?
-		  				      indicator.save
-		  				    else
-		  				      # an error occurred, stop
-		  				      msg = I18n.t('models.indicator_scale.msgs.not_valid', :row_num => n)
-		  				      raise ActiveRecord::Rollback
-		  				      return msg
-		  				    end
-						    else
-						      # not enough colors or scales out of range
-						      msg = I18n.t('models.indicator_scale.msgs.colors_scales_out_range', :row_num => n)
-						      raise ActiveRecord::Rollback
-						      return msg
-						    end
+  		  		logger.debug "+++ saving record"
+  		  					  # Save if valid 
+  		  				    if indicator.valid?
+  		  				      indicator.save
+  		  				    else
+  		  				      # an error occurred, stop
+  		  				      msg = I18n.t('models.indicator_scale.msgs.not_valid', :row_num => n)
+  		  				      raise ActiveRecord::Rollback
+  		  				      return msg
+  		  				    end
+  						    else
+  						      # not enough colors or scales out of range
+  						      msg = I18n.t('models.indicator_scale.msgs.colors_scales_out_range', :row_num => n)
+  						      raise ActiveRecord::Rollback
+  						      return msg
+  						    end
+  							else
+			logger.debug "+++ **reacord already has scales!"
+  					      msg = I18n.t('models.indicator_scale.msgs.already_exists', :row_num => n)
+  					      raise ActiveRecord::Rollback
+  					      return msg
+  							end
 							else
 				logger.debug "+++ **record does not exist!"
-					      msg = I18n.t('models.indicator_scale.msgs.already_exists', :row_num => n)
+					      msg = I18n.t('models.indicator_scale.msgs.not_exists', :row_num => n)
 					      raise ActiveRecord::Rollback
 					      return msg
 							end
@@ -189,10 +205,10 @@ logger.debug "not all params provided"
     else
       # get all of the indicators for this event
 logger.debug "getting all indicator info"
-      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_scales => :indicator_scale_translations})
-        .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
+      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_type => :indicator_type_translations}, {:indicator_scales => :indicator_scale_translations})
+        .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
           :event_id => event_id, :locale => "en")
-        .order("shape_type_translations.name_singular ASC, indicators.id ASC, indicator_scales.id ASC")
+          .order("shape_type_translations.name_singular ASC, indicator_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
 
       if indicators.nil? || indicators.length == 0
 logger.debug "no indicators found"
@@ -218,6 +234,13 @@ logger.debug "no shape type translation found"
             return obj
           else
             row << ind.shape_type.shape_type_translations[0].name_singular
+          end
+          if ind.indicator_type.indicator_type_translations.nil? || ind.indicator_type.indicator_type_translations.length == 0
+logger.debug "no indicator type translation found"
+						obj.msg = I18n.t('models.indicator_scale.msgs.no_indicator_type_trans')
+            return obj
+          else
+            row << ind.indicator_type.indicator_type_translations[0].name
           end
           # get en
           ind.indicator_translations.each do |trans|

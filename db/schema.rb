@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120612065405) do
+ActiveRecord::Schema.define(:version => 20120616062234) do
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
@@ -114,15 +114,35 @@ ActiveRecord::Schema.define(:version => 20120612065405) do
   add_index "indicator_translations", ["locale"], :name => "index_indicator_translations_on_locale"
   add_index "indicator_translations", ["name"], :name => "index_indicator_translations_on_name"
 
+  create_table "indicator_type_translations", :force => true do |t|
+    t.integer  "indicator_type_id"
+    t.string   "locale"
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "indicator_type_translations", ["indicator_type_id"], :name => "index_d1368a672c18e8979b1f029497e86e371a15a431"
+  add_index "indicator_type_translations", ["locale"], :name => "index_indicator_type_translations_on_locale"
+
+  create_table "indicator_types", :force => true do |t|
+    t.boolean  "has_summary", :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "indicators", :force => true do |t|
     t.integer  "event_id"
     t.integer  "shape_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "number_format"
+    t.integer  "indicator_type_id", :default => 2
   end
 
   add_index "indicators", ["event_id"], :name => "index_indicators_on_event_id"
+  add_index "indicators", ["indicator_type_id"], :name => "index_indicators_on_indicator_type_id"
   add_index "indicators", ["shape_type_id"], :name => "index_indicators_on_shape_type_id"
 
   create_table "page_translations", :force => true do |t|

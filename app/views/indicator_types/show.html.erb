@@ -1,0 +1,17 @@
+<% title t('.title') %>
+
+<p>
+  <b><%= t('app.common.name') %>:</b>
+  <%= @indicator_type.name %>
+</p>
+
+<p>
+  <b><%= t('app.common.has_summary') %>:</b>
+  <%= @indicator_type.has_summary %>
+</p>
+
+<div class="admin_nav">
+	<%= link_to t('app.buttons.edit'), edit_indicator_type_path(@indicator_type) %>
+	<%= link_to t('app.buttons.list'), indicator_types_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>

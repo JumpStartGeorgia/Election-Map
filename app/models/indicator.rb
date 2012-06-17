@@ -7,11 +7,12 @@ class Indicator < ActiveRecord::Base
   has_many :data, :dependent => :destroy
   belongs_to :event
   belongs_to :shape_type
+  belongs_to :indicator_type
   accepts_nested_attributes_for :indicator_translations
-  attr_accessible :event_id, :shape_type_id, :number_format, :indicator_translations_attributes
+  attr_accessible :indicator_type, :event_id, :shape_type_id, :number_format, :indicator_translations_attributes
   attr_accessor :locale
 
-  validates :event_id, :shape_type_id, :presence => true
+  validates :indicator_type, :event_id, :shape_type_id, :presence => true
   
   scope :l10n , joins(:indicator_translations).where('locale = ?',I18n.locale)
   scope :by_name , order('name').l10n
@@ -61,7 +62,7 @@ class Indicator < ActiveRecord::Base
 	end
 
   def self.csv_all_header
-    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional - e.g. %), en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
+    "Event, Shape Type, en: Indicator Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional - e.g. %), en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
   end
 
   def self.csv_scale_header
@@ -69,17 +70,27 @@ class Indicator < ActiveRecord::Base
   end
 
   def self.csv_name_header
-    "Event, Shape Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional - e.g. %)".split(",")
+    "Event, Shape Type, Indicator Type, en: Indicator Name, en: Indicator Abbrv, en: Indicator Description, ka: Indicator Name, ka: Indicator Abbrv, ka: Indicator Description, Number Format (optional - e.g. %)".split(",")
   end
 
   def self.csv_change_name_header
-    "Event, Shape Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW en: Indicator Description, NEW ka: Indicator Name, NEW ka: Indicator Abbrv, NEW ka: Indicator Description, Number Format (optional - e.g., %)".split(",")
+    "Event, Shape Type, en: Indicator Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW en: Indicator Description, NEW ka: Indicator Name, NEW ka: Indicator Abbrv, NEW ka: Indicator Description, Number Format (optional - e.g., %)".split(",")
   end
 
   def self.build_from_csv(file, deleteExistingRecord)
     infile = file.read
     n, msg = 0, ""
-    index_first_scale = 9
+    idx_event = 0
+    idx_shape_type = 1
+    idx_indicator_type = 2
+    idx_en_ind_name = 3
+    idx_en_ind_abbrv_name = 4
+    idx_en_ind_desc = 5
+    idx_ka_ind_name = 6
+    idx_ka_ind_abbrv_name = 7
+    idx_ka_ind_desc = 8
+    idx_number_format = 9
+    index_first_scale = 10
     columns_per_scale = 3
 
 		Indicator.transaction do
@@ -92,25 +103,29 @@ class Indicator < ActiveRecord::Base
     logger.debug "++++processing row #{n}"		
 
         # if the event or shape type are not provided, stop
-        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
-  logger.debug "+++++++ event or shape type not provided"				
+        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0 ||
+            row[idx_indicator_type].nil? || row[idx_indicator_type].strip.length == 0
+  logger.debug "+++++++ event or shape type or indicator type not provided"				
     		  msg = I18n.t('models.indicator.msgs.no_event_shape_spreadsheet', :row_num => n)
   	      raise ActiveRecord::Rollback
     		  return msg
   			else
   				# get the event id
-  				event = Event.find_by_name(row[0].strip)
+  				event = Event.find_by_name(row[idx_event].strip)
   				# get the shape type id
-  				shape_type = ShapeType.find_by_name_singular(row[1].strip)
+  				shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
+  				# get the indicator type id
+  				indicator_type = IndicatorType.find_by_name(row[idx_indicator_type].strip)
 
-  				if event.nil? || shape_type.nil?
-  	logger.debug "++++event or shape type was not found"				
+  				if event.nil? || shape_type.nil? || indicator_type.nil?
+  	logger.debug "++++event or shape type or indicator type was not found"				
 		  		  msg = I18n.t('models.indicator.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
             # only conintue if all values are present
-            if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil? || row[7].nil?
+            if row[idx_en_ind_name].nil? || row[idx_en_ind_abbrv_name].nil? || row[idx_en_ind_desc].nil? || 
+                row[idx_ka_ind_name].nil? || row[idx_ka_ind_abbrv_name].nil? || row[idx_ka_ind_desc].nil?
         		  msg = I18n.t('models.indicator.msgs.missing_data_spreadsheet', :row_num => n)
   logger.debug "+++++**missing data in row"
               raise ActiveRecord::Rollback
@@ -119,8 +134,8 @@ class Indicator < ActiveRecord::Base
 			logger.debug "++++found event and shape type, seeing if record already exists"
 							# see if indicator already exists for the provided event and shape_type
 							alreadyExists = Indicator.includes(:indicator_translations)
-							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
-							    event.id, shape_type.id, row[2].strip)
+							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+							    event.id, shape_type.id, indicator_type.id, row[idx_en_ind_name].strip)
 					
 		          # if the indicator already exists and deleteExistingRecord is true, delete the indicator
 		          if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -137,12 +152,13 @@ class Indicator < ActiveRecord::Base
 								ind = Indicator.new
 								ind.event_id = event.id
 								ind.shape_type_id = shape_type.id
-								ind.number_format = row[8].strip if !row[8].nil? && row[8].strip.length > 0
+								ind.indicator_type_id = indicator_type.id
+								ind.number_format = row[idx_number_format].strip if !row[idx_number_format].nil? && row[idx_number_format].strip.length > 0
 							  # translations
-								ind.indicator_translations.build(:locale => 'en', :name => row[2].strip, 
-										:name_abbrv => row[3].strip, :description => row[4].strip)
-								ind.indicator_translations.build(:locale => 'ka', :name => row[5].strip, 
-										:name_abbrv => row[6].strip, :description => row[7].strip)
+								ind.indicator_translations.build(:locale => 'en', :name => row[idx_en_ind_name].strip, 
+										:name_abbrv => row[idx_en_ind_abbrv_name].strip, :description => row[idx_en_ind_desc].strip)
+								ind.indicator_translations.build(:locale => 'ka', :name => row[idx_ka_ind_name].strip, 
+										:name_abbrv => row[idx_ka_ind_abbrv_name].strip, :description => row[idx_ka_ind_desc].strip)
 							  # scales
 							  finishedScales = false # keep looping until find empty cell
 							  i = index_first_scale # where first scale starts
@@ -205,7 +221,18 @@ class Indicator < ActiveRecord::Base
   def self.change_names_from_csv(file)
     infile = file.read
     n, msg = 0, ""
-    index_en_name = 3
+    idx_event = 0
+    idx_shape_type = 1
+    idx_indicator_type = 2
+    idx_old_en_ind_name = 3
+    idx_en_ind_name = 4
+    idx_en_ind_abbrv_name = 5
+    idx_en_ind_desc = 6
+    idx_ka_ind_name = 7
+    idx_ka_ind_abbrv_name = 8
+    idx_ka_ind_desc = 9
+    idx_number_format = 10
+    index_en_name = 4
 
 		Indicator.transaction do
 		  CSV.parse(infile) do |row|
@@ -216,25 +243,29 @@ class Indicator < ActiveRecord::Base
     logger.debug "++++processing row #{n}"		
 
         # if the event or shape type are not provided, stop
-        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
+        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0 ||
+            row[idx_indicator_type].nil? || row[idx_indicator_type].strip.length == 0
   logger.debug "+++++++ event or shape type not provided"				
     		  msg = I18n.t('models.indicator.msgs.no_event_shape_spreadsheet', :row_num => n)
   	      raise ActiveRecord::Rollback
     		  return msg
   			else
   				# get the event id
-  				event = Event.find_by_name(row[0].strip)
+  				event = Event.find_by_name(row[idx_event].strip)
   				# get the shape type id
-  				shape_type = ShapeType.find_by_name_singular(row[1].strip)
+  				shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
+  				# get the indicator type id
+  				indicator_type = IndicatorType.find_by_name(row[idx_indicator_type].strip)
 
-  				if event.nil? || shape_type.nil?
-  	logger.debug "++++event or shape type was not found"				
+  				if event.nil? || shape_type.nil? || indicator_type.nil?
+  	logger.debug "++++event or shape type or indicator type was not found"				
 		  		  msg = I18n.t('models.indicator.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
             # only conintue if all values are present
-            if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil? || row[7].nil? || row[8].nil?
+            if row[idx_old_en_ind_name].nil? || row[idx_en_ind_name].nil? || row[idx_en_ind_abbrv_name].nil? || row[idx_en_ind_desc].nil? || 
+                row[idx_ka_ind_name].nil? || row[idx_ka_ind_abbrv_name].nil? || row[idx_ka_ind_desc].nil?
         		  msg = I18n.t('models.indicator.msgs.missing_data_spreadsheet', :row_num => n)
   logger.debug "+++++**missing data in row"
               raise ActiveRecord::Rollback
@@ -243,16 +274,16 @@ class Indicator < ActiveRecord::Base
 			logger.debug "++++found event and shape type, seeing if record already exists"
 							# see if indicator already exists for the provided event and shape_type
 							alreadyExists = Indicator.includes(:indicator_translations)
-							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
-							    event.id, shape_type.id, row[2].strip)
+							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+							    event.id, shape_type.id, indicator_type.id, row[idx_old_en_ind_name].strip)
 					
 							if !alreadyExists.nil? && alreadyExists.length > 0
 			logger.debug "++++found indicator record, populate obj"
 								# update record
 								# - alreadyExists only has en translation record, need to have all translations
 								ind = Indicator.find(alreadyExists[0].id)
-								if !row[9].nil? && row[9].strip.length > 0
-									ind.number_format = row[9].strip 
+								if !row[idx_number_format].nil? && row[idx_number_format].strip.length > 0
+									ind.number_format = row[idx_number_format].strip 
 								else
 									ind.number_format = nil
 								end
@@ -306,16 +337,16 @@ logger.debug "not all params provided"
       # get all of the indicators for this event
       if names_only
 logger.debug "getting indicator names only"
-        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations)
-          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
+        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_type => :indicator_type_translations})
+          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
             :event_id => event_id, :locale => "en")
-          .order("shape_type_translations.name_singular ASC, indicators.id ASC")
+          .order("shape_type_translations.name_singular ASC, indicator_type_translations.name ASC, indicators.id ASC")
       else 
 logger.debug "getting all indicator info"
-        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_scales => :indicator_scale_translations})
-          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale ", 
+        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_type => :indicator_type_translations}, {:indicator_scales => :indicator_scale_translations})
+          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
             :event_id => event_id, :locale => "en")
-          .order("shape_type_translations.name_singular ASC, indicators.id ASC, indicator_scales.id ASC")
+          .order("shape_type_translations.name_singular ASC, indicator_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
       end
       
       if indicators.nil? || indicators.length == 0
@@ -338,10 +369,17 @@ logger.debug "no event translation found"
           end
           if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.length == 0
 logger.debug "no shape type translation found"
-						obj.msg = I18n.t('models.indicator.msgs.no_shpae_type_trans')
+						obj.msg = I18n.t('models.indicator.msgs.no_shape_type_trans')
             return obj
           else
             row << ind.shape_type.shape_type_translations[0].name_singular
+          end
+          if ind.indicator_type.indicator_type_translations.nil? || ind.indicator_type.indicator_type_translations.length == 0
+logger.debug "no indicator type translation found"
+						obj.msg = I18n.t('models.indicator.msgs.no_indicator_type_trans')
+            return obj
+          else
+            row << ind.indicator_type.indicator_type_translations[0].name
           end
           # get en
           ind.indicator_translations.each do |trans|

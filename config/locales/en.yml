@@ -11,8 +11,8 @@ en:
         already_exists: Row %{row_num} already exists in the database.
     indicator:
       msgs:
-        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
-        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type or indicator type was not found in the spreadsheet.
+        no_event_shape_db: Row %{row_num} - The event or shape type or indicator type was not found in the database.
         missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
@@ -22,19 +22,22 @@ en:
         no_indicators: No Indicators where found for the selected event.
         no_event_trans: No translation records for the Event name were found.
         no_shape_type_trans: No translations records for the Shape Types were found.
+        no_shape_type_trans: No translations records for the Indicator Types were found.
     indicator_scale:
       msgs:
-        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
-        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type or indicator type was not found in the spreadsheet.
+        no_event_shape_db: Row %{row_num} - The event or shape type or indicator type was not found in the database.
         missing_data_spreadsheet: Row %{row_num} - Indicator Name is missing and is required to save the record.
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
         colors_scales_out_range: "Row %{row_num} must have colors for every scale or, if no color provided, can only have between 3 and 13 indicator scales."
-        already_exists: Row %{row_num} already exists in the database.
+        not_exists: Indicator at Row %{row_num} does not exist in the database.
+        already_exists: Indicator at Row %{row_num} already has scales in the database.
         missing_paramters: Not all parameters were provided to create the download.
         no_indicators: No Indicators where found for the selected event.
         no_event_trans: No translation records for the Event name were found.
         no_shape_type_trans: No translations records for the Shape Types were found.
+        no_shape_type_trans: No translations records for the Indicator Types were found.
     shape:
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
@@ -64,6 +67,7 @@ en:
       new_event_types: New Event Type
       new_events: New Event
       new_indicator_scales: New Indicator Scale
+      new_indicator_types: New Indicator Type
       new_indicators: New Indicator
       new_locales: New Language
       new_pages: New Page
@@ -103,6 +107,7 @@ en:
       parent_shape: Parent Shape
       locale: Language
       file_upload: CSV File to Upload
+      has_summary: Can Summarize All Indicators in Type
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -147,6 +152,7 @@ en:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
+      indicator_types: Indicator Types
       locales: Languages
       pages: Basic Pages
       cache: Clear Cache
@@ -209,6 +215,15 @@ en:
       help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
       help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
       delete_records: Delete existing scales on file for the provided Indicator(s)
+  indicator_types:
+    edit:
+      title: Editing Indicator Type
+    index:
+      title: Indicator Types
+    new:
+      title: New Indicator Type
+    show:
+      title: Indicator Type Details
   indicators:
     change_name:
       title: Upload a CSV File to Change Indicator Names

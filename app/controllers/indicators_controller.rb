@@ -122,9 +122,6 @@ logger.debug "controller - getting all info"
 filename ="Indicator_Names_Scales_for_"
           obj = Indicator.create_csv(params[:event_id], false)
         end
-logger.debug "obj = #{obj}"
-logger.debug "csv data = #{obj.csv_data}"
-logger.debug "msg = #{obj.msg}"
         if !obj.msg.nil?
   				flash[:notice] = I18n.t('app.msgs.download.error', :event_name => event.name, :msg => obj.msg)
   	      redirect_to download_indicators_path #GET
@@ -134,12 +131,12 @@ logger.debug "msg = #{obj.msg}"
         else
           # send the file
 					# make sure we get the english file name
-          filename << event.event_translations[0].name.gsub(' ', '_')
-					#remove bad characters
-					filename.gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
+          filename << event.event_translations[0].name
+          # add date to file name
+          filename << "_#{l Time.now, :format => :file}"
           send_data obj.csv_data,
             :type => 'text/csv; charset=utf-8; header=present',
-            :disposition => "attachment; filename=#{filename}.csv"
+            :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
         end
       end
 		end

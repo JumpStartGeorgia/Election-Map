@@ -1,5 +1,6 @@
 ElectionMap::Application.routes.draw do
 
+
 	#--------------------------------	
 	# all resources should be within the scope block below
 	#--------------------------------	
@@ -23,6 +24,7 @@ ElectionMap::Application.routes.draw do
 	      get :export
 			end
 	  end
+    resources :indicator_types
 	  resources :indicators do
 			collection do
 	      get :upload
