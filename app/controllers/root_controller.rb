@@ -72,17 +72,17 @@ logger.debug "+++++++++ parent shape could not be found"
 
 					# get the indicators for the children shape_type
 					if !params[:event_id].nil? && !@child_shape_type_id.nil?
-						@indicators = Indicator.find_by_event_shape_type(params[:event_id],@child_shape_type_id)
+						@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id],@child_shape_type_id)
 					end
 
-					if @indicators.nil? || @indicators.empty?
+					if @indicator_types.nil? || @indicator_types.empty?
 						# no indicators exist for this event and shape type
 logger.debug "+++++++++ no indicators exist for this event and shape type"
 						flag_redirect = true
 					else
 						# if an indicator is not selected, select the first one in the list
 						if params[:indicator_id].nil?
-							params[:indicator_id] = @indicators[0].id
+							params[:indicator_id] = @indicator_types[0].indicators[0] if !@indicator_types[0].indicators.nil? && !@indicator_types[0].indicators.empty?
 						end
 
 						# get the indicator

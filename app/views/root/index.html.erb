@@ -1,13 +1,18 @@
 <% title @map_title %>
 
-<% if !@indicators.nil? && @indicators.length > 0 %>
+<% if !@indicator_types.nil? && !@indicator_types.empty? %>
 	<ul id="indicators" class="group">
-		<% @indicators.each do |indicator| %>
-			<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
-			<li>
-				<%= link_to indicator.name_abbrv, indicator_map_path(params.merge(:indicator_id => indicator.id)), 
-					:title => indicator.name, :class => is_active %>
-			</li>
+		<% @indicator_types.each do |indicator_type| %>
+			<% if indicator_type.has_summary %>
+				<li><%= link_to t(".inidcator_summary_link", :name => indicator_type.name), '#', :class => "not_active" %></li>
+			<% end %>
+			<% indicator_type.indicators.each do |indicator| %>
+				<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
+				<li>
+					<%= link_to indicator.name_abbrv, indicator_map_path(params.merge(:indicator_id => indicator.id)), 
+						:title => indicator.name, :class => is_active %>
+				</li>
+			<% end %>
 		<% end %>
 	</ul>
 <% end %>
