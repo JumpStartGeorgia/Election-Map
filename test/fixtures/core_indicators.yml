@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  indicator_type_id: 1
+  number_format: MyString
+  name: MyString
+  name_abbrv: MyString
+  name_description: MyText
+
+two:
+  indicator_type_id: 1
+  number_format: MyString
+  name: MyString
+  name_abbrv: MyString
+  name_description: MyText

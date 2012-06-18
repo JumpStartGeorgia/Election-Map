@@ -1,0 +1,33 @@
+<% title t('.title') %>
+
+<p>
+  <b><%= t("app.common.name") %>:</b>
+  <%= @core_indicator.name %>
+</p>
+
+<p>
+  <b><%= t("app.common.name_abbrv") %>:</b>
+  <%= @core_indicator.name_abbrv %>
+</p>
+
+<p>
+  <b><%= t("app.common.description") %>:</b>
+  <%= @core_indicator.description %>
+</p>
+
+<p>
+  <b><%= t("app.common.indicator_type") %>:</b>
+  <%= @core_indicator.indicator_type %>
+</p>
+
+<p>
+  <b><%= t("app.common.number_format") %>:</b>
+  <%= @core_indicator.number_format %>
+</p>
+
+<div class="admin_nav">
+	<%= link_to t('app.buttons.edit'), edit_core_indicator_path(@core_indicator) %>
+	<%= link_to t('app.buttons.list'), core_indicators_path %>
+	<%= link_to t('app.buttons.admin'), admin_path %>
+</div>
+

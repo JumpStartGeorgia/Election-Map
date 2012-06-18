@@ -1,0 +1,23 @@
+<%= semantic_form_for @core_indicator do |f| %>
+	<%= f.semantic_errors %>
+	<%= f.inputs :for => :core_indicator_translations do |core_indicator_translation, i| %>
+		
+		<% formLocale = I18n.available_locales[i-1] %>
+		
+		<div id="form-<%= formLocale %>" class="multilanguage">
+			<h3><%= t("app.language.#{formLocale}") %></h3>
+
+		  <%= core_indicator_translation.input :name %>
+		  <%= core_indicator_translation.input :name_abbrv %>
+		  <%= core_indicator_translation.input :description %>
+			<%= core_indicator_translation.hidden_field :locale , :value => formLocale %>
+		</div>
+
+	<% end %>
+  <%= f.inputs do %>
+    <%= f.input :indicator_type %>
+    <%= f.input :number_format %>
+  <% end %>
+
+	<%= f.actions :submit, :reset, :cancel %>
+<% end %>

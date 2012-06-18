@@ -97,6 +97,7 @@ ka:
       common_name: Common Name
       value: Value
       name: Name
+      name_abbrv: Abbrveiated Name
       name_singular: Singular Name
       name_plural: Plural Name
       title: Title
@@ -108,6 +109,8 @@ ka:
       locale: Language
       file_upload: CSV File to Upload
       has_summary: Can Summarize All Indicators in Type
+      indicator_type: Indicator Type
+      number_format: Number Format
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -152,8 +155,8 @@ ka:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
+      core_indicators: Unique Indicators for all Events
       indicator_types: Indicator Types
-      locales: Languages
       pages: Basic Pages
       cache: Clear Cache
       csv_header: Upload CSV Files
@@ -180,6 +183,15 @@ ka:
       instructions: Please note that you can add as many 'Indicator/Value' columns as you need.
       help_1: Data must be provided in every column or no records will be saved.
       delete_records: Delete existing data on file for the provided Event and Shape Type(s)
+  core_indicators:
+    edit:
+      title: Editing Indicator
+    index:
+      title: Indicators
+    new:
+      title: New Indicator
+    show:
+      title: Indicator Details
   event_types:
     edit:
       title: Editing Event Type

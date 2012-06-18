@@ -1,6 +1,7 @@
 ElectionMap::Application.routes.draw do
 
 
+
 	#--------------------------------	
 	# all resources should be within the scope block below
 	#--------------------------------	
@@ -9,7 +10,7 @@ ElectionMap::Application.routes.draw do
 		devise_for :users
 
 
-	  resources :locales
+	  resources :core_indicators
 	  resources :data do
 			collection do
 	      get :upload
