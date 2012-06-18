@@ -4,13 +4,13 @@
 	<ul id="indicators" class="group">
 		<% @indicator_types.each do |indicator_type| %>
 			<% if indicator_type.has_summary %>
-				<li><%= link_to t(".inidcator_summary_link", :name => indicator_type.name), '#', :class => "not_active" %></li>
+				<li><%= link_to t(".indicator_summary_link", :name => indicator_type.name), '#', :class => "not_active" %></li>
 			<% end %>
-			<% indicator_type.indicators.each do |indicator| %>
+			<% indicator_type.core_indicators.indicators.each do |indicator| %>
 				<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
 				<li>
 					<%= link_to indicator.name_abbrv, indicator_map_path(params.merge(:indicator_id => indicator.id)), 
-						:title => indicator.name, :class => is_active %>
+						:title => indicator.description, :class => is_active %>
 				</li>
 			<% end %>
 		<% end %>

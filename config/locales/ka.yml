@@ -155,7 +155,7 @@ ka:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
-      core_indicators: Unique Indicators for all Events
+      core_indicators: Unique Indicators
       indicator_types: Indicator Types
       pages: Basic Pages
       cache: Clear Cache
@@ -168,7 +168,7 @@ ka:
       download_header: Download CSV Files
       download_indicators: Indicators
     index:
-      inidcator_summary_link: "%{name} Summary"
+      indicator_summary_link: "%{name} Summary"
       export_link_text: Export Map
       export_help_text: Export Help
     clear_cache:

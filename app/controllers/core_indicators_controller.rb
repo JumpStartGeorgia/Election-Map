@@ -5,7 +5,7 @@ class CoreIndicatorsController < ApplicationController
   # GET /core_indicators
   # GET /core_indicators.json
   def index
-    @core_indicators = CoreIndicator.all
+    @core_indicators = CoreIndicator.order_by_type_name
 
     respond_to do |format|
       format.html # index.html.erb

@@ -15,9 +15,10 @@ class Datum < ActiveRecord::Base
 		if (indicator_id.nil? || shape_id.nil?)
 			return nil		
 		else
-			sql = "SELECT d.id, d.value, i.number_format FROM data as d "
+			sql = "SELECT d.id, d.value, ci.number_format FROM data as d "
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
+			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
 			sql << "left join shapes as s on i.shape_type_id = s.shape_type_id "
 			sql << "left join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
 			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND dt.locale = :locale AND st.locale = :locale"
@@ -80,9 +81,9 @@ class Datum < ActiveRecord::Base
 		              return msg
 		            else
 									# see if indicator already exists for the provided event and shape_type
-									indicator = Indicator.includes(:indicator_translations)
-										.where('indicators.event_id = ? and indicators.shape_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
-											event.id, shape_type.id, row[i].strip)
+									indicator = Indicator.includes(:core_indicator => :core_indicator_translations)
+										.where('indicators.event_id=:event_id and indicators.shape_type_id=:shape_type_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name', 
+											:event_id => event.id, :shape_type_id => shape_type.id, :name => row[i].strip, :locale => "en")
 					
 									if indicator.nil? || indicator.length == 0
 					logger.debug "++++indicator was not found"
@@ -183,15 +184,15 @@ logger.debug "no shapes were found"
 				# get the data for the provided parameters
 				if indicator_id.nil?
 					# get data for all indicators
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:data => :datum_translations})
-		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => :core_indicator_translations}, {:data => :datum_translations})
+		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
 		          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale, 
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")
 				else
 					# get data for provided indicator
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:data => :datum_translations})
-		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => :core_indicator_translations}, {:data => :datum_translations})
+		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
 		          :indicator_id => indicator_id, :locale => I18n.locale, 
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")

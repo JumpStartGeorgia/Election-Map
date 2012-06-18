@@ -1,22 +1,40 @@
 class Indicator < ActiveRecord::Base
-  translates :name, :name_abbrv, :description
+#  translates :name, :name_abbrv, :description
   require 'csv'
 
-  has_many :indicator_translations, :dependent => :destroy
+#  has_many :indicator_translations, :dependent => :destroy
+  belongs_to :core_indicator
+  has_one :indicator_type, :through => :core_indicator
   has_many :indicator_scales, :dependent => :destroy
   has_many :data, :dependent => :destroy
   belongs_to :event
   belongs_to :shape_type
-  belongs_to :indicator_type
-  accepts_nested_attributes_for :indicator_translations
-  attr_accessible :indicator_type, :event_id, :shape_type_id, :number_format, :indicator_translations_attributes
+#  belongs_to :indicator_type
+#  accepts_nested_attributes_for :indicator_translations
+  attr_accessible :core_indicator_id, :event_id, :shape_type_id#, :indicator_type, :number_format, :indicator_translations_attributes
   attr_accessor :locale
 
-  validates :indicator_type, :event_id, :shape_type_id, :presence => true
+  validates :core_indicator_id, :event_id, :shape_type_id, :presence => true
   
-  scope :l10n , joins(:indicator_translations).where('locale = ?',I18n.locale)
-  scope :by_name , order('name').l10n
+#  scope :l10n , joins(:indicator_translations).where('locale = ?',I18n.locale)
+#  scope :by_name , order('name').l10n
 
+
+  def name
+    self.core_indicator.name
+  end
+
+  def name_abbrv
+    self.core_indicator.name_abbrv
+  end
+
+  def description
+    self.core_indicator.description
+  end
+
+  def number_format
+    self.core_indicator.number_format
+  end
 
 	# the shape_type has changed, get the indicator that 
   # matches the indicator from the last shape type
@@ -24,15 +42,13 @@ class Indicator < ActiveRecord::Base
 		if (old_indicator.nil? || new_shape_type.nil?)
 			return nil		
 		else
-			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}_#{I18n.locale}") {
+			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}") {
 				sql = "select inew.* "
 				sql << "from indicators as iold "
-				sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
-				sql << "inner join indicator_translations as itold on iold.id = itold.indicator_id "
-				sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name_abbrv = itnew.name_abbrv and itold.locale = itnew.locale "
-				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
+				sql << "inner join indicators as inew on iold.event_id = inew.event_id and iold.core_indicator_id = inew.core_indicator_id "
+				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type"
 		
-				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => I18n.locale])
+				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type])
 			}
 =begin
       sql = "select inew.* "
@@ -53,9 +69,9 @@ class Indicator < ActiveRecord::Base
 			return nil		
 		else
 			Rails.cache.fetch("indicators_by_event_#{event_id}_shape_type_#{shape_type_id}_#{I18n.locale}") {
-				includes(:indicator_translations)
+				includes({:core_indicator => :core_indicator_translations})
 				.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id}, 
-							:indicator_translations => {:locale => I18n.locale})
+							:core_indicator_translations => {:locale => I18n.locale})
 			}
 #      where(:event_id => event_id, :shape_type_id => shape_type_id)
 		end
@@ -77,6 +93,8 @@ class Indicator < ActiveRecord::Base
     "Event, Shape Type, en: Indicator Type, OLD en: Indicator Name, NEW en: Indicator Name, NEW en: Indicator Abbrv, NEW en: Indicator Description, NEW ka: Indicator Name, NEW ka: Indicator Abbrv, NEW ka: Indicator Description, Number Format (optional - e.g., %)".split(",")
   end
 
+=begin
+# no longer need these methods due to addition of core_indicators object
   def self.build_from_csv(file, deleteExistingRecord)
     infile = file.read
     n, msg = 0, ""
@@ -133,8 +151,8 @@ class Indicator < ActiveRecord::Base
             else
 			logger.debug "++++found event and shape type, seeing if record already exists"
 							# see if indicator already exists for the provided event and shape_type
-							alreadyExists = Indicator.includes(:indicator_translations)
-							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+							alreadyExists = Indicator.includes({:core_indicator => :core_indicator_translations})
+							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?', 
 							    event.id, shape_type.id, indicator_type.id, row[idx_en_ind_name].strip)
 					
 		          # if the indicator already exists and deleteExistingRecord is true, delete the indicator
@@ -273,8 +291,8 @@ class Indicator < ActiveRecord::Base
             else
 			logger.debug "++++found event and shape type, seeing if record already exists"
 							# see if indicator already exists for the provided event and shape_type
-							alreadyExists = Indicator.includes(:indicator_translations)
-							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+							alreadyExists = Indicator.includes({:core_indicator => :core_indicator_translations})
+							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?', 
 							    event.id, shape_type.id, indicator_type.id, row[idx_old_en_ind_name].strip)
 					
 							if !alreadyExists.nil? && alreadyExists.length > 0
@@ -323,7 +341,7 @@ class Indicator < ActiveRecord::Base
   logger.debug "++++procssed #{n} rows in CSV file"
     return msg 
   end
-
+=end
   def self.create_csv(event_id, names_only)
 		obj = OpenStruct.new
 		obj.csv_data = nil
@@ -337,13 +355,13 @@ logger.debug "not all params provided"
       # get all of the indicators for this event
       if names_only
 logger.debug "getting indicator names only"
-        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_type => :indicator_type_translations})
+        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, {:indicator_type => :indicator_type_translations}]})
           .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
             :event_id => event_id, :locale => "en")
           .order("shape_types.id ASC, indicator_type_translations.name ASC, indicators.id ASC")
       else 
 logger.debug "getting all indicator info"
-        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_type => :indicator_type_translations}, {:indicator_scales => :indicator_scale_translations})
+        indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, {:indicator_type => :indicator_type_translations}]}, {:indicator_scales => :indicator_scale_translations})
           .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
             :event_id => event_id, :locale => "en")
           .order("shape_types.id ASC, indicator_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
@@ -382,7 +400,7 @@ logger.debug "no indicator type translation found"
             row << ind.indicator_type.indicator_type_translations[0].name
           end
           # get en
-          ind.indicator_translations.each do |trans|
+          ind.core_indicator.core_indicator_translations.each do |trans|
             if trans.locale == 'en'
               row << trans.name
               row << trans.name_abbrv
@@ -390,7 +408,7 @@ logger.debug "no indicator type translation found"
             end
           end
           # get ka
-          ind.indicator_translations.each do |trans|
+          ind.core_indicator.core_indicator_translations.each do |trans|
             if trans.locale == 'ka'
               row << trans.name
               row << trans.name_abbrv

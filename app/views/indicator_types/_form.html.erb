@@ -1,14 +1,14 @@
 <%= semantic_form_for @indicator_type do |f| %>
   <%= f.error_messages %>
-  <%= f.inputs :for => :indicator_translations do |indicator_translation, i| %>
+  <%= f.inputs :for => :indicator_type_translations do |indicator_type_translation, i| %>
 	
   	<% formLocale = I18n.available_locales[i-1] %>
 	
   	<div id="form-<%= formLocale %>" class="multilanguage">
   		<h3><%= t("app.language.#{formLocale}") %></h3>
 
-  		<%= indicator_translation.input :name %>
-  		<%= indicator_translation.hidden_field :locale , :value => formLocale %>
+  		<%= indicator_type_translation.input :name %>
+  		<%= indicator_type_translation.hidden_field :locale , :value => formLocale %>
   	</div>
 
   <% end %>

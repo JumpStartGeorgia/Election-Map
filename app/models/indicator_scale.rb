@@ -109,8 +109,8 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
             else
 			logger.debug "+++ found event and shape type, seeing if indicator record exists"
 							# see if indicator exists for the provided event and shape_type
-							alreadyExists = Indicator.includes(:indicator_translations, )
-								.where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and indicator_translations.locale="en" and indicator_translations.name= ?', 
+							alreadyExists = Indicator.includes(:core_indicator => :core_indicator_translations)
+								.where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?', 
 									event.id, shape_type.id, indicator_type.id, row[idx_en_ind_name].strip)
 					
 		          # if the indicator already exists and deleteExistingRecord is true, delete the indicator scales
@@ -205,7 +205,7 @@ logger.debug "not all params provided"
     else
       # get all of the indicators for this event
 logger.debug "getting all indicator info"
-      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:indicator_type => :indicator_type_translations}, {:indicator_scales => :indicator_scale_translations})
+      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, {:indicator_type => :indicator_type_translations}]}, {:indicator_scales => :indicator_scale_translations})
         .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
           :event_id => event_id, :locale => "en")
           .order("shape_types.id ASC, indicator_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
@@ -243,13 +243,13 @@ logger.debug "no indicator type translation found"
             row << ind.indicator_type.indicator_type_translations[0].name
           end
           # get en
-          ind.indicator_translations.each do |trans|
+          ind.core_indicator.core_indicator_translations.each do |trans|
             if trans.locale == 'en'
               row << trans.name
             end
           end
           # get ka
-          ind.indicator_translations.each do |trans|
+          ind.core_indicator.core_indicator_translations.each do |trans|
             if trans.locale == 'ka'
               row << trans.name
             end

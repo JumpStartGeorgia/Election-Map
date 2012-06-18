@@ -72,7 +72,7 @@ logger.debug "+++++++++ parent shape could not be found"
 
 					# get the indicators for the children shape_type
 					if !params[:event_id].nil? && !@child_shape_type_id.nil?
-						@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id],@child_shape_type_id)
+						@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id], @child_shape_type_id)
 					end
 
 					if @indicator_types.nil? || @indicator_types.empty?
@@ -82,7 +82,7 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 					else
 						# if an indicator is not selected, select the first one in the list
 						if params[:indicator_id].nil?
-							params[:indicator_id] = @indicator_types[0].indicators[0] if !@indicator_types[0].indicators.nil? && !@indicator_types[0].indicators.empty?
+							params[:indicator_id] = @indicator_types[0].indicators[0].id if !@indicator_types[0].indicators.nil? && !@indicator_types[0].indicators.empty?
 						end
 
 						# get the indicator
@@ -410,8 +410,8 @@ logger.debug " - no matching event found!"
 		if !@indicator.nil?
 			gon.indicator_name = @indicator.name
 			gon.indicator_name_abbrv = @indicator.name_abbrv
-			gon.indicator_number_format = @indicator.number_format.nil? ? "" : @indicator.number_format
 			gon.indicator_description = @indicator.description
+			gon.indicator_number_format = @indicator.number_format.nil? ? "" : @indicator.number_format
 			gon.indicator_scale_colors = IndicatorScale.get_colors(@indicator.id)
 		end
 
