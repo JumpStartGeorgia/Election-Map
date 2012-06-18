@@ -165,6 +165,7 @@ ka:
       download_header: Download CSV Files
       download_indicators: Indicators
     index:
+      inidcator_summary_link: "%{name} Summary"
       export_link_text: Export Map
       export_help_text: Export Help
     clear_cache:
