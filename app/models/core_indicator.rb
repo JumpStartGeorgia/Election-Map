@@ -19,4 +19,15 @@ class CoreIndicator < ActiveRecord::Base
     joins(:core_indicator_translations).where(:core_indicator_translations => {:locale => I18n.locale})
       .order("core_indicators.indicator_type_id ASC, core_indicator_translations.name ASC")
   end
+
+  def name_abbrv_w_parent
+    parent_abbrv = self.ancestry.nil? ? "" : " (#{self.parent.name_abbrv})"
+    "#{self.name_abbrv}#{parent_abbrv}"
+  end
+
+  def description_w_parent
+    parent_name = self.ancestry.nil? ? "" : " (#{self.parent.name})"
+    "#{self.description}#{parent_name}"
+  end
+
 end

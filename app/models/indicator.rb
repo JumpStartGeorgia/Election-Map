@@ -28,8 +28,16 @@ class Indicator < ActiveRecord::Base
     self.core_indicator.name_abbrv
   end
 
+  def name_abbrv_w_parent
+    self.core_indicator.name_abbrv_w_parent
+  end
+
   def description
     self.core_indicator.description
+  end
+
+  def description_w_parent
+    self.core_indicator.description_w_parent
   end
 
   def number_format
