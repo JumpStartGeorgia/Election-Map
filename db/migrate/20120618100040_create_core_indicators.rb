@@ -1,6 +1,6 @@
 class CreateCoreIndicators < ActiveRecord::Migration
   def up
-		unless table_exists? :core_indicators
+		if !table_exists? :core_indicators
 		  create_table :core_indicators do |t|
 		    t.integer :indicator_type_id
 		    t.string :number_format
@@ -10,27 +10,27 @@ class CreateCoreIndicators < ActiveRecord::Migration
 			add_index :core_indicators, :indicator_type_id
 		end
 	
-		unless table_exists? :core_indicator_translations
+		if !table_exists? :core_indicator_translations
 		  CoreIndicator.create_translation_table! :name => :string, :name_abbrv => :string, :description => :text
 			add_index :core_indicator_translations, :name
 			add_index :core_indicator_translations, :name_abbrv
 		end
 
-		unless column_exists? :indicators, :core_indicator_id
+		if !column_exists? :indicators, :core_indicator_id
 			add_column :indicators, :core_indicator_id, :integer
 			add_index :indicators, :core_indicator_id
 		end
 
 		# rename old columns in indicators table
-		unless !column_exists? :indicators, :indicator_type_id
+		if column_exists? :indicators, :indicator_type_id
 			rename_column :indicators, :indicator_type_id, :indicator_type_id_old
 		end
-		unless !column_exists? :indicators, :number_format
+		if column_exists? :indicators, :number_format
 			rename_column :indicators, :number_format, :number_format_old
 		end
 		
 		# rename old indicator translations table
-		unless !table_exists? :indicator_translations
+		if table_exists? :indicator_translations
 			rename_table :indicator_translations, :indicator_translation_olds
 		end
 
@@ -73,24 +73,24 @@ class CreateCoreIndicators < ActiveRecord::Migration
   end
 
 	def down
-		unless table_exists? :core_indicators
+		if table_exists? :core_indicators
 	    drop_table :core_indicators
 		end
-		unless table_exists? :core_indicator_translations
+		if table_exists? :core_indicator_translations
 	    CoreIndicator.drop_translation_table!    
 		end
 
-		unless column_exists? :indicators, :core_indicator_id
+		if column_exists? :indicators, :core_indicator_id
 			remove_index :indicators, :core_indicator_id
 			remove_column :indicators, :core_indicator_id
 		end
-		unless column_exists? :indicators, :number_format
+		if !column_exists? :indicators, :number_format
 			rename_column :indicators, :indicator_type_id_old, :indicator_type_id
 		end
-		unless column_exists? :indicators, :number_format
+		if !column_exists? :indicators, :number_format
 			rename_column :indicators, :number_format_old, :number_format
 		end
-		unless table_exists? :indicator_translations
+		if !table_exists? :indicator_translations
 			rename_table :indicator_translation_olds, :indicator_translations
 		end
 	end
