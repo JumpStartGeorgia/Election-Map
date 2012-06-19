@@ -111,6 +111,8 @@ ka:
       has_summary: Can Summarize All Indicators in Type
       indicator_type: Indicator Type
       number_format: Number Format
+      color: Color
+      indicator_ancestry: Belongs To
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:

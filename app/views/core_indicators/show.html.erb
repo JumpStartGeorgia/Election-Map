@@ -25,6 +25,18 @@
   <%= @core_indicator.number_format %>
 </p>
 
+<p>
+  <b><%= t("app.common.color") %>:</b>
+  <% if !@core_indicator.color.nil? %>
+  <span style="background-color: <%= "#{@core_indicator.color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+  <% end %>
+</p>
+
+<p>
+  <b><%= t("app.common.indicator_ancestry") %>:</b>
+  <%= @core_indicator.parent.name if !@core_indicator.ancestry.nil? %>
+</p>
+
 <div class="admin_nav">
 	<%= link_to t('app.buttons.edit'), edit_core_indicator_path(@core_indicator) %>
 	<%= link_to t('app.buttons.list'), core_indicators_path %>

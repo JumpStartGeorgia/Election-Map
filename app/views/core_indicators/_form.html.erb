@@ -17,6 +17,11 @@
   <%= f.inputs do %>
     <%= f.input :indicator_type %>
     <%= f.input :number_format %>
+    <%= f.input :color %>
+    <li class="string input optional stringish">
+    <%= label_tag "core_indicator_ancestry", t("app.common.indicator_ancestry"), :class => "label"%>
+    <%= select_tag "core_indicator_ancestry", options_from_collection_for_select(@core_indicators, "id", "name", @core_indicator.ancestry), :name => "core_indicator[ancestry]" %>
+    </li>
   <% end %>
 
 	<%= f.actions :submit, :reset, :cancel %>

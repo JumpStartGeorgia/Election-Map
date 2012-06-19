@@ -106,3 +106,17 @@ div.admin_nav a:hover {
   -webkit-border-radius: 3px;
 }
 
+/* alternating row styles for tables in admin index pages */
+tr.odd_row {
+  background-color: #c0c0c0;
+}
+
+tr.even_row {
+  background-color: #e0e0e0;  
+}
+
+tr.odd_row td, tr.even_row td{
+  padding: 3px;
+  font-size: smaller;
+}
+

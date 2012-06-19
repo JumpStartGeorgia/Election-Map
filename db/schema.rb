@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120618100040) do
+ActiveRecord::Schema.define(:version => 20120619165259) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -33,8 +33,11 @@ ActiveRecord::Schema.define(:version => 20120618100040) do
     t.string   "number_format"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "ancestry"
+    t.string   "color"
   end
 
+  add_index "core_indicators", ["ancestry"], :name => "index_core_indicators_on_ancestry"
   add_index "core_indicators", ["indicator_type_id"], :name => "index_core_indicators_on_indicator_type_id"
 
   create_table "data", :force => true do |t|
@@ -61,33 +64,6 @@ ActiveRecord::Schema.define(:version => 20120618100040) do
   add_index "datum_translations", ["common_name"], :name => "index_datum_translations_on_common_name"
   add_index "datum_translations", ["datum_id"], :name => "index_datum_translations_on_datum_id"
   add_index "datum_translations", ["locale"], :name => "index_datum_translations_on_locale"
-
-  create_table "event_indicator_translations", :force => true do |t|
-    t.integer  "event_indicator_id"
-    t.string   "locale"
-    t.string   "name"
-    t.string   "name_abbrv"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "description"
-  end
-
-  add_index "event_indicator_translations", ["event_indicator_id"], :name => "index_event_indicator_translations_on_event_indicator_id"
-  add_index "event_indicator_translations", ["locale"], :name => "index_event_indicator_translations_on_locale"
-  add_index "event_indicator_translations", ["name"], :name => "index_event_indicator_translations_on_name"
-
-  create_table "event_indicators", :force => true do |t|
-    t.integer  "event_id"
-    t.integer  "shape_type_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "number_format"
-    t.integer  "indicator_type_id", :default => 2
-  end
-
-  add_index "event_indicators", ["event_id"], :name => "index_event_indicators_on_event_id"
-  add_index "event_indicators", ["indicator_type_id"], :name => "index_event_indicators_on_indicator_type_id"
-  add_index "event_indicators", ["shape_type_id"], :name => "index_event_indicators_on_shape_type_id"
 
   create_table "event_translations", :force => true do |t|
     t.integer  "event_id"
@@ -151,7 +127,7 @@ ActiveRecord::Schema.define(:version => 20120618100040) do
 
   add_index "indicator_scales", ["indicator_id"], :name => "index_indicator_scales_on_indicator_id"
 
-  create_table "indicator_translation_olds", :force => true do |t|
+  create_table "indicator_translations", :force => true do |t|
     t.integer  "indicator_id"
     t.string   "locale"
     t.string   "name"
@@ -161,9 +137,9 @@ ActiveRecord::Schema.define(:version => 20120618100040) do
     t.text     "description"
   end
 
-  add_index "indicator_translation_olds", ["indicator_id"], :name => "index_indicator_translations_on_indicator_id"
-  add_index "indicator_translation_olds", ["locale"], :name => "index_indicator_translations_on_locale"
-  add_index "indicator_translation_olds", ["name"], :name => "index_indicator_translations_on_name"
+  add_index "indicator_translations", ["indicator_id"], :name => "index_indicator_translations_on_indicator_id"
+  add_index "indicator_translations", ["locale"], :name => "index_indicator_translations_on_locale"
+  add_index "indicator_translations", ["name"], :name => "index_indicator_translations_on_name"
 
   create_table "indicator_type_translations", :force => true do |t|
     t.integer  "indicator_type_id"
@@ -197,13 +173,6 @@ ActiveRecord::Schema.define(:version => 20120618100040) do
   add_index "indicators", ["event_id"], :name => "index_indicators_on_event_id"
   add_index "indicators", ["indicator_type_id_old"], :name => "index_indicators_on_indicator_type_id"
   add_index "indicators", ["shape_type_id"], :name => "index_indicators_on_shape_type_id"
-
-  create_table "locales", :force => true do |t|
-    t.string   "language"
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "page_translations", :force => true do |t|
     t.integer  "page_id"

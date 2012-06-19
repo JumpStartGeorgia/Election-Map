@@ -7,17 +7,25 @@
     <th><%= t("app.common.description") %></th>
     <th><%= t("app.common.indicator_type") %></th>
     <th><%= t("app.common.number_format") %></th>
+    <th><%= t("app.common.color") %></th>
+    <th><%= t("app.common.indicator_ancestry") %></th>
     <th></th>
     <th></th>
   </tr>
 
 <% @core_indicators.each do |core_indicator| %>
-  <tr>
+  <tr class="<%= cycle("odd_row", "even_row")%>">
     <td><%= link_to core_indicator.name_abbrv, core_indicator %></td>
     <td><%= core_indicator.name %></td>
     <td><%= core_indicator.description %></td>
     <td><%= core_indicator.indicator_type.name %></td>
     <td><%= core_indicator.number_format %></td>
+    <td>
+      <% if !core_indicator.color.nil? %>
+      <span style="background-color: <%= "#{core_indicator.color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <% end %>
+    </td>
+    <td><%= core_indicator.parent.name if !core_indicator.ancestry.nil? %></td>
     <td><%= link_to t('app.buttons.edit'), edit_core_indicator_path(core_indicator) %></td>
     <td><%= link_to t('app.buttons.delete'), core_indicator, confirm: t('app.msgs.delete_confirm'), method: :delete %></td>
   </tr>

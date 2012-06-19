@@ -11,7 +11,7 @@
   </tr>
 
 <% @shape_types.each do |shape_type| %>
-  <tr>
+  <tr class="<%= cycle("odd_row", "even_row")%>">
     <td><%= shape_type.name_singular %></td>
     <td><%= shape_type.name_plural %></td>
     <td><%= shape_type.parent.name_singular if !shape_type.parent.nil? %></td>

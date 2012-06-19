@@ -28,6 +28,7 @@ class CoreIndicatorsController < ApplicationController
   # GET /core_indicators/new.json
   def new
     @core_indicator = CoreIndicator.new
+    @core_indicators = CoreIndicator.all
     # create the translation object for however many locales there are
     # so the form will properly create all of the nested form fields
     I18n.available_locales.length.times {@core_indicator.core_indicator_translations.build}
@@ -41,6 +42,7 @@ class CoreIndicatorsController < ApplicationController
   # GET /core_indicators/1/edit
   def edit
     @core_indicator = CoreIndicator.find(params[:id])
+    @core_indicators = CoreIndicator.all
   end
 
   # POST /core_indicators

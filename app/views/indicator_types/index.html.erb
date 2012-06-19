@@ -9,7 +9,7 @@
   </tr>
 
 <% @indicator_types.each do |indicator_type| %>
-  <tr>
+  <tr class="<%= cycle("odd_row", "even_row")%>">
     <td><%= link_to indicator_type.name, indicator_type %></td>
     <td><%= indicator_type.has_summary %></td>
     <td><%= link_to t('app.buttons.edit'), edit_indicator_type_path(indicator_type) %></td>
