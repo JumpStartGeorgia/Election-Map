@@ -182,7 +182,7 @@ en:
       download_link_text: Download the CSV template file for Data
       instructions: Please note that you can add as many 'Indicator/Value' columns as you need.
       help_1: Data must be provided in every column or no records will be saved.
-      delete_records: Delete existing data on file for the provided Event and Shape Type(s)
+      delete_records: Delete existing data on file for the provided Event, Shape Type, and Indicator
   core_indicators:
     edit:
       title: Editing Indicator

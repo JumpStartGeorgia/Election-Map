@@ -164,7 +164,7 @@ class Indicator < ActiveRecord::Base
 		            alreadyExists = nil
 		          end
 					
-							if alreadyExists.nil? || alreadyExists.length == 0
+							if alreadyExists.nil? || alreadyExists.empty?
 			logger.debug "++++record does not exist, populate obj"
 								# populate record
 								ind = Indicator.new
@@ -367,7 +367,7 @@ logger.debug "getting all indicator info"
           .order("shape_types.id ASC, indicator_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
       end
       
-      if indicators.nil? || indicators.length == 0
+      if indicators.nil? || indicators.empty?
 logger.debug "no indicators found"
 				obj.msg = I18n.t('models.indicator.msgs.no_indicators')
         return obj
@@ -378,21 +378,21 @@ logger.debug "creating csv rows"
         max_num_scales = 0
         indicators.each do |ind|
           row = []
-          if ind.event.event_translations.nil? || ind.event.event_translations.length == 0
+          if ind.event.event_translations.nil? || ind.event.event_translations.empty?
 logger.debug "no event translation found"
 						obj.msg = I18n.t('models.indicator.msgs.no_event_trans')
             return obj
           else
             row << ind.event.event_translations[0].name
           end
-          if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.length == 0
+          if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.empty?
 logger.debug "no shape type translation found"
 						obj.msg = I18n.t('models.indicator.msgs.no_shape_type_trans')
             return obj
           else
             row << ind.shape_type.shape_type_translations[0].name_singular
           end
-          if ind.indicator_type.indicator_type_translations.nil? || ind.indicator_type.indicator_type_translations.length == 0
+          if ind.indicator_type.indicator_type_translations.nil? || ind.indicator_type.indicator_type_translations.empty?
 logger.debug "no indicator type translation found"
 						obj.msg = I18n.t('models.indicator.msgs.no_indicator_type_trans')
             return obj

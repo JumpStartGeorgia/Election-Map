@@ -98,7 +98,7 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 							# we know the old indicator id and the new shape type
 							# - use that to find the new indicator id
 							new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
-							if new_indicator.nil? || new_indicator.length == 0
+							if new_indicator.nil? || new_indicator.empty?
 								# could not find a match, reset the indicator id
 								params[:indicator_id] = nil
 							else
@@ -358,7 +358,7 @@ logger.debug " - no matching event found!"
 
 	# get the shape type
 	def get_shape_type(shape_type_id)
-		if @shape_types.nil? || @shape_types.length == 0 || shape_type_id.nil?
+		if @shape_types.nil? || @shape_types.empty? || shape_type_id.nil?
       return nil
     else
 			@shape_types.each do |type|
@@ -386,7 +386,7 @@ logger.debug " - no matching event found!"
 
 	# get the child shape type
 	def get_child_shape_type_old(parent_shape_type_id)
-		if @shape_types.nil? || @shape_types.length == 0 || parent_shape_type_id.nil?
+		if @shape_types.nil? || @shape_types.empty? || parent_shape_type_id.nil?
       return nil
     else
 			@shape_types.each do |type|

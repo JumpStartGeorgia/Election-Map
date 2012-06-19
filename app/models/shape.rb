@@ -188,7 +188,7 @@ class Shape < ActiveRecord::Base
 		                    alreadyExists = nil
 		                end
 
-		                if alreadyExists.nil? || alreadyExists.length == 0
+		                if alreadyExists.nil? || alreadyExists.empty?
 		    logger.debug "++++row is not in db, get parent shape type"
 		                  # record does not exist yet
 		                  # find parent shape type so we can find parent shape
@@ -212,7 +212,7 @@ class Shape < ActiveRecord::Base
 		                    end
 		                
 		                    # see if a parent node was found
-		                    if (parentRoot.nil?) && (parentChild.nil? || parentChild.length == 0)
+		                    if (parentRoot.nil?) && (parentChild.nil? || parentChild.empty?)
 		        logger.debug "++++no parent shape found"
 		                      # no parent found
 		                      parent = nil

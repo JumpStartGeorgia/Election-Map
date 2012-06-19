@@ -85,7 +85,7 @@ class Datum < ActiveRecord::Base
 										.where('indicators.event_id=:event_id and indicators.shape_type_id=:shape_type_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name', 
 											:event_id => event.id, :shape_type_id => shape_type.id, :name => row[i].strip, :locale => "en")
 					
-									if indicator.nil? || indicator.length == 0
+									if indicator.nil? || indicator.empty?
 					logger.debug "++++indicator was not found"
 										msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
 										raise ActiveRecord::Rollback
@@ -109,7 +109,7 @@ class Datum < ActiveRecord::Base
 				                alreadyExists = nil
 				            end
 
-										if alreadyExists.nil? || alreadyExists.length == 0
+										if alreadyExists.nil? || alreadyExists.empty?
 					logger.debug "++++data does not exist, save it"
 											# populate record
 											datum = Datum.new
@@ -177,7 +177,7 @@ logger.debug "not all params provided"
 			# get the shapes we need data for
 			shapes = Shape.get_shapes_for_download(shape_id, shape_type_id)
 
-			if shapes.nil? || shapes.length == 0
+			if shapes.nil? || shapes.empty?
 logger.debug "no shapes were found"
 				return nil
 		  else
@@ -198,7 +198,7 @@ logger.debug "no shapes were found"
 		        .order("indicators.id ASC, data.id asc")
 				end
 
-		    if indicators.nil? || indicators.length == 0
+		    if indicators.nil? || indicators.empty?
 	logger.debug "no indicators or data found"
 		      return nil
 		    else
@@ -208,14 +208,14 @@ logger.debug "no shapes were found"
 		      indicators.each_with_index do |ind, index|
 						if index == 0
 							#event
-				      if ind.event.event_translations.nil? || ind.event.event_translations.length == 0
+				      if ind.event.event_translations.nil? || ind.event.event_translations.empty?
 		logger.debug "no event translation found"
 				        return nil
 				      else
 				        row_starter << ind.event.event_translations[0].name
 				      end
 							# shape type
-				      if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.length == 0
+				      if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.empty?
 		logger.debug "no shape type translation found"
 				        return nil
 				      else
@@ -223,7 +223,7 @@ logger.debug "no shapes were found"
 				      end
 						end 
 
-						if ind.data.nil? || ind.data.length == 0
+						if ind.data.nil? || ind.data.empty?
 	logger.debug "no data"
 		          return nil
 						else
@@ -268,7 +268,7 @@ logger.debug "no shapes were found"
 						# that is located in the row_starter array
 				    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
 				    indicators.each do |i|
-				      header << i.name
+				      header << i.description
 				    end
 				    csv << header.flatten
 				    

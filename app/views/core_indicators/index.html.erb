@@ -2,8 +2,8 @@
 
 <table>
   <tr>
-    <th><%= t("app.common.name") %></th>
     <th><%= t("app.common.name_abbrv") %></th>
+    <th><%= t("app.common.name") %></th>
     <th><%= t("app.common.description") %></th>
     <th><%= t("app.common.indicator_type") %></th>
     <th><%= t("app.common.number_format") %></th>
@@ -13,8 +13,8 @@
 
 <% @core_indicators.each do |core_indicator| %>
   <tr>
-    <td><%= link_to core_indicator.name, core_indicator %></td>
-    <td><%= core_indicator.name_abbrv %></td>
+    <td><%= link_to core_indicator.name_abbrv, core_indicator %></td>
+    <td><%= core_indicator.name %></td>
     <td><%= core_indicator.description %></td>
     <td><%= core_indicator.indicator_type.name %></td>
     <td><%= core_indicator.number_format %></td>

@@ -9,7 +9,7 @@ class IndicatorScalesController < ApplicationController
 			if params[:file].present?
 				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
 					msg = IndicatorScale.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
-			    if msg.nil? || msg.length == 0
+			    if msg.nil? || msg.empty?
 			      # no errors, success!
             # clear the cache
             Rails.cache.clear

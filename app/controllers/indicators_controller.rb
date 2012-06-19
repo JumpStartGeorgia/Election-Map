@@ -13,7 +13,7 @@ class IndicatorsController < ApplicationController
 				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
 
 				  msg = Indicator.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
-		      if msg.nil? || msg.length == 0
+		      if msg.nil? || msg.empty?
 		        # no errors, success!
             # clear the cache
             Rails.cache.clear
@@ -54,7 +54,7 @@ class IndicatorsController < ApplicationController
 			if params[:file].present?
 				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
 				  msg = Indicator.change_names_from_csv(params[:file])
-		      if msg.nil? || msg.length == 0
+		      if msg.nil? || msg.empty?
 		        # no errors, success!
 						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to change_name_indicators_path #GET
@@ -125,7 +125,7 @@ filename ="Indicator_Names_Scales_for_"
         if !obj.msg.nil?
   				flash[:notice] = I18n.t('app.msgs.download.error', :event_name => event.name, :msg => obj.msg)
   	      redirect_to download_indicators_path #GET
-				elsif obj.csv_data.nil? || obj.csv_data.length == 0
+				elsif obj.csv_data.nil? || obj.csv_data.empty?
   				flash[:notice] = I18n.t('app.msgs.download.no_records', :event_name => event.name)
   	      redirect_to download_indicators_path #GET
         else
