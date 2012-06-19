@@ -1,4 +1,4 @@
-class IndicatorTranslation < ActiveRecord::Base
+class IndicatorTranslationOld < ActiveRecord::Base
   attr_accessible :indicator_id, :name, :name_abbrv, :description, :locale
   belongs_to :indicator
 
