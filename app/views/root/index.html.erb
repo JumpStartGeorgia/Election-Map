@@ -10,8 +10,10 @@
 				<% core.indicators.each do |indicator| %>
 					<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
 					<li>
-						<%= link_to core.name_abbrv, indicator_map_path(params.merge(:indicator_id => indicator.id)), 
-							:title => core.description, :class => is_active %>
+					  <% parent_abbrv = core.ancestry.nil? ? "" : "(#{core.parent.name_abbrv})"  %>
+					  <% parent_name = core.ancestry.nil? ? "" : "(#{core.parent.name})"  %>
+						<%= link_to "#{core.name_abbrv} #{parent_abbrv}", indicator_map_path(params.merge(:indicator_id => indicator.id)), 
+							:title => "#{core.description} #{parent_name}", :class => is_active %>
 					</li>
 				<% end %>
 			<% end %>
