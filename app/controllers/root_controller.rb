@@ -82,7 +82,13 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 					else
 						# if an indicator is not selected, select the first one in the list
 						if params[:indicator_id].nil?
-							params[:indicator_id] = @indicator_types[0].indicators[0].id if !@indicator_types[0].indicators.nil? && !@indicator_types[0].indicators.empty?
+							if @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? || @indicator_types[0].core_indicators[0].indicators.nil? || @indicator_types[0].core_indicators[0].indicators.empty?
+								# could not find an indicator
+	logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
+								flag_redirect = true
+							else
+								params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
+							end
 						end
 
 						# get the indicator

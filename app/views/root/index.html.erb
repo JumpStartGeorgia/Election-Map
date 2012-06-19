@@ -6,18 +6,20 @@
 			<% if indicator_type.has_summary %>
 				<li><%= link_to t(".indicator_summary_link", :name => indicator_type.name), '#', :class => "not_active" %></li>
 			<% end %>
-			<% indicator_type.core_indicators.indicators.each do |indicator| %>
-				<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
-				<li>
-					<%= link_to indicator.name_abbrv, indicator_map_path(params.merge(:indicator_id => indicator.id)), 
-						:title => indicator.description, :class => is_active %>
-				</li>
+			<% indicator_type.core_indicators.each do |core| %>
+				<% core.indicators.each do |indicator| %>
+					<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
+					<li>
+						<%= link_to core.name_abbrv, indicator_map_path(params.merge(:indicator_id => indicator.id)), 
+							:title => core.description, :class => is_active %>
+					</li>
+				<% end %>
 			<% end %>
 		<% end %>
 	</ul>
 <% end %>
 
-<% if !@events.nil? && @events.length > 0 %>
+<% if !@events.nil? && !@events.empty? %>
 	<ul id="events" class="group">
 		<% @events.each_with_index do |event, i| %>
 			<% if !event.shape_id.nil? 

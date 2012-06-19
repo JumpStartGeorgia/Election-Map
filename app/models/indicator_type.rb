@@ -3,7 +3,7 @@ class IndicatorType < ActiveRecord::Base
   
   has_many :indicator_type_translations, :dependent => :destroy
   has_many :core_indicators
-#  has_many :indicators, :through => :core_indicators
+  has_many :indicators, :through => :core_indicators
   accepts_nested_attributes_for :indicator_type_translations
   attr_accessible :id, :has_summary, :indicator_type_translations_attributes
 
@@ -14,11 +14,16 @@ class IndicatorType < ActiveRecord::Base
 		if event_id.nil? || shape_type_id.nil?
 			return nil		
 		else
+=begin
 			Rails.cache.fetch("indicator_types_by_event_#{event_id}_shape_type_#{shape_type_id}") {
 				includes(:core_indicators => :indicators)
 				.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id})
 			}
-#      where(:event_id => event_id, :shape_type_id => shape_type_id)
+=end
+			includes(:indicator_type_translations, {:core_indicators => [:core_indicator_translations, :indicators]})
+			.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id}, 
+					:indicator_type_translations => {:locale => I18n.locale},
+					:core_indicator_translations => {:locale => I18n.locale})
 		end
 	end
 
