@@ -33,7 +33,7 @@ function map_init(){
 	if (gon.indicator_scale_colors && gon.indicator_scales){
 		gon.indicator_scale_colors.splice(0,0,color_nodata);
 		gon.indicator_scales.splice(0,0,scale_nodata);
-	}
+	} 
 
 	var options = {
     projection: WGS84_google_mercator,
@@ -61,7 +61,7 @@ function map_init(){
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
 //  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
-  vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
+  vector_child = new OpenLayers.Layer.Vector("Child Layer");
 
   map.addLayers([vector_base, vector_child]);
 //  map.addLayers([map_layer, vector_base, vector_child]);
@@ -145,6 +145,10 @@ console.log('vector_base - no features found');
 function load_vector_child(resp){
 	if (resp.success()){
     vector_child.addFeatures(resp.features);
+    // if this is summary view, populate gon.indicator_scales and colors with names from json file
+    populate_summary_data();
+    // add style map
+    vector_child.styleMap = build_indicator_scale_styles();
 		// now that the child vector is loaded, lets show the legend
     draw_legend();
 		// now load the values for the hidden form
@@ -154,11 +158,39 @@ console.log('vector_child - no features found');
   }
 }
 
+// go through each feature and get unique indicator names and their colors
+function populate_summary_data(){
+  if (gon.view_type == gon.summary_view_type_name) {
+	  gon.indicator_scale_colors = [color_nodata];
+	  gon.indicator_scales = [scale_nodata];
+  	
+    var names = [gon.indicator_scales[0].name];
+    for (var i=0; i<vector_child.features.length; i++)
+    {
+      // see if name has already been saved
+      if (names.indexOf(vector_child.features[i].attributes.value) == -1){
+        // save name and color
+        gon.indicator_scale_colors[gon.indicator_scales.length] = vector_child.features[i].attributes.color;
+        gon.indicator_scales[gon.indicator_scales.length] = {"name":vector_child.features[i].attributes.value};
+        // record the name so can easily test for new unique name in if statement above
+        names[gon.indicator_scales.length] = vector_child.features[i].attributes.value;
+      }
+    }
+  }
+}
+
 // Legend
 function draw_legend()
 {
   var legend = $('#legend');
-	if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
+  
+  if (gon.view_type == gon.summary_view_type_name) {
+    // create legend
+    for (var i=0; i<gon.indicator_scales.length; i++)
+    {
+      legend.append('<li><span style="background-color: ' + gon.indicator_scale_colors[i] + ';"></span> ' + gon.indicator_scales[i].name + '</li>');
+		}
+	} else  if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 		var color = "";
 		for (var i=0; i<gon.indicator_scales.length; i++){
 			// if the scale has a color, use it, otherwise use app color
@@ -168,8 +200,8 @@ function draw_legend()
 				color = gon.indicator_scale_colors[i];
 			}
 
-      legend.append('<li><span style="background: ' + color + '"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
-		}
+      legend.append('<li><span style="background-color: ' + color + ';"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
+		} 
 	} else {
 		// no legend
 		legend.innerHTML = "";
@@ -362,8 +394,13 @@ function update_query_parameter(url, name, name2, value){
 // show the map box
 function hover_handler (feature)
 {
-	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv + ":", 
-		feature.attributes.value, gon.indicator_number_format);
+  if (gon.view_type == gon.summary_view_type_name){
+  	populate_map_box(feature.attributes.common_name, feature.attributes.value + ":", 
+  		feature.attributes.data_value, gon.indicator_number_format);
+  } else if (gon.indicator_scale_colors && gon.indicator_scales){
+  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv + ":", 
+  		feature.attributes.value, gon.indicator_number_format);
+  } 
 }
 
 // hide the map box

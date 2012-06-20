@@ -96,14 +96,18 @@ class Shape < ActiveRecord::Base
 
 				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id)
 				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
-					json << '", "value":"'
+					json << '", "data_value":"'
 					json << data[0].value
-					json << '", "indicator_name":"'
+					json << '", "value":"'
 					json << data[0].attributes["indicator_name"]
+					json << '", "color":"'
+					json << data[0].attributes["color"] if !data[0].attributes["color"].nil? 
 				else
+					json << '", "data_value":"'
+					json << I18n.t('app.msgs.no_data')
 					json << '", "value":"'
 					json << I18n.t('app.msgs.no_data')
-					json << '", "indicator_name":"'
+					json << '", "color":"'
 					json << I18n.t('app.msgs.no_data')
 				end
 

@@ -2,8 +2,8 @@
 #require 'csv_tsv_renderer'
 
 class RootController < ApplicationController
-  before_filter :authenticate_user!, :except => [:index, :shape, :children_shapes, :grandchildren_shapes, :export, :download]
-#	caches_action :shape, :children_shapes, :layout => false, :cache_path => Proc.new { |c| c.params }
+  before_filter :authenticate_user!, 
+    :except => [:index, :shape, :children_shapes, :summary_children_shapes, :grandchildren_shapes, :export, :download]
 
   # GET /
   # GET /.json
