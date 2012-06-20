@@ -55,6 +55,7 @@ class CoreIndicatorsController < ApplicationController
         format.html { redirect_to @core_indicator, notice: 'Core indicator was successfully created.' }
         format.json { render json: @core_indicator, status: :created, location: @core_indicator }
       else
+		    @core_indicators = CoreIndicator.all
         format.html { render action: "new" }
         format.json { render json: @core_indicator.errors, status: :unprocessable_entity }
       end
@@ -66,11 +67,16 @@ class CoreIndicatorsController < ApplicationController
   def update
     @core_indicator = CoreIndicator.find(params[:id])
 
+		# ancestry does not like "", so must reset the value to nil
+		params[:core_indicator][:ancestry] = nil if params[:core_indicator][:ancestry] == ""
+
     respond_to do |format|
       if @core_indicator.update_attributes(params[:core_indicator])
         format.html { redirect_to @core_indicator, notice: 'Core indicator was successfully updated.' }
         format.json { head :ok }
       else
+		    @core_indicators = CoreIndicator.all
+logger.debug "++++++++ errors = #{@core_indicator.errors.inspect}"
         format.html { render action: "edit" }
         format.json { render json: @core_indicator.errors, status: :unprocessable_entity }
       end

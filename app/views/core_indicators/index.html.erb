@@ -21,9 +21,11 @@
     <td><%= core_indicator.indicator_type.name %></td>
     <td><%= core_indicator.number_format %></td>
     <td>
-      <% if !core_indicator.color.nil? %>
-      <span style="background-color: <%= "#{core_indicator.color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      <% end %>
+			<% if !core_indicator.color.nil? && !core_indicator.color.empty? %>
+				<span style="background-color: <%= "#{core_indicator.color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			<% elsif !core_indicator.ancestry.nil? && !core_indicator.parent.color.nil? && !core_indicator.parent.color.empty? %>
+				<span style="background-color: <%= "#{core_indicator.parent.color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+			<% end %>
     </td>
     <td><%= core_indicator.parent.name if !core_indicator.ancestry.nil? %></td>
     <td><%= link_to t('app.buttons.edit'), edit_core_indicator_path(core_indicator) %></td>
