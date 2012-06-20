@@ -4,13 +4,22 @@
 	<ul id="indicators" class="group">
 		<% @indicator_types.each do |indicator_type| %>
 			<% if indicator_type.has_summary %>
-				<li><%= link_to t(".indicator_summary_link", :name => indicator_type.name), '#', :class => "not_active" %></li>
+				<li>
+					<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s && 
+					      @summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
+				  <%= link_to t(".indicator_summary_link", :name => indicator_type.name), 
+				    summary_map_path(:event_id => params[:event_id], :event_type_id => params[:event_type_id],
+				      :shape_type_id => params[:shape_type_id], :shape_id => params[:shape_id], 
+				      :indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name), 
+				    :class => is_active %>
+				</li>
 			<% end %>
 			<% indicator_type.core_indicators.each do |core| %>
 				<% core.indicators.each do |indicator| %>
 					<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
 					<li>
-						<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id)), 
+						<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id, 
+						  :view_type => nil, :indicator_type_id => nil)), 
 							:title => core.description_w_parent, :class => is_active %>
 					</li>
 				<% end %>
@@ -66,7 +75,11 @@
 				<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
 					<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
 						<% if type.has_children? %>
-							<%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+						  <% if @summary_view_type_name == params[:view_type] %>
+  							<%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+              <% else %>
+  							<%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+              <% end %>
 						<% else %>
 							<%= type.name_singular %>
 						<% end %>

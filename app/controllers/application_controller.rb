@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_shape_types
   before_filter :set_default_values
 	before_filter :set_gon_data
+	before_filter :set_summary_view_type_name
   
 	unless Rails.application.config.consider_all_requests_local
 		rescue_from Exception,
@@ -60,6 +61,11 @@ protected
     gon.tile_url = "http://tile.mapspot.ge/#{lang}/${z}/${x}/${y}.png"
 	end
 
+	# name for summary view type
+	def set_summary_view_type_name
+	  @summary_view_type_name = "summary"
+  end
+  
 	# after user logs in, go to admin page	
 	def after_sign_in_path_for(resource)
 		admin_path
@@ -69,7 +75,7 @@ protected
 	def clean_filename(filename)
 		filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
 	end
-
+	
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier
 		  .exception_notification(request.env, exception)

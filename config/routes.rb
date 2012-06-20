@@ -68,6 +68,8 @@ ElectionMap::Application.routes.draw do
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get
 		match '/event_type/:event_type_id/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/indicator/:indicator_id)' => 'root#index', :as => 'indicator_map', :via => :get
 		match '/event_type/:event_type_id/event/:event_id/indicator/:indicator_id/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id))' => 'root#index', :as => 'shape_level_map', :via => :get
+		match '/event_type/:event_type_id/event/:event_id/shape_type/:shape_type_id/shape/:shape_id/indicator_type/:indicator_type_id/view_type/:view_type' => 'root#index', :as => 'summary_map', :via => :get
+		match '/event_type/:event_type_id/event/:event_id/indicator_type/:indicator_type_id/view_type/:view_type/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id))' => 'root#index', :as => 'summary_shape_level_map', :via => :get
 
 		root :to => 'root#index'
 

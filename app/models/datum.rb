@@ -33,7 +33,7 @@ class Datum < ActiveRecord::Base
 		if (shape_id.nil? || event_id.nil? || indicator_type_id.nil?)
 			return nil		
 		else
-			sql = "SELECT d.id, d.value, ci.number_format , cit.name as 'indicator_name' "
+			sql = "SELECT d.id, d.value, ci.number_format, ci.color, cit.name as 'indicator_name' "
 			sql << "FROM data as d "
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "

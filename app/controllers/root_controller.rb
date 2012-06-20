@@ -80,8 +80,8 @@ logger.debug "+++++++++ parent shape could not be found"
 logger.debug "+++++++++ no indicators exist for this event and shape type"
 						flag_redirect = true
 					else
-						# if an indicator is not selected, select the first one in the list
-						if params[:indicator_id].nil?
+						# if an indicator is not selected, select the first one in the list if this is not the summary view
+						if params[:indicator_id].nil? && params[:view_type] != @summary_view_type_name
 							if @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? || @indicator_types[0].core_indicators[0].indicators.nil? || @indicator_types[0].core_indicators[0].indicators.empty?
 								# could not find an indicator
 	logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
@@ -93,23 +93,26 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 
 						# get the indicator
 						# if the shape type changed, update the indicator_id to be valid for the new shape_type
-						if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
+						# only if this is not the summary view
+            if params[:view_type] != @summary_view_type_name
+  						if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
 
-							# we know the old indicator id and the new shape type
-							# - use that to find the new indicator id
-							new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
-							if new_indicator.nil? || new_indicator.empty?
-								# could not find a match, reset the indicator id
-								params[:indicator_id] = nil
-							else
-								# save the new value				
-								params[:indicator_id] = new_indicator.first.id.to_s
-								@indicator = new_indicator.first
-							end
-						else
-							# get the selected indicator 
-							@indicator = Indicator.find(params[:indicator_id])
-						end
+  							# we know the old indicator id and the new shape type
+  							# - use that to find the new indicator id
+  							new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
+  							if new_indicator.nil? || new_indicator.empty?
+  								# could not find a match, reset the indicator id
+  								params[:indicator_id] = nil
+  							else
+  								# save the new value				
+  								params[:indicator_id] = new_indicator.first.id.to_s
+  								@indicator = new_indicator.first
+  							end
+  						else
+  							# get the selected indicator 
+  							@indicator = Indicator.find(params[:indicator_id])
+  						end
+  					end
 					end
 				end
 			end
@@ -119,6 +122,7 @@ logger.debug "+++++++++ no indicators exist for this event and shape type"
 
   		# set js variables
       set_gon_variables
+      
     end
 
     if flag_redirect
@@ -448,9 +452,19 @@ logger.debug " - no matching event found!"
 		# - only children shape path needs the indicator id since that is the only layer that is clickable
 		if !params[:shape_id].nil?
 			gon.shape_path = shape_path(:id => params[:shape_id])
-			gon.children_shapes_path = children_shapes_path(:parent_id => params[:shape_id], 
-			  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+			if params[:view_type] == @summary_view_type_name
+  			gon.children_shapes_path = summary_children_shapes_path(:parent_id => params[:shape_id], 
+  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id], 
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+      else
+  			gon.children_shapes_path = children_shapes_path(:parent_id => params[:shape_id], 
+  			  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+      end
 		end
+		
+		# view type
+		gon.view_type = params[:view_type]
+		gon.summary_view_type_name = @summary_view_type_name
 
 		# indicator name
 		if !@indicator.nil?
@@ -462,11 +476,8 @@ logger.debug " - no matching event found!"
 		end
 
 		# indicator scales
-		if !params[:indicator_id].nil?
-			gon.showing_indicators = true
+		if !params[:indicator_id].nil? && params[:view_type] != @summary_view_type_name
 			build_indicator_scale_array
-		else
-			gon.showing_indicators = false
 		end
 
     # save the map title for export
