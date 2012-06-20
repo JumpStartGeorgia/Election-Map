@@ -57,6 +57,7 @@ ElectionMap::Application.routes.draw do
 		match '/clear_cache', :to => 'root#clear_cache', :as => :clear_cache, :via => :get
 		match '/shape/:id', :to => 'root#shape', :as => :shape, :via => :get, :defaults => {:format => 'json'}
 		match '/children_shapes/:parent_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id))', :to => 'root#children_shapes', :as => :children_shapes, :via => :get, :defaults => {:format => 'json'}
+		match '/summary_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)', :to => 'root#summary_children_shapes', :as => :summary_children_shapes, :via => :get, :defaults => {:format => 'json'}
 		match '/grandchildren_shapes/:parent_id(/indicator/:indicator_id)', :to => 'root#grandchildren_shapes', :as => :grandchildren_shapes, :via => :get, :defaults => {:format => 'json'}
 		match '/download/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data, :via => :get
 		match '/contact' => 'messages#new', :as => 'contact', :via => :get

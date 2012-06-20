@@ -56,8 +56,8 @@ protected
 		gon.no_data_text = I18n.t('app.msgs.no_data')
 		gon.no_data_color = "#CCCCCC"
     # tile url
-#    lang = I18n.locale.to_s == 'ka' ? 'ka' : 'en'
-#    gon.tile_url = "http://tile.mapspot.ge/#{lang}/${z}/${x}/${y}.png"
+    lang = I18n.locale.to_s == 'ka' ? 'ka' : 'en'
+    gon.tile_url = "http://tile.mapspot.ge/#{lang}/${z}/${x}/${y}.png"
 	end
 
 	# after user logs in, go to admin page	

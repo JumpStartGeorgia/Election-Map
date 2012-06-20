@@ -27,6 +27,38 @@ class Datum < ActiveRecord::Base
 		end
 	end
 
+	# get the max data value for all indicators that belong to the 
+	# indicator type and event for a specific shape
+	def self.get_summary_data_for_shape(shape_id, event_id, indicator_type_id)
+		if (shape_id.nil? || event_id.nil? || indicator_type_id.nil?)
+			return nil		
+		else
+			sql = "SELECT d.id, d.value, ci.number_format , cit.name as 'indicator_name' "
+			sql << "FROM data as d "
+			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
+			sql << "inner join indicators as i on d.indicator_id = i.id "
+			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
+			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
+			sql << "left join shapes as s on i.shape_type_id = s.shape_type_id "
+			sql << "left join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
+			sql << "inner join ( "
+			sql << "	SELECT max(cast(d.value as decimal(12,6))) as max_value "
+			sql << "	FROM data as d "
+			sql << "	inner join datum_translations as dt on d.id = dt.datum_id "
+			sql << "	inner join indicators as i on d.indicator_id = i.id "
+			sql << "	inner join core_indicators as ci on i.core_indicator_id = ci.id "
+			sql << "	inner join shapes as s on i.shape_type_id = s.shape_type_id "
+			sql << "	inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
+			sql << "	WHERE i.event_id = :event_id and ci.indicator_type_id = :indicator_type_id AND s.id =  :shape_id "
+			sql << "	AND dt.locale = :locale AND st.locale = :locale "
+			sql << ") as max_val on cast(d.value as decimal(12,6)) = max_val.max_value "
+			sql << "WHERE i.event_id = :event_id and ci.indicator_type_id = :indicator_type_id and s.id =  :shape_id "
+			sql << "AND dt.locale = :locale AND st.locale = :locale AND cit.locale = :locale "
+
+			find_by_sql([sql, :event_id => event_id, :shape_id => shape_id, :indicator_type_id => indicator_type_id, :locale => I18n.locale])
+		end
+	end
+
   def self.csv_header
     "Event, Shape Type, Common ID, Common Name, Indicator, Value, Indicator, Value".split(",")
   end

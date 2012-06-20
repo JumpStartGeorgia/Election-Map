@@ -74,9 +74,52 @@ class Shape < ActiveRecord::Base
 		return json
 	end
 
-    def self.csv_header
-      "Event, Shape Type, Parent ID, Parent Name, Common ID, Common Name, Geometry".split(",")
-    end
+	# create the properly formatted json string
+	def self.build_summary_json(shapes, event_id, indicator_type_id)
+		json = ''
+		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
+			json = '{ "type": "FeatureCollection","features": ['
+			shapes.each_with_index do |shape, i|
+				json << '{ "type": "Feature", "geometry": '
+				json << shape.geometry
+				json << ', "properties": {'
+				json << '"id":"'
+				json << shape.id.to_s
+				json << '", "common_id":"'
+				json << shape.common_id
+				json << '", "common_name":"'
+			  json << shape.common_name if !shape.common_name.nil?
+				json << '", "has_children":"'
+				json << shape.has_children?.to_s
+				json << '", "shape_type_id":"'
+				json << shape.shape_type_id.to_s
+
+				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id)
+				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
+					json << '", "value":"'
+					json << data[0].value
+					json << '", "indicator_name":"'
+					json << data[0].attributes["indicator_name"]
+				else
+					json << '", "value":"'
+					json << I18n.t('app.msgs.no_data')
+					json << '", "indicator_name":"'
+					json << I18n.t('app.msgs.no_data')
+				end
+
+				json << '"}}'
+				json << ',' if i < shapes.length-1 # do not add comma for the last shape
+			end
+			json << ']}'
+		end
+		return json
+	end
+
+
+
+  def self.csv_header
+    "Event, Shape Type, Parent ID, Parent Name, Common ID, Common Name, Geometry".split(",")
+  end
 
     def self.build_from_csv(file, deleteExistingRecord)
 	    infile = file.read
