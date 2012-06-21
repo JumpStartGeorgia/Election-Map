@@ -462,7 +462,7 @@ function populate_map_box(title, indicator, value, number_format)
 // load the hidden form with the values so the export link works
 function load_hidden_form()
 {
-	if (gon.indicator_name){
+	if (gon.indicator_name || (gon.view_type == gon.summary_view_type_name)){
 		// update the url for the download data link
 		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "event_name", "event_name", gon.event_name));
 		$("#export-data").attr('href',update_query_parameter($("#export-data").attr('href'), "map_title", "map_title", gon.map_title));

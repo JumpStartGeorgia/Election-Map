@@ -304,7 +304,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 	    filename = "election_map_svg"
 		else
 			# create the file name: map title - indicator - event
-			filename = params[:hidden_form_map_title]
+			filename = params[:hidden_form_map_title].clone()
 			filename << "-"
 			filename << params[:hidden_form_indicator_name_abbrv]
 			filename << "-"

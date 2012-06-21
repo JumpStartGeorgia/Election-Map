@@ -130,6 +130,8 @@ class Shape < ActiveRecord::Base
     def self.build_from_csv(file, deleteExistingRecord)
 	    infile = file.read
 	    n, msg = 0, ""
+			old_root_id = nil
+			
 
 			Shape.transaction do
 			  CSV.parse(infile, :col_sep => "\t") do |row|
@@ -165,6 +167,9 @@ class Shape < ActiveRecord::Base
 							#  if this is the root record (row[2] is nil)
 		          if !root.nil? && deleteExistingRecord && (row[2].nil? || row[2].strip.length == 0)
 		logger.debug "+++++++ deleting existing root shape and all of its descendants"
+									# save the existing root id so at the end all events with this root can be updated
+									old_root_id = root.id
+									# destroy the shapes
 		              Shape.destroy_all(["id in (?)", root.subtree_ids])
 		              root = nil
 		          end
@@ -183,14 +188,21 @@ class Shape < ActiveRecord::Base
 		              if shape.valid?
 		                # update the event to have this as the root
 		  logger.debug "++++updating event to map to this root shape"
-		                success = event.update_attribute :shape_id, shape.id
-		                if !success
-		                  # could not update event record
-		            		  msg = I18n.t('models.shape.msgs.not_update_event', :row_num => n)
-		  logger.debug "++++event could not be updated to indicate this is the root"
-		      			      raise ActiveRecord::Rollback
-		            		  return msg
-		                end
+
+										events = Event.where(:shape_id => old_root_id)
+										if !events.nil? && !events.empty?
+		  logger.debug "+++++++there are #{events.count} that have this old root id"
+											events.each do |e|
+												e.shape_id = shape.id
+						            if !e.save
+						              # could not update event record
+						        		  msg = I18n.t('models.shape.msgs.not_update_event', :row_num => n)
+					logger.debug "++++event could not be updated to indicate this is the root"
+						  			      raise ActiveRecord::Rollback
+						        		  return msg
+						            end
+											end
+										end
 		              else
 		                # could not create shape
 		          		  msg = I18n.t('models.shape.msgs.root_not_valid', :row_num => n)
