@@ -14,7 +14,8 @@
   <% end %>
 
   <%= f.inputs do %>
-    <%= f.input :has_summary, :as => :radio %>
+    <%= f.input :has_summary, :as => :radio, :hint => t("app.msgs.has_summary_hint") %>
+    <%= f.input :sort_order, :hint => t("app.msgs.sort_order_hint") %>
   <% end %>
 
 	<%= f.actions :submit, :reset, :cancel %>

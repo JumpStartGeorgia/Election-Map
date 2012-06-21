@@ -10,6 +10,11 @@
   <%= @indicator_type.has_summary %>
 </p>
 
+<p>
+  <b><%= t('app.common.sort_order') %>:</b>
+  <%= @indicator_type.sort_order %>
+</p>
+
 <div class="admin_nav">
 	<%= link_to t('app.buttons.edit'), edit_indicator_type_path(@indicator_type) %>
 	<%= link_to t('app.buttons.list'), indicator_types_path %>

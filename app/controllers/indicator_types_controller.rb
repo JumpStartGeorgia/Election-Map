@@ -5,7 +5,7 @@ class IndicatorTypesController < ApplicationController
   # GET /indicator_types
   # GET /indicator_types.json
   def index
-    @indicator_types = IndicatorType.all
+    @indicator_types = IndicatorType.order("sort_order asc")
 
     respond_to do |format|
       format.html # index.html.erb

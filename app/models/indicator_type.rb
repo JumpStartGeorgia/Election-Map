@@ -5,9 +5,11 @@ class IndicatorType < ActiveRecord::Base
   has_many :core_indicators
   has_many :indicators, :through => :core_indicators
   accepts_nested_attributes_for :indicator_type_translations
-  attr_accessible :id, :has_summary, :indicator_type_translations_attributes
+  attr_accessible :id, :has_summary, :sort_order, :indicator_type_translations_attributes
 
   attr_accessor :locale
+
+	
   
 	# get all indicators by type for an event and shape type
 	def self.find_by_event_shape_type(event_id, shape_type_id)
@@ -24,6 +26,7 @@ class IndicatorType < ActiveRecord::Base
 			.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id}, 
 					:indicator_type_translations => {:locale => I18n.locale},
 					:core_indicator_translations => {:locale => I18n.locale})
+			.order("indicator_types.sort_order asc, core_indicator_translations.name asc")
 		end
 	end
 

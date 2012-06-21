@@ -54,6 +54,7 @@ logger.debug "+++++++++ parent shape could not be found"
 				    logger.debug("parent shape type is root and it should be clickable")
 						child_shape_type = parent_shape_type
 						@child_shape_type_id = child_shape_type.id
+						@child_shape_type_name = child_shape_type.name_singular
 						# set the map title
 						# format = parent shape type shape name
 						@map_title = parent_shape_type.name_singular + ": " + @shape.common_name
@@ -65,6 +66,7 @@ logger.debug "+++++++++ parent shape could not be found"
 #						child_shape_type = get_child_shape_type(params[:shape_type_id])
 						child_shape_type = get_child_shape_type(@shape)
 						@child_shape_type_id = child_shape_type.id
+						@child_shape_type_name = child_shape_type.name_singular
 						# set the map title
 						# format = children shape types of parent shape type
 						@map_title = parent_shape_type.name_singular + ": " + @shape.common_name + " - " + child_shape_type.name_plural
@@ -80,9 +82,13 @@ logger.debug "+++++++++ parent shape could not be found"
 logger.debug "+++++++++ no indicators exist for this event and shape type"
 						flag_redirect = true
 					else
-						# if an indicator is not selected, select the first one in the list if this is not the summary view
-						if params[:indicator_id].nil? && params[:view_type] != @summary_view_type_name
-							if @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? || @indicator_types[0].core_indicators[0].indicators.nil? || @indicator_types[0].core_indicators[0].indicators.empty?
+						# if an indicator is not selected, select the first one in the list
+						# if the first indicator type has a summary, select the summary
+						if params[:indicator_id].nil? && params[:view_type].nil?
+							if @indicator_types[0].has_summary
+								params[:view_type] = @summary_view_type_name
+								params[:indicator_type_id] = @indicator_types[0].id
+							elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? || @indicator_types[0].core_indicators[0].indicators.nil? || @indicator_types[0].core_indicators[0].indicators.empty?
 								# could not find an indicator
 	logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
 								flag_redirect = true
@@ -473,6 +479,11 @@ logger.debug " - no matching event found!"
 			gon.indicator_description = @indicator.description_w_parent
 			gon.indicator_number_format = @indicator.number_format.nil? ? "" : @indicator.number_format
 			gon.indicator_scale_colors = IndicatorScale.get_colors(@indicator.id)
+		end
+
+		# if summary view type set indicator_description for legend title
+		if params[:view_type] == @summary_view_type_name
+			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name)
 		end
 
 		# indicator scales
