@@ -33,7 +33,7 @@ logger.debug "+++++++++ event could not be found or the selected event does not 
 			else
 				# get the shape
 				params[:shape_id] = event.shape_id if params[:shape_id].nil?
-		    logger.debug("shape id = #{params[:shape_id]}")
+logger.debug("+++++++++shape id = #{params[:shape_id]}")
 				@shape = Shape.get_shape_no_geometry(params[:shape_id])
 
 				if @shape.nil?
@@ -48,77 +48,88 @@ logger.debug "+++++++++ parent shape could not be found"
 					parent_shape_type = get_shape_type(params[:shape_type_id])
 					@child_shape_type_id = nil
 
-          # if the parent shape is the root and the parent_shape_clickable is set to true,
-          # make the parent shape also be the child shape
-          if parent_shape_type.is_root? && !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-				    logger.debug("parent shape type is root and it should be clickable")
-						child_shape_type = parent_shape_type
-						@child_shape_type_id = child_shape_type.id
-						@child_shape_type_name = child_shape_type.name_singular
-						# set the map title
-						# format = parent shape type shape name
-						@map_title = parent_shape_type.name_singular + ": " + @shape.common_name
-					elsif !parent_shape_type.nil? && parent_shape_type.has_children?
-				    logger.debug("parent shape type is not root or it should not be clickable")
-					  # this is not the root, so reset parent shape clickable
-					  params[:parent_shape_clickable] = nil
-						# found child, save id
-#						child_shape_type = get_child_shape_type(params[:shape_type_id])
-						child_shape_type = get_child_shape_type(@shape)
-						@child_shape_type_id = child_shape_type.id
-						@child_shape_type_name = child_shape_type.name_singular
-						# set the map title
-						# format = children shape types of parent shape type
-						@map_title = parent_shape_type.name_singular + ": " + @shape.common_name + " - " + child_shape_type.name_plural
-					end
-
-					# get the indicators for the children shape_type
-					if !params[:event_id].nil? && !@child_shape_type_id.nil?
-						@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id], @child_shape_type_id)
-					end
-
-					if @indicator_types.nil? || @indicator_types.empty?
-						# no indicators exist for this event and shape type
-logger.debug "+++++++++ no indicators exist for this event and shape type"
+					if parent_shape_type.nil?
+logger.debug("+++++++++ parent shape type could not be found")
 						flag_redirect = true
 					else
-						# if an indicator is not selected, select the first one in the list
-						# if the first indicator type has a summary, select the summary
-						if params[:indicator_id].nil? && params[:view_type].nil?
-							if @indicator_types[0].has_summary
-								params[:view_type] = @summary_view_type_name
-								params[:indicator_type_id] = @indicator_types[0].id
-							elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? || @indicator_types[0].core_indicators[0].indicators.nil? || @indicator_types[0].core_indicators[0].indicators.empty?
-								# could not find an indicator
-	logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
-								flag_redirect = true
-							else
-								params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
+		        # if the parent shape is the root and the parent_shape_clickable is set to true,
+		        # make the parent shape also be the child shape
+		        if parent_shape_type.is_root? && !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+	logger.debug("+++++++++ parent shape type is root and it should be clickable")
+							child_shape_type = parent_shape_type
+							@child_shape_type_id = child_shape_type.id
+							@child_shape_type_name = child_shape_type.name_singular
+							# set the map title
+							# format = parent shape type shape name
+							@map_title = parent_shape_type.name_singular + ": " + @shape.common_name
+						elsif parent_shape_type.has_children?
+	logger.debug("+++++++++ parent shape type is not root or it should not be clickable")
+							# this is not the root, so reset parent shape clickable
+							params[:parent_shape_clickable] = nil
+							# found child, save id
+	#						child_shape_type = get_child_shape_type(params[:shape_type_id])
+							child_shape_type = get_child_shape_type(@shape)
+							@child_shape_type_id = child_shape_type.id
+							@child_shape_type_name = child_shape_type.name_singular
+							# set the map title
+							# format = children shape types of parent shape type
+							@map_title = parent_shape_type.name_singular + ": " + @shape.common_name + " - " + child_shape_type.name_plural
+						else
+	logger.debug("+++++++++ parent shape type is not root and parent shape type does not have children")
+							flag_redirect = true
+						end
+					end
+
+					if @child_shape_type_id.nil?
+logger.debug("+++++++++ child shape type could not be found")
+						flag_redirect = true
+					else
+						# get the indicators for the children shape_type
+						@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id], @child_shape_type_id)
+
+						if @indicator_types.nil? || @indicator_types.empty?
+							# no indicators exist for this event and shape type
+	logger.debug "+++++++++ no indicators exist for this event and shape type"
+							flag_redirect = true
+						else
+							# if an indicator is not selected, select the first one in the list
+							# if the first indicator type has a summary, select the summary
+							if params[:indicator_id].nil? && params[:view_type].nil?
+								if @indicator_types[0].has_summary
+									params[:view_type] = @summary_view_type_name
+									params[:indicator_type_id] = @indicator_types[0].id
+								elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? || @indicator_types[0].core_indicators[0].indicators.nil? || @indicator_types[0].core_indicators[0].indicators.empty?
+									# could not find an indicator
+		logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
+									flag_redirect = true
+								else
+									params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
+								end
+							end
+
+							# get the indicator
+							# if the shape type changed, update the indicator_id to be valid for the new shape_type
+							# only if this is not the summary view
+		          if params[:view_type] != @summary_view_type_name
+								if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
+
+									# we know the old indicator id and the new shape type
+									# - use that to find the new indicator id
+									new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
+									if new_indicator.nil? || new_indicator.empty?
+										# could not find a match, reset the indicator id
+										params[:indicator_id] = nil
+									else
+										# save the new value				
+										params[:indicator_id] = new_indicator.first.id.to_s
+										@indicator = new_indicator.first
+									end
+								else
+									# get the selected indicator 
+									@indicator = Indicator.find(params[:indicator_id])
+								end
 							end
 						end
-
-						# get the indicator
-						# if the shape type changed, update the indicator_id to be valid for the new shape_type
-						# only if this is not the summary view
-            if params[:view_type] != @summary_view_type_name
-  						if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
-
-  							# we know the old indicator id and the new shape type
-  							# - use that to find the new indicator id
-  							new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
-  							if new_indicator.nil? || new_indicator.empty?
-  								# could not find a match, reset the indicator id
-  								params[:indicator_id] = nil
-  							else
-  								# save the new value				
-  								params[:indicator_id] = new_indicator.first.id.to_s
-  								@indicator = new_indicator.first
-  							end
-  						else
-  							# get the selected indicator 
-  							@indicator = Indicator.find(params[:indicator_id])
-  						end
-  					end
 					end
 				end
 			end
