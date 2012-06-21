@@ -29,8 +29,6 @@
   <b><%= t("app.common.color") %>:</b>
   <% if !@core_indicator.color.nil? && !@core_indicator.color.empty? %>
 	  <span style="background-color: <%= "#{@core_indicator.color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-	<% elsif !@core_indicator.ancestry.nil? && !@core_indicator.parent.color.nil? && !@core_indicator.parent.color.empty? %>
-	  <span style="background-color: <%= "#{@core_indicator.parent.color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 	<% end %>
 </p>
 

@@ -30,4 +30,15 @@ class CoreIndicator < ActiveRecord::Base
     "#{self.description}#{parent_name}"
   end
 
+	# if this is a child and no color exist, see if the parent has a color
+	def color
+	  if !self.color.nil? && !self.color.empty?
+	  	self.color
+		elsif !self.ancestry.nil? && !self.parent.color.nil? && !self.parent.color.empty?
+	  	self.parent.color
+		else
+			nil
+		end
+	end
+
 end

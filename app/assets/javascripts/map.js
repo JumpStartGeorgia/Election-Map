@@ -27,6 +27,11 @@ var WGS84 = new OpenLayers.Projection("EPSG:4326");
 // WGS84 Google Mercator projection
 var WGS84_google_mercator = new OpenLayers.Projection("EPSG:900913");
 
+// gon.indicator_number_format will not exist for the summary view
+// so have to create local variable to store value;
+var number_format = "";
+
+
 // Function called from body tag
 function map_init(){
 	// add no data to scales
@@ -34,6 +39,11 @@ function map_init(){
 		gon.indicator_scale_colors.splice(0,0,color_nodata);
 		gon.indicator_scales.splice(0,0,scale_nodata);
 	} 
+
+	// if gon.indicator_number_format has a value, save it
+	if (gon.indicator_number_format){
+		number_format = gon.indicator_number_format;
+	}
 
 	var options = {
     projection: WGS84_google_mercator,
@@ -61,7 +71,7 @@ function map_init(){
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
 //  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
-  vector_child = new OpenLayers.Layer.Vector("Child Layer");
+  vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
   map.addLayers([vector_base, vector_child]);
 //  map.addLayers([map_layer, vector_base, vector_child]);
@@ -147,8 +157,6 @@ function load_vector_child(resp){
     vector_child.addFeatures(resp.features);
     // if this is summary view, populate gon.indicator_scales and colors with names from json file
     populate_summary_data();
-    // add style map
-    vector_child.styleMap = build_indicator_scale_styles();
 		// now that the child vector is loaded, lets show the legend
     draw_legend();
 		// now load the values for the hidden form
@@ -175,7 +183,16 @@ function populate_summary_data(){
         // record the name so can easily test for new unique name in if statement above
         names[gon.indicator_scales.length] = vector_child.features[i].attributes.value;
       }
+
+			// see if the number format has already been saved
+			if (number_format.length == 0){
+				number_format = vector_child.features[i].attributes.number_format;
+			}
     }
+
+    // add style map
+//    vector_child.styleMap = null;
+    vector_child.styleMap = build_indicator_scale_styles();
   }
 }
 
@@ -395,11 +412,11 @@ function update_query_parameter(url, name, name2, value){
 function hover_handler (feature)
 {
   if (gon.view_type == gon.summary_view_type_name){
-  	populate_map_box(feature.attributes.common_name, feature.attributes.value + ":", 
-  		feature.attributes.data_value, gon.indicator_number_format);
+  	populate_map_box(feature.attributes.common_name, feature.attributes.value, 
+  		feature.attributes.data_value, number_format);
   } else if (gon.indicator_scale_colors && gon.indicator_scales){
-  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv + ":", 
-  		feature.attributes.value, gon.indicator_number_format);
+  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv, 
+  		feature.attributes.value, number_format);
   } 
 }
 
@@ -416,16 +433,23 @@ function populate_map_box(title, indicator, value, number_format)
     {
         box.children('h1').text(title);
     }
-    if (indicator && value)
+    if (indicator && indicator != gon.no_data_text)
     {
-        box.children('#map-box-content').children('#map-box-indicator').text(indicator);
-				// make the number pretty
-				var x = format_number(value);
-				// if the value is a number, apply the number_format
-				if (!isNaN(x) && number_format){
-					x += number_format;
-				}
-        box.children('#map-box-content').children('#map-box-value').text(x);
+      box.children('#map-box-content').children('#map-box-indicator').text(indicator + ":");
+    } else {
+      box.children('#map-box-content').children('#map-box-indicator').text("");
+    }
+    if (value)
+    {
+			// make the number pretty
+			var x = format_number(value);
+			// if the value is a number, apply the number_format
+			if (!isNaN(x) && number_format){
+				x += number_format;
+			}
+      box.children('#map-box-content').children('#map-box-value').text(x);
+    } else {
+      box.children('#map-box-content').children('#map-box-value').text("");
     }
     if (title || (indicator && value))
     {

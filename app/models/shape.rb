@@ -102,13 +102,15 @@ class Shape < ActiveRecord::Base
 					json << data[0].attributes["indicator_name"]
 					json << '", "color":"'
 					json << data[0].attributes["color"] if !data[0].attributes["color"].nil? 
+					json << '", "number_format":"'
+					json << data[0].attributes["number_format"] if !data[0].attributes["number_format"].nil? 
 				else
 					json << '", "data_value":"'
 					json << I18n.t('app.msgs.no_data')
 					json << '", "value":"'
 					json << I18n.t('app.msgs.no_data')
 					json << '", "color":"'
-					json << I18n.t('app.msgs.no_data')
+					json << '", "number_format":"'
 				end
 
 				json << '"}}'

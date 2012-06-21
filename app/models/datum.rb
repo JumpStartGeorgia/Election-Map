@@ -33,14 +33,18 @@ class Datum < ActiveRecord::Base
 		if (shape_id.nil? || event_id.nil? || indicator_type_id.nil?)
 			return nil		
 		else
-			sql = "SELECT d.id, d.value, ci.number_format as 'number_format', ci.color as 'color', cit.name as 'indicator_name' "
+			sql = "SELECT d.id, d.value, ci.number_format as 'number_format', "
+			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
+			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
 			sql << "FROM data as d "
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
 			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
-			sql << "left join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "left join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
+			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id "
+			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and cit.locale = cit_parent.locale "
+			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
+			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
 			sql << "inner join ( "
 			sql << "	SELECT max(cast(d.value as decimal(12,6))) as max_value "
 			sql << "	FROM data as d "
