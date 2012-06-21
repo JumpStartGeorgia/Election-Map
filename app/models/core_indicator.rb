@@ -31,7 +31,7 @@ class CoreIndicator < ActiveRecord::Base
   end
 
 	# if this is a child and no color exist, see if the parent has a color
-	def color
+	def indicator_color
 	  if !self.color.nil? && !self.color.empty?
 	  	self.color
 		elsif !self.ancestry.nil? && !self.parent.color.nil? && !self.parent.color.empty?

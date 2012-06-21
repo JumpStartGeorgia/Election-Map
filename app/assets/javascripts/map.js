@@ -193,6 +193,7 @@ function populate_summary_data(){
     // add style map
 //    vector_child.styleMap = null;
     vector_child.styleMap = build_indicator_scale_styles();
+		vector_child.redraw();
   }
 }
 
@@ -433,6 +434,7 @@ function populate_map_box(title, indicator, value, number_format)
     {
         box.children('h1').text(title);
     }
+		// under summary, the indicator name is the value so if the indicator = no data, do not show it
     if (indicator && indicator != gon.no_data_text)
     {
       box.children('#map-box-content').children('#map-box-indicator').text(indicator + ":");
