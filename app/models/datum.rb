@@ -297,7 +297,8 @@ logger.debug "no shapes were found"
 					end
 		      
 					# use tab as separator for excel does not like ','
-					obj.csv_data = CSV.generate(:col_sep => "\t", :force_quotes => true) do |csv|
+#					obj.csv_data = CSV.generate(:col_sep => "\t", :force_quotes => true) do |csv|
+					obj.csv_data = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
 				    # generate the header
 				    header = []
 						# replace the [Level] placeholder in download_header with the name of the map level
@@ -317,8 +318,9 @@ logger.debug "no shapes were found"
 
 					# convert to utf-8
 					# the bom is used to indicate utf-16le which excel requires
-				  bom = "\xEF\xBB\xBF".force_encoding("UTF-8") #Byte Order Mark UTF-8
-					obj.csv_data = (bom + obj.csv_data).force_encoding("UTF-8")
+#				  bom = "\xEF\xBB\xBF".force_encoding("UTF-8") #Byte Order Mark UTF-8
+#					obj.csv_data = (bom + obj.csv_data).force_encoding("UTF-8")
+					
 					
 		      return obj
 				end

@@ -348,7 +348,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 
 		    # send the file
 		    send_data data.csv_data,
-		      :type => 'text/tab-separated-values; header=present',
+		      :type => 'text/csv; header=present',
 		      :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
 			end
 
