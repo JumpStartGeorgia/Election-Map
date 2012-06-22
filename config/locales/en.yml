@@ -137,7 +137,7 @@ en:
       about: About Project
       contact: Contact Us
       terms: Terms of Use
-      js_link_title: Visit JumpStart Georgia`s website
+      js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by JumpStart Georgia
     map:
       title: Election Map
@@ -154,7 +154,7 @@ en:
       about: About Project
       contact: Contact Us
       terms: Terms of Use
-      js_link_title: Visit JumpStart Georgia`s website
+      js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by JumpStart Georgia
   root:
     admin:

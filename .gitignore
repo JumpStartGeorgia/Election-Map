@@ -12,6 +12,7 @@
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
+/log/*.swp
 /tmp
 
 # Ignore the compiled public/assets
