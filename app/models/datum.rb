@@ -29,11 +29,17 @@ class Datum < ActiveRecord::Base
 
 	# get the max data value for all indicators that belong to the 
 	# indicator type and event for a specific shape
-	def self.get_summary_data_for_shape(shape_id, event_id, indicator_type_id)
+	def self.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit=1)
 		if (shape_id.nil? || event_id.nil? || indicator_type_id.nil?)
 			return nil		
 		else
-			sql = "SELECT d.id, d.value, ci.number_format as 'number_format', "
+		  # if limit is a string, convert to int
+		  # will be string if value passed in via params object
+		  if limit.class == String
+		    limit = limit.to_i
+		  end
+		  
+			sql = "SELECT d.id, d.value, st.common_id, st.common_name, ci.number_format as 'number_format', "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
 			sql << "FROM data as d "
@@ -45,22 +51,59 @@ class Datum < ActiveRecord::Base
 			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and cit.locale = cit_parent.locale "
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
 			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
-			sql << "inner join ( "
-			sql << "	SELECT max(cast(d.value as decimal(12,6))) as max_value "
-			sql << "	FROM data as d "
-			sql << "	inner join datum_translations as dt on d.id = dt.datum_id "
-			sql << "	inner join indicators as i on d.indicator_id = i.id "
-			sql << "	inner join core_indicators as ci on i.core_indicator_id = ci.id "
-			sql << "	inner join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "	inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
-			sql << "	WHERE i.event_id = :event_id and ci.indicator_type_id = :indicator_type_id AND s.id =  :shape_id "
-			sql << "	AND dt.locale = :locale AND st.locale = :locale "
-			sql << ") as max_val on cast(d.value as decimal(12,6)) = max_val.max_value "
 			sql << "WHERE i.event_id = :event_id and ci.indicator_type_id = :indicator_type_id and s.id =  :shape_id "
 			sql << "AND dt.locale = :locale AND st.locale = :locale AND cit.locale = :locale "
-
-			find_by_sql([sql, :event_id => event_id, :shape_id => shape_id, :indicator_type_id => indicator_type_id, :locale => I18n.locale])
+      sql << "order by cast(d.value as decimal(12,6)) desc "
+      sql << "limit :limit"
+			find_by_sql([sql, :event_id => event_id, :shape_id => shape_id, :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 		end
+	end
+
+
+	# create the properly formatted json string
+	def self.build_summary_json(shape_id, event_id, indicator_type_id, limit=1)
+		json = ''
+		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+			json = '{ "summary_data": {'
+			json << '"shape_id":"'
+			json << shape_id.to_s
+			json << '", "event_id":"'
+			json << event_id.to_s
+			json << '", "indicator_type_id":"'
+			json << indicator_type_id.to_s
+			json << '", "limit":"'
+			json << limit.to_s
+			json << '", "data": ['
+
+			data = Datum.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit)
+			if !data.nil? && !data.empty?
+        data.each_with_index do |datum, i|
+  				json << '{"rank":"'
+  				json << (i+1).to_s
+					json << '", "indicator_name":"'
+					json << datum.attributes["indicator_name"]
+					json << '", "value":"'
+					json << datum.value
+					json << '", "number_format":"'
+					json << datum.attributes["number_format"] if !datum.attributes["number_format"].nil? 
+					json << '", "color":"'
+					json << datum.attributes["color"] if !datum.attributes["color"].nil? 
+  				json << '", "common_id":"'
+					json << datum.attributes["common_id"] if !datum.attributes["common_id"].nil? 
+  				json << '", "common_name":"'
+					json << datum.attributes["common_name"] if !datum.attributes["common_name"].nil? 
+          if i < data.length-1 # if this is last item, do not include ','
+  				  json << '"}, '
+  				else
+  				  json << '"} '
+				  end
+        end
+      end
+
+			json << ']' # close data array
+			json << '}}'
+		end
+		return json
 	end
 
   def self.csv_header

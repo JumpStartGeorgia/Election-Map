@@ -3,7 +3,7 @@
 
 class RootController < ApplicationController
   before_filter :authenticate_user!, 
-    :except => [:index, :shape, :children_shapes, :summary_children_shapes, :grandchildren_shapes, :export, :download]
+    :except => [:index, :export, :download]
 
   # GET /
   # GET /.json
@@ -150,162 +150,6 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 			render :layout => 'map'
 		end
 	end
-
-  # GET /shape/:id
-  # GET /shape/:id.json
-  def shape
-		geometries = Rails.cache.fetch("shape_json_#{I18n.locale}_#{params[:id]}") {
-			#get the parent shape
-			shape = Shape.where(:id => params[:id])
-			Shape.build_json(shape)
-		}
-=begin
-    #get the parent shape
-    shape = Shape.where(:id => params[:id])
-    geometries = Shape.build_json(shape)
-=end
-    respond_to do |format|
-      format.json { render json: geometries }
-    end
-  end
-
-  # GET /children_shapes/:parent_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id))
-  # GET /children_shapes/:parent_id.json
-  def children_shapes
-		geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
-			geo = ''
-			#get the parent shape
-			shape = Shape.where(:id => params[:parent_id])
-
-			if !shape.nil? && !shape.empty?
-		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-					# get the parent shape and format for json
-					geo = Shape.build_json(shape, params[:indicator_id])
-				elsif shape.first.has_children?
-					# get all of the children of the parent and format for json
-					geo = Shape.build_json(shape.first.children, params[:indicator_id])
-				end
-			end
-
-			geo
-		}
-=begin
-    geometries = nil
-    #get the parent shape
-    shape = Shape.where(:id => params[:parent_id])
-
-    if !shape.nil? && shape.length > 0
-      if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-    		# get the parent shape and format for json
-    		geometries = Shape.build_json(shape, params[:indicator_id])
-    	elsif shape.first.has_children?
-    		# get all of the children of the parent and format for json
-    		geometries = Shape.build_json(shape.first.children, params[:indicator_id])
-    	end
-    end
-=end
-    respond_to do |format|
-      format.json { render json: geometries}
-    end
-  end
-
-  # GET /summary_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)
-  # GET /summary_children_shapes/:parent_id.json
-  def summary_children_shapes
-		geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type__#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
-			geo = ''
-			#get the parent shape
-			shape = Shape.where(:id => params[:parent_id])
-
-			if !shape.nil? && !shape.empty?
-		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-					# get the parent shape and format for json
-					geo = Shape.build_summary_json(shape, params[:event_id], params[:indicator_type_id])
-				elsif shape.first.has_children?
-					# get all of the children of the parent and format for json
-					geo = Shape.build_summary_json(shape.first.children, params[:event_id], params[:indicator_type_id])
-				end
-			end
-
-			geo
-		}
-=begin
-    geometries = nil
-    #get the parent shape
-    shape = Shape.where(:id => params[:parent_id])
-
-		if !shape.nil? && !shape.empty?
-	    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-				# get the parent shape and format for json
-				geo = Shape.build_summary_json(shape, params[:event_id], params[:indicator_type_id])
-			elsif shape.first.has_children?
-				# get all of the children of the parent and format for json
-				geo = Shape.build_summary_json(shape.first.children, params[:event_id], params[:indicator_type_id])
-			end
-		end
-=end
-    respond_to do |format|
-      format.json { render json: geometries}
-    end
-  end
-
-  # GET /grandchildren_shapes/:parent_id
-  # GET /grandchildren_shapes/:parent_id.json
-  def grandchildren_shapes
-
-		geometries = Rails.cache.fetch("grandchildren_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
-			geo = ''
-			#get the parent shape
-			shape = Shape.where(:id => params[:parent_id])
-
-		  if !shape.nil? && shape.length > 0
-		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-		  		# get the parent shape and format for json
-		  		geo = Shape.build_json(shape, params[:indicator_id])
-		  	elsif shape.first.has_children?
-		  		# get all of the grandchildren of the parent, and format for json
-					shapes = []
-					shape.first.children.each do |child|
-						if child.has_children?
-							shapes << child.children
-						end
-					end
-					# flatten all of the nested arrays into just one array
-					shapes.flatten!
-		  		geo = Shape.build_json(shapes, params[:indicator_id])
-		  	end
-		  end
-
-			geo
-		}
-
-=begin
-    geometries = nil
-    #get the parent shape
-    shape = Shape.where(:id => params[:parent_id])
-
-    if !shape.nil? && shape.length > 0
-      if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-    		# get the parent shape and format for json
-    		geometries = Shape.build_json(shape, params[:indicator_id])
-    	elsif shape.first.has_children?
-    		# get all of the grandchildren of the parent, and format for json
-				shapes = []
-				shape.first.children.each do |child|
-					if child.has_children?
-						shapes << child.children
-					end
-				end
-				# flatten all of the nested arrays into just one array
-				shapes.flatten!
-    		geometries = Shape.build_json(shapes, params[:indicator_id])
-    	end
-    end
-=end
-    respond_to do |format|
-      format.json { render json: geometries}
-    end
-  end
 
   # POST /export
 	# generate the svg file
@@ -468,13 +312,13 @@ logger.debug " - no matching event found!"
     # shape json paths
 		# - only children shape path needs the indicator id since that is the only layer that is clickable
 		if !params[:shape_id].nil?
-			gon.shape_path = shape_path(:id => params[:shape_id])
+			gon.shape_path = json_shape_path(:id => params[:shape_id])
 			if params[:view_type] == @summary_view_type_name
-  			gon.children_shapes_path = summary_children_shapes_path(:parent_id => params[:shape_id], 
+  			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id], 
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id], 
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       else
-  			gon.children_shapes_path = children_shapes_path(:parent_id => params[:shape_id], 
+  			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id], 
   			  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       end
 		end
