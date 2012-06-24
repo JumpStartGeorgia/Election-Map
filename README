@@ -1,7 +1,9 @@
 JumpStart Georgia's Election Map Application
 
-Phase 1 - Creation of application using OpenLayers to show the results of an event for an indicator at a particular map level.
+Phase 1 - Creation of application using OpenLayers to show the results of an event for an indicator at a particular map level.  Complete May 2012.
 
-Phase 2 - Switching database structure to group indicators by type and providing ability to show summary of all indicators for an event at a particular map level.
+Phase 2 - Switching database structure to group indicators by type and providing ability to show summary of all indicators for an event at a particular map level.  Complete June 2012.
 
-Phase 3 - Redesign look of website to make navigation more compact.  Add data tables and D3 graphs.
+Phase 3 - Showing all districts, instead of just the regions, at the country-wide view.  
+
+Phase 4 - Redesign look of website to make navigation more compact.  Add data tables and D3 graphs.
