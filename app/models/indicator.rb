@@ -53,12 +53,24 @@ class Indicator < ActiveRecord::Base
 			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}") {
 				sql = "select inew.* "
 				sql << "from indicators as iold "
-				sql << "inner join indicators as inew on iold.event_id = inew.event_id and iold.core_indicator_id = inew.core_indicator_id "
-				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type"
+				sql << "inner join indicators as inew on iold.event_id = inew.event_id "
+        sql << "inner join core_indicators as ciold on iold.core_indicator_id = ciold.id "
+        sql << "inner join core_indicators as cinew on inew.core_indicator_id = cinew.id "
+        sql << "inner join core_indicator_translations as citold on ciold.id = citold.core_indicator_id "
+        sql << "inner join core_indicator_translations as citnew on cinew.id = citnew.core_indicator_id and citold.name_abbrv = citnew.name_abbrv and citold.locale = citnew.locale "
+				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and citold.locale = :locale"
 		
-				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type])
+				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => I18n.locale])
 			}
 =begin
+sql = "select inew.* "
+sql << "from indicators as iold "
+sql << "inner join indicators as inew on iold.event_id = inew.event_id and iold.core_indicator_id = inew.core_indicator_id "
+sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type"
+
+find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type])
+
+
       sql = "select inew.* "
       sql << "from indicators as iold "
       sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
