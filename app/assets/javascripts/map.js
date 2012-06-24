@@ -350,24 +350,29 @@ function click_handler (feature)
 	// if the feature has children, continue
 	if (feature.attributes.has_children == "true"){
 		// add/update the shape_id parameter
+ary = ["original = " + window.location.href];
 		var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
-
+ary[1] = "new shape id: " + url;
 		// add/update the shape_type_id parameter
 		url = update_query_parameter(url, "shape_type_id", "shape_type", feature.attributes.shape_type_id);
+ary[2] = "new shape type id: " + url;
 
 		// add/update the event_id parameter
 		// - when switching between event types, the event id is not set in the url 
 		//   so it needs to be added
 		url = update_query_parameter(url, "event_id", "event", gon.event_id);
+ary[3] = "new event id: " + url;
 
 		// add/update the parameter to indicate that the shape type is changing
 		url = update_query_parameter(url, "change_shape_type", "change_shape", true);
+ary[4] = "new change shape type: " + url;
 
 		// update the parameter to indicate that the parent shape is clickable
 		// clicking on the map should reset this value for it should only be true
 		// when clicking on the menu navigation
 		url = update_query_parameter(url, "parent_shape_clickable", "parent_clickable", false);
-
+ary[5] = "new parent clickable: " + url;
+alert("urls = " + ary.join(" \r\r "));
 		// load the url
 		window.location.href = url;
 	}
@@ -377,7 +382,7 @@ function click_handler (feature)
 function update_query_parameter(url, name, name2, value){
 	// get the current url
 	var index = url.indexOf(name + "=");
-	var index2 = url.indexOf(name2 + "/");
+	var index2 = url.indexOf("/" + name2 + "/");
 	if (index > 0){
 		// found 'name=', now need to replace the value
 		var name_length = name.length+1; // use +1 to account for the '='
@@ -390,8 +395,8 @@ function update_query_parameter(url, name, name2, value){
 			url = url.slice(0, index+name_length) + value;
 		}
 	}else if (index2 > 0) {
-		// found 'name/', now need to replace the value
-		var name_length = name2.length+1; // use +1 to account for the '='
+		// found '/name/', now need to replace the value
+		var name_length = name2.length+2; // use +1 to account for the '/' at the beginning and end
 		var indexAfter = url.indexOf("/", index2+name_length);
 		if (indexAfter > 0){
 			// there is another paramter after this one
