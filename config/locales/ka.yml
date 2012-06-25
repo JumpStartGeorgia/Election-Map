@@ -93,6 +93,7 @@ ka:
       message_sent: თქვენი შეტყობინება გაგზავნილია! მადლობა რომ დაგვიკავშირდით.
       core_indicator_color_share: "If no color provided and indicator belongs to another indicator, the other indicatr's color will be used"
       map_summary_legend_title: "%{shape_type} გამარჯვებულები"
+      indicator_summary_link: "%{name} შემაჯამებელი"
       has_summary_hint: "If Has Summary is true, an indicator link will be available that will show which indicators that belong to this indicator type won each shape area."
       sort_order_hint: "Sort order is ascending so 1 will be first, 2 second, etc."
     common:
@@ -176,7 +177,6 @@ ka:
       download_header: Download CSV Files
       download_indicators: Indicators
     index:
-      indicator_summary_link: "%{name} შემაჯამებელი"
       export_link_text: ჩამოტვირთეთ მონაცემები
       export_help_text: დახმარება
     clear_cache:

@@ -39,7 +39,8 @@ class Datum < ActiveRecord::Base
 		    limit = limit.to_i
 		  end
 		  
-			sql = "SELECT d.id, d.value, stt.name_singular as 'shape_type_name', st.common_id, st.common_name, ci.number_format as 'number_format', "
+			sql = "SELECT d.id, d.value, ci.number_format as 'number_format', "
+			sql << "itt.name as 'indicator_type_name',stt.name_singular as 'shape_type_name', st.common_id, st.common_name,  "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
 			sql << "FROM data as d "
@@ -53,6 +54,8 @@ class Datum < ActiveRecord::Base
 			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
       sql << "inner join shape_types as sts on i.shape_type_id = sts.id "
       sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale "
+			sql << "inner join indicator_types as it on ci.indicator_type_id = it.id "
+			sql << "inner join indicator_type_translations as itt on it.id = itt.indicator_type_id and dt.locale = itt.locale "
 			sql << "WHERE i.event_id = :event_id and ci.indicator_type_id = :indicator_type_id and s.id =  :shape_id "
 			sql << "AND dt.locale = :locale "
       sql << "order by cast(d.value as decimal(12,6)) desc "
@@ -79,9 +82,10 @@ class Datum < ActiveRecord::Base
 			data = Datum.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit)
 			if !data.nil? && !data.empty?
         # only need one reference to shape type common id/name
-				json << '", "title":"'
-				json << I18n.t("app.msgs.map_summary_legend_title", 
-						:shape_type => "#{data[0].attributes["shape_type_name"]} #{data[0].attributes["common_name"]}")
+				json << '", "title_location":"'
+				json << "#{data[0].attributes["shape_type_name"]}: #{data[0].attributes["common_name"]}"
+				json << '", "title_summary":"'
+				json << I18n.t("app.msgs.indicator_summary_link", :name => data[0].attributes["indicator_type_name"])
 				json << '", "shape_type_name":"'
 				json << data[0].attributes["shape_type_name"]
 				json << '", "common_id":"'
