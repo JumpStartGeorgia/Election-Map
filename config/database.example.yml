@@ -1,8 +1,8 @@
 development:
     adapter:  mysql2 
-    database: 
-    username: 
-    password: 
+    database:
+    username:
+    password:
     encoding: utf8
 #    host: localhost 
 #    port: 
