@@ -78,13 +78,16 @@ class Datum < ActiveRecord::Base
 
 			data = Datum.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit)
 			if !data.nil? && !data.empty?
-        # only need one reference to common id/name
+        # only need one reference to shape type common id/name
+				json << '", "title":"'
+				json << I18n.t("app.msgs.map_summary_legend_title", 
+						:shape_type => "#{data[0].attributes["shape_type_name"]} #{data[0].attributes["common_name"]}")
 				json << '", "shape_type_name":"'
-				json << data[0].attributes["shape_type_name"] if !data[0].attributes["shape_type_name"].nil? 
+				json << data[0].attributes["shape_type_name"]
 				json << '", "common_id":"'
-				json << data[0].attributes["common_id"] if !data[0].attributes["common_id"].nil? 
+				json << data[0].attributes["common_id"]
 				json << '", "common_name":"'
-				json << data[0].attributes["common_name"] if !data[0].attributes["common_name"].nil? 
+				json << data[0].attributes["common_name"]
   			json << '", "data": ['
         data.each_with_index do |datum, i|
   				json << '{"rank":"'
