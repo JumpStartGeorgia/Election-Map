@@ -39,20 +39,22 @@ class Datum < ActiveRecord::Base
 		    limit = limit.to_i
 		  end
 		  
-			sql = "SELECT d.id, d.value, st.common_id, st.common_name, ci.number_format as 'number_format', "
+			sql = "SELECT d.id, d.value, stt.name_singular as 'shape_type_name', st.common_id, st.common_name, ci.number_format as 'number_format', "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
 			sql << "FROM data as d "
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
-			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
+			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id and dt.locale = cit.locale "
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id "
-			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and cit.locale = cit_parent.locale "
+			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and dt.locale = cit_parent.locale "
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
+			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
+      sql << "inner join shape_types as sts on i.shape_type_id = sts.id "
+      sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale "
 			sql << "WHERE i.event_id = :event_id and ci.indicator_type_id = :indicator_type_id and s.id =  :shape_id "
-			sql << "AND dt.locale = :locale AND st.locale = :locale AND cit.locale = :locale "
+			sql << "AND dt.locale = :locale "
       sql << "order by cast(d.value as decimal(12,6)) desc "
       sql << "limit :limit"
 			find_by_sql([sql, :event_id => event_id, :shape_id => shape_id, :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
@@ -73,10 +75,17 @@ class Datum < ActiveRecord::Base
 			json << indicator_type_id.to_s
 			json << '", "limit":"'
 			json << limit.to_s
-			json << '", "data": ['
 
 			data = Datum.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit)
 			if !data.nil? && !data.empty?
+        # only need one reference to common id/name
+				json << '", "shape_type_name":"'
+				json << data[0].attributes["shape_type_name"] if !data[0].attributes["shape_type_name"].nil? 
+				json << '", "common_id":"'
+				json << data[0].attributes["common_id"] if !data[0].attributes["common_id"].nil? 
+				json << '", "common_name":"'
+				json << data[0].attributes["common_name"] if !data[0].attributes["common_name"].nil? 
+  			json << '", "data": ['
         data.each_with_index do |datum, i|
   				json << '{"rank":"'
   				json << (i+1).to_s
@@ -88,19 +97,15 @@ class Datum < ActiveRecord::Base
 					json << datum.attributes["number_format"] if !datum.attributes["number_format"].nil? 
 					json << '", "color":"'
 					json << datum.attributes["color"] if !datum.attributes["color"].nil? 
-  				json << '", "common_id":"'
-					json << datum.attributes["common_id"] if !datum.attributes["common_id"].nil? 
-  				json << '", "common_name":"'
-					json << datum.attributes["common_name"] if !datum.attributes["common_name"].nil? 
           if i < data.length-1 # if this is last item, do not include ','
   				  json << '"}, '
   				else
   				  json << '"} '
 				  end
         end
+  			json << ']' # close data array
       end
 
-			json << ']' # close data array
 			json << '}}'
 		end
 		return json
