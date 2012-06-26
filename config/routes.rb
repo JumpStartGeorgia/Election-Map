@@ -46,6 +46,8 @@ ElectionMap::Application.routes.draw do
 	      get :upload
 	      post :upload
 	      get :export
+	      get :delete
+	      post :delete
 			end
 		end
 	  resources :shape_types

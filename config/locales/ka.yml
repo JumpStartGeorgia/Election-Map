@@ -95,6 +95,11 @@ ka:
       map_summary_legend_title: "%{shape_type} გამარჯვებულები"
       has_summary_hint: "If Has Summary is true, an indicator link will be available that will show which indicators that belong to this indicator type won each shape area."
       sort_order_hint: "Sort order is ascending so 1 will be first, 2 second, etc."
+      delete_shapes_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
+      delete_shapes_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
+      delete_data_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
+      delete_data_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
+      missing_parameters: Pleaes select data from all fields before submitting.
     common:
       important: Important
       indicator: Indicator
@@ -119,6 +124,7 @@ ka:
       color: Color
       indicator_ancestry: Belongs To
       sort_order: Sort Order
+      shape_type: Shape Level
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -175,6 +181,9 @@ ka:
       shapes: Map Shapes
       download_header: Download CSV Files
       download_indicators: Indicators
+      delete_header: Delete Records
+      delete_shapes: Shapes
+      delete_data: Data
     index:
       indicator_summary_link: "%{name} შემაჯამებელი"
       export_link_text: ჩამოტვირთეთ მონაცემები
@@ -277,15 +286,6 @@ ka:
       help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
       help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
       delete_records: Delete existing indicators and their data records on file for the provided Event and Shape Type(s)
-  locales:
-    edit:
-      title: Editing Language
-    index:
-      title: Languages
-    new:
-      title: New Language
-    show:
-      title: Language Details
   pages:
     edit:
       title: Editing Page
@@ -313,6 +313,12 @@ ka:
       title: Upload a CSV File of Shapes
       download_link_text: Download the CSV template file for Shapes
       delete_records: Delete existing shapes on file for the provided Event and Shape Type(s)
+    delete:
+      title: Delete Shapes
+      instructions: To delete Shape records, please select the event the shapes belong to and what level of shapes you wish to delete.
+      important: Important
+      help_1: "The same set of shape records can be shared with multiple events. When you delete shapes for the selected Event, you may also be deleting shapes for other Events that also use the same set of shape records. "
+      help_2: "For the selected shape level, all shapes at that level and subsequent shape levels that are under the selected level will be deleted.  For instance, if you select 'District', all 'District' shapes will be deleted as well as all 'Precinct' shapes that are under those 'District' shapes."
   messages:
     new:
       title: დაგვიკავშირდით

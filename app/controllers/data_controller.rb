@@ -13,21 +13,19 @@ class DataController < ApplicationController
 				  msg = Datum.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-            # clear the cache
-            Rails.cache.clear
-						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to upload_data_path #GET
 		      else
 		        # errors
-						flash[:notice] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
+						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to upload_data_path #GET
 		      end 
 				else
-					flash[:notice] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
+					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to upload_data_path #GET
 				end
 			else
-				flash[:notice] = I18n.t('app.msgs.upload.no_file')
+				flash[:error] = I18n.t('app.msgs.upload.no_file')
 	      redirect_to upload_data_path #GET
 			end
 		end

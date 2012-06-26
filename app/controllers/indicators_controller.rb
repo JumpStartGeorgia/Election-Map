@@ -15,21 +15,19 @@ class IndicatorsController < ApplicationController
 				  msg = Indicator.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-            # clear the cache
-            Rails.cache.clear
-						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to upload_indicators_path #GET
 		      else
 		        # errors
-						flash[:notice] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
+						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to upload_indicators_path #GET
 		      end 
 				else
-					flash[:notice] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
+					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to upload_indicators_path #GET
 				end
 			else
-				flash[:notice] = I18n.t('app.msgs.upload.no_file')
+				flash[:error] = I18n.t('app.msgs.upload.no_file')
 	      redirect_to upload_indicators_path #GET
 			end
 		end
@@ -56,19 +54,19 @@ class IndicatorsController < ApplicationController
 				  msg = Indicator.change_names_from_csv(params[:file])
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to change_name_indicators_path #GET
 		      else
 		        # errors
-						flash[:notice] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
+						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to change_name_indicators_path #GET
 		      end 
 				else
-					flash[:notice] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
+					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to change_name_indicators_path #GET
 				end
 			else
-				flash[:notice] = I18n.t('app.msgs.upload.no_file')
+				flash[:error] = I18n.t('app.msgs.upload.no_file')
 	      redirect_to change_name_indicators_path #GET
 			end
 		end
@@ -103,7 +101,7 @@ class IndicatorsController < ApplicationController
 
       if event.nil?
         # no matching event found
-				flash[:notice] = I18n.t('app.msgs.download.unknow_event')
+				flash[:error] = I18n.t('app.msgs.download.unknow_event')
 	      redirect_to download_indicators_path #GET
       else
         #get the data
@@ -123,10 +121,10 @@ filename ="Indicator_Names_Scales_for_"
           obj = Indicator.create_csv(params[:event_id], false)
         end
         if !obj.msg.nil?
-  				flash[:notice] = I18n.t('app.msgs.download.error', :event_name => event.name, :msg => obj.msg)
+  				flash[:error] = I18n.t('app.msgs.download.error', :event_name => event.name, :msg => obj.msg)
   	      redirect_to download_indicators_path #GET
 				elsif obj.csv_data.nil? || obj.csv_data.empty?
-  				flash[:notice] = I18n.t('app.msgs.download.no_records', :event_name => event.name)
+  				flash[:error] = I18n.t('app.msgs.download.no_records', :event_name => event.name)
   	      redirect_to download_indicators_path #GET
         else
           # send the file

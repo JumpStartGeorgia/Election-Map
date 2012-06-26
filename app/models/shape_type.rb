@@ -13,4 +13,15 @@ class ShapeType < ActiveRecord::Base
   scope :by_name , order('name').l10n
 
 
+
+	# get all of the shape types assigned to an event, via the event's shape_id
+	def self.by_event(event_id)
+		if !event_id.nil?
+			event = Event.find(event_id)
+
+			if !event.nil? && !event.shape_id.nil? && !event.shape.nil?
+				parent_shape_type =  event.shape.shape_type
+			end
+		end
+	end
 end
