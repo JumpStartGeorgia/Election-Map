@@ -114,4 +114,5 @@ class ShapeTypesController < ApplicationController
       format.json { head :ok }
     end
   end
+
 end
