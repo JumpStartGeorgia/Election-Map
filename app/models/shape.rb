@@ -53,6 +53,8 @@ class Shape < ActiveRecord::Base
 				json << ', "properties": {'
 				json << '"id":"'
 				json << shape.id.to_s
+				json << '", "parent_id":"'
+				shape.parent_id.nil? ? json << "" : json << shape.parent_id.to_s
 				json << '", "common_id":"'
 				json << shape.common_id
 				json << '", "common_name":"'
@@ -85,6 +87,8 @@ class Shape < ActiveRecord::Base
 				json << ', "properties": {'
 				json << '"id":"'
 				json << shape.id.to_s
+				json << '", "parent_id":"'
+				shape.parent_id.nil? ? json << "" : json << shape.parent_id.to_s
 				json << '", "common_id":"'
 				json << shape.common_id
 				json << '", "common_name":"'

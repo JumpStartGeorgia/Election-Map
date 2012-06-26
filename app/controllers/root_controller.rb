@@ -318,8 +318,10 @@ logger.debug " - no matching event found!"
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id], 
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       else
-  			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id], 
-  			  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+  			#gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id], 
+  			#  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+  			gon.children_shapes_path = json_grandchildren_shapes_path(:parent_id => params[:shape_id],
+  			  :indicator_id => params[:indicator_id])
       end
 		end
 		
