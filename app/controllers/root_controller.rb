@@ -318,13 +318,17 @@ logger.debug " - no matching event found!"
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id], 
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       else
-  			#gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id], 
-  			#  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
-  			gon.children_shapes_path = json_grandchildren_shapes_path(:parent_id => params[:shape_id],
-  			  :indicator_id => params[:indicator_id])
+        parent_id = Shape.find(params[:shape_id]).parent_id
+        if parent_id.nil?
+          gon.children_shapes_path = json_grandchildren_shapes_path(:parent_id => params[:shape_id],
+  			     :indicator_id => params[:indicator_id])
+        else
+			    gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
+			      :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+        end
       end
 		end
-		
+
 		# view type
 		gon.view_type = params[:view_type]
 		gon.summary_view_type_name = @summary_view_type_name
