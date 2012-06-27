@@ -12,9 +12,8 @@ ElectionMap::Application.configure do
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
 
-config.cache_store = :memory_store
+#config.cache_store = :memory_store
 
-=begin
 	# Global enable/disable all memcached usage
 	config.perform_caching = true
 	# Disable/enable fragment and page caching in ActionController
@@ -25,7 +24,7 @@ config.cache_store = :memory_store
 	config.session_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-session", :expires_in => 30.minutes, :compress => true }
 	# this is a hack for development so can cache model objects in development
 	require 'development/memcache_hack'
-=end
+
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
 

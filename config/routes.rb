@@ -73,7 +73,7 @@ ElectionMap::Application.routes.draw do
     # json routes
 		match '/json/shape/:id', :to => 'json#shape', :as => :json_shape, :via => :get, :defaults => {:format => 'json'}
 		match '/json/children_shapes/:parent_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id))', :to => 'json#children_shapes', :as => :json_children_shapes, :via => :get, :defaults => {:format => 'json'}
-		match '/json/grandchildren_shapes/:parent_id(/indicator/:indicator_id)', :to => 'json#grandchildren_shapes', :as => :json_grandchildren_shapes, :via => :get, :defaults => {:format => 'json'}
+		match '/json/grandchildren_shapes/:parent_id/indicator/:indicator_id', :to => 'json#grandchildren_shapes', :as => :json_grandchildren_shapes, :via => :get, :defaults => {:format => 'json'}
 		match '/json/summary_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)', :to => 'json#summary_children_shapes', :as => :json_summary_children_shapes, :via => :get, :defaults => {:format => 'json'}
 		match '/json/summary_data/shape/:shape_id/event/:event_id/indicator_type/:indicator_type_id(/limit/:limit)', :to => 'json#summary_data', :as => :json_summary_data, :via => :get, :defaults => {:format => 'json'}
 
