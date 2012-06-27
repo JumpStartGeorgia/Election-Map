@@ -19,9 +19,9 @@ class Datum < ActiveRecord::Base
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
-			sql << "left join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "left join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name "
-			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND dt.locale = :locale AND st.locale = :locale"
+			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
+			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
+			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND dt.locale = :locale"
 	
 			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id, :locale => I18n.locale])
 		end

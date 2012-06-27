@@ -99,7 +99,7 @@ class JsonController < ApplicationController
   # GET /grandchildren_shapes/:parent_id
   def grandchildren_shapes
 
-		#geometries = Rails.cache.fetch("grandchildren_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
+		geometries = Rails.cache.fetch("grandchildren_shapes_json_#{I18n.locale}_#{params[:parent_id]}_#{params[:parent_shape_clickable]}_#{params[:indicator_id]}") {
 			geo = ''
 			#get the parent shape
 			shape = Shape.where(:id => params[:parent_id])
@@ -122,8 +122,8 @@ class JsonController < ApplicationController
 		  	end
 		  end
 
-			geometries = geo
-		#}
+			geo
+		}
 
 =begin
     geometries = nil
