@@ -101,6 +101,7 @@ en:
       delete_data_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
       delete_data_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
       missing_parameters: Pleaes select data from all fields before submitting.
+      select_event: Select Event First
     common:
       important: Important
       indicator: Indicator
@@ -198,6 +199,8 @@ en:
       instructions: Please note that you can add as many 'Indicator/Value' columns as you need.
       help_1: Data must be provided in every column or no records will be saved.
       delete_records: Delete existing data on file for the provided Event, Shape Type, and Indicator
+    delete:
+      title: Delete Data
   core_indicators:
     edit:
       title: Editing Indicator

@@ -115,4 +115,12 @@ class ShapeTypesController < ApplicationController
     end
   end
 
+	# GET /shape_types/by_event/:event_id.json
+	def by_event
+		shape_types = ancestry_options(ShapeType.by_event(params[:event_id])) {|i| "#{'-' * i.depth} #{i.name_singular}" }
+			
+    respond_to do |format|
+      format.json { render json: shape_types }
+    end
+	end
 end

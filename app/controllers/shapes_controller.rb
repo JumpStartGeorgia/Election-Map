@@ -47,11 +47,11 @@ class ShapesController < ApplicationController
   # GET /shapes/delete
   # GET /shapes/delete.json
   def delete
+		gon.load_js_shape_delete = true
 		@events = Event.get_all_events
-		@types = ancestry_options([@shape_types[0]]) {|i| "#{'-' * i.depth} #{i.name_singular}" }
 
 		if request.post?
-			if params[:event_id].nil? || params[:shape_type_id].nil?
+			if params[:event_id].nil? || params[:shape_type_id].nil? || params[:shape_type_id] == "0"
 				flash[:error] = I18n.t('app.msgs.missing_parameters')
 			else
 				# delete the shapes

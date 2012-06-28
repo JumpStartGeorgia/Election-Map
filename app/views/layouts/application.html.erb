@@ -2,6 +2,7 @@
 <html>
 <head>
   <title><%= "#{yield (:title)} - #{t('.title')}" || t('.title') %></title>
+	<%= include_gon %>
   <%= stylesheet_link_tag    "application" %>
 	<%= javascript_include_tag "vendor_html5" %>
   <%= csrf_meta_tags %>
@@ -72,6 +73,10 @@
 		<a href="http://jumpstart.ge" target="_blank" title="<%= t('.js_link_title')%>"><%= t('.js_link_text')%></a>
 	</footer>
   <%= javascript_include_tag "application" %>
+	<%= javascript_tag do %>
+		I18n.defaultLocale = "<%= I18n.default_locale %>";
+		I18n.locale = "<%= I18n.locale %>";
+	<% end %>
 
 	<% if Rails.env.production? %>
 	<!-- google analytics -->
