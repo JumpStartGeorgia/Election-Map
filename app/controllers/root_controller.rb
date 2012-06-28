@@ -56,7 +56,7 @@ logger.debug("+++++++++ parent shape type could not be found")
 						custom_view = event.event_custom_views.where(:shape_type_id => parent_shape_type.id)
 						@is_custom_view = false
 						@has_custom_view = false
-						if !custom_view.nil? && !custom_view.empty? 
+						if !custom_view.nil? && !custom_view.empty? && (params[:parent_shape_clickable].nil? || params[:parent_shape_clickable].to_s != "true")
 							@has_custom_view = true
 							# set the param if not set yet
 							params[:custom_view] = custom_view.first.is_default_view.to_s if params[:custom_view].nil?
@@ -77,7 +77,7 @@ logger.debug("+++++++++ parent shape type could not be found")
 				      # if the parent shape is the root and the parent_shape_clickable is set to true,
 				      # make the parent shape also be the child shape
 		logger.debug("+++++++++ parent shape type is root and it should be clickable")
-							child_shape_type = parent_shape_type
+							child_shape_type = parent_shape_type.clone
 						elsif parent_shape_type.has_children?
 	logger.debug("+++++++++ parent shape type is not root or it should not be clickable")
 							# this is not the root, so reset parent shape clickable

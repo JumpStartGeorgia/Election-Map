@@ -65,10 +65,10 @@ ElectionMap::Application.routes.draw do
 
     # routes to root#index
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get
-		match '/event_type/:event_type_id/event/:event_id(/shape/:shape_id(/shape_type/:shape_type_id(/indicator/:indicator_id)))' => 'root#index', :as => 'indicator_map', :via => :get
-		match '/event_type/:event_type_id/event/:event_id/indicator/:indicator_id/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id))' => 'root#index', :as => 'shape_level_map', :via => :get
-		match '/event_type/:event_type_id/event/:event_id/shape_type/:shape_type_id/shape/:shape_id/indicator_type/:indicator_type_id/view_type/:view_type' => 'root#index', :as => 'summary_map', :via => :get
-		match '/event_type/:event_type_id/event/:event_id/indicator_type/:indicator_type_id/view_type/:view_type/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id))' => 'root#index', :as => 'summary_shape_level_map', :via => :get
+		match '/event_type/:event_type_id/event/:event_id(/shape/:shape_id(/shape_type/:shape_type_id(/indicator/:indicator_id(/custom_view/:custom_view))))' => 'root#index', :as => 'indicator_map', :via => :get
+		match '/event_type/:event_type_id/event/:event_id/indicator/:indicator_id/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id(/custom_view/:custom_view)))' => 'root#index', :as => 'shape_level_map', :via => :get
+		match '/event_type/:event_type_id/event/:event_id/shape_type/:shape_type_id/shape/:shape_id/indicator_type/:indicator_type_id/view_type/:view_type(/custom_view/:custom_view)' => 'root#index', :as => 'summary_map', :via => :get
+		match '/event_type/:event_type_id/event/:event_id/indicator_type/:indicator_type_id/view_type/:view_type/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id(/custom_view/:custom_view)))' => 'root#index', :as => 'summary_shape_level_map', :via => :get
 
     # json routes
 		match '/json/shape/:id', :to => 'json#shape', :as => :json_shape, :via => :get, :defaults => {:format => 'json'}
