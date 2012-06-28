@@ -28,7 +28,7 @@ class JsonController < ApplicationController
 
 			grandchildren_cache = nil
 			if !parent_shape.nil?
-				key = key_grandchildren_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[indicator_id]", params[:indicator_id])
+				key = key_grandchildren_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s).gsub("[indicator_id]", params[:indicator_id])
 logger.debug "++++++++++grand children key = #{key}"
 				grandchildren_cache = Rails.cache.read(key)
 			end
@@ -36,8 +36,7 @@ logger.debug "++++++++++grand children key = #{key}"
 			if !grandchildren_cache.nil?
 				# cache exists, pull out need shapes
 logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
-#TODO - delete the below cache call and replace with code
-# pulling shapes out of grand children cache
+#TODO - delete the below cache call and replace with code pulling shapes out of grand children cache
 				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}") {
 					geo = ''
 					#get the parent shape
@@ -124,23 +123,64 @@ logger.debug "++++++++++grand children key = #{key}"
 	################################################3
   # GET /json/summary_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)
   def summary_children_shapes
-		geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
-			geo = ''
-			#get the parent shape
-			shape = Shape.where(:id => params[:parent_id])
+		geometries = nil
+		# get parent of parent shape and see if grandchildren cache already exists
+		shape = Shape.where(:id => params[:parent_id])
+		parent_shape = nil
+		if !shape.nil? && !shape.empty?
+			parent_shape = shape.first.parent
 
-			if !shape.nil? && !shape.empty?
-		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-					# get the parent shape and format for json
-					geo = Shape.build_summary_json(shape, params[:event_id], params[:indicator_type_id])
-				elsif shape.first.has_children?
-					# get all of the children of the parent and format for json
-					geo = Shape.build_summary_json(shape.first.children, params[:event_id], params[:indicator_type_id])
-				end
+			grandchildren_cache = nil
+			if !parent_shape.nil?
+			key = key_summary_grandchildren_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s).gsub("[event_id]", params[:event_id]).gsub("[indicator_type_id]", params[:indicator_type_id])
+logger.debug "++++++++++grand children key = #{key}"
+				grandchildren_cache = Rails.cache.read(key)
 			end
 
-			geo
-		}
+			if !grandchildren_cache.nil?
+				# cache exists, pull out need shapes
+logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
+#TODO - delete the below cache call and replace with code pulling shapes out of grand children cache
+				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
+					geo = ''
+					#get the parent shape
+					shape = Shape.where(:id => params[:parent_id])
+
+					if !shape.nil? && !shape.empty?
+						if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+							# get the parent shape and format for json
+							geo = Shape.build_summary_json(shape, params[:event_id], params[:indicator_type_id])
+						elsif shape.first.has_children?
+							# get all of the children of the parent and format for json
+							geo = Shape.build_summary_json(shape.first.children, params[:event_id], params[:indicator_type_id])
+						end
+					end
+
+					geo
+				}
+
+			else
+logger.debug "++++++++++grand children cache does NOT exist"
+				# no cache exists
+				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
+					geo = ''
+					#get the parent shape
+					shape = Shape.where(:id => params[:parent_id])
+
+					if !shape.nil? && !shape.empty?
+						if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+							# get the parent shape and format for json
+							geo = Shape.build_summary_json(shape, params[:event_id], params[:indicator_type_id])
+						elsif shape.first.has_children?
+							# get all of the children of the parent and format for json
+							geo = Shape.build_summary_json(shape.first.children, params[:event_id], params[:indicator_type_id])
+						end
+					end
+
+					geo
+				}
+			end
+		end
 
     respond_to do |format|
       format.json { render json: geometries}
@@ -150,7 +190,7 @@ logger.debug "++++++++++grand children key = #{key}"
 
   # GET /summary_grandchildren_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id
   def summary_grandchildren_shapes
-		key = key_summary_grandchildren_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[event_id]", params[:event_id]).gsub("[indicator_id]", params[:indicator_type_id])
+		key = key_summary_grandchildren_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[event_id]", params[:event_id]).gsub("[indicator_type_id]", params[:indicator_type_id])
 		geometries = Rails.cache.fetch(key) {
 			geo = ''
 			#get the parent shape
