@@ -96,6 +96,40 @@ class JsonController < ApplicationController
     end
   end
 
+    # GET /summary_grandchildren_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id
+    def summary_grandchildren_shapes
+  		geometries = Rails.cache.fetch("summary_grandchildren_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}") {
+  			geo = ''
+  			#get the parent shape
+  			shape = Shape.where(:id => params[:parent_id])
+
+  			if !shape.nil? && !shape.empty?
+  		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+  					# get the parent shape and format for json
+  					geo = Shape.build_summary_json(shape, params[:event_id], params[:indicator_type_id])
+  				elsif shape.first.has_children?
+  		  		# get all of the grandchildren of the parent, and format for json
+  					shapes = []
+  					shape.first.children.each do |child|
+  						if child.has_children?
+  							shapes << child.children
+  						end
+  					end
+  					# flatten all of the nested arrays into just one array
+  					shapes.flatten!
+  					geo = Shape.build_summary_json(shapes, params[:event_id], params[:indicator_type_id])
+  				end
+  			end
+
+  			geo
+  		}
+
+      respond_to do |format|
+        format.json { render json: geometries}
+      end
+    end
+
+
   # GET /grandchildren_shapes/:parent_id
   def grandchildren_shapes
 
