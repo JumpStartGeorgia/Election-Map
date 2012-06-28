@@ -59,7 +59,9 @@
 		<% if @has_custom_view %>
 			<%= link_to(image_tag("all-data.png", :alt => t('app.buttons.custom_view')), 
 				indicator_map_path(params.merge(:custom_view => !@is_custom_view, :indicator_id => @custom_indicator_id)), 
-				:id => "switch-custom-view", :title => t('app.buttons.custom_view')) %>
+				:id => "switch-custom-view", :title => t('app.buttons.custom_view', 
+					:children_shapes => @custom_child_shape_type_name_plural,
+					:parent_shape => @parent_shape_type_name_singular)) %>
 		<% end %>
 		<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>"><%= image_tag "svg.png", :alt => t('app.buttons.download_map')%></a>
 		<%= link_to(image_tag("xls.png", :alt => t('app.buttons.download_data')), 

@@ -91,13 +91,19 @@ logger.debug("+++++++++ parent shape type could not be found")
 
 						if !flag_redirect
 							@child_shape_type_id = child_shape_type.id
-							@child_shape_type_name = child_shape_type.name_singular
+							@parent_shape_type_name_singular = parent_shape_type.name_singular
+							@child_shape_type_name_singular = child_shape_type.name_singular
+							@child_shape_type_name_plural = child_shape_type.name_plural	
+							if @has_custom_view
+								@custom_child_shape_type_name_singular = custom_child_shape_type.name_singular
+								@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural	
+							end
 							@map_title = nil
 							# set the map title
-							if parent_shape_type == child_shape_type
-								@map_title = parent_shape_type.name_singular + ": " + @shape.common_name
+							if parent_shape_type.id == child_shape_type.id
+								@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name
 							else
-								@map_title = parent_shape_type.name_singular + ": " + @shape.common_name + " - " + child_shape_type.name_plural
+								@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name + " - " + @child_shape_type_name_plural
 							end
 						end							
 
@@ -379,7 +385,7 @@ logger.debug " - no matching event found!"
 
 		# if summary view type set indicator_description for legend title
 		if params[:view_type] == @summary_view_type_name
-			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name)
+			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular)
 		end
 
 		# indicator scales
