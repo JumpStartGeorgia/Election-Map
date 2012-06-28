@@ -78,6 +78,7 @@ en:
       download_csv: Download CSV File
       download_map: Download Map
       download_data: Download Data
+      custom_view: Switch Views
     msgs:
       no_data: No Data
       delete_confirm: "Are you sure?"

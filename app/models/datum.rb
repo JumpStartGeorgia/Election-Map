@@ -1,6 +1,6 @@
 class Datum < ActiveRecord::Base
   translates :common_id, :common_name
-
+	
   belongs_to :indicator
   has_many :datum_translations, :dependent => :destroy
   accepts_nested_attributes_for :datum_translations

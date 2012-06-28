@@ -78,6 +78,7 @@ ka:
       download_csv: ჩამოტვირთეთ CSV ფაილი
       download_data: ჩამოტვირთეთ რუქა
       download_map: ჩამოტვირთეთ მონაცემები
+      custom_view: Switch Views
     msgs:
       no_data: არ არის მონაცემი
       delete_confirm: "Are you sure?"

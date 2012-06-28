@@ -57,9 +57,9 @@
 
 	<div id="export">
 		<% if @has_custom_view %>
-			<%= link_to(image_tag("all-data.png", :alt => t('app.buttons.download_data')), 
+			<%= link_to(image_tag("all-data.png", :alt => t('app.buttons.custom_view')), 
 				indicator_map_path(params.merge(:custom_view => !@is_custom_view, :indicator_id => @custom_indicator_id)), 
-				:id => "switch-custom-view", :title => t('app.buttons.download_data')) %>
+				:id => "switch-custom-view", :title => t('app.buttons.custom_view')) %>
 		<% end %>
 		<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>"><%= image_tag "svg.png", :alt => t('app.buttons.download_map')%></a>
 		<%= link_to(image_tag("xls.png", :alt => t('app.buttons.download_data')), 

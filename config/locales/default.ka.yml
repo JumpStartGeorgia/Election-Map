@@ -64,7 +64,7 @@ ka:
     human:
       format:
         delimiter: ""
-        precision: 3
+        precision: 2
         significant: true
         strip_insignificant_zeros: true
       storage_units:
