@@ -98,10 +98,13 @@ en:
       sort_order_hint: "Sort order is ascending so 1 will be first, 2 second, etc."
       delete_shapes_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
       delete_shapes_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
-      delete_data_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
+      delete_data_success_1: "The data records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}' and Indicator - '%{indicator}'."
+      delete_data_success_2: "The data records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
+      delete_data_success_3: "The data records were successfully deleted for Event - '%{event}'."
       delete_data_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
       missing_parameters: Pleaes select data from all fields before submitting.
       select_event: Select Event First
+      select_shape_type: Select Shape Level First
     common:
       important: Important
       indicator: Indicator
@@ -201,6 +204,9 @@ en:
       delete_records: Delete existing data on file for the provided Event, Shape Type, and Indicator
     delete:
       title: Delete Data
+      instructions: "To delete Data records, please select the Event, Shape Level, and Indicator."
+      help_1: "To delete all Data for an Event, leave the Shape Level and Indicator fields empty."
+      help_2: "To delete all Data for an Event and Shape Level, leave the Indicator field empty."
   core_indicators:
     edit:
       title: Editing Indicator

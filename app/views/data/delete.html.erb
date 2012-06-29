@@ -1,6 +1,20 @@
 <% title t('.title') %>
 
-<%= form_tag delete_shapes_path %>
+<%= form_tag delete_data_path do %>
+	<div>
+		<p>
+			<%= t('.instructions')%>    
+		</p>
+		<ul>
+			<li>
+				<%= t('.help_1')%>
+			</li>
+			<li>
+				<%= t('.help_2')%>
+			</li>
+		</ul>
+	</div>
+
 	<div>
 		<p>
 			<%= t('app.common.event') %>
@@ -12,7 +26,7 @@
 		</p>
 		<p>
 			<%= t('app.common.indicator') %>
-			<%= select_tag "indicator_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe %>
+			<%= select_tag "indicator_id", "<option value=\"0\">#{t('app.msgs.select_shape_type')}</option>".html_safe %>
 		</p>
 	</div>
 	<div>

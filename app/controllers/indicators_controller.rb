@@ -140,5 +140,19 @@ filename ="Indicator_Names_Scales_for_"
 		end
   end
 
+	# GET /indicators/event/:event_id/shape_type/:shape_type_id.json
+	def by_event_shape_type
+		indicators = Indicator.find_by_event_shape_type(params[:event_id], params[:shape_type_id])
+
+		# build array with id and names
+		custom_ary = []
+		indicators.each do |ind|
+			custom_ary << {:id => ind.id, :name => ind.name, :name_abbrv => ind.name_abbrv}
+		end
+			
+    respond_to do |format|
+      format.json { render json: custom_ary.sort_by {|e| e[:name]} }
+    end
+	end
 
 end

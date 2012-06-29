@@ -51,19 +51,20 @@ class ShapesController < ApplicationController
 		@events = Event.get_all_events
 
 		if request.post?
-			if params[:event_id].nil? || params[:shape_type_id].nil? || params[:shape_type_id] == "0"
+			if params[:event_id].nil? || params[:event_id] == "" || params[:shape_type_id].nil? || params[:shape_type_id] == "0"
 				flash[:error] = I18n.t('app.msgs.missing_parameters')
 			else
 				# delete the shapes
 				msg = Shape.delete_shapes(params[:event_id], params[:shape_type_id])
 
 				if msg.nil?				
+					flash[:success] = I18n.t('app.msgs.delete_shapes_success', 
+					  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
+
           # reset params
           params[:event_id] = nil
           params[:shape_type_id] = nil
           
-					flash[:success] = I18n.t('app.msgs.delete_shapes_success', 
-					  :event => params[:event_name], :shape_type => params[:shape_type_name])
 				else
       		gon.event_id = params[:event_id]
       		gon.shape_type_id = params[:shape_type_id]
