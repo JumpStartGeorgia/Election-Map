@@ -55,17 +55,29 @@ logger.debug("+++++++++ parent shape type could not be found")
 						# if the event has a custom view for the parent shape type, use it
 						custom_view = event.event_custom_views.where(:shape_type_id => parent_shape_type.id)
 						@is_custom_view = false
-						if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
+						@has_custom_view = false
+						if !custom_view.nil? && !custom_view.empty? && (params[:parent_shape_clickable].nil? || params[:parent_shape_clickable].to_s != "true")
+							@has_custom_view = true
+							# set the param if not set yet
+							params[:custom_view] = custom_view.first.is_default_view.to_s if params[:custom_view].nil?
+
+							if params[:custom_view] == "true"
 	logger.debug("+++++++++ parent shape type has custom view of seeing #{custom_view.first.descendant_shape_type_id} shape_type")
-							#found custom view, use it to get the child shape type
-							child_shape_type = custom_view.first.descendant_shape_type
-							# indicate custom view is being used
-							@is_custom_view = true
+								#found custom view, use it to get the child shape type
+								child_shape_type = custom_view.first.descendant_shape_type
+								custom_child_shape_type = get_child_shape_type(@shape)
+								# indicate custom view is being used
+								@is_custom_view = true
+							else
+	logger.debug("+++++++++ parent shape type has custom view, but not using it")
+								child_shape_type = get_child_shape_type(@shape)
+								custom_child_shape_type = custom_view.first.descendant_shape_type
+							end
 						elsif parent_shape_type.is_root? && !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 				      # if the parent shape is the root and the parent_shape_clickable is set to true,
 				      # make the parent shape also be the child shape
 		logger.debug("+++++++++ parent shape type is root and it should be clickable")
-							child_shape_type = parent_shape_type
+							child_shape_type = parent_shape_type.clone
 						elsif parent_shape_type.has_children?
 	logger.debug("+++++++++ parent shape type is not root or it should not be clickable")
 							# this is not the root, so reset parent shape clickable
@@ -79,13 +91,19 @@ logger.debug("+++++++++ parent shape type could not be found")
 
 						if !flag_redirect
 							@child_shape_type_id = child_shape_type.id
-							@child_shape_type_name = child_shape_type.name_singular
+							@parent_shape_type_name_singular = parent_shape_type.name_singular
+							@child_shape_type_name_singular = child_shape_type.name_singular
+							@child_shape_type_name_plural = child_shape_type.name_plural	
+							if @has_custom_view
+								@custom_child_shape_type_name_singular = custom_child_shape_type.name_singular
+								@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural	
+							end
 							@map_title = nil
 							# set the map title
-							if parent_shape_type == child_shape_type
-								@map_title = parent_shape_type.name_singular + ": " + @shape.common_name
+							if parent_shape_type.id == child_shape_type.id
+								@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name
 							else
-								@map_title = parent_shape_type.name_singular + ": " + @shape.common_name + " - " + child_shape_type.name_plural
+								@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name + " - " + @child_shape_type_name_plural
 							end
 						end							
 
@@ -109,7 +127,9 @@ logger.debug("+++++++++ child shape type could not be found")
 								if @indicator_types[0].has_summary
 									params[:view_type] = @summary_view_type_name
 									params[:indicator_type_id] = @indicator_types[0].id
-								elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? || @indicator_types[0].core_indicators[0].indicators.nil? || @indicator_types[0].core_indicators[0].indicators.empty?
+								elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? ||
+											@indicator_types[0].core_indicators[0].indicators.nil? || 
+											@indicator_types[0].core_indicators[0].indicators.empty?
 									# could not find an indicator
 		logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
 									flag_redirect = true
@@ -138,6 +158,16 @@ logger.debug("+++++++++ child shape type could not be found")
 								else
 									# get the selected indicator 
 									@indicator = Indicator.find(params[:indicator_id])
+								end
+							end
+
+							# if have custom view, get indicator if user wants to switch between custom view and non-custom view
+							if @has_custom_view
+								@custom_indicator_id = nil
+
+								custom_indicator = Indicator.find_new_id(params[:indicator_id], custom_child_shape_type.id)
+								if !custom_indicator.nil? && !custom_indicator.empty?
+									@custom_indicator_id = custom_indicator.first.id.to_s
 								end
 							end
 						end
@@ -324,7 +354,10 @@ logger.debug " - no matching event found!"
 		# - only children shape path needs the indicator id since that is the only layer that is clickable
 		if !params[:shape_id].nil?
 			gon.shape_path = json_shape_path(:id => params[:shape_id])
-			if params[:view_type] == @summary_view_type_name
+			if params[:view_type] == @summary_view_type_name && @is_custom_view
+  			gon.children_shapes_path = json_summary_grandchildren_shapes_path(:parent_id => params[:shape_id], 
+  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id])
+			elsif params[:view_type] == @summary_view_type_name
   			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id], 
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id], 
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
@@ -352,7 +385,7 @@ logger.debug " - no matching event found!"
 
 		# if summary view type set indicator_description for legend title
 		if params[:view_type] == @summary_view_type_name
-			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name)
+			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular)
 		end
 
 		# indicator scales

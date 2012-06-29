@@ -3,23 +3,6 @@
 <%= form_tag delete_shapes_path %>
 	<div>
 		<p>
-			<%= t('.instructions')%>    
-		</p>
-		<p>
-			<%= t('.important')%>:
-		</p>
-		<ul>
-			<li>
-				<%= t('.help_1')%>
-			</li>
-			<li>
-				<%= t('.help_2')%>
-			</li>
-		</ul>
-	</div>
-
-	<div>
-		<p>
 			<%= t('app.common.event') %>
 			<%= select_tag "event_id", options_from_collection_for_select(@events, "id", "name", params[:event_id]), :include_blank => true %>
 		</p>
@@ -27,11 +10,16 @@
 			<%= t('app.common.shape_type') %>
 			<%= select_tag "shape_type_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe %>
 		</p>
+		<p>
+			<%= t('app.common.indicator') %>
+			<%= select_tag "indicator_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe %>
+		</p>
 	</div>
 	<div>
 	  <%= submit_tag t("app.buttons.delete"), :confirm => t('app.msgs.delete_confirm'), :id => "submit" %>
 	  <%= hidden_field_tag 'event_name' %>
 	  <%= hidden_field_tag 'shape_type_name' %>
+	  <%= hidden_field_tag 'indicator_name' %>
 	</div>
 <% end %>
 

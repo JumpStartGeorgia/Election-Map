@@ -14,38 +14,32 @@ class ShapeType < ActiveRecord::Base
   scope :by_name , order('name').l10n
 
 
-=begin
 	# get all of the shape types assigned to an event, via the event's shape_id
 	def self.by_event(event_id)
-		shape_type_ids = []
+		shape_types = []
+		shape_type_ids = nil
 		if !event_id.nil?
 			event = Event.find(event_id)
 
 			if !event.nil? && !event.shape_id.nil? && !event.shape.nil?
-#				parent_shape_type = event.shape.shape_type
-				shape_type_ids << event.shape.shape_type_id
-
-				shape_type_ids << get_unique_shape_types(event.shape.children)
-				shape_type_ids.flatten!
+			  # if the shape tied to the event is not the root, switch to the root
+			  shape = event.shape.is_root? ? event.shape : event.shape.root
+			  
+				# get all distinct shape_type_ids for this shape set
+				shape_type_ids = shape.subtree.select("distinct shape_type_id")
+				
+				if !shape_type_ids.nil? && !shape_type_ids.empty?
+					# get each shape_type object
+					shape_type_ids.each do |shape|
+						shape_types << shape.shape_type
+					end
+					return shape_types
+				end
 			end
 		end
 
-		return shape_type_ids
 	end
 
 protected
 
-	def self.get_unique_shape_types(shapes)
-		shape_type_ids = []
-		x = shapes.select("distinct shape_type_id, ancestry")
-		x.each do |s|
-			shape_type_ids << s.shape_type_id
-			# if there are children, continue the search
-			if s.has_children?
-				shape_type_ids << get_unique_shape_types(s.children)
-			end
-		end
-		return shape_type_ids
-	end
-=end
 end

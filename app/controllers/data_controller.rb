@@ -42,4 +42,37 @@ class DataController < ApplicationController
       :disposition => "attachment; filename=#{filename}.csv"
   end 
 
+  # GET /data/delete
+  # GET /data/delete.json
+  def delete
+		gon.load_js_data_delete = true
+		@events = Event.get_all_events
+
+		if request.post?
+			if params[:event_id].nil?
+				flash[:error] = I18n.t('app.msgs.missing_parameters')
+			else
+				# delete the data
+=begin
+				msg = Datum.delete_data(params[:event_id], params[:shape_type_id], params[:indicator_id])
+
+				if msg.nil?				
+          # reset params
+          params[:event_id] = nil
+          params[:shape_type_id] = nil
+          params[:indicator_id] = nil
+        
+  				flash[:success] = I18n.t('app.msgs.delete_data_success', 
+  				  :event => params[:event_name], :shape_type => params[:shape_type_name])
+				else
+      		gon.event_id = params[:event_id]
+      		gon.shape_type_id = params[:shape_type_id]
+      		gon.indicator_type_id = params[:indicator_id]
+					flash[:error] = I18n.t('app.msgs.delete_data_fail', :msg => msg)
+				end
+=end
+			end
+		end
+  end
+
 end

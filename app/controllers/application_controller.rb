@@ -82,9 +82,7 @@ protected
 
     result = []
     items.map do |item|
-      result << OpenStruct.new(:name => yield(item), :id => item.id)
-      #this is a recursive call:
-      result += ancestry_options(item.children, &block)
+      result << {"name" => yield(item), "id" => item.id}
     end
     result
   end
