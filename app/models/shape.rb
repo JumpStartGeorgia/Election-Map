@@ -94,7 +94,7 @@ class Shape < ActiveRecord::Base
 				json << '", "shape_type_id":"'
 				json << shape.shape_type_id.to_s
 
-				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id)
+				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id, 1)
 				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
 					json << '", "data_value":"'
 					json << data[0].value

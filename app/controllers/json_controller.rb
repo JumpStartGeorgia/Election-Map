@@ -157,15 +157,9 @@ class JsonController < ApplicationController
   def summary_data
 		if !params[:shape_id].nil? && !params[:event_id].nil? && !params[:indicator_type_id].nil?
   		data = Rails.cache.fetch("summary_data_json_#{I18n.locale}_shape_#{params[:shape_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_limit_#{params[:limit]}") {
-  			d = ''
+
 				# get all of the summary data and format for json
-				if params[:limit].nil?
-				  d = Datum.build_summary_json(params[:shape_id], params[:event_id], params[:indicator_type_id])
-        else
-				  d = Datum.build_summary_json(params[:shape_id], params[:event_id], params[:indicator_type_id], params[:limit])
-        end
-        
-  			d
+			  Datum.build_summary_json(params[:shape_id], params[:event_id], params[:indicator_type_id], params[:limit])
   		}
     end
     respond_to do |format|
