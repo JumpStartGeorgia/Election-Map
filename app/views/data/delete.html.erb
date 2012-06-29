@@ -1,6 +1,6 @@
 <% title t('.title') %>
 
-<%= form_tag delete_shapes_path, :multipart => true do %>
+<%= form_tag delete_shapes_path %>
 	<div>
 		<p>
 			<%= t('app.common.event') %>
@@ -16,7 +16,10 @@
 		</p>
 	</div>
 	<div>
-	  <%= submit_tag t("app.buttons.delete") %>
+	  <%= submit_tag t("app.buttons.delete"), :confirm => t('app.msgs.delete_confirm'), :id => "submit" %>
+	  <%= hidden_field_tag 'event_name' %>
+	  <%= hidden_field_tag 'shape_type_name' %>
+	  <%= hidden_field_tag 'indicator_name' %>
 	</div>
 <% end %>
 

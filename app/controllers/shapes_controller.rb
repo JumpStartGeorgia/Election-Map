@@ -58,16 +58,15 @@ class ShapesController < ApplicationController
 				msg = Shape.delete_shapes(params[:event_id], params[:shape_type_id])
 
 				if msg.nil?				
-					# get the name of the event and shape type
-					event, shape_type = "", ""
-					@events.each do |e|
-						event = e.name if e.id.to_s() == params[:event_id]
-					end
-					@shape_types.each do |st|
-						shape_type = st.name_singular if st.id.to_s() == params[:shape_type_id]
-					end
-					flash[:success] = I18n.t('app.msgs.delete_shapes_success', :event => event, :shape_type => shape_type)
+          # reset params
+          params[:event_id] = nil
+          params[:shape_type_id] = nil
+          
+					flash[:success] = I18n.t('app.msgs.delete_shapes_success', 
+					  :event => params[:event_name], :shape_type => params[:shape_type_name])
 				else
+      		gon.event_id = params[:event_id]
+      		gon.shape_type_id = params[:shape_type_id]
 					flash[:error] = I18n.t('app.msgs.delete_shapes_fail', :msg => msg)
 				end
 			end

@@ -22,8 +22,11 @@ class ShapeType < ActiveRecord::Base
 			event = Event.find(event_id)
 
 			if !event.nil? && !event.shape_id.nil? && !event.shape.nil?
+			  # if the shape tied to the event is not the root, switch to the root
+			  shape = event.shape.is_root? ? event.shape : event.shape.root
+			  
 				# get all distinct shape_type_ids for this shape set
-				shape_type_ids = event.shape.subtree.select("distinct shape_type_id")
+				shape_type_ids = shape.subtree.select("distinct shape_type_id")
 				
 				if !shape_type_ids.nil? && !shape_type_ids.empty?
 					# get each shape_type object
