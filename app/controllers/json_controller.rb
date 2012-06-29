@@ -36,8 +36,18 @@ logger.debug "++++++++++grand children key = #{key}"
 			if !grandchildren_cache.nil?
 				# cache exists, pull out need shapes
 logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
-#TODO - delete the below cache call and replace with code pulling shapes out of grand children cache
-				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}") {
+
+        geometries = ActiveSupport::JSON.decode(grandchildren_cache)
+        needed = []
+        geometries['features'].each do |value|
+          if value['properties']['parent_id'] == params[:parent_id]
+            needed << value
+          end
+        end
+        geometries['features'] = needed
+
+=begin
+        geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}") {
 					geo = ''
 					#get the parent shape
 					shape = Shape.where(:id => params[:parent_id])
@@ -54,6 +64,7 @@ logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
 
 					geo
 				}
+=end
 
 			else
 logger.debug "++++++++++grand children cache does NOT exist"
@@ -140,8 +151,18 @@ logger.debug "++++++++++grand children key = #{key}"
 			if !grandchildren_cache.nil?
 				# cache exists, pull out need shapes
 logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
-#TODO - delete the below cache call and replace with code pulling shapes out of grand children cache
-				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
+
+        geometries = ActiveSupport::JSON.decode(grandchildren_cache)
+        needed = []
+        geometries['features'].each do |value|
+          if value['properties']['parent_id'] == params[:parent_id]
+            needed << value
+          end
+        end
+        geometries['features'] = needed
+
+=begin
+        geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
 					geo = ''
 					#get the parent shape
 					shape = Shape.where(:id => params[:parent_id])
@@ -158,6 +179,7 @@ logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
 
 					geo
 				}
+=end
 
 			else
 logger.debug "++++++++++grand children cache does NOT exist"
@@ -202,7 +224,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
 					geo = Shape.build_summary_json(shape, params[:event_id], params[:indicator_type_id])
 				elsif shape.first.has_children?
 		  		# get all of the grandchildren of the parent, and format for json
-					shapes = []
+					shapes = [] 
 					shape.first.children.each do |child|
 						if child.has_children?
 							shapes << child.children
@@ -237,7 +259,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
         else
 				  d = Datum.build_summary_json(params[:shape_id], params[:event_id], params[:indicator_type_id], params[:limit])
         end
-        
+
   			d
   		}
     end

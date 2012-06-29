@@ -369,7 +369,7 @@ logger.debug " - no matching event found!"
   			  :indicator_id => params[:indicator_id], :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       end
 		end
-		
+
 		# view type
 		gon.view_type = params[:view_type]
 		gon.summary_view_type_name = @summary_view_type_name
