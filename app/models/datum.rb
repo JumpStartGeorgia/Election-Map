@@ -29,15 +29,13 @@ class Datum < ActiveRecord::Base
 
 	# get the max data value for all indicators that belong to the 
 	# indicator type and event for a specific shape
-	def self.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit=1)
+	def self.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit=nil)
 		if (shape_id.nil? || event_id.nil? || indicator_type_id.nil?)
 			return nil		
 		else
 		  # if limit is a string, convert to int
 		  # will be string if value passed in via params object
-		  if limit.class == String
-		    limit = limit.to_i
-		  end
+	    limit = limit.to_i if !limit.nil? && limit.class == String
 		  
 			sql = "SELECT d.id, d.value, stt.name_singular as 'shape_type_name', st.common_id, st.common_name, ci.number_format as 'number_format', "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
@@ -56,14 +54,14 @@ class Datum < ActiveRecord::Base
 			sql << "WHERE i.event_id = :event_id and ci.indicator_type_id = :indicator_type_id and s.id =  :shape_id "
 			sql << "AND dt.locale = :locale "
       sql << "order by cast(d.value as decimal(12,6)) desc "
-      sql << "limit :limit"
+      sql << "limit :limit" if !limit.nil?
 			find_by_sql([sql, :event_id => event_id, :shape_id => shape_id, :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 		end
 	end
 
 
 	# create the properly formatted json string
-	def self.build_summary_json(shape_id, event_id, indicator_type_id, limit=1)
+	def self.build_summary_json(shape_id, event_id, indicator_type_id, limit=nil)
 		json = ''
 		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil?
 			json = '{ "summary_data": {'
