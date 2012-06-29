@@ -404,57 +404,56 @@ logger.debug "no shapes were found"
 	end
 =end
 
-=begin
-		# delete all data that are assigned to the
-		# provided event_id, shape_type_id, and indicator_id
-		def self.delete_data(event_id, shape_type_id = nil, indicator_id = nil)
-			msg = nil
-			if !event_id.nil? && !shape_type_id.nil?
-				# get the event				
-				event = Event.find(event_id)
-				if !event.nil? && !event.shape_id.nil? && !event.shape.nil?
-					# get the shape type
-					shape_type = ShapeType.find(shape_type_id)
-					if !shape_type.nil?
-						Shape.transaction do
-							# if the event root shape was deleted, update events and remove the id
-							if !shape_type.subtree_ids.index(event.shape.shape_type_id).nil?
-								# get all events with this shape id
-								events = Event.where(:shape_id => event.shape_id)
-								if !events.nil? && !events.empty?
-									events.each do |e|
-										e.shape_id = nil
-										if !e.save
-											msg = "error occurred while updating event record"
-						          raise ActiveRecord::Rollback
-											return msg
-										end
-									end
-								end
-							end
 
-							# delete the shapes
-		          if !Shape.destroy_all(["id in (:shape_ids) and shape_type_id in (:shape_type_ids)", 
-								:shape_ids => event.shape.subtree_ids, :shape_type_ids => shape_type.subtree_ids])
-
-								msg = "error occurred while deleting records"
-                raise ActiveRecord::Rollback
-								return msg
-							end
+	# delete all data that are assigned to the
+	# provided event_id, shape_type_id, and indicator_id
+	def self.delete_data(event_id, shape_type_id = nil, indicator_id = nil)
+		msg = nil
+		if !event_id.nil?
+			# get the event				
+			event = Event.find(event_id)
+			if !event.nil?
+				Datum.transaction do
+					if !shape_type_id.nil? && !indicator_id.nil?
+logger.debug "------ delete data for shape type #{shape_type_id} and indicator #{indicator_id}"
+						# delete all data assigned to shape_type and indicator
+						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
+								:indicator_ids => event.indicators.select("id").where(:id => indicator_id, :shape_type_id => shape_type_id).collect(&:id)])
+							msg = "error occurred while deleting records"
+				      raise ActiveRecord::Rollback
+							return msg
 						end
+
+					elsif !shape_type_id.nil?
+logger.debug "------ delete data for shape type #{shape_type_id}"
+						# delete all data assigned to shape_type
+						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
+								:indicator_ids => event.indicators.select("id").where(:shape_type_id => shape_type_id).collect(&:id)])
+							msg = "error occurred while deleting records"
+				      raise ActiveRecord::Rollback
+							return msg
+						end
+
 					else
-						msg = "shape type could not be found"
-						return msg
+logger.debug "------ delete all data for event #{event_id}"
+						# delete all data for event
+						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
+								:indicator_ids => event.indicators.select("id").collect(&:id)])
+							msg = "error occurred while deleting records"
+				      raise ActiveRecord::Rollback
+							return msg
+						end
 					end
-				else
-					msg = "event could not be found"
-					return msg
 				end
 			else
-				msg = "params not provided"
+				msg = "event could not be found"
 				return msg
 			end
+		else
+			msg = "params not provided"
 			return msg
 		end
-=end
+		return msg
+	end
+
 end

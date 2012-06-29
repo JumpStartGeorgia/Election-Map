@@ -49,28 +49,38 @@ class DataController < ApplicationController
 		@events = Event.get_all_events
 
 		if request.post?
-			if params[:event_id].nil?
+			if params[:event_id].nil? || params[:event_id] == ""
 				flash[:error] = I18n.t('app.msgs.missing_parameters')
 			else
 				# delete the data
-=begin
+				params[:shape_type_id] = nil if params[:shape_type_id] == "" || params[:shape_type_id] == "0"
+				params[:indicator_id] = nil if params[:indicator_id] == "" || params[:indicator_id] == "0"
 				msg = Datum.delete_data(params[:event_id], params[:shape_type_id], params[:indicator_id])
 
 				if msg.nil?				
+					if !params[:shape_type_id].nil? && !params[:indicator_id].nil?
+						flash[:success] = I18n.t('app.msgs.delete_data_success_1', 
+						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip, 
+							:indicator => params[:indicator_name])
+					elsif !params[:shape_type_id].nil?
+						flash[:success] = I18n.t('app.msgs.delete_data_success_2', 
+						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
+					else
+						flash[:success] = I18n.t('app.msgs.delete_data_success_3', 
+						  :event => params[:event_name])
+					end
+
           # reset params
           params[:event_id] = nil
           params[:shape_type_id] = nil
           params[:indicator_id] = nil
         
-  				flash[:success] = I18n.t('app.msgs.delete_data_success', 
-  				  :event => params[:event_name], :shape_type => params[:shape_type_name])
 				else
       		gon.event_id = params[:event_id]
       		gon.shape_type_id = params[:shape_type_id]
       		gon.indicator_type_id = params[:indicator_id]
 					flash[:error] = I18n.t('app.msgs.delete_data_fail', :msg => msg)
 				end
-=end
 			end
 		end
   end

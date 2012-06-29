@@ -40,6 +40,4 @@ class ShapeType < ActiveRecord::Base
 
 	end
 
-protected
-
 end
