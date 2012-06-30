@@ -1,5 +1,27 @@
 module TimeTest
 
+  def self.load_summaries
+		# clear the cache
+		Rails.cache.clear
+		count = 0
+
+		start = Time.now
+		Rails.logger.debug "start time = #{start}"
+
+		# cache shape summary json for each election event
+		events = Event.where(:event_type_id => 1)
+
+		events.each do |event|
+			if !event.shape_id.nil?
+				app.get "/en/json/summary_grandchildren_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/2"
+      end
+    end
+
+		end_time = Time.now
+
+		Rails.logger.debug "end time = #{end_time}, took #{(start-end_time)} seconds"
+  end
+
 	def self.run_test
 		# clear the cache
 		Rails.cache.clear
