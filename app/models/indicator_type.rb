@@ -3,6 +3,7 @@ class IndicatorType < ActiveRecord::Base
   
   has_many :indicator_type_translations, :dependent => :destroy
   has_many :core_indicators
+  has_many :event_indicator_relationships, :dependent => :destroy
   has_many :indicators, :through => :core_indicators
   accepts_nested_attributes_for :indicator_type_translations
   attr_accessible :id, :has_summary, :sort_order, :indicator_type_translations_attributes

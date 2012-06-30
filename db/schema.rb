@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120627085713) do
+ActiveRecord::Schema.define(:version => 20120630082923) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -77,6 +77,23 @@ ActiveRecord::Schema.define(:version => 20120627085713) do
   add_index "event_custom_views", ["descendant_shape_type_id"], :name => "index_event_custom_views_on_descendant_shape_type_id"
   add_index "event_custom_views", ["event_id"], :name => "index_event_custom_views_on_event_id"
   add_index "event_custom_views", ["shape_type_id"], :name => "index_event_custom_views_on_shape_type_id"
+
+  create_table "event_indicator_relationships", :force => true do |t|
+    t.integer  "event_id",                  :null => false
+    t.integer  "indicator_type_id"
+    t.integer  "core_indicator_id"
+    t.integer  "related_core_indicator_id"
+    t.integer  "related_indicator_type_id"
+    t.integer  "sort_order",                :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "event_indicator_relationships", ["core_indicator_id"], :name => "index_event_indicator_relationships_on_core_indicator_id"
+  add_index "event_indicator_relationships", ["event_id"], :name => "index_event_indicator_relationships_on_event_id"
+  add_index "event_indicator_relationships", ["indicator_type_id"], :name => "index_event_indicator_relationships_on_indicator_type_id"
+  add_index "event_indicator_relationships", ["related_core_indicator_id"], :name => "index_event_indicator_relationships_on_related_core_indicator_id"
+  add_index "event_indicator_relationships", ["related_indicator_type_id"], :name => "index_event_indicator_relationships_on_related_indicator_type_id"
 
   create_table "event_translations", :force => true do |t|
     t.integer  "event_id"
