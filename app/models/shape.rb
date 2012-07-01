@@ -91,10 +91,13 @@ class Shape < ActiveRecord::Base
 				json["features"][i]["properties"]["common_name"] = shape.common_name
 				json["features"][i]["properties"]["has_children"] = shape.has_children?
 				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
-
+        
 =begin
+				# have to parse it for the data is already in json format and 
+				# transforming it to json again escapes the "" and breaks openlayers
         json["features"][i]["properties"]["data"] = JSON.parse(Datum.get_related_indicator_type_data(shape.id, event_id, indicator_type_id))
 =end
+
 				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id, 1)
 				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
 				  json["features"][i]["properties"]["data_value"] = data[0].value

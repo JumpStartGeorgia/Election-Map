@@ -171,23 +171,20 @@ class Datum < ActiveRecord::Base
 	
   # build the json string for the provided indicator relationships
 	def self.build_related_indicator_json(shape_id, event_id, relationships)
-    results = ''
+    results = Hash.new()
 	  if !shape_id.nil? && !event_id.nil? && !relationships.nil? && !relationships.empty?
-      results = '{ "results": ['
+      results["results"] = Array.new(relationships.length) {Hash.new}
 	    relationships.each_with_index do |rel, i|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
-	        results << build_summary_json(shape_id, event_id, rel.related_indicator_type_id)
-	        results << ", " if i < relationships.length-1
+	        results["results"][i] = JSON.parse(build_summary_json(shape_id, event_id, rel.related_indicator_type_id))
         elsif !rel.related_core_indicator_id.nil?
           # get the data item for this indciator
-	        results << build_data_item_json(shape_id, event_id, rel.related_core_indicator_id)
-	        results << ", " if i < relationships.length-1
+	        results["results"][i] = JSON.parse(build_data_item_json(shape_id, event_id, rel.related_core_indicator_id))
         end
       end
-      results << ']}'
     end
-	  return results
+	  return results.to_json
   end
 
   def self.csv_header
