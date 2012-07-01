@@ -27,6 +27,29 @@ class Datum < ActiveRecord::Base
 		end
 	end
 
+	# get the data value for a specific shape and core indicator
+	def self.get_data_for_shape_core_indicator(shape_id, event_id, core_indicator_id)
+		if (!core_indicator_id.nil? && !shape_id.nil? && !event_id.nil?)
+			sql = "SELECT d.id, d.value, ci.number_format, "
+			sql << "stt.name_singular as 'shape_type_name', st.common_id, st.common_name,  "
+			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name' "
+			sql << "FROM data as d  "
+			sql << "inner join datum_translations as dt on d.id = dt.datum_id  "
+			sql << "inner join indicators as i on d.indicator_id = i.id  "
+			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id  "
+			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id and dt.locale = cit.locale  "
+			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id  "
+			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and dt.locale = cit_parent.locale  "
+			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
+			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale  "
+			sql << "inner join shape_types as sts on i.shape_type_id = sts.id  "
+			sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale  "
+			sql << "WHERE ci.id = :core_indicator_id AND i.event_id = :event_id AND s.id = :shape_id AND dt.locale = :locale"
+			find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id, 
+			                  :shape_id => shape_id, :locale => I18n.locale])
+		end
+	end
+
 	# get the max data value for all indicators that belong to the 
 	# indicator type and event for a specific shape
 	def self.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit=nil)
@@ -37,7 +60,7 @@ class Datum < ActiveRecord::Base
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
 		  
-			sql = "SELECT d.id, d.value, stt.name_singular as 'shape_type_name', st.common_id, st.common_name, ci.number_format as 'number_format', "
+			sql = "SELECT d.id, d.value, ci.number_format as 'number_format', stt.name_singular as 'shape_type_name', st.common_id, st.common_name, "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
 			sql << "FROM data as d "
@@ -59,58 +82,113 @@ class Datum < ActiveRecord::Base
 		end
 	end
 
+	# build json for a data item for the provided core indicator id
+	def self.build_data_item_json(shape_id, event_id, core_indicator_id)
+    json = Hash.new()
+		if !shape_id.nil? && !event_id.nil? && !core_indicator_id.nil?
+      json["data_item"] = Hash.new()
+      json["data_item"]["shape_id"] = shape_id
+      json["data_item"]["event_id"] = event_id
+      json["data_item"]["core_indicator_id"] = core_indicator_id
 
-	# create the properly formatted json string
+			data = Datum.get_data_for_shape_core_indicator(shape_id, event_id, core_indicator_id)
+			if !data.nil? && !data.empty?
+        json["data_item"]["title"] = data[0].attributes["indicator_name"]
+        json["data_item"]["shape_type_name"] = data[0].attributes["shape_type_name"]
+        json["data_item"]["common_id"] = data[0].attributes["common_id"]
+        json["data_item"]["common_name"] = data[0].attributes["common_name"]
+        json["data_item"]["indicator_name"] = data[0].attributes["indicator_name"]
+        json["data_item"]["value"] = data[0].value
+        json["data_item"]["number_format"] = data[0].attributes["number_format"]
+      else
+        json["data_item"]["title"] = I18n.t('app.msgs.no_data')
+        json["data_item"]["shape_type_name"] = nil
+        json["data_item"]["common_id"] = nil
+        json["data_item"]["common_name"] = nil
+        json["data_item"]["indicator_name"] = I18n.t('app.msgs.no_data')
+        json["data_item"]["value"] = I18n.t('app.msgs.no_data')
+        json["data_item"]["number_format"] = nil
+      end
+		end
+		return json.to_json
+	end
+	
+	# build json for summary data for the provided indicator type
 	def self.build_summary_json(shape_id, event_id, indicator_type_id, limit=nil)
-		json = ''
+    json = Hash.new()
 		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil?
-			json = '{ "summary_data": {'
-			json << '"shape_id":"'
-			json << shape_id.to_s
-			json << '", "event_id":"'
-			json << event_id.to_s
-			json << '", "indicator_type_id":"'
-			json << indicator_type_id.to_s
-			json << '", "limit":"'
-			json << limit.to_s
+      json["summary_data"] = Hash.new()
+      json["summary_data"]["shape_id"] = shape_id
+      json["summary_data"]["event_id"] = event_id
+      json["summary_data"]["indicator_type_id"] = indicator_type_id
+      json["summary_data"]["limit"] = limit
 
 			data = Datum.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit)
 			if !data.nil? && !data.empty?
         # only need one reference to shape type common id/name
-				json << '", "title":"'
-				json << I18n.t("app.msgs.map_summary_legend_title", 
+        json["summary_data"]["title"] = I18n.t("app.msgs.map_summary_legend_title", 
 						:shape_type => "#{data[0].attributes["shape_type_name"]} #{data[0].attributes["common_name"]}")
-				json << '", "shape_type_name":"'
-				json << data[0].attributes["shape_type_name"]
-				json << '", "common_id":"'
-				json << data[0].attributes["common_id"]
-				json << '", "common_name":"'
-				json << data[0].attributes["common_name"]
-  			json << '", "data": ['
+        json["summary_data"]["shape_type_name"] = data[0].attributes["shape_type_name"]
+        json["summary_data"]["common_id"] = data[0].attributes["common_id"]
+        json["summary_data"]["common_name"] = data[0].attributes["common_name"]
+        json["summary_data"]["data"] = Array.new(data.length) {Hash.new}
+        
         data.each_with_index do |datum, i|
-  				json << '{"rank":"'
-  				json << (i+1).to_s
-					json << '", "indicator_name":"'
-					json << datum.attributes["indicator_name"]
-					json << '", "value":"'
-					json << datum.value
-					json << '", "number_format":"'
-					json << datum.attributes["number_format"] if !datum.attributes["number_format"].nil? 
-					json << '", "color":"'
-					json << datum.attributes["color"] if !datum.attributes["color"].nil? 
-          if i < data.length-1 # if this is last item, do not include ','
-  				  json << '"}, '
-  				else
-  				  json << '"} '
-				  end
+          json["summary_data"]["data"][i]["rank"] = i+1
+          json["summary_data"]["data"][i]["indicator_name"] = datum.attributes["indicator_name"]
+          json["summary_data"]["data"][i]["value"] = datum.value
+          json["summary_data"]["data"][i]["number_format"] = datum.attributes["number_format"]
+          json["summary_data"]["data"][i]["color"] = datum.attributes["color"]
         end
-  			json << ']' # close data array
       end
-
-			json << '}}'
 		end
-		return json
+		return json.to_json
 	end
+	
+	def self.get_related_indicator_type_data(shape_id, event_id, indicator_type_id)
+    results = ''
+		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+  	  # get the event
+  	  event = Event.find(event_id)
+  	  
+  	  # get the relationships for this indicator type
+  	  results = build_related_indicator_json(shape_id, event_id, event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
+    end
+    return results
+  end
+	
+	def self.get_related_core_indicator_data(shape_id, event_id, core_indicator_id)
+    results = ''
+		if !shape_id.nil? && !event_id.nil? && !core_indicator_id.nil?
+  	  # get the event
+  	  event = Event.find(event_id)
+  	  
+  	  # get the relationships for this indicator type
+  	  results = build_related_indicator_json(shape_id, event_id, event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
+    end
+    return results
+  end
+	
+  # build the json string for the provided indicator relationships
+	def self.build_related_indicator_json(shape_id, event_id, relationships)
+    results = ''
+	  if !shape_id.nil? && !event_id.nil? && !relationships.nil? && !relationships.empty?
+      results = '{ "results": ['
+	    relationships.each_with_index do |rel, i|
+	      if !rel.related_indicator_type_id.nil?
+	        # get the summary for this indciator type
+	        results << build_summary_json(shape_id, event_id, rel.related_indicator_type_id)
+	        results << ", " if i < relationships.length-1
+        elsif !rel.related_core_indicator_id.nil?
+          # get the data item for this indciator
+	        results << build_data_item_json(shape_id, event_id, rel.related_core_indicator_id)
+	        results << ", " if i < relationships.length-1
+        end
+      end
+      results << ']}'
+    end
+	  return results
+  end
 
   def self.csv_header
     "Event, Shape Type, Common ID, Common Name, Indicator, Value, Indicator, Value".split(",")

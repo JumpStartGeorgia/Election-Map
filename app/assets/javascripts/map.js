@@ -190,7 +190,7 @@ function populate_summary_data(){
       }
 
 			// see if the number format has already been saved
-			if (number_format.length == 0){
+			if (number_format.length == 0 && vector_child.features[i].attributes.number_format != null){
 				number_format = vector_child.features[i].attributes.number_format;
 			}
     }

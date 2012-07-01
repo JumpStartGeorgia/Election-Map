@@ -44,85 +44,72 @@ class Shape < ActiveRecord::Base
 
 	# create the properly formatted json string
 	def self.build_json(shapes, indicator_id=nil)
-		json = ''
+    json = Hash.new()
 		if !shapes.nil? && shapes.length > 0
-			json = '{ "type": "FeatureCollection","features": ['
+      json["type"] = "FeatureCollection"
+      json["features"] = Array.new(shapes.length) {Hash.new}
 			shapes.each_with_index do |shape, i|
-				json << '{ "type": "Feature", "geometry": '
-				json << shape.geometry
-				json << ', "properties": {'
-				json << '"id":"'
-				json << shape.id.to_s
-				json << '", "parent_id":"'
-				shape.parent_id.nil? ? json << "" : json << shape.parent_id.to_s
-				json << '", "common_id":"'
-				json << shape.common_id
-				json << '", "common_name":"'
-			  json << shape.common_name if !shape.common_name.nil?
-				json << '", "has_children":"'
-				json << shape.has_children?.to_s
-				json << '", "shape_type_id":"'
-				json << shape.shape_type_id.to_s
-				json << '", "value":"'
+				json["features"][i]["type"] = "Feature"
+				# have to parse it for the geo is already in json format and 
+				# transforming it to json again escapes the "" and breaks openlayers
+				json["features"][i]["geometry"] = JSON.parse(shape.geometry) 
+				json["features"][i]["properties"] = Hash.new
+				json["features"][i]["properties"]["id"] = shape.id
+				json["features"][i]["properties"]["parent_id"] = shape.parent_id
+				json["features"][i]["properties"]["common_id"] = shape.common_id
+				json["features"][i]["properties"]["common_name"] = shape.common_name
+				json["features"][i]["properties"]["has_children"] = shape.has_children?
+				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
 				if !indicator_id.nil?
 					data = Datum.get_data_for_shape(shape.id, indicator_id)
-					(!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null") ? json << data[0].value : json << I18n.t('app.msgs.no_data')
+					if (!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null")
+  				  json["features"][i]["properties"]["value"] = data[0].value
+          else
+            json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+          end
 				end
-				json << '"}}'
-				json << ',' if i < shapes.length-1 # do not add comma for the last shape
 			end
-			json << ']}'
 		end
-		return json
+		return json.to_json
 	end
 
 	# create the properly formatted json string
 	def self.build_summary_json(shapes, event_id, indicator_type_id)
-		json = ''
+    json = Hash.new()
 		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
-			json = '{ "type": "FeatureCollection","features": ['
+      json["type"] = "FeatureCollection"
+      json["features"] = Array.new(shapes.length) {Hash.new}
 			shapes.each_with_index do |shape, i|
-				json << '{ "type": "Feature", "geometry": '
-				json << shape.geometry
-				json << ', "properties": {'
-				json << '"id":"'
-				json << shape.id.to_s
-				json << '", "parent_id":"'
-				shape.parent_id.nil? ? json << "" : json << shape.parent_id.to_s
-				json << '", "common_id":"'
-				json << shape.common_id
-				json << '", "common_name":"'
-			  json << shape.common_name if !shape.common_name.nil?
-				json << '", "has_children":"'
-				json << shape.has_children?.to_s
-				json << '", "shape_type_id":"'
-				json << shape.shape_type_id.to_s
+				json["features"][i]["type"] = "Feature"
+				# have to parse it for the geo is already in json format and 
+				# transforming it to json again escapes the "" and breaks openlayers
+				json["features"][i]["geometry"] = JSON.parse(shape.geometry) 
+				json["features"][i]["properties"] = Hash.new
+				json["features"][i]["properties"]["id"] = shape.id
+				json["features"][i]["properties"]["parent_id"] = shape.parent_id
+				json["features"][i]["properties"]["common_id"] = shape.common_id
+				json["features"][i]["properties"]["common_name"] = shape.common_name
+				json["features"][i]["properties"]["has_children"] = shape.has_children?
+				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
 
+=begin
+        json["features"][i]["properties"]["data"] = JSON.parse(Datum.get_related_indicator_type_data(shape.id, event_id, indicator_type_id))
+=end
 				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id, 1)
 				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
-					json << '", "data_value":"'
-					json << data[0].value
-					json << '", "value":"'
-					json << data[0].attributes["indicator_name"]
-					json << '", "color":"'
-					json << data[0].attributes["color"] if !data[0].attributes["color"].nil? 
-					json << '", "number_format":"'
-					json << data[0].attributes["number_format"] if !data[0].attributes["number_format"].nil? 
+				  json["features"][i]["properties"]["data_value"] = data[0].value
+				  json["features"][i]["properties"]["value"] = data[0].attributes["indicator_name"]
+				  json["features"][i]["properties"]["color"] = data[0].attributes["color"]
+				  json["features"][i]["properties"]["number_format"] = data[0].attributes["number_format"]
 				else
-					json << '", "data_value":"'
-					json << I18n.t('app.msgs.no_data')
-					json << '", "value":"'
-					json << I18n.t('app.msgs.no_data')
-					json << '", "color":"'
-					json << '", "number_format":"'
+				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
+				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+				  json["features"][i]["properties"]["color"] = nil
+				  json["features"][i]["properties"]["number_format"] = nil
 				end
-
-				json << '"}}'
-				json << ',' if i < shapes.length-1 # do not add comma for the last shape
 			end
-			json << ']}'
 		end
-		return json
+		return json.to_json
 	end
 
 
