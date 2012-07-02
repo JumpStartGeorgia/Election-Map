@@ -61,16 +61,28 @@ class Shape < ActiveRecord::Base
 				json["features"][i]["properties"]["has_children"] = shape.has_children?
 				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
 				if !indicator_id.nil?
+
+					data = Datum.get_related_indicator_data(shape.id, indicator_id)
+					if (!data.nil? && data.has_key?("value") && !data["value"].nil? && data["value"].downcase != "null")
+						json["features"][i]["properties"]["value"] = data["value"]
+						json["features"][i]["properties"]["results"] = data["results"]
+		      else
+		        json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+						json["features"][i]["properties"]["results"] = Array.new
+		      end
+=begin
+# old way of getting the data before the d3 pop-ups
 					data = Datum.get_data_for_shape(shape.id, indicator_id)
 					if (!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null")
   				  json["features"][i]["properties"]["value"] = data[0].value
           else
             json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
           end
+=end
 				end
 			end
 		end
-		return json.to_json
+		return json
 	end
 
 	# create the properly formatted json string
@@ -92,12 +104,22 @@ class Shape < ActiveRecord::Base
 				json["features"][i]["properties"]["has_children"] = shape.has_children?
 				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
         
+				data = Datum.get_related_indicator_type_data(shape.id, event_id, indicator_type_id)
+				if (!data.nil? && data.has_key?("value") && !data["value"].nil? && data["value"].downcase != "null")
+				  json["features"][i]["properties"]["data_value"] = data["data_value"]
+					json["features"][i]["properties"]["value"] = data["value"]
+				  json["features"][i]["properties"]["color"] = data["color"]
+				  json["features"][i]["properties"]["number_format"] = data["number_format"]
+					json["features"][i]["properties"]["results"] = data["results"]
+	      else
+				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
+				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+				  json["features"][i]["properties"]["color"] = nil
+				  json["features"][i]["properties"]["number_format"] = nil
+					json["features"][i]["properties"]["results"] = Array.new
+	      end
 =begin
-				# have to parse it for the data is already in json format and 
-				# transforming it to json again escapes the "" and breaks openlayers
-        json["features"][i]["properties"]["data"] = JSON.parse(Datum.get_related_indicator_type_data(shape.id, event_id, indicator_type_id))
-=end
-
+# old way of getting the data before the d3 pop-ups
 				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id, 1)
 				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
 				  json["features"][i]["properties"]["data_value"] = data[0].value
@@ -110,9 +132,10 @@ class Shape < ActiveRecord::Base
 				  json["features"][i]["properties"]["color"] = nil
 				  json["features"][i]["properties"]["number_format"] = nil
 				end
+=end
 			end
 		end
-		return json.to_json
+		return json
 	end
 
 

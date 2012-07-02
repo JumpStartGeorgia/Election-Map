@@ -9,7 +9,7 @@ class JsonController < ApplicationController
 		geometries = Rails.cache.fetch("parent_shape_json_#{I18n.locale}_shape_#{params[:id]}") {
 			#get the parent shape
 			shape = Shape.where(:id => params[:id])
-			Shape.build_json(shape)
+			Shape.build_json(shape).to_json
 		}
 
     respond_to do |format|
@@ -63,7 +63,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
 						end
 					end
 
-					geo
+					geo.to_json
 				}
 			end
 		end
@@ -99,7 +99,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
 		  	end
 		  end
 
-			geo
+			geo.to_json
 		}
 
 logger.debug "++++++++++grand children key = #{key}"
@@ -157,7 +157,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
 						end
 					end
 
-					geo
+					geo.to_json
 				}
 			end
 		end
@@ -194,7 +194,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
 				end
 			end
 
-			geo
+			geo.to_json
 		}
 
     respond_to do |format|
@@ -212,7 +212,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
   		data = Rails.cache.fetch("summary_data_json_#{I18n.locale}_shape_#{params[:shape_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_limit_#{params[:limit]}") {
 
 				# get all of the summary data and format for json
-			  Datum.build_summary_json(params[:shape_id], params[:event_id], params[:indicator_type_id], params[:limit])
+			  Datum.build_summary_json(params[:shape_id], params[:event_id], params[:indicator_type_id], params[:limit]).to_json
   		}
     end
     respond_to do |format|

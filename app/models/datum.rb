@@ -86,85 +86,143 @@ class Datum < ActiveRecord::Base
 	def self.build_data_item_json(shape_id, event_id, core_indicator_id)
     json = Hash.new()
 		if !shape_id.nil? && !event_id.nil? && !core_indicator_id.nil?
-      json["data_item"] = Hash.new()
-      json["data_item"]["shape_id"] = shape_id
-      json["data_item"]["event_id"] = event_id
-      json["data_item"]["core_indicator_id"] = core_indicator_id
+      json[key_data_item] = Hash.new()
+      json[key_data_item]["shape_id"] = shape_id
+      json[key_data_item]["event_id"] = event_id
+      json[key_data_item]["core_indicator_id"] = core_indicator_id
 
 			data = Datum.get_data_for_shape_core_indicator(shape_id, event_id, core_indicator_id)
 			if !data.nil? && !data.empty?
-        json["data_item"]["title"] = data[0].attributes["indicator_name"]
-        json["data_item"]["shape_type_name"] = data[0].attributes["shape_type_name"]
-        json["data_item"]["common_id"] = data[0].attributes["common_id"]
-        json["data_item"]["common_name"] = data[0].attributes["common_name"]
-        json["data_item"]["indicator_name"] = data[0].attributes["indicator_name"]
-        json["data_item"]["value"] = data[0].value
-        json["data_item"]["number_format"] = data[0].attributes["number_format"]
+        json[key_data_item]["title"] = data[0].attributes["indicator_name"]
+        json[key_data_item]["shape_type_name"] = data[0].attributes["shape_type_name"]
+        json[key_data_item]["common_id"] = data[0].attributes["common_id"]
+        json[key_data_item]["common_name"] = data[0].attributes["common_name"]
+        json[key_data_item]["indicator_name"] = data[0].attributes["indicator_name"]
+        json[key_data_item]["value"] = data[0].value
+        json[key_data_item]["number_format"] = data[0].attributes["number_format"]
       else
-        json["data_item"]["title"] = I18n.t('app.msgs.no_data')
-        json["data_item"]["shape_type_name"] = nil
-        json["data_item"]["common_id"] = nil
-        json["data_item"]["common_name"] = nil
-        json["data_item"]["indicator_name"] = I18n.t('app.msgs.no_data')
-        json["data_item"]["value"] = I18n.t('app.msgs.no_data')
-        json["data_item"]["number_format"] = nil
+        json[key_data_item]["title"] = I18n.t('app.msgs.no_data')
+        json[key_data_item]["shape_type_name"] = nil
+        json[key_data_item]["common_id"] = nil
+        json[key_data_item]["common_name"] = nil
+        json[key_data_item]["indicator_name"] = I18n.t('app.msgs.no_data')
+        json[key_data_item]["value"] = I18n.t('app.msgs.no_data')
+        json[key_data_item]["number_format"] = nil
       end
 		end
-		return json.to_json
+		return json
 	end
 	
 	# build json for summary data for the provided indicator type
 	def self.build_summary_json(shape_id, event_id, indicator_type_id, limit=nil)
     json = Hash.new()
 		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil?
-      json["summary_data"] = Hash.new()
-      json["summary_data"]["shape_id"] = shape_id
-      json["summary_data"]["event_id"] = event_id
-      json["summary_data"]["indicator_type_id"] = indicator_type_id
-      json["summary_data"]["limit"] = limit
+      json[key_summary_data] = Hash.new()
+      json[key_summary_data]["shape_id"] = shape_id
+      json[key_summary_data]["event_id"] = event_id
+      json[key_summary_data]["indicator_type_id"] = indicator_type_id
+      json[key_summary_data]["limit"] = limit
 
 			data = Datum.get_summary_data_for_shape(shape_id, event_id, indicator_type_id, limit)
 			if !data.nil? && !data.empty?
         # only need one reference to shape type common id/name
-        json["summary_data"]["title"] = I18n.t("app.msgs.map_summary_legend_title", 
+        json[key_summary_data]["title"] = I18n.t("app.msgs.map_summary_legend_title", 
 						:shape_type => "#{data[0].attributes["shape_type_name"]} #{data[0].attributes["common_name"]}")
-        json["summary_data"]["shape_type_name"] = data[0].attributes["shape_type_name"]
-        json["summary_data"]["common_id"] = data[0].attributes["common_id"]
-        json["summary_data"]["common_name"] = data[0].attributes["common_name"]
-        json["summary_data"]["data"] = Array.new(data.length) {Hash.new}
+        json[key_summary_data]["shape_type_name"] = data[0].attributes["shape_type_name"]
+        json[key_summary_data]["common_id"] = data[0].attributes["common_id"]
+        json[key_summary_data]["common_name"] = data[0].attributes["common_name"]
+        json[key_summary_data]["data"] = Array.new(data.length) {Hash.new}
         
         data.each_with_index do |datum, i|
-          json["summary_data"]["data"][i]["rank"] = i+1
-          json["summary_data"]["data"][i]["indicator_name"] = datum.attributes["indicator_name"]
-          json["summary_data"]["data"][i]["value"] = datum.value
-          json["summary_data"]["data"][i]["number_format"] = datum.attributes["number_format"]
-          json["summary_data"]["data"][i]["color"] = datum.attributes["color"]
+          json[key_summary_data]["data"][i]["rank"] = i+1
+          json[key_summary_data]["data"][i]["indicator_name"] = datum.attributes["indicator_name"]
+          json[key_summary_data]["data"][i]["value"] = datum.value
+          json[key_summary_data]["data"][i]["number_format"] = datum.attributes["number_format"]
+          json[key_summary_data]["data"][i]["color"] = datum.attributes["color"]
         end
       end
 		end
-		return json.to_json
+		return json
 	end
 	
 	def self.get_related_indicator_type_data(shape_id, event_id, indicator_type_id)
-    results = ''
+    results = nil
 		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
   	  
   	  # get the relationships for this indicator type
   	  results = build_related_indicator_json(shape_id, event_id, event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
+
+			# now pull out the data value for this indicator type so the map
+			# can show the correct colors
+			if !results.nil? && !results.empty? && results.has_key?(key_results) && !results[key_results].empty?
+				results[key_results].each do |result|
+					if result.has_key?(key_summary_data) && 
+							result[key_summary_data]["indicator_type_id"].to_s == indicator_type_id.to_s &&
+							result[key_summary_data].has_key?("data") && !result[key_summary_data]["data"].empty?
+							
+						results["data_value"] = result[key_summary_data]["data"][0]["value"]
+						results["value"] = result[key_summary_data]["data"][0]["indicator_name"]
+						results["color"] = result[key_summary_data]["data"][0]["color"]
+						results["number_format"] = result[key_summary_data]["data"][0]["number_format"]
+						break
+					end
+				end
+			end
+    end
+    return results
+  end
+	
+	def self.get_related_indicator_data(shape_id, indicator_id)
+    results = nil
+		if !shape_id.nil? && !indicator_id.nil?
+			# get the indicator
+			indicator = Indicator.find(indicator_id)
+			event = indicator.event
+  	  
+  	  # get the relationships for this indicator
+  	  results = build_related_indicator_json(shape_id, event.id, event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
+
+			# now pull out the data value for this indicator so the map
+			# can show the correct colors
+			if !results.nil? && !results.empty? && results.has_key?(key_results) && !results[key_results].empty?
+				results[key_results].each do |result|
+					if result.has_key?(key_data_item) && 
+							result[key_data_item]["core_indicator_id"].to_s == indicator.core_indicator_id.to_s &&
+							!result[key_data_item]["value"].nil?
+						
+						results["value"] = result[key_data_item]["value"]
+						break
+					end
+				end
+			end
     end
     return results
   end
 	
 	def self.get_related_core_indicator_data(shape_id, event_id, core_indicator_id)
-    results = ''
+    results = nil
 		if !shape_id.nil? && !event_id.nil? && !core_indicator_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
   	  
-  	  # get the relationships for this indicator type
+  	  # get the relationships for this indicator
   	  results = build_related_indicator_json(shape_id, event_id, event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
+
+			# now pull out the data value for this indicator so the map
+			# can show the correct colors
+			if !results.nil? && !results.empty? && results.has_key?(key_results) && !results[key_results].empty?
+				results[key_results].each do |result|
+					if result.has_key?(key_data_item) && 
+							result[key_data_item]["core_indicator_id"].to_s == core_indicator_id.to_s &&
+							!result[key_data_item]["value"].nil?
+
+						results["value"] = result[key_data_item]["value"]
+						break
+					end
+				end
+			end
     end
     return results
   end
@@ -173,18 +231,18 @@ class Datum < ActiveRecord::Base
 	def self.build_related_indicator_json(shape_id, event_id, relationships)
     results = Hash.new()
 	  if !shape_id.nil? && !event_id.nil? && !relationships.nil? && !relationships.empty?
-      results["results"] = Array.new(relationships.length) {Hash.new}
+      results[key_results] = Array.new(relationships.length) {Hash.new}
 	    relationships.each_with_index do |rel, i|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
-	        results["results"][i] = JSON.parse(build_summary_json(shape_id, event_id, rel.related_indicator_type_id))
+	        results[key_results][i] = build_summary_json(shape_id, event_id, rel.related_indicator_type_id)
         elsif !rel.related_core_indicator_id.nil?
           # get the data item for this indciator
-	        results["results"][i] = JSON.parse(build_data_item_json(shape_id, event_id, rel.related_core_indicator_id))
+	        results[key_results][i] = build_data_item_json(shape_id, event_id, rel.related_core_indicator_id)
         end
       end
     end
-	  return results.to_json
+	  return results
   end
 
   def self.csv_header
@@ -527,6 +585,21 @@ logger.debug "------ delete all data for event #{event_id}"
 			return msg
 		end
 		return msg
+	end
+
+
+protected
+
+	def self.key_summary_data
+		"summary_data"
+	end
+
+	def self.key_data_item
+		"data_item"
+	end
+
+	def self.key_results
+		"results"
 	end
 
 end
