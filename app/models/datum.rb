@@ -32,7 +32,8 @@ class Datum < ActiveRecord::Base
 		if (!core_indicator_id.nil? && !shape_id.nil? && !event_id.nil?)
 			sql = "SELECT d.id, d.value, ci.number_format, "
 			sql << "stt.name_singular as 'shape_type_name', st.common_id, st.common_name,  "
-			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name' "
+			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
+			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv' "
 			sql << "FROM data as d  "
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id  "
 			sql << "inner join indicators as i on d.indicator_id = i.id  "
@@ -62,6 +63,7 @@ class Datum < ActiveRecord::Base
 		  
 			sql = "SELECT d.id, d.value, ci.number_format as 'number_format', stt.name_singular as 'shape_type_name', st.common_id, st.common_name, "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
+			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
 			sql << "FROM data as d "
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
@@ -136,6 +138,7 @@ class Datum < ActiveRecord::Base
         data.each_with_index do |datum, i|
           json[key_summary_data]["data"][i]["rank"] = i+1
           json[key_summary_data]["data"][i]["indicator_name"] = datum.attributes["indicator_name"]
+          json[key_summary_data]["data"][i]["indicator_name_abbrv"] = datum.attributes["indicator_name_abbrv"]
           json[key_summary_data]["data"][i]["value"] = datum.value
           json[key_summary_data]["data"][i]["number_format"] = datum.attributes["number_format"]
           json[key_summary_data]["data"][i]["color"] = datum.attributes["color"]
@@ -163,7 +166,7 @@ class Datum < ActiveRecord::Base
 							result[key_summary_data].has_key?("data") && !result[key_summary_data]["data"].empty?
 							
 						results["data_value"] = result[key_summary_data]["data"][0]["value"]
-						results["value"] = result[key_summary_data]["data"][0]["indicator_name"]
+						results["value"] = result[key_summary_data]["data"][0]["indicator_name_abbrv"]
 						results["color"] = result[key_summary_data]["data"][0]["color"]
 						results["number_format"] = result[key_summary_data]["data"][0]["number_format"]
 						break

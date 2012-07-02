@@ -1,6 +1,6 @@
-module TimeTest
+module BuildCache
 
-  def self.load_summaries
+  def self.run
 		# clear the cache
 		Rails.cache.clear
 		count = 0
@@ -8,14 +8,45 @@ module TimeTest
 		start = Time.now
 		Rails.logger.debug "start time = #{start}"
 
-		# cache shape summary json for each election event
-		events = Event.where(:event_type_id => 1)
+		# get the events that have shapes assigned to them
+		# if no shape assigned, then not appearing on site
+		events = Event.where("shape_id is not null")
+		if !events.nil? && !events.empty?
+			events.each_with_index do |event, i|
+				shape_type_id = event.shape.shape_type_id
+				# see if event has custom view
+				custom_view = event.event_custom_views.where(:shape_type_id => shape_type_id)
 
-		events.each do |event|
-			if !event.shape_id.nil?
-				app.get "/en/json/summary_grandchildren_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/2"
-      end
-    end
+				if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
+					# has custom view, use the custom shape type
+					shape_type_id = custom_view.first.descendant_shape_type_id
+				end
+
+				indicator_types = IndicatorType.find_by_event_shape_type(event.id, shape_type_id)
+				if !indicator_types.nil? && !indicator_types.empty?
+					# if the first indicator type has a summary, load summary data
+					# else, load data for first indicator
+					if indicator_types[0].has_summary
+						I18n.available_locales.each do |locale|
+							# load the parent shape
+							app.get "/#{locale}/json/shape/#{event.shape_id}"
+
+							# load the children shapes
+							app.get "/#{locale}/json/summary_grandchildren_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}"
+						end
+					elsif !indicator_types[0].core_indicators.nil? && !indicator_types[0].core_indicators.empty? &&
+								!indicator_types[0].core_indicators[0].indicators.nil? && !indicator_types[0].core_indicators[0].indicators.empty?
+						I18n.available_locales.each do |locale|
+							# load the parent shape
+							app.get "/#{locale}/json/shape/#{event.shape_id}"
+
+							# load the children shapes
+							app.get "/#{locale}/json/grandchildren_shapes/#{event.shape_id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}"
+						end
+					end
+				end
+			end
+		end
 
 		end_time = Time.now
 
