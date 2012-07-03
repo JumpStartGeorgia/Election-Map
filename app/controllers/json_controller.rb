@@ -19,6 +19,7 @@ class JsonController < ApplicationController
 
   # GET /json/children_shapes/:parent_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id))
   def children_shapes
+    start = Time.now
 		geometries = nil
 		# get parent of parent shape and see if grandchildren cache already exists
 		shape = Shape.where(:id => params[:parent_id])
@@ -71,10 +72,12 @@ logger.debug "++++++++++grand children cache does NOT exist"
     respond_to do |format|
       format.json { render json: geometries}
     end
+    puts "@ time to render children_shapes json: #{Time.now-start} seconds"    
   end
 
   # GET /json/grandchildren_shapes/:parent_id/indicator/:indicator_id
   def grandchildren_shapes
+    start = Time.now
 		key = key_grandchildren_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[indicator_id]", params[:indicator_id])
 		geometries = Rails.cache.fetch(key) {
 			geo = ''
@@ -106,6 +109,7 @@ logger.debug "++++++++++grand children key = #{key}"
     respond_to do |format|
       format.json { render json: geometries}
     end
+puts "@ time to render grandchildren_shapes json: #{Time.now-start} seconds"    
   end
 
 	################################################3
@@ -113,6 +117,7 @@ logger.debug "++++++++++grand children key = #{key}"
 	################################################3
   # GET /json/summary_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)
   def summary_children_shapes
+    start = Time.now
 		geometries = nil
 		# get parent of parent shape and see if grandchildren cache already exists
 		shape = Shape.where(:id => params[:parent_id])
@@ -165,11 +170,13 @@ logger.debug "++++++++++grand children cache does NOT exist"
     respond_to do |format|
       format.json { render json: geometries}
     end
+    puts "@ time to render summary_children_shapes json: #{Time.now-start} seconds"    
   end
 
 
   # GET /summary_grandchildren_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id
   def summary_grandchildren_shapes
+    start = Time.now
 		key = key_summary_grandchildren_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[event_id]", params[:event_id]).gsub("[indicator_type_id]", params[:indicator_type_id])
 		geometries = Rails.cache.fetch(key) {
 			geo = ''
@@ -200,6 +207,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
     respond_to do |format|
       format.json { render json: geometries}
     end
+    puts "@ time to render summary_grandchildren_shapes json: #{Time.now-start} seconds"    
   end
 
 

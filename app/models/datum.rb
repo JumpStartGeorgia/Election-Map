@@ -78,6 +78,8 @@ class Datum < ActiveRecord::Base
 
 	# get the data value for a shape and core indicator
 	def self.get_data_for_shape_core_indicator(shapes, event_id, core_indicator_id)
+    start = Time.now
+    x = nil
 		if !shapes.nil? && !shapes.empty? && !core_indicator_id.nil? && !event_id.nil?
 			sql = "SELECT s.id as 'shape_id', d.id, d.value, ci.number_format, "
 			sql << "stt.name_singular as 'shape_type_name', st.common_id, st.common_name,  "
@@ -95,14 +97,18 @@ class Datum < ActiveRecord::Base
 			sql << "inner join shape_types as sts on i.shape_type_id = sts.id  "
 			sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale  "
 			sql << "WHERE ci.id = :core_indicator_id AND i.event_id = :event_id AND s.id in (:shape_id) AND dt.locale = :locale"
-			find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id, 
+			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id, 
 			                  :shape_id => shapes.collect(&:id), :locale => I18n.locale])
 		end
+		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
+    return x
 	end
 
 	# get the max data value for all indicators that belong to the 
 	# indicator type and event for a specific shape
 	def self.get_summary_data_for_shape(shapes, event_id, indicator_type_id, limit=nil)
+    start = Time.now
+    x = nil
 		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
 		  # if limit is a string, convert to int
 		  # will be string if value passed in via params object
@@ -127,9 +133,11 @@ class Datum < ActiveRecord::Base
 			sql << "AND dt.locale = :locale "
       sql << "order by cast(d.value as decimal(12,6)) desc "
       sql << "limit :limit" if !limit.nil?
-			find_by_sql([sql, :event_id => event_id, :shape_id => shapes.collect(&:id), 
+			x = find_by_sql([sql, :event_id => event_id, :shape_id => shapes.collect(&:id), 
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 		end
+		puts "********************* time to query summary data for indicator type: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id} - # of results = #{x.length}"
+    return x
 	end
 
 	# build data item json for a core indicator id and shapes
@@ -148,15 +156,16 @@ class Datum < ActiveRecord::Base
           json[i][key_data_item]["event_id"] = event_id
           json[i][key_data_item]["core_indicator_id"] = core_indicator_id
 
-          datum = data.select {|x| x.shape_id == shape.id}
-    			if !datum.nil? && !datum.empty?
-            json[i][key_data_item]["title"] = datum.first.indicator_name
-            json[i][key_data_item]["shape_type_name"] = datum.first.shape_type_name
-            json[i][key_data_item]["common_id"] = datum.first.shape_common_id
-            json[i][key_data_item]["common_name"] = datum.first.shape_common_name
-            json[i][key_data_item]["indicator_name"] = datum.first.indicator_name
-            json[i][key_data_item]["value"] = datum.first.value
-            json[i][key_data_item]["number_format"] = datum.first.number_format
+          index = data.index{|x| x.shape_id==shape.id}
+          if !index.nil?
+            datum = data[index]
+            json[i][key_data_item]["title"] = datum.indicator_name
+            json[i][key_data_item]["shape_type_name"] = datum.shape_type_name
+            json[i][key_data_item]["common_id"] = datum.shape_common_id
+            json[i][key_data_item]["common_name"] = datum.shape_common_name
+            json[i][key_data_item]["indicator_name"] = datum.indicator_name
+            json[i][key_data_item]["value"] = datum.value
+            json[i][key_data_item]["number_format"] = datum.number_format
           else
             json[i][key_data_item]["title"] = I18n.t('app.msgs.no_data')
             json[i][key_data_item]["shape_type_name"] = nil
@@ -169,7 +178,7 @@ class Datum < ActiveRecord::Base
     		end
   		end
 		end
-		logger.debug "****************** time to build data item json: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
+		puts "************** time to build data item json: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
 		return json
 	end
 	
@@ -212,7 +221,7 @@ class Datum < ActiveRecord::Base
         end
       end
     end
-		logger.debug "****************** time to build summary data item json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
+		puts "************** time to build summary data item json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 	
@@ -251,7 +260,7 @@ class Datum < ActiveRecord::Base
         end 
       end
     end
-		logger.debug "****************** time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return data
   end
 	
@@ -289,7 +298,7 @@ class Datum < ActiveRecord::Base
         end 
       end
     end
-		logger.debug "****************** time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
+		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return data
   end
 	
@@ -326,7 +335,7 @@ class Datum < ActiveRecord::Base
         end 
       end
     end
-		logger.debug "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
+		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
     return data
   end
 	
@@ -365,10 +374,10 @@ class Datum < ActiveRecord::Base
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
-	logger.debug "++++processing row #{n}"				
+	puts "++++processing row #{n}"				
 
         if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
-  logger.debug "++++event or shape type was not found in spreadsheet"
+  puts "++++event or shape type was not found in spreadsheet"
     		  msg = I18n.t('models.datum.msgs.no_event_shape_spreadsheet', :row_num => n)
 		      raise ActiveRecord::Rollback
           return msg
@@ -379,25 +388,25 @@ class Datum < ActiveRecord::Base
 					shape_type = ShapeType.find_by_name_singular(row[1].strip)
 
 					if event.nil? || shape_type.nil?
-			logger.debug "++++event or shape type was not found"				
+			puts "++++event or shape type was not found"				
 		  		  msg = I18n.t('models.datum.msgs.no_event_shape_db', :row_num => n)
 				    raise ActiveRecord::Rollback
 		  		  return msg
 					else
-			logger.debug "++++event and shape found, procesing indicators"
+			puts "++++event and shape found, procesing indicators"
 						finishedIndicators = false
 						i = 4 # where first indicator starts
 
 						until finishedIndicators do
 							if row[i].nil? || row[i+1].nil?
-			logger.debug "++++found empty cells, stopping processing for row"
+			puts "++++found empty cells, stopping processing for row"
 							  # found empty cell, stop
 							  finishedIndicators = true
 							else
 		            # only conintue if required fields provided
 		            if row[2].nil? || row[3].nil?
 		        		  msg = I18n.t('models.datum.msgs.missing_data_spreadsheet', :row_num => n)
-		  logger.debug "++++**missing data in row"
+		  puts "++++**missing data in row"
 		              raise ActiveRecord::Rollback
 		              return msg
 		            else
@@ -407,12 +416,12 @@ class Datum < ActiveRecord::Base
 											:event_id => event.id, :shape_type_id => shape_type.id, :name => row[i].strip, :locale => "en")
 					
 									if indicator.nil? || indicator.empty?
-					logger.debug "++++indicator was not found"
+					puts "++++indicator was not found"
 										msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
 										raise ActiveRecord::Rollback
 										return msg
 									else
-					logger.debug "++++indicator found, checking if data exists"
+					puts "++++indicator found, checking if data exists"
 										# check if data already exists
 										alreadyExists = Datum.joins(:datum_translations)
 											.where(:data => {:indicator_id => indicator.first.id}, 
@@ -423,7 +432,7 @@ class Datum < ActiveRecord::Base
 					
 				            # if the datum already exists and deleteExistingRecord is true, delete the datum
 				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
-					logger.debug "+++++++ deleting existing #{alreadyExists.length} datum records "
+					puts "+++++++ deleting existing #{alreadyExists.length} datum records "
 					              alreadyExists.each do |exists|
 				                  Datum.destroy (exists.id)
                         end
@@ -431,7 +440,7 @@ class Datum < ActiveRecord::Base
 				            end
 
 										if alreadyExists.nil? || alreadyExists.empty?
-					logger.debug "++++data does not exist, save it"
+					puts "++++data does not exist, save it"
 											# populate record
 											datum = Datum.new
 											datum.indicator_id = indicator.first.id
@@ -439,14 +448,14 @@ class Datum < ActiveRecord::Base
 
 											# add translations
 											I18n.available_locales.each do |locale|
-			logger.debug "++++ - adding translations for #{locale}"
+			puts "++++ - adding translations for #{locale}"
 												datum.datum_translations.build(:locale => locale, 
 													:common_id => row[2].nil? ? row[2] : row[2].strip, 
 													:common_name => row[3].nil? ? row[3] : row[3].strip)
 											end
 
 
-				logger.debug "++++saving record"
+				puts "++++saving record"
 											if datum.valid?
 												datum.save
 											else
@@ -458,7 +467,7 @@ class Datum < ActiveRecord::Base
 
 											i+=2 # move on to the next set of indicator/value pairs
 										else
-				logger.debug "++++**record already exists!"
+				puts "++++**record already exists!"
 											msg = I18n.t('models.datum.msgs.already_exists', :row_num => n)
 											raise ActiveRecord::Rollback
 											return msg
@@ -471,7 +480,7 @@ class Datum < ActiveRecord::Base
 				end
 			end
 
-  logger.debug "++++updating ka records with ka text in shape_names"
+  puts "++++updating ka records with ka text in shape_names"
 			# ka translation is hardcoded as en in the code above
 			# update all ka records with the apropriate ka translation
 			# update common ids
@@ -480,7 +489,7 @@ class Datum < ActiveRecord::Base
 			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_name = sn.ka where dt.locale = 'ka' and dt.common_name = sn.en")
 
 		end
-  logger.debug "++++procssed #{n} rows in CSV file"
+  puts "++++procssed #{n} rows in CSV file"
     return msg 
   end
 
@@ -492,14 +501,14 @@ class Datum < ActiveRecord::Base
 
 		# parameters must be provided
     if event_id.nil? || shape_type_id.nil? || shape_id.nil?
-logger.debug "not all params provided"
+puts "not all params provided"
 			return nil
     else
 			# get the shapes we need data for
 			shapes = Shape.get_shapes_for_download(shape_id, shape_type_id)
 
 			if shapes.nil? || shapes.empty?
-logger.debug "no shapes were found"
+puts "no shapes were found"
 				return nil
 		  else
 				# get the data for the provided parameters
@@ -520,7 +529,7 @@ logger.debug "no shapes were found"
 				end
 
 		    if indicators.nil? || indicators.empty?
-	logger.debug "no indicators or data found"
+	puts "no indicators or data found"
 		      return nil
 		    else
 		      # create the csv data
@@ -530,14 +539,14 @@ logger.debug "no shapes were found"
 						if index == 0
 							#event
 				      if ind.event.event_translations.nil? || ind.event.event_translations.empty?
-		logger.debug "no event translation found"
+		puts "no event translation found"
 				        return nil
 				      else
 				        row_starter << ind.event.event_translations[0].name
 				      end
 							# shape type
 				      if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.empty?
-		logger.debug "no shape type translation found"
+		puts "no shape type translation found"
 				        return nil
 				      else
 				        row_starter << ind.shape_type.shape_type_translations[0].name_singular
@@ -545,7 +554,7 @@ logger.debug "no shapes were found"
 						end 
 
 						if ind.data.nil? || ind.data.empty?
-	logger.debug "no data"
+	puts "no data"
 		          return nil
 						else
 							ind.data.each_with_index do |d, dindex|
@@ -649,7 +658,7 @@ logger.debug "no shapes were found"
 			if !event.nil?
 				Datum.transaction do
 					if !shape_type_id.nil? && !indicator_id.nil?
-logger.debug "------ delete data for shape type #{shape_type_id} and indicator #{indicator_id}"
+puts "------ delete data for shape type #{shape_type_id} and indicator #{indicator_id}"
 						# delete all data assigned to shape_type and indicator
 						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
 								:indicator_ids => event.indicators.select("id").where(:id => indicator_id, :shape_type_id => shape_type_id).collect(&:id)])
@@ -659,7 +668,7 @@ logger.debug "------ delete data for shape type #{shape_type_id} and indicator #
 						end
 
 					elsif !shape_type_id.nil?
-logger.debug "------ delete data for shape type #{shape_type_id}"
+puts "------ delete data for shape type #{shape_type_id}"
 						# delete all data assigned to shape_type
 						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
 								:indicator_ids => event.indicators.select("id").where(:shape_type_id => shape_type_id).collect(&:id)])
@@ -669,7 +678,7 @@ logger.debug "------ delete data for shape type #{shape_type_id}"
 						end
 
 					else
-logger.debug "------ delete all data for event #{event_id}"
+puts "------ delete all data for event #{event_id}"
 						# delete all data for event
 						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
 								:indicator_ids => event.indicators.select("id").collect(&:id)])
