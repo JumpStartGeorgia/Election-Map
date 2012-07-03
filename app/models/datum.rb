@@ -13,7 +13,7 @@ class Datum < ActiveRecord::Base
 	# get the data value for a specific shape
 	def self.get_data_for_shape(shape_id, indicator_id)
 		if !indicator_id.nil? && !shape_id.nil?
-			sql = "SELECT d.value, ci.number_format FROM data as d "
+			sql = "SELECT d.id, d.value, ci.number_format FROM data as d "
 			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
@@ -28,7 +28,7 @@ class Datum < ActiveRecord::Base
 	# get the data value for a shape and core indicator
 	def self.get_data_for_shape_core_indicator(shapes, event_id, core_indicator_id)
 		if !shapes.nil? && !shapes.empty? && !core_indicator_id.nil? && !event_id.nil?
-			sql = "SELECT s.id as 'shape_id', d.value, ci.number_format, "
+			sql = "SELECT s.id as 'shape_id', d.id, d.value, ci.number_format, "
 			sql << "stt.name_singular as 'shape_type_name', st.common_id, st.common_name,  "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv' "
@@ -57,7 +57,7 @@ class Datum < ActiveRecord::Base
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
 		  		  
-			sql = "SELECT s.id as 'shape_id', d.value, ci.number_format as 'number_format', stt.name_singular as 'shape_type_name', st.common_id, st.common_name, "
+			sql = "SELECT s.id as 'shape_id', d.id, d.value, ci.number_format as 'number_format', stt.name_singular as 'shape_type_name', st.common_id, st.common_name, "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
