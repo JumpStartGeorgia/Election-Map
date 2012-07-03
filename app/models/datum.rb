@@ -45,7 +45,7 @@ class Datum < ActiveRecord::Base
 			sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale  "
 			sql << "WHERE ci.id = :core_indicator_id AND i.event_id = :event_id AND s.id in (:shape_id) AND dt.locale = :locale"
 			find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id, 
-			                  :shape_id => shapes.select("id").collect(&:id), :locale => I18n.locale])
+			                  :shape_id => shapes.collect(&:id), :locale => I18n.locale])
 		end
 	end
 
@@ -56,7 +56,7 @@ class Datum < ActiveRecord::Base
 		  # if limit is a string, convert to int
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
-		  
+		  		  
 			sql = "SELECT s.id as 'shape_id', d.value, ci.number_format as 'number_format', stt.name_singular as 'shape_type_name', st.common_id, st.common_name, "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv', "
@@ -76,7 +76,7 @@ class Datum < ActiveRecord::Base
 			sql << "AND dt.locale = :locale "
       sql << "order by cast(d.value as decimal(12,6)) desc "
       sql << "limit :limit" if !limit.nil?
-			find_by_sql([sql, :event_id => event_id, :shape_id => shapes.select("id").collect(&:id), 
+			find_by_sql([sql, :event_id => event_id, :shape_id => shapes.collect(&:id), 
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 		end
 	end
@@ -162,91 +162,112 @@ class Datum < ActiveRecord::Base
 	end
 	
 	def self.get_related_indicator_type_data(shapes, event_id, indicator_type_id)
-    results = nil
+    data = nil
 		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
   	  
   	  # get the relationships for this indicator type
-  	  results = build_related_indicator_json(shapes, event_id, event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
+  	  results = build_related_indicator_json(shapes, event_id, 
+  	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
 
-			# now pull out the data value for this indicator type so the map
-			# can show the correct colors
-			if !results.nil? && !results.empty? && results.has_key?(key_results) && !results[key_results].empty?
-				results[key_results].each do |result|
-					if result.has_key?(key_summary_data) && 
-							result[key_summary_data]["indicator_type_id"].to_s == indicator_type_id.to_s &&
-							result[key_summary_data].has_key?("data") && !result[key_summary_data]["data"].empty?
-							
-						results["data_value"] = result[key_summary_data]["data"][0]["value"]
-						results["value"] = result[key_summary_data]["data"][0]["indicator_name_abbrv"]
-						results["color"] = result[key_summary_data]["data"][0]["color"]
-						results["number_format"] = result[key_summary_data]["data"][0]["number_format"]
-						break
-					end
-				end
-			end
+      if !results.nil? && !results.empty?
+        data = Array.new(shapes.length) {Hash.new}
+
+        # merge the shape data from each result set onto one data set
+        shapes.each_with_index do |shape, i|
+          data[i][key_results] = Array.new(results[key_results].length) {Hash.new}
+          results[key_results].each_with_index do |result, j|
+            data[i][key_results][j] = result[i]
+            
+            # if this is the indicator that was passed in, get its value
+            # so the map can show the correct colors
+  					if result[i].has_key?(key_summary_data) && 
+  							result[i][key_summary_data]["indicator_type_id"].to_s == indicator_type_id.to_s &&
+  							result[i][key_summary_data].has_key?("data") && !result[i][key_summary_data]["data"].empty?
+
+  						data[i]["shape_id"] = result[i][key_summary_data]["shape_id"]
+  						data[i]["data_value"] = result[i][key_summary_data]["data"][0]["value"]
+  						data[i]["value"] = result[i][key_summary_data]["data"][0]["indicator_name_abbrv"]
+  						data[i]["color"] = result[i][key_summary_data]["data"][0]["color"]
+  						data[i]["number_format"] = result[i][key_summary_data]["data"][0]["number_format"]
+  					end
+          end
+        end 
+      end
     end
-    return results
+    return data
   end
 	
 	def self.get_related_indicator_data(shapes, indicator_id)
-    results = nil
+    data = nil
 		if !shapes.nil? && !shapes.empty? && !indicator_id.nil?
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
 			event = indicator.event
   	  
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shapes, event.id, event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
+  	  results = build_related_indicator_json(shapes, event.id, 
+  	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
 
-			# now pull out the data value for this indicator so the map
-			# can show the correct colors
-			if !results.nil? && !results.empty? && results.has_key?(key_results) && !results[key_results].empty?
-				results[key_results].each do |result|
-				  result.each do |item|
-  					if item.has_key?(key_data_item) && 
-  							item[key_data_item]["core_indicator_id"].to_s == indicator.core_indicator_id.to_s &&
-  							!item[key_data_item]["value"].nil?
-						
-  						result["value"] = item[key_data_item]["value"]
-  						break
+      if !results.nil? && !results.empty?
+        data = Array.new(shapes.length) {Hash.new}
+
+        # merge the shape data from each result set onto one data set
+        shapes.each_with_index do |shape, i|
+          data[i][key_results] = Array.new(results[key_results].length) {Hash.new}
+          results[key_results].each_with_index do |result, j|
+            data[i][key_results][j] = result[i]
+            
+            # if this is the indicator that was passed in, get its value
+            # so the map can show the correct colors
+  					if result[i].has_key?(key_data_item) && 
+  							result[i][key_data_item]["core_indicator_id"].to_s == indicator.core_indicator_id.to_s &&
+  							!result[i][key_data_item]["value"].nil?
+
+  						data[i]["shape_id"] = result[i][key_data_item]["shape_id"]
+  						data[i]["value"] = result[i][key_data_item]["value"]
   					end
           end
-				end
-			end
+        end 
+      end
     end
-    return results
+    return data
   end
 	
 	def self.get_related_core_indicator_data(shapes, event_id, core_indicator_id)
-    results = nil
+    data = nil
 		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !core_indicator_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
   	  
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shapes, event_id, event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
+  	  results = build_related_indicator_json(shapes, event_id, 
+  	    event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
 
-=begin
-			# now pull out the data value for this indicator so the map
-			# can show the correct colors
-			if !results.nil? && !results.empty? && results.has_key?(key_results) && !results[key_results].empty?
-				results[key_results].each do |result|
-				  result.each do |item|
-  					if item.has_key?(key_data_item) && 
-  							item[key_data_item]["core_indicator_id"].to_s == core_indicator_id.to_s &&
-  							!item[key_data_item]["value"].nil?
+      if !results.nil? && !results.empty?
+        data = Array.new(shapes.length) {Hash.new}
 
-  						result["value"] = item[key_data_item]["value"]
-  						break
+        # merge the shape data from each result set onto one data set
+        shapes.each_with_index do |shape, i|
+          data[i][key_results] = Array.new(results[key_results].length) {Hash.new}
+          results[key_results].each_with_index do |result, j|
+            data[i][key_results][j] = result[i]
+            
+            # if this is the indicator that was passed in, get its value
+            # so the map can show the correct colors
+  					if result[i].has_key?(key_data_item) && 
+  							result[i][key_data_item]["core_indicator_id"].to_s == core_indicator_id.to_s &&
+  							!result[i][key_data_item]["value"].nil?
+
+  						data[i]["shape_id"] = result[i][key_data_item]["shape_id"]
+  						data[i]["value"] = result[i][key_data_item]["value"]
   					end
           end
-				end
-			end
-=end			
+        end 
+      end
     end
-    return results
+    return data
   end
 	
   # build the json string for the provided indicator relationships

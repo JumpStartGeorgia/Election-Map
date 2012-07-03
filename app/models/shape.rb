@@ -46,8 +46,11 @@ class Shape < ActiveRecord::Base
 	def self.build_json(shapes, indicator_id=nil)
     json = Hash.new()
 		if !shapes.nil? && shapes.length > 0
+		  
       json["type"] = "FeatureCollection"
       json["features"] = Array.new(shapes.length) {Hash.new}
+
+			data = Datum.get_related_indicator_data(shapes, indicator_id)
 			shapes.each_with_index do |shape, i|
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and 
@@ -61,11 +64,12 @@ class Shape < ActiveRecord::Base
 				json["features"][i]["properties"]["has_children"] = shape.has_children?
 				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
 				if !indicator_id.nil?
-
-					data = Datum.get_related_indicator_data(shape.id, indicator_id)
-					if (!data.nil? && data.has_key?("value") && !data["value"].nil? && data["value"].downcase != "null")
-						json["features"][i]["properties"]["value"] = data["value"]
-						json["features"][i]["properties"]["results"] = data["results"]
+          # get the data for this shape
+				  datum = data.select {|x| x["shape_id"] == shape.id}
+					if (!datum.nil? && !datum.empty? && datum.first.has_key?("value") && 
+					    !datum.first["value"].nil? && datum.first["value"].downcase != "null")
+						json["features"][i]["properties"]["value"] = datum.first["value"]
+						json["features"][i]["properties"]["results"] = datum.first["results"]
 		      else
 		        json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
 						json["features"][i]["properties"]["results"] = Array.new
@@ -91,6 +95,8 @@ class Shape < ActiveRecord::Base
 		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
       json["type"] = "FeatureCollection"
       json["features"] = Array.new(shapes.length) {Hash.new}
+      
+			data = Datum.get_related_indicator_type_data(shapes, event_id, indicator_type_id)
 			shapes.each_with_index do |shape, i|
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and 
@@ -103,14 +109,16 @@ class Shape < ActiveRecord::Base
 				json["features"][i]["properties"]["common_name"] = shape.common_name
 				json["features"][i]["properties"]["has_children"] = shape.has_children?
 				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
-        
-				data = Datum.get_related_indicator_type_data(shape.id, event_id, indicator_type_id)
-				if (!data.nil? && data.has_key?("value") && !data["value"].nil? && data["value"].downcase != "null")
-				  json["features"][i]["properties"]["data_value"] = data["data_value"]
-					json["features"][i]["properties"]["value"] = data["value"]
-				  json["features"][i]["properties"]["color"] = data["color"]
-				  json["features"][i]["properties"]["number_format"] = data["number_format"]
-					json["features"][i]["properties"]["results"] = data["results"]
+
+        # get the data for this shape
+			  datum = data.select {|x| x["shape_id"] == shape.id}
+				if (!datum.nil? && !datum.empty? && datum.first.has_key?("value") && 
+				    !datum.first["value"].nil? && datum.first["value"].downcase != "null")
+				  json["features"][i]["properties"]["data_value"] = datum.first["data_value"]
+					json["features"][i]["properties"]["value"] = datum.first["value"]
+				  json["features"][i]["properties"]["color"] = datum.first["color"]
+				  json["features"][i]["properties"]["number_format"] = datum.first["number_format"]
+					json["features"][i]["properties"]["results"] = datum.first["results"]
 	      else
 				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
 				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
