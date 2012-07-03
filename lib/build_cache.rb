@@ -6,13 +6,13 @@ module BuildCache
 		count = 0
 
 		start = Time.now
-		Rails.logger.debug "start time = #{start}"
-
+		puts "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
 		events = Event.where("shape_id is not null")
 		if !events.nil? && !events.empty?
 			events.each_with_index do |event, i|
+				event_start = Time.now
 				shape_type_id = event.shape.shape_type_id
 				# see if event has custom view
 				custom_view = event.event_custom_views.where(:shape_type_id => shape_type_id)
@@ -44,13 +44,14 @@ module BuildCache
 							app.get "/#{locale}/json/grandchildren_shapes/#{event.shape_id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}"
 						end
 					end
+					puts "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"				
 				end
 			end
 		end
 
 		end_time = Time.now
 
-		Rails.logger.debug "end time = #{end_time}, took #{(start-end_time)} seconds"
+		puts "============ total time took #{(end_time - start)} seconds"
   end
 
 	def self.run_test
@@ -59,7 +60,6 @@ module BuildCache
 		count = 0
 
 		start = Time.now
-		Rails.logger.debug "start time = #{start}"
 
 		# cache all shapes
 		shapes = Shape.where("ancestry is null")
@@ -129,8 +129,8 @@ module BuildCache
 
 		end_time = Time.now
 
-		Rails.logger.debug "end time = #{end_time}, took #{(start-end_time)} seconds"
-		Rails.logger.debug "took #{end_time_shapes-start} seconds to process the shapes, took #{(end_time-end_time_shapes)} seconds to process the event and their shapes"
+		puts "end time = #{end_time}, took #{(start-end_time)} seconds"
+		puts "took #{end_time_shapes-start} seconds to process the shapes, took #{(end_time-end_time_shapes)} seconds to process the event and their shapes"
 	end
 
 end

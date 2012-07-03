@@ -45,6 +45,7 @@ class Shape < ActiveRecord::Base
 	# create the properly formatted json string
 	def self.build_json(shapes, indicator_id=nil)
     json = Hash.new()
+		start = Time.now
 		if !shapes.nil? && shapes.length > 0
 		  
       json["type"] = "FeatureCollection"
@@ -86,11 +87,17 @@ class Shape < ActiveRecord::Base
 				end
 			end
 		end
+		if indicator_id.nil?
+			logger.debug "****************** time to build json: #{Time.now-start} seconds with no indicator"
+		else
+			logger.debug "****************** time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
+		end
 		return json
 	end
 
 	# create the properly formatted json string
 	def self.build_summary_json(shapes, event_id, indicator_type_id)
+		start = Time.now
     json = Hash.new()
 		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
       json["type"] = "FeatureCollection"
@@ -143,6 +150,7 @@ class Shape < ActiveRecord::Base
 =end
 			end
 		end
+		logger.debug "****************** time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
