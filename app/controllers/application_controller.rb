@@ -76,6 +76,18 @@ protected
 		filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
 	end
 	
+	# create an array of items, ordered by ancestry value
+	def ancestry_options(items, &block)
+    return ancestry_options(items){ |i| "#{'-' * i.depth} #{i.name}" } unless block_given?
+
+    result = []
+    items.map do |item|
+      result << {"name" => yield(item), "id" => item.id}
+    end
+    result
+  end
+
+
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier
 		  .exception_notification(request.env, exception)

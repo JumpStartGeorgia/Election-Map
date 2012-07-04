@@ -15,6 +15,7 @@ var color_nodata = gon.no_data_color;
 scale_nodata['name'] = gon.no_data_text;
 scale_nodata['color'] = color_nodata;
 var opacity = "1.0";
+var map_opacity = "0.9";
 
 // define number formatting for data values
 var numFormat = new NumberFormat();
@@ -52,7 +53,11 @@ function map_init(){
     maxResolution: 156543.0339,
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
     theme: null,
-    controls: []  // Remove all controls
+		controls: [] // turn all controls off
+		/* for future use
+    controls: [
+			new OpenLayers.Control.PanZoomBar({})
+		]*/
   };
 
 	var vectorBaseStyle = new OpenLayers.StyleMap({
@@ -66,7 +71,7 @@ function map_init(){
 
   map = new OpenLayers.Map('map', options);
 
-//	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true});
+//	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
 
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
 //  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
@@ -185,7 +190,7 @@ function populate_summary_data(){
       }
 
 			// see if the number format has already been saved
-			if (number_format.length == 0){
+			if (number_format.length == 0 && vector_child.features[i].attributes.number_format != null){
 				number_format = vector_child.features[i].attributes.number_format;
 			}
     }
@@ -348,7 +353,7 @@ function build_rule(color, type, value1, value2, isFirst){
 function click_handler (feature)
 {
 	// if the feature has children, continue
-	if (feature.attributes.has_children == "true"){
+	if (feature.attributes.has_children == true){
 		// add/update the shape_id parameter
 
 		var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);

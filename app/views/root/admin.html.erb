@@ -43,12 +43,22 @@
 			<%= link_to t('.shapes'), upload_shapes_path %>
 			</li>
 		</ul>
-	</div>
-	<div class="admin_panel">
+
 		<h3><%= t('.download_header')%></h3>
 		<ul>
 			<li>
 			<%= link_to t('.download_indicators'), download_indicators_path %>
+			</li>
+		</ul>
+	</div>
+	<div class="admin_panel">
+		<h3><%= t('.delete_header')%></h3>
+		<ul>
+			<li>
+			<%= link_to t('.delete_data'), delete_data_path %>
+			</li>
+			<li>
+			<%= link_to t('.delete_shapes'), delete_shapes_path %>
 			</li>
 		</ul>
 	</div>

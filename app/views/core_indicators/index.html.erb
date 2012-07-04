@@ -10,7 +10,6 @@
     <th><%= t("app.common.color") %></th>
     <th><%= t("app.common.indicator_ancestry") %></th>
     <th></th>
-    <th></th>
   </tr>
 
 <% @core_indicators.each do |core_indicator| %>
@@ -27,7 +26,6 @@
     </td>
     <td><%= core_indicator.parent.name if !core_indicator.ancestry.nil? %></td>
     <td><%= link_to t('app.buttons.edit'), edit_core_indicator_path(core_indicator) %></td>
-    <td><%= link_to t('app.buttons.delete'), core_indicator, confirm: t('app.msgs.delete_confirm'), method: :delete %></td>
   </tr>
 <% end %>
 </table>

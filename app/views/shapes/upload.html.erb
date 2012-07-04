@@ -12,11 +12,15 @@
 			<%= t('app.common.file_upload') %>
 			<%= file_field_tag 'file', :accept => 'text/csv,text/plain' %>
 		</p>
+<%
+=begin %>
 		<p>
 			<%= check_box_tag(:delete_records) %>
 			<%= label_tag(:delete_records, t('.delete_records')) %>
 		</p>
 	</div>
+<%
+=end %>
 	<div>
 	  <%= submit_tag t("app.buttons.upload_csv") %>
 	</div>
