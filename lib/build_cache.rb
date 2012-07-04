@@ -3,13 +3,16 @@ module BuildCache
   def self.run
 		# clear the cache
 		Rails.cache.clear
-		count = 0
+    
+    # create new instance of app
+    app = ActionDispatch::Integration::Session.new(Rails.application)
 
 		start = Time.now
 		puts "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
-		events = Event.where("shape_id is not null")
+#		events = Event.where("shape_id is not null")
+		events = Event.where(:id => 3)
 		if !events.nil? && !events.empty?
 			events.each_with_index do |event, i|
 				event_start = Time.now
