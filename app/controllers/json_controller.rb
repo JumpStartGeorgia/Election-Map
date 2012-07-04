@@ -41,7 +41,7 @@ logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
         geometries = ActiveSupport::JSON.decode(grandchildren_cache)
         needed = []
         geometries['features'].each do |value|
-          if value['properties']['parent_id'] == params[:parent_id]
+          if value['properties']['parent_id'].to_s == params[:parent_id]
             needed << value
           end
         end
@@ -139,7 +139,7 @@ logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
         geometries = ActiveSupport::JSON.decode(grandchildren_cache)
         needed = []
         geometries['features'].each do |value|
-          if value['properties']['parent_id'] == params[:parent_id]
+          if value['properties']['parent_id'].to_s == params[:parent_id]
             needed << value
           end
         end
