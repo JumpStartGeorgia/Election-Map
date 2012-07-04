@@ -287,7 +287,7 @@ class Datum < ActiveRecord::Base
             
             # if this is the indicator that was passed in, get its value
             # so the map can show the correct colors
-  					if result[i].has_key?(key_data_item) && 
+  					if !result[i].nil? && result[i].has_key?(key_data_item) && 
   							result[i][key_data_item]["core_indicator_id"].to_s == indicator.core_indicator_id.to_s &&
   							!result[i][key_data_item]["value"].nil?
 
@@ -324,7 +324,7 @@ class Datum < ActiveRecord::Base
             
             # if this is the indicator that was passed in, get its value
             # so the map can show the correct colors
-  					if result[i].has_key?(key_data_item) && 
+  					if !result[i].nil? && result[i].has_key?(key_data_item) && 
   							result[i][key_data_item]["core_indicator_id"].to_s == core_indicator_id.to_s &&
   							!result[i][key_data_item]["value"].nil?
 

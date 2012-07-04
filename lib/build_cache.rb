@@ -1,6 +1,10 @@
 module BuildCache
 
   def self.run
+    # turn off the active record logging
+    old_logger = ActiveRecord::Base.logger
+    ActiveRecord::Base.logger = nil
+
 		# clear the cache
 		Rails.cache.clear
     
@@ -11,8 +15,8 @@ module BuildCache
 		puts "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
-#		events = Event.where("shape_id is not null")
-		events = Event.where(:id => 3)
+		events = Event.where("shape_id is not null")
+#		events = Event.where("id between 1 and 4")
 		if !events.nil? && !events.empty?
 			events.each_with_index do |event, i|
 				event_start = Time.now
@@ -65,6 +69,9 @@ module BuildCache
 		end
 
 		end_time = Time.now
+
+    # turn active record logging back on
+    ActiveRecord::Base.logger = old_logger
 
 		puts "============ total time took #{(end_time - start)} seconds"
   end
