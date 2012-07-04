@@ -1,5 +1,6 @@
 # encoding: utf-8
 #require 'csv_tsv_renderer'
+require 'girl_friday'
 
 class RootController < ApplicationController
   before_filter :authenticate_user!, 
@@ -261,7 +262,20 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
   # GET /events/clear_cache
   def clear_cache
 		Rails.cache.clear
+logger.debug "========== adding to default event cache queue"
+#		DEFAULT_EVENT_CACHE_QUEUE.push :id => 3
+
+		GirlFriday::Queue.new(:default_event_cache_test, :size => 3, :error_handler => RootController, &method(:run_cache))
+logger.debug "========== done adding to default event cache queue"
   end
+
+	def handle(ex)
+    logger.debug ex.message
+  end	
+
+	def run_cache
+		logger.debug "run cache was called!"
+	end
 
 	# any mis-match routing errors are directed here
 	def routing_error

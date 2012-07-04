@@ -30,13 +30,13 @@ class JsonController < ApplicationController
 			custom_children_cache = nil
 			if !parent_shape.nil?
 				key = key_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s).gsub("[indicator_id]", params[:indicator_id])
-logger.debug "++++++++++grand children key = #{key}"
+logger.debug "++++++++++custom children key = #{key}"
 				custom_children_cache = Rails.cache.read(key)
 			end
 
 			if !custom_children_cache.nil?
 				# cache exists, pull out need shapes
-logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
+logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
 
         geometries = ActiveSupport::JSON.decode(custom_children_cache)
         needed = []
@@ -47,7 +47,7 @@ logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
         end
         geometries['features'] = needed
 			else
-logger.debug "++++++++++grand children cache does NOT exist"
+logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
 				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}") {
 					geo = ''
@@ -94,7 +94,7 @@ logger.debug "++++++++++grand children cache does NOT exist"
 			geo.to_json
 		}
 
-logger.debug "++++++++++grand children key = #{key}"
+logger.debug "++++++++++custom children key = #{key}"
     respond_to do |format|
       format.json { render json: geometries}
     end
@@ -117,13 +117,13 @@ puts "@ time to render custom_children_shapes json: #{Time.now-start} seconds"
 			custom_children_cache = nil
 			if !parent_shape.nil?
 			key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s).gsub("[event_id]", params[:event_id]).gsub("[indicator_type_id]", params[:indicator_type_id])
-logger.debug "++++++++++grand children key = #{key}"
+logger.debug "++++++++++custom children key = #{key}"
 				custom_children_cache = Rails.cache.read(key)
 			end
 
 			if !custom_children_cache.nil?
 				# cache exists, pull out need shapes
-logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
+logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
 
         geometries = ActiveSupport::JSON.decode(custom_children_cache)
         needed = []
@@ -134,7 +134,7 @@ logger.debug "++++++++++grand children cache exists, pulling out desired shapes"
         end
         geometries['features'] = needed
 			else
-logger.debug "++++++++++grand children cache does NOT exist"
+logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
 				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
 					geo = ''

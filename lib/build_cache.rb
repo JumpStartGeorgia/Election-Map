@@ -1,13 +1,11 @@
 module BuildCache
 
-  def self.run
+	# create the cache for all events and their default view
+  def self.default_event_cache
     # turn off the active record logging
     old_logger = ActiveRecord::Base.logger
     ActiveRecord::Base.logger = nil
 
-		# clear the cache
-		Rails.cache.clear
-    
     # create new instance of app
     app = ActionDispatch::Integration::Session.new(Rails.application)
 
@@ -15,8 +13,8 @@ module BuildCache
 		puts "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
-		events = Event.where("shape_id is not null")
-#		events = Event.where("id between 1 and 4")
+#		events = Event.where("shape_id is not null")
+		events = Event.where("id between 1 and 4")
 		if !events.nil? && !events.empty?
 			events.each_with_index do |event, i|
 				event_start = Time.now
@@ -75,6 +73,37 @@ module BuildCache
 
 		puts "============ total time took #{(end_time - start)} seconds"
   end
+
+	# create the cache for all events and their default view
+  def self.event_indicator_cache(event_id, shape_type_id)
+    # turn off the active record logging
+    old_logger = ActiveRecord::Base.logger
+    ActiveRecord::Base.logger = nil
+
+		start = Time.now
+		puts "============ starting build cache at #{start}"
+
+		if !event_id.nil? && !shape_type_id.nil?
+		  # create new instance of app
+		  app = ActionDispatch::Integration::Session.new(Rails.application)
+
+			# get the event
+			event = Event.find(event_id)
+			if !event.nil?
+				# get all indicators for this event and shape type
+				indicators = Indicator.where(:event_id => event_id, :shape_type_id => shape_type_id)
+				if !indicators.nil? && !indicators.empty?
+
+				end
+			end
+		end
+		end_time = Time.now
+
+    # turn active record logging back on
+    ActiveRecord::Base.logger = old_logger
+		puts "============ total time took #{(end_time - start)} seconds"
+	end
+
 
 	def self.run_test
 		# clear the cache
