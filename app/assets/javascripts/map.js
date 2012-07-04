@@ -190,7 +190,7 @@ function populate_summary_data(){
       }
 
 			// see if the number format has already been saved
-			if (number_format.length == 0){
+			if (number_format.length == 0 && vector_child.features[i].attributes.number_format != null){
 				number_format = vector_child.features[i].attributes.number_format;
 			}
     }
@@ -353,7 +353,7 @@ function build_rule(color, type, value1, value2, isFirst){
 function click_handler (feature)
 {
 	// if the feature has children, continue
-	if (feature.attributes.has_children == "true"){
+	if (feature.attributes.has_children == true){
 		// add/update the shape_id parameter
 
 		var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
