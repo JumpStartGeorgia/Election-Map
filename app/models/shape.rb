@@ -97,9 +97,9 @@ class Shape < ActiveRecord::Base
 			end
 		end
 		if indicator_id.nil?
-			puts "+++ time to build json: #{Time.now-start} seconds with no indicator"
+			logger.debug "+++ time to build json: #{Time.now-start} seconds with no indicator"
 		else
-			puts "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
+			logger.debug "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
 		end
 		return json
 	end
@@ -171,7 +171,7 @@ class Shape < ActiveRecord::Base
 =end
 			end
 		end
-		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
+		logger.debug "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
@@ -185,6 +185,13 @@ class Shape < ActiveRecord::Base
 	    infile = file.read
 	    n, msg = 0, ""
 			old_root_id = nil
+      idx_event = 0
+      idx_shape_type = 1
+      idx_parent_id = 2
+      idx_parent_name = 3
+      idx_common_id = 4
+      idx_common_name = 5
+      index_geo = 6
 			
 
 			Shape.transaction do
@@ -193,34 +200,34 @@ class Shape < ActiveRecord::Base
 			    n += 1
 			    # SKIP: header i.e. first row OR blank row
 			    next if n == 1 or row.join.blank?
-    puts "++++processing row #{n}"		
+    logger.debug "++++processing row #{n}"		
 
-	        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
-    puts "++++event or shape type was not found in spreadsheet"
+	        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
+    logger.debug "++++event or shape type was not found in spreadsheet"
       		  msg = I18n.t('models.shape.msgs.no_event_shape_spreadsheet', :row_num => n)
 			      raise ActiveRecord::Rollback
             return msg
 					else
 		    		# get the event id
-		    		event = Event.find_by_name(row[0].strip)
+		    		event = Event.find_by_name(row[idx_event].strip)
 		    		# get the shape type id
-		    		shape_type = ShapeType.find_by_name_singular(row[1].strip)
+		    		shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
 
 		    		if event.nil? || shape_type.nil?
-		  puts "++++event or shape type was not found"		
+		  logger.debug "++++event or shape type was not found"		
 		    		  msg = I18n.t('models.shape.msgs.no_event_shape_db', :row_num => n)
 					    raise ActiveRecord::Rollback
 		          return msg
 		    		else
-		  puts "++++found event and shape type, get root shape"
+		  logger.debug "++++found event and shape type, get root shape"
 		          # get the root shape
 		          root = Shape.joins(:shape_translations)
 		                  .where(:shapes => {:id => event.shape_id}, :shape_translations => {:locale => 'en'}).first
 		      
 		          # if the root shape already exists and deleteExistingRecord is true, delete the shape
-							#  if this is the root record (row[2] is nil)
-		          if !root.nil? && deleteExistingRecord && (row[2].nil? || row[2].strip.length == 0)
-		puts "+++++++ deleting existing root shape and all of its descendants"
+							#  if this is the root record (row[idx_parent_id] is nil)
+		          if !root.nil? && deleteExistingRecord && (row[idx_parent_id].nil? || row[idx_parent_id].strip.length == 0)
+		logger.debug "+++++++ deleting existing root shape and all of its descendants"
 									# save the existing root id so at the end all events with this root can be updated
 									old_root_id = root.id
 									# destroy the shapes
@@ -229,29 +236,29 @@ class Shape < ActiveRecord::Base
 		          end
 
 		          if root.nil?
-		  puts "++++root does not exist"
-		            if row[2].nil? || row[2].strip.length == 0
+		  logger.debug "++++root does not exist"
+		            if row[idx_parent_id].nil? || row[idx_parent_id].strip.length == 0
 		              # no root exists in db, but this is the root, so add it
-		  puts "++++adding root shape"
-                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[6].strip
+		  logger.debug "++++adding root shape"
+                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip
 									# add translations
 									I18n.available_locales.each do |locale|
-										shape.shape_translations.create(:locale => locale, :common_id => row[4].strip, :common_name => row[5].strip)
+										shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
 									end
 
 		              if shape.valid?
 		                # update the event to have this as the root
-		  puts "++++updating event to map to this root shape"
+		  logger.debug "++++updating event to map to this root shape"
 
 										events = Event.where(:shape_id => old_root_id)
 										if !events.nil? && !events.empty?
-		  puts "+++++++there are #{events.count} that have this old root id"
+		  logger.debug "+++++++there are #{events.count} that have this old root id"
 											events.each do |e|
 												e.shape_id = shape.id
 						            if !e.save
 						              # could not update event record
 						        		  msg = I18n.t('models.shape.msgs.not_update_event', :row_num => n)
-					puts "++++event could not be updated to indicate this is the root"
+					logger.debug "++++event could not be updated to indicate this is the root"
 						  			      raise ActiveRecord::Rollback
 						        		  return msg
 						            end
@@ -260,43 +267,43 @@ class Shape < ActiveRecord::Base
 		              else
 		                # could not create shape
 		          		  msg = I18n.t('models.shape.msgs.root_not_valid', :row_num => n)
-		  puts "++++root row could not be saved"
+		  logger.debug "++++root row could not be saved"
 		    			      raise ActiveRecord::Rollback
 		          		  return msg
 		              end
 		            else
 		              # no root exists and this row is not root -> stop
 		        		  msg = I18n.t('models.shape.msgs.root_shape_not_found', :row_num => n)
-		    puts "++++root shape for this event was not found"
+		    logger.debug "++++root shape for this event was not found"
 		              raise ActiveRecord::Rollback
 		              return msg
 		            end
 		          else
-		    puts "++++root already exists"
+		    logger.debug "++++root already exists"
 		            # found root, continue
 	              # only conintue if all values are present
-	              if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil?
+	              if row[idx_parent_id].nil? || row[idx_parent_name].nil? || row[idx_common_id].nil? || row[idx_common_name].nil? || row[idx_geo].nil?
 	          		  msg = I18n.t('models.shape.msgs.missing_data_spreadsheet', :row_num => n)
-	    puts "++++**missing data in row"
+	    logger.debug "++++**missing data in row"
 	                raise ActiveRecord::Rollback
 	                return msg
 			          else
 			            # if this is row 2, see if this row is also a root and the same
-				          if n==2 && row[2].nil? && root.shape_type_id == shape_type.id && 
-											root.common_id == row[4].strip && root.common_name == row[5].strip
+				          if n==2 && row[idx_parent_id].nil? && root.shape_type_id == shape_type.id && 
+											root.common_id == row[idx_common_id].strip && root.common_name == row[idx_common_name].strip
 				      		  msg = I18n.t('models.shape.msgs.root_already_exists', :row_num => n)
-				  puts "++++**root record already exists!"
+				  logger.debug "++++**root record already exists!"
 				            raise ActiveRecord::Rollback
 				            return msg
 		              else
-		    puts "++++chekcing if row already in db"
+		    logger.debug "++++chekcing if row already in db"
 		                alreadyExists = root.descendants.joins(:shape_translations)
-		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[6].strip}, 
-		                    :shape_translations => {:locale => 'en', :common_id => row[4].strip, :common_name => row[5].strip})
+		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[idx_geo].strip}, 
+		                    :shape_translations => {:locale => 'en', :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip})
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
 		                if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
-			puts "+++++++ deleting existing #{alreadyExists.length} shape record and all of its descendants "
+			logger.debug "+++++++ deleting existing #{alreadyExists.length} shape record and all of its descendants "
                         alreadyExists.each do |exists|
 						              Shape.destroy_all(["id in (?)", exists.subtree_ids])
                         end
@@ -304,70 +311,70 @@ class Shape < ActiveRecord::Base
 		                end
 
 		                if alreadyExists.nil? || alreadyExists.empty?
-		    puts "++++row is not in db, get parent shape type"
+		    logger.debug "++++row is not in db, get parent shape type"
 		                  # record does not exist yet
 		                  # find parent shape type so we can find parent shape
 		                  parent_shape_type = shape_type.parent
 		                  if parent_shape_type.nil?
 		                    # did not find parent shape type
 		              		  msg = I18n.t('models.shape.msgs.parent_shape_type_not_found', :row_num => n)
-		        puts "++++**could not find parent shape type"
+		        logger.debug "++++**could not find parent shape type"
 		                    raise ActiveRecord::Rollback
 		                    return msg
 		                  else
-		      puts "++++getting parent shape"
+		      logger.debug "++++getting parent shape"
 		                    # check if the root has descendants
 		                    # have to check the root object by iteself and then check for through the descendants
 		                    parentRoot = root.shape_type_id == parent_shape_type.id && 
-		                      root.common_id == row[2].strip && root.common_name == row[3].strip ? root : nil
+		                      root.common_id == row[idx_parent_id].strip && root.common_name == row[idx_parent_name].strip ? root : nil
 		                    if root.has_children?
 		                      parentChild = root.descendants.joins(:shape_translations)
 		                        .where(:shapes => {:shape_type_id => parent_shape_type.id}, 
-		                        :shape_translations => {:locale => 'en', :common_id => row[2].strip, :common_name => row[3].strip})
+		                        :shape_translations => {:locale => 'en', :common_id => row[idx_parent_id].strip, :common_name => row[idx_parent_name].strip})
 		                    end
 		                
 		                    # see if a parent node was found
 		                    if (parentRoot.nil?) && (parentChild.nil? || parentChild.empty?)
-		        puts "++++no parent shape found"
+		        logger.debug "++++no parent shape found"
 		                      # no parent found
 		                      parent = nil
 		                    elsif !parentRoot.nil?
-		        puts "++++parent shape is root"
+		        logger.debug "++++parent shape is root"
 		                      parent = parentRoot
 		                    elsif !parentChild.nil? && parentChild.length > 0
-		        puts "++++parent is a child node"
+		        logger.debug "++++parent is a child node"
 		                      parent = parentChild.first
 		                    end
-		        puts "++++parent = #{parent}"
+		        logger.debug "++++parent = #{parent}"
 		                    if parent.nil?
 		                      # did not find parent shape
 			              		  msg = I18n.t('models.shape.msgs.parent_shape_not_found', :row_num => n)
-		          puts "++++**could not find parent shape"
+		          logger.debug "++++**could not find parent shape"
 		                      raise ActiveRecord::Rollback
 		                      return msg
 		                    else
 		                      # found parent, add child
-		      puts "++++found parent, saving this row"
+		      logger.debug "++++found parent, saving this row"
 													#################################
 													# HACK
 													# if this is the district Khobi, use the geo that is provided at the bottom of this class
 													# - the khobi district geo that has something bad in it and the string gets cut off
 													#################################
-													if row[5].strip.downcase == "khobi"
-          puts "++++++++++++++ found khobi, using geo data hardcoded into app"
+													if row[idx_common_name].strip.downcase == "khobi"
+          logger.debug "++++++++++++++ found khobi, using geo data hardcoded into app"
 			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => khobi_district_geometry
 													else
-			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[6].strip
+			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip
 													end
 													# add translations
 													I18n.available_locales.each do |locale|
-														shape.shape_translations.create(:locale => locale, :common_id => row[4].strip, :common_name => row[5].strip)
+														shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
 													end
 
 		                      if !shape.valid?
 		                        # could not create shape
 		                  		  msg =I18n.t('models.shape.msgs.not_valid', :row_num => n)
-		          puts "++++row could not be saved"
+		          logger.debug "++++row could not be saved"
 		                        raise ActiveRecord::Rollback
 		                        return msg
 		                      end
@@ -376,7 +383,7 @@ class Shape < ActiveRecord::Base
 		                else
 		                  # record already exists
 		            		  msg = I18n.t('models.shape.msgs.already_exists', :row_num => n)
-		          puts "++++**record already exists!"
+		          logger.debug "++++**record already exists!"
 		                  raise ActiveRecord::Rollback
 		                  return msg
 		                end
@@ -387,7 +394,7 @@ class Shape < ActiveRecord::Base
 	        end
         end
 
-  puts "++++updating ka records with ka text in shape_names"
+  logger.debug "++++updating ka records with ka text in shape_names"
 				# ka translation is hardcoded as en in the code above
 				# update all ka records with the apropriate ka translation
 				# update common ids
@@ -396,7 +403,7 @@ class Shape < ActiveRecord::Base
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_name = sn.ka where st.locale = 'ka' and st.common_name = sn.en")
 
 			end 
-  puts "++++procssed #{n} rows in CSV file"
+  logger.debug "++++procssed #{n} rows in CSV file"
       return msg 
     end    
 

@@ -79,7 +79,7 @@ function map_init(){
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
   map.addLayers([vector_base, vector_child]);
-  map.addLayers([map_layer, vector_base, vector_child]);
+//  map.addLayers([map_layer, vector_base, vector_child]);
 
 	// load the base layer
 	var prot = new OpenLayers.Protocol.HTTP({

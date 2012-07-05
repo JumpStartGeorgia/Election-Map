@@ -392,6 +392,11 @@ class Datum < ActiveRecord::Base
   def self.build_from_csv(file, deleteExistingRecord)
     infile = file.read
     n, msg = 0, ""
+    idx_event = 0
+    idx_shape_type = 1
+    idx_common_id = 2
+    idx_common_name = 3
+    index_first_ind = 4
 
 		Datum.transaction do
 		  CSV.parse(infile) do |row|
@@ -400,16 +405,16 @@ class Datum < ActiveRecord::Base
 		    next if n == 1 or row.join.blank?
 	puts "++++processing row #{n}"				
 
-        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
+        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
   puts "++++event or shape type was not found in spreadsheet"
     		  msg = I18n.t('models.datum.msgs.no_event_shape_spreadsheet', :row_num => n)
 		      raise ActiveRecord::Rollback
           return msg
 				else
 					# get the event id
-					event = Event.find_by_name(row[0].strip)
+					event = Event.find_by_name(row[idx_event].strip)
 					# get the shape type id
-					shape_type = ShapeType.find_by_name_singular(row[1].strip)
+					shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
 
 					if event.nil? || shape_type.nil?
 			puts "++++event or shape type was not found"				
@@ -419,7 +424,7 @@ class Datum < ActiveRecord::Base
 					else
 			puts "++++event and shape found, procesing indicators"
 						finishedIndicators = false
-						i = 4 # where first indicator starts
+						i = index_first_ind
 
 						until finishedIndicators do
 							if row[i].nil? || row[i+1].nil?
@@ -428,7 +433,7 @@ class Datum < ActiveRecord::Base
 							  finishedIndicators = true
 							else
 		            # only conintue if required fields provided
-		            if row[2].nil? || row[3].nil?
+		            if row[idx_common_id].nil? || row[idx_common_name].nil?
 		        		  msg = I18n.t('models.datum.msgs.missing_data_spreadsheet', :row_num => n)
 		  puts "++++**missing data in row"
 		              raise ActiveRecord::Rollback
@@ -451,8 +456,8 @@ class Datum < ActiveRecord::Base
 											.where(:data => {:indicator_id => indicator.first.id}, 
 												:datum_translations => {
 													:locale => 'en',
-													:common_id => row[2].nil? ? row[2] : row[2].strip, 
-													:common_name => row[3].nil? ? row[3] : row[3].strip})
+													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip, 
+													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip})
 					
 				            # if the datum already exists and deleteExistingRecord is true, delete the datum
 				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -474,8 +479,8 @@ class Datum < ActiveRecord::Base
 											I18n.available_locales.each do |locale|
 			puts "++++ - adding translations for #{locale}"
 												datum.datum_translations.build(:locale => locale, 
-													:common_id => row[2].nil? ? row[2] : row[2].strip, 
-													:common_name => row[3].nil? ? row[3] : row[3].strip)
+													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip, 
+													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip)
 											end
 
 
