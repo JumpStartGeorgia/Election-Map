@@ -72,13 +72,16 @@ class Shape < ActiveRecord::Base
   					if (!datum.nil? && datum.has_key?("value") && 
   					    !datum["value"].nil? && datum["value"].downcase != "null")
   						json["features"][i]["properties"]["value"] = datum["value"]
+  						json["features"][i]["properties"]["formatted_value"] = datum["formatted_value"]
   						json["features"][i]["properties"]["results"] = datum["results"]
   		      else
   		        json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+  						json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
   						json["features"][i]["properties"]["results"] = Array.new
   		      end
 		      else
 		        json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+						json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
 						json["features"][i]["properties"]["results"] = Array.new
           end
 =begin
@@ -131,12 +134,14 @@ class Shape < ActiveRecord::Base
   				    !datum["value"].nil? && datum["value"].downcase != "null")
   				  json["features"][i]["properties"]["data_value"] = datum["data_value"]
   					json["features"][i]["properties"]["value"] = datum["value"]
+  					json["features"][i]["properties"]["formatted_value"] = datum["formatted_value"]
   				  json["features"][i]["properties"]["color"] = datum["color"]
   				  json["features"][i]["properties"]["number_format"] = datum["number_format"]
   					json["features"][i]["properties"]["results"] = datum["results"]
   	      else
   				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
   				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+  				  json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
   				  json["features"][i]["properties"]["color"] = nil
   				  json["features"][i]["properties"]["number_format"] = nil
   					json["features"][i]["properties"]["results"] = Array.new
@@ -144,6 +149,7 @@ class Shape < ActiveRecord::Base
 	      else
 				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
 				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
+				  json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
 				  json["features"][i]["properties"]["color"] = nil
 				  json["features"][i]["properties"]["number_format"] = nil
 					json["features"][i]["properties"]["results"] = Array.new

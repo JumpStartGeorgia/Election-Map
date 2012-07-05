@@ -14,7 +14,7 @@ var scale_nodata = [];
 var color_nodata = gon.no_data_color;
 scale_nodata['name'] = gon.no_data_text;
 scale_nodata['color'] = color_nodata;
-var opacity = "1.0";
+var opacity = "0.6";
 var map_opacity = "0.9";
 
 // define number formatting for data values
@@ -54,9 +54,9 @@ function map_init(){
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
     theme: null,
 		controls: [] // turn all controls off
-		/* for future use
-    controls: [
-			new OpenLayers.Control.PanZoomBar({})
+/*    controls: [
+			new OpenLayers.Control.PanZoomBar(),
+			new OpenLayers.Control.Navigation()
 		]*/
   };
 
@@ -79,7 +79,7 @@ function map_init(){
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
   map.addLayers([vector_base, vector_child]);
-//  map.addLayers([map_layer, vector_base, vector_child]);
+  map.addLayers([map_layer, vector_base, vector_child]);
 
 	// load the base layer
 	var prot = new OpenLayers.Protocol.HTTP({
@@ -355,7 +355,6 @@ function click_handler (feature)
 	// if the feature has children, continue
 	if (feature.attributes.has_children == true){
 		// add/update the shape_id parameter
-
 		var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
 
 		// add/update the shape_type_id parameter
@@ -423,7 +422,7 @@ function hover_handler (feature)
   		feature.attributes.data_value, number_format);
   } else if (gon.indicator_scale_colors && gon.indicator_scales){
   	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv, 
-  		feature.attributes.value, number_format);
+  		feature.attributes.formatted_value, number_format);
   } 
 }
 
@@ -450,12 +449,11 @@ function populate_map_box(title, indicator, value, number_format)
     if (value)
     {
 			// make the number pretty
-			var x = format_number(value);
 			// if the value is a number, apply the number_format
-			if (!isNaN(x) && number_format){
-				x += number_format;
+			if (!isNaN(value) && number_format){
+				value += number_format;
 			}
-      box.children('#map-box-content').children('#map-box-value').text(x);
+      box.children('#map-box-content').children('#map-box-value').text(value);
     } else {
       box.children('#map-box-content').children('#map-box-value').text("");
     }
