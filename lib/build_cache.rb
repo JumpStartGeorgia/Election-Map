@@ -40,7 +40,7 @@ module BuildCache
 
 							# load the children shapes
 							if is_custom_view
-							  app.get "/#{locale}/json/summary_grandchildren_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}"
+							  app.get "/#{locale}/json/summary_custom_children_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}/shape_type/#{shape_type_id}"
 							else
 							  app.get "/#{locale}/json/summary_children_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}"
 						  end
@@ -53,7 +53,7 @@ module BuildCache
 
 							# load the children shapes
 							if is_custom_view
-							  app.get "/#{locale}/json/grandchildren_shapes/#{event.shape_id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}"
+							  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/shape_type/#{shape_type_id}"
 							else
 							  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}"
 						  end
@@ -74,7 +74,7 @@ module BuildCache
 		puts "============ total time took #{(end_time - start)} seconds"
   end
 
-	# create the cache for all events and their default view
+	# create cache for all indicators in an event at a shape level
   def self.event_indicator_cache(event_id, shape_type_id)
     # turn off the active record logging
     old_logger = ActiveRecord::Base.logger
@@ -90,10 +90,34 @@ module BuildCache
 			# get the event
 			event = Event.find(event_id)
 			if !event.nil?
+				# see if event has custom view at this shape type
+				custom_view = event.event_custom_views.where(:descendant_shape_type_id => shape_type_id)
+        is_custom_view = false
+				if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
+					# has custom view, use the custom shape type
+  				puts "=================== "				
+					puts "=================== event #{event_id} at shape type #{shape_type_id} is a custom view"
+  				puts "=================== "				
+					is_custom_view = true
+				end
+
 				# get all indicators for this event and shape type
 				indicators = Indicator.where(:event_id => event_id, :shape_type_id => shape_type_id)
 				if !indicators.nil? && !indicators.empty?
-
+					I18n.available_locales.each do |locale|
+  				  indicators.each do |indicator|
+      				ind_start = Time.now
+    					# load the children shapes
+    					if is_custom_view
+    					  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/indicator/#{indicator.id}/shape_type/#{shape_type_id}"
+    					else
+    					  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/parent_clickable/false/indicator/#{indicator.id}"
+    				  end
+      				puts "=================== "				
+    					puts "=================== time to load indicator #{indicator.id} for event #{event.id} was #{(Time.now-ind_start)} seconds"				
+    					puts "=================== "				
+            end
+  				end
 				end
 			end
 		end
@@ -116,10 +140,10 @@ module BuildCache
 		shapes = Shape.where("ancestry is null")
 
 		shapes.each do |shape|
-			app.get "/en/grandchildren_shapes/#{shape.id}"
+			app.get "/en/custom_children_shapes/#{shape.id}"
 			count += shape.children.count
 			shape.children.each do |child|
-				app.get "/en/grandchildren_shapes/#{child.id}"
+				app.get "/en/custom_children_shapes/#{child.id}"
 			end
 		end
 
@@ -161,7 +185,7 @@ module BuildCache
 					indicators_district.each do |ind|
 						# get shapes for each indicator
 #						app.get "/en/children_shapes/#{shape.id}/parent_clickable/false/indicator/#{ind.id}"
-						app.get "/en/grandchildren_shapes/#{shape.id}/indicator/#{ind.id}"
+						app.get "/en/custom_children_shapes/#{shape.id}/indicator/#{ind.id}"
 					end
 				end
 
@@ -171,7 +195,7 @@ module BuildCache
 						shape.children.each do |child|
 							# get shapes for each indicator
 #							app.get "/en/children_shapes/#{child.id}/parent_clickable/false/indicator/#{ind.id}"
-							app.get "/en/grandchildren_shapes/#{child.id}/indicator/#{ind.id}"
+							app.get "/en/custom_children_shapes/#{child.id}/indicator/#{ind.id}"
 						end
 					end
 				end

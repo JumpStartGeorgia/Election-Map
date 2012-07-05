@@ -1,6 +1,7 @@
 class Datum < ActiveRecord::Base
   translates :common_id, :common_name
-	
+	include ActionView::Helpers::NumberHelper	
+
   belongs_to :indicator
   has_many :datum_translations, :dependent => :destroy
   accepts_nested_attributes_for :datum_translations
@@ -59,6 +60,23 @@ class Datum < ActiveRecord::Base
 	end
 	def color
 		self[:color]
+	end
+
+	# format the value if it is a number
+	def formatted_value
+		# if value has a '.' then convert to float, else int
+		is_number = true
+		if !self.value.nil?
+			if self.value.index(".").nil?
+				Integer(self.value) rescue is_number = false
+				return number_with_delimiter(self.value.to_i) if is_number
+			else
+				Float(self.value) rescue is_number = false
+				return number_with_precision(self.value.to_f) if is_number
+			end
+		end
+		# if could not convert to number then return original value
+		return self.value
 	end
 
 	# get the data value for a specific shape
@@ -165,6 +183,7 @@ class Datum < ActiveRecord::Base
             json[i][key_data_item]["common_name"] = datum.shape_common_name
             json[i][key_data_item]["indicator_name"] = datum.indicator_name
             json[i][key_data_item]["value"] = datum.value
+            json[i][key_data_item]["formatted_value"] = datum.formatted_value
             json[i][key_data_item]["number_format"] = datum.number_format
           else
             json[i][key_data_item]["title"] = I18n.t('app.msgs.no_data')
@@ -173,6 +192,7 @@ class Datum < ActiveRecord::Base
             json[i][key_data_item]["common_name"] = nil
             json[i][key_data_item]["indicator_name"] = I18n.t('app.msgs.no_data')
             json[i][key_data_item]["value"] = I18n.t('app.msgs.no_data')
+            json[i][key_data_item]["formatted_value"] = I18n.t('app.msgs.no_data')
             json[i][key_data_item]["number_format"] = nil
           end
     		end
@@ -213,7 +233,8 @@ class Datum < ActiveRecord::Base
               json[i][key_summary_data]["data"][j]["rank"] = j+1
               json[i][key_summary_data]["data"][j]["indicator_name"] = d.indicator_name
               json[i][key_summary_data]["data"][j]["indicator_name_abbrv"] = d.indicator_name_abbrv
-              json[i][key_summary_data]["data"][j]["value"] = d.value
+              json[i][key_summary_data]["data"][j]["value"] = d.formatted_value
+              json[i][key_summary_data]["data"][j]["formatted_value"] = d.formatted_value
               json[i][key_summary_data]["data"][j]["number_format"] = d.number_format
               json[i][key_summary_data]["data"][j]["color"] = d.color
             end
@@ -252,6 +273,7 @@ class Datum < ActiveRecord::Base
 
   						data[i]["shape_id"] = result[i][key_summary_data]["shape_id"]
   						data[i]["data_value"] = result[i][key_summary_data]["data"][0]["value"]
+  						data[i]["formatted_value"] = result[i][key_summary_data]["data"][0]["formatted_value"]
   						data[i]["value"] = result[i][key_summary_data]["data"][0]["indicator_name_abbrv"]
   						data[i]["color"] = result[i][key_summary_data]["data"][0]["color"]
   						data[i]["number_format"] = result[i][key_summary_data]["data"][0]["number_format"]
@@ -293,6 +315,7 @@ class Datum < ActiveRecord::Base
 
   						data[i]["shape_id"] = result[i][key_data_item]["shape_id"]
   						data[i]["value"] = result[i][key_data_item]["value"]
+  						data[i]["formatted_value"] = result[i][key_data_item]["formatted_value"]
   					end
           end
         end 
@@ -330,6 +353,7 @@ class Datum < ActiveRecord::Base
 
   						data[i]["shape_id"] = result[i][key_data_item]["shape_id"]
   						data[i]["value"] = result[i][key_data_item]["value"]
+  						data[i]["formatted_value"] = result[i][key_data_item]["formatted_value"]
   					end
           end
         end 
