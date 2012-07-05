@@ -52,10 +52,8 @@
 				<%= "#{t('.signed_in')} #{current_user.email}" %>. 
 				<%= link_to t('.admin'), admin_path %>  
 				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>  
-		  <% else %>  
-				<%= link_to t('.sign_in'), new_user_session_path %>  
+				<a>|</a>
 		  <% end %>  
-		<a>|</a>
 		<%= link_to t('.about'), view_pages_path(:name => "about") %>
 		<a>|</a>
 		<%= link_to t('.contact'), contact_path %>

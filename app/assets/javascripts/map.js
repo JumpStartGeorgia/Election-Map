@@ -352,7 +352,6 @@ function build_rule(color, type, value1, value2, isFirst){
 
 function click_handler (feature)
 {
-alert("shape id = " + feature.attributes.id);
 	// if the feature has children, continue
 	if (feature.attributes.has_children == true){
 		// add/update the shape_id parameter
