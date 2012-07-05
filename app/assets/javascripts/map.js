@@ -14,7 +14,7 @@ var scale_nodata = [];
 var color_nodata = gon.no_data_color;
 scale_nodata['name'] = gon.no_data_text;
 scale_nodata['color'] = color_nodata;
-var opacity = "1.0";
+var opacity = "0.6";
 var map_opacity = "0.9";
 
 // define number formatting for data values
@@ -54,9 +54,9 @@ function map_init(){
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
     theme: null,
 		controls: [] // turn all controls off
-		/* for future use
-    controls: [
-			new OpenLayers.Control.PanZoomBar({})
+/*    controls: [
+			new OpenLayers.Control.PanZoomBar(),
+			new OpenLayers.Control.Navigation()
 		]*/
   };
 
@@ -79,7 +79,7 @@ function map_init(){
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
   map.addLayers([vector_base, vector_child]);
-//  map.addLayers([map_layer, vector_base, vector_child]);
+  map.addLayers([map_layer, vector_base, vector_child]);
 
 	// load the base layer
 	var prot = new OpenLayers.Protocol.HTTP({
