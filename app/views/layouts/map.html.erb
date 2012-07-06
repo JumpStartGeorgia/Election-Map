@@ -42,6 +42,9 @@
   </header>
 
 	<section id="container" class="wrap group">
+			<% flash.each do |key, msg| %>
+					<%= content_tag :div, msg, :class => [key, " message"], :id => "notice_ #{key}" %>
+			<% end %>
 
   		<%= yield %>
 

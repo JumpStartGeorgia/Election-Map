@@ -220,7 +220,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
       #get the data
       data = Datum.create_csv(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
 
-			if !data.nil && !data.csv_data.nil?
+			if !data.nil? && !data.csv_data.nil?
 				# create file name using event name and map title that were passed in
 				# cannot use georgian characters in file name
 				if I18n.locale.to_s == "ka" || params[:event_name].nil? || params[:map_title].nil?
@@ -247,6 +247,10 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 		  end
 =end
 		end
+
+		# if get here, then an error occurred
+		redirect_to :back, :notice => t("app.msgs.no_data_download")
+
   end
 
   # GET /events/admin
@@ -262,20 +266,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
   # GET /events/clear_cache
   def clear_cache
 		Rails.cache.clear
-logger.debug "========== adding to default event cache queue"
-#		DEFAULT_EVENT_CACHE_QUEUE.push :id => 3
-
-		GirlFriday::Queue.new(:default_event_cache_test, :size => 3, :error_handler => RootController, &method(:run_cache))
-logger.debug "========== done adding to default event cache queue"
   end
-
-	def handle(ex)
-    logger.debug ex.message
-  end	
-
-	def run_cache
-		logger.debug "run cache was called!"
-	end
 
 	# any mis-match routing errors are directed here
 	def routing_error

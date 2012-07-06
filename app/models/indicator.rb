@@ -159,8 +159,8 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
   				else
 		logger.debug "++++found event, shape type, indicator type and core indicator, seeing if record already exists"
 						# see if indicator already exists for the provided event and shape_type
-						alreadyExists = Indicator.includes(:core_indicator)
-						  .where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.indicator_type_id = ? and core_indicators.id = ?', 
+						alreadyExists = Indicator.select("indicators.id").includes(:core_indicator)
+						  .where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.id = ? and core_indicators.indicator_type_id = ? ', 
 						    event.id, shape_type.id, indicator_type.id, core_indicator.id)
 				
 	          # if the indicator already exists and deleteExistingRecord is true, delete the indicator

@@ -13,8 +13,8 @@ module BuildCache
 		puts "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
-#		events = Event.where("shape_id is not null")
-		events = Event.where("id between 1 and 4")
+		events = Event.where("shape_id is not null")
+#		events = Event.where("id between 1 and 4")
 		if !events.nil? && !events.empty?
 			events.each_with_index do |event, i|
 				event_start = Time.now

@@ -27,10 +27,9 @@ class Shape < ActiveRecord::Base
 
 	# get the list of shapes for data download
 	def self.get_shapes_for_download(shape_id, shape_type_id)
-		return shape_id.nil? || shape_type_id.nil? ? nil : select("shapes.id, shape_type_id, common_id, common_name, ancestry")
-					.joins(:shape_translations)
-					.where("shapes.shape_type_id = :shape_type_id and shape_translations.locale = :locale and ((shapes.shape_type_id = 1 and shapes.id = :shape_id) or (shapes.shape_type_id = 2 and shapes.ancestry = :shape_id) or (shapes.ancestry like :shape_id_like))", 
-			:shape_id => shape_id, :shape_type_id => shape_type_id, :shape_id_like => "%/#{shape_id}", :locale => I18n.locale)
+		if !shape_id.nil? && !shape_type_id.nil?
+			Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
+		end
 	end
 
 	# need this so can access ActionView::Helpers::NumberHelper helpers to format numbers in build_json
@@ -97,9 +96,9 @@ class Shape < ActiveRecord::Base
 			end
 		end
 		if indicator_id.nil?
-			logger.debug "+++ time to build json: #{Time.now-start} seconds with no indicator"
+			puts "+++ time to build json: #{Time.now-start} seconds with no indicator"
 		else
-			logger.debug "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
+			puts "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
 		end
 		return json
 	end
@@ -171,7 +170,7 @@ class Shape < ActiveRecord::Base
 =end
 			end
 		end
-		logger.debug "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
+		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
@@ -297,7 +296,7 @@ class Shape < ActiveRecord::Base
 				            return msg
 		              else
 		    logger.debug "++++chekcing if row already in db"
-		                alreadyExists = root.descendants.joins(:shape_translations)
+		                alreadyExists = root.descendants.select("shapes.id").joins(:shape_translations)
 		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[idx_geo].strip}, 
 		                    :shape_translations => {:locale => 'en', :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip})
 
@@ -328,7 +327,7 @@ class Shape < ActiveRecord::Base
 		                    parentRoot = root.shape_type_id == parent_shape_type.id && 
 		                      root.common_id == row[idx_parent_id].strip && root.common_name == row[idx_parent_name].strip ? root : nil
 		                    if root.has_children?
-		                      parentChild = root.descendants.joins(:shape_translations)
+		                      parentChild = root.descendants.select("shapes.id").joins(:shape_translations)
 		                        .where(:shapes => {:shape_type_id => parent_shape_type.id}, 
 		                        :shape_translations => {:locale => 'en', :common_id => row[idx_parent_id].strip, :common_name => row[idx_parent_name].strip})
 		                    end

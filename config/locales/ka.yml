@@ -105,6 +105,7 @@ ka:
       missing_parameters: Pleaes select data from all fields before submitting.
       select_event: Select Event First
       select_shape_type: Select Shape Level First
+      no_data_download: No data was found to download.
     common:
       important: Important
       indicator: Indicator

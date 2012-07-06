@@ -31,6 +31,12 @@ gem "girl_friday", "~> 0.9.7" # asynchronous calls
 
 group :development do
 	gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
+#	gem 'ruby-prof' # analyze code perofrmance
+#	gem "query_reviewer", :git => "git://github.com/nesquena/query_reviewer.git" # query analyzer
+#	gem "bullet" # notifies you when n+1 queries are being called
+#	gem 'slim_scrooge' # looks for queries that get columns that are not used
+#	gem "rails-indexes" # looks for fields in db that need index
+#	gem "lol_dba", "~> 1.3.0" # looks for fields in db that need index
 end
 
 group :staging do

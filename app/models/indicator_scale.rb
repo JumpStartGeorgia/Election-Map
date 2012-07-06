@@ -109,7 +109,7 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
             else
 			logger.debug "+++ found event and shape type, seeing if indicator record exists"
 							# see if indicator exists for the provided event and shape_type
-							alreadyExists = Indicator.includes(:core_indicator => :core_indicator_translations)
+							alreadyExists = Indicator.select("indicators.id").includes(:core_indicator => :core_indicator_translations)
 								.where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?', 
 									event.id, shape_type.id, indicator_type.id, row[idx_en_ind_name].strip)
 					
