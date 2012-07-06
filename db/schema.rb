@@ -103,35 +103,6 @@ ActiveRecord::Schema.define(:version => 20120706103548) do
   add_index "event_indicator_relationships", ["indicator_type_id"], :name => "index_event_indicator_relationships_on_indicator_type_id"
   add_index "event_indicator_relationships", ["related_core_indicator_id"], :name => "index_event_indicator_relationships_on_related_core_indicator_id"
   add_index "event_indicator_relationships", ["related_indicator_type_id"], :name => "index_event_indicator_relationships_on_related_indicator_type_id"
-  add_index "event_indicator_relationships", ["sort_order"], :name => "index_event_indicator_relationships_on_sort_order"
-
-  create_table "event_indicator_translations", :force => true do |t|
-    t.integer  "event_indicator_id"
-    t.string   "locale"
-    t.string   "name"
-    t.string   "name_abbrv"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "description"
-  end
-
-  add_index "event_indicator_translations", ["event_indicator_id"], :name => "index_event_indicator_translations_on_event_indicator_id"
-  add_index "event_indicator_translations", ["locale"], :name => "index_event_indicator_translations_on_locale"
-  add_index "event_indicator_translations", ["name"], :name => "index_event_indicator_translations_on_name"
-  add_index "event_indicator_translations", ["name_abbrv"], :name => "index_event_indicator_translations_on_name_abbrv"
-
-  create_table "event_indicators", :force => true do |t|
-    t.integer  "event_id"
-    t.integer  "shape_type_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "number_format"
-    t.integer  "indicator_type_id", :default => 2
-  end
-
-  add_index "event_indicators", ["event_id"], :name => "index_event_indicators_on_event_id"
-  add_index "event_indicators", ["indicator_type_id"], :name => "index_event_indicators_on_indicator_type_id"
-  add_index "event_indicators", ["shape_type_id"], :name => "index_event_indicators_on_shape_type_id"
 
   create_table "event_translations", :force => true do |t|
     t.integer  "event_id"
@@ -174,7 +145,6 @@ ActiveRecord::Schema.define(:version => 20120706103548) do
     t.date     "event_date"
   end
 
-  add_index "events", ["event_date"], :name => "index_events_on_event_date"
   add_index "events", ["event_type_id"], :name => "index_events_on_event_type_id"
   add_index "events", ["id"], :name => "index_events_on_id"
   add_index "events", ["shape_id"], :name => "index_events_on_shape_id"
@@ -244,7 +214,6 @@ ActiveRecord::Schema.define(:version => 20120706103548) do
   add_index "indicator_type_translations", ["id"], :name => "index_indicator_type_translations_on_id"
   add_index "indicator_type_translations", ["indicator_type_id"], :name => "index_d1368a672c18e8979b1f029497e86e371a15a431"
   add_index "indicator_type_translations", ["locale"], :name => "index_indicator_type_translations_on_locale"
-  add_index "indicator_type_translations", ["name"], :name => "index_indicator_type_translations_on_name"
 
   create_table "indicator_types", :force => true do |t|
     t.boolean  "has_summary", :default => false
@@ -272,13 +241,6 @@ ActiveRecord::Schema.define(:version => 20120706103548) do
   add_index "indicators", ["id"], :name => "index_indicators_on_id"
   add_index "indicators", ["indicator_type_id_old"], :name => "index_indicators_on_indicator_type_id"
   add_index "indicators", ["shape_type_id"], :name => "index_indicators_on_shape_type_id"
-
-  create_table "locales", :force => true do |t|
-    t.string   "language"
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "page_translations", :force => true do |t|
     t.integer  "page_id"
@@ -325,9 +287,6 @@ ActiveRecord::Schema.define(:version => 20120706103548) do
   create_table "shape_names", :primary_key => "en", :force => true do |t|
     t.string "ka", :null => false
   end
-
-  add_index "shape_names", ["en"], :name => "en"
-  add_index "shape_names", ["ka"], :name => "ka"
 
   create_table "shape_translations", :force => true do |t|
     t.integer  "shape_id"

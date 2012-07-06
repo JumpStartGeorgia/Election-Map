@@ -181,6 +181,7 @@ class Shape < ActiveRecord::Base
   end
 
     def self.build_from_csv(file, deleteExistingRecord)
+      start = Time.now
 	    infile = file.read
 	    n, msg = 0, ""
 			old_root_id = nil
@@ -195,11 +196,11 @@ class Shape < ActiveRecord::Base
 
 			Shape.transaction do
 			  CSV.parse(infile, :col_sep => "\t") do |row|
-
+          startRow = Time.now
 			    n += 1
 			    # SKIP: header i.e. first row OR blank row
 			    next if n == 1 or row.join.blank?
-    logger.debug "++++processing row #{n}"		
+    puts "++++processing row #{n}"		
 
 	        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
     logger.debug "++++event or shape type was not found in spreadsheet"
@@ -207,10 +208,12 @@ class Shape < ActiveRecord::Base
 			      raise ActiveRecord::Rollback
             return msg
 					else
+					  startPhase = Time.now
 		    		# get the event id
 		    		event = Event.find_by_name(row[idx_event].strip)
 		    		# get the shape type id
 		    		shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
+          	puts "**** time to load event and shape type: #{Time.now-startPhase} seconds"
 
 		    		if event.nil? || shape_type.nil?
 		  logger.debug "++++event or shape type was not found"		
@@ -219,9 +222,11 @@ class Shape < ActiveRecord::Base
 		          return msg
 		    		else
 		  logger.debug "++++found event and shape type, get root shape"
+              startPhase = Time.now
 		          # get the root shape
 		          root = Shape.joins(:shape_translations)
 		                  .where(:shapes => {:id => event.shape_id}, :shape_translations => {:locale => 'en'}).first
+            	puts "**** time to get root shape: #{Time.now-startPhase} seconds"
 		      
 		          # if the root shape already exists and deleteExistingRecord is true, delete the shape
 							#  if this is the root record (row[idx_parent_id] is nil)
@@ -238,14 +243,17 @@ class Shape < ActiveRecord::Base
 		  logger.debug "++++root does not exist"
 		            if row[idx_parent_id].nil? || row[idx_parent_id].strip.length == 0
 		              # no root exists in db, but this is the root, so add it
+                  startPhase = Time.now
 		  logger.debug "++++adding root shape"
                   shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip
 									# add translations
 									I18n.available_locales.each do |locale|
 										shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
 									end
-
+                  puts "******** time to create root shape: #{Time.now-startPhase} seconds"
+                	
 		              if shape.valid?
+                    startPhase = Time.now
 		                # update the event to have this as the root
 		  logger.debug "++++updating event to map to this root shape"
 
@@ -263,6 +271,7 @@ class Shape < ActiveRecord::Base
 						            end
 											end
 										end
+										puts "******** time to update shape_id for events: #{Time.now-startPhase} seconds"                  	
 		              else
 		                # could not create shape
 		          		  msg = I18n.t('models.shape.msgs.root_not_valid', :row_num => n)
@@ -295,10 +304,12 @@ class Shape < ActiveRecord::Base
 				            raise ActiveRecord::Rollback
 				            return msg
 		              else
+                    startPhase = Time.now
 		    logger.debug "++++chekcing if row already in db"
 		                alreadyExists = root.descendants.select("shapes.id").joins(:shape_translations)
 		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[idx_geo].strip}, 
 		                    :shape_translations => {:locale => 'en', :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip})
+                  	puts "**** time to get existing shape: #{Time.now-startPhase} seconds"
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
 		                if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -322,6 +333,7 @@ class Shape < ActiveRecord::Base
 		                    return msg
 		                  else
 		      logger.debug "++++getting parent shape"
+		                    startPhase = Time.now
 		                    # check if the root has descendants
 		                    # have to check the root object by iteself and then check for through the descendants
 		                    parentRoot = root.shape_type_id == parent_shape_type.id && 
@@ -345,6 +357,8 @@ class Shape < ActiveRecord::Base
 		                      parent = parentChild.first
 		                    end
 		        logger.debug "++++parent = #{parent}"
+          	            puts "**** time to find parent shape: #{Time.now-startPhase} seconds"
+          	            
 		                    if parent.nil?
 		                      # did not find parent shape
 			              		  msg = I18n.t('models.shape.msgs.parent_shape_not_found', :row_num => n)
@@ -359,6 +373,7 @@ class Shape < ActiveRecord::Base
 													# if this is the district Khobi, use the geo that is provided at the bottom of this class
 													# - the khobi district geo that has something bad in it and the string gets cut off
 													#################################
+													startPhase = Time.now
 													if row[idx_common_name].strip.downcase == "khobi"
           logger.debug "++++++++++++++ found khobi, using geo data hardcoded into app"
 			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => khobi_district_geometry
@@ -369,6 +384,7 @@ class Shape < ActiveRecord::Base
 													I18n.available_locales.each do |locale|
 														shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
 													end
+                        	puts "************ time to create shape record: #{Time.now-startPhase} seconds"
 
 		                      if !shape.valid?
 		                        # could not create shape
@@ -391,18 +407,22 @@ class Shape < ActiveRecord::Base
 		          end  
 		        end  
 	        end
+          puts "************ time to process row: #{Time.now-startRow} seconds"
         end
 
   logger.debug "++++updating ka records with ka text in shape_names"
+        startPhase = Time.now
 				# ka translation is hardcoded as en in the code above
 				# update all ka records with the apropriate ka translation
 				# update common ids
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_id = sn.ka where st.locale = 'ka' and st.common_id = sn.en")
 				# update common names
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_name = sn.ka where st.locale = 'ka' and st.common_name = sn.en")
+      	puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 			end 
   logger.debug "++++procssed #{n} rows in CSV file"
+	    puts "****************** time to build_from_csv: #{Time.now-start} seconds"
       return msg 
     end    
 

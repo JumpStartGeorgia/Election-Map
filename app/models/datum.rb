@@ -390,6 +390,7 @@ class Datum < ActiveRecord::Base
   end
 
   def self.build_from_csv(file, deleteExistingRecord)
+		start = Time.now
     infile = file.read
     n, msg = 0, ""
     idx_event = 0
@@ -400,10 +401,11 @@ class Datum < ActiveRecord::Base
 
 		Datum.transaction do
 		  CSV.parse(infile) do |row|
+        startRow = Time.now
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
-	logger.debug "++++processing row #{n}"				
+  puts "**************** processing row #{n}"				
 
         if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
   logger.debug "++++event or shape type was not found in spreadsheet"
@@ -411,10 +413,12 @@ class Datum < ActiveRecord::Base
 		      raise ActiveRecord::Rollback
           return msg
 				else
+          startPhase = Time.now
 					# get the event id
 					event = Event.find_by_name(row[idx_event].strip)
 					# get the shape type id
 					shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
+        	puts "**** time to get event and shape type: #{Time.now-startPhase} seconds"
 
 					if event.nil? || shape_type.nil?
 			logger.debug "++++event or shape type was not found"				
@@ -432,6 +436,7 @@ class Datum < ActiveRecord::Base
 							  # found empty cell, stop
 							  finishedIndicators = true
 							else
+              	puts "******** loading next indicator in row"
 		            # only conintue if required fields provided
 		            if row[idx_common_id].nil? || row[idx_common_name].nil?
 		        		  msg = I18n.t('models.datum.msgs.missing_data_spreadsheet', :row_num => n)
@@ -439,11 +444,13 @@ class Datum < ActiveRecord::Base
 		              raise ActiveRecord::Rollback
 		              return msg
 		            else
+                  startPhase = Time.now
 									# see if indicator already exists for the provided event and shape_type
 									indicator = Indicator.select("indicators.id")
 										.includes(:core_indicator => :core_indicator_translations)
 										.where('indicators.event_id=:event_id and indicators.shape_type_id=:shape_type_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name', 
 											:event_id => event.id, :shape_type_id => shape_type.id, :name => row[i].strip, :locale => "en")
+                	puts "******** time to look for exisitng indicator: #{Time.now-startPhase} seconds"
 					
 									if indicator.nil? || indicator.empty?
 					logger.debug "++++indicator was not found"
@@ -452,6 +459,7 @@ class Datum < ActiveRecord::Base
 										return msg
 									else
 					logger.debug "++++indicator found, checking if data exists"
+                    startPhase = Time.now
 										# check if data already exists
 										alreadyExists = Datum.select("data.id").joins(:datum_translations)
 											.where(:data => {:indicator_id => indicator.first.id}, 
@@ -459,6 +467,8 @@ class Datum < ActiveRecord::Base
 													:locale => 'en',
 													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip, 
 													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip})
+
+                  	puts "******** time to look for exisitng data item: #{Time.now-startPhase} seconds"
 					
 				            # if the datum already exists and deleteExistingRecord is true, delete the datum
 				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -471,6 +481,7 @@ class Datum < ActiveRecord::Base
 
 										if alreadyExists.nil? || alreadyExists.empty?
 					logger.debug "++++data does not exist, save it"
+					            startPhase = Time.now
 											# populate record
 											datum = Datum.new
 											datum.indicator_id = indicator.first.id
@@ -483,9 +494,11 @@ class Datum < ActiveRecord::Base
 													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip, 
 													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip)
 											end
+                    	puts "******** time to build data object: #{Time.now-startPhase} seconds"
 
 
 				logger.debug "++++saving record"
+				              startPhase = Time.now
 											if datum.valid?
 												datum.save
 											else
@@ -494,6 +507,7 @@ class Datum < ActiveRecord::Base
 										    raise ActiveRecord::Rollback
 										    return msg
 											end
+                    	puts "******** time to save data item: #{Time.now-startPhase} seconds"
 
 											i+=2 # move on to the next set of indicator/value pairs
 										else
@@ -508,18 +522,23 @@ class Datum < ActiveRecord::Base
 						end
 					end
 				end
+			  puts "************ time to process row: #{Time.now-startRow} seconds"
+			  puts "************************ total time so far : #{Time.now-start} seconds"
 			end
 
   logger.debug "++++updating ka records with ka text in shape_names"
+      startPhase = Time.now
 			# ka translation is hardcoded as en in the code above
 			# update all ka records with the apropriate ka translation
 			# update common ids
 			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_id = sn.ka where dt.locale = 'ka' and dt.common_id = sn.en")
 			# update common names
 			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_name = sn.ka where dt.locale = 'ka' and dt.common_name = sn.en")
+      puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 		end
-  logger.debug "++++procssed #{n} rows in CSV file"
+    logger.debug "++++procssed #{n} rows in CSV file"
+  	puts "****************** time to build_from_csv: #{Time.now-start} seconds"
     return msg 
   end
 
