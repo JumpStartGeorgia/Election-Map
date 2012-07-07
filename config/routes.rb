@@ -75,11 +75,11 @@ ElectionMap::Application.routes.draw do
 		match '/event_type/:event_type_id/event/:event_id/indicator_type/:indicator_type_id/view_type/:view_type/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id(/custom_view/:custom_view)))' => 'root#index', :as => 'summary_shape_level_map', :via => :get
 
     # json routes
-		match '/json/shape/:id', :to => 'json#shape', :as => :json_shape, :via => :get, :defaults => {:format => 'json'}
-		match '/json/children_shapes/:parent_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id))', :to => 'json#children_shapes', :as => :json_children_shapes, :via => :get, :defaults => {:format => 'json'}
-		match '/json/custom_children_shapes/:parent_id/indicator/:indicator_id/shape_type/:shape_type_id', :to => 'json#custom_children_shapes', :as => :json_custom_children_shapes, :via => :get, :defaults => {:format => 'json'}
-		match '/json/summary_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)', :to => 'json#summary_children_shapes', :as => :json_summary_children_shapes, :via => :get, :defaults => {:format => 'json'}
-		match '/json/summary_custom_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id/shape_type/:shape_type_id', :to => 'json#summary_custom_children_shapes', :as => :json_summary_custom_children_shapes, :via => :get, :defaults => {:format => 'json'}
+		match '/json/shape/:id/shape_type/:shape_type_id', :to => 'json#shape', :as => :json_shape, :via => :get, :defaults => {:format => 'json'}
+		match '/json/children_shapes/:parent_id/shape_type/:shape_type_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id))', :to => 'json#children_shapes', :as => :json_children_shapes, :via => :get, :defaults => {:format => 'json'}
+		match '/json/custom_children_shapes/:parent_id/shape_type/:shape_type_id/indicator/:indicator_id', :to => 'json#custom_children_shapes', :as => :json_custom_children_shapes, :via => :get, :defaults => {:format => 'json'}
+		match '/json/summary_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)', :to => 'json#summary_children_shapes', :as => :json_summary_children_shapes, :via => :get, :defaults => {:format => 'json'}
+		match '/json/summary_custom_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id', :to => 'json#summary_custom_children_shapes', :as => :json_summary_custom_children_shapes, :via => :get, :defaults => {:format => 'json'}
 		match '/json/summary_data/shape/:shape_id/event/:event_id/indicator_type/:indicator_type_id(/limit/:limit)', :to => 'json#summary_data', :as => :json_summary_data, :via => :get, :defaults => {:format => 'json'}
 
 

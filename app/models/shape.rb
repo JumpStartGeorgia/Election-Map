@@ -82,13 +82,13 @@ class Shape < ActiveRecord::Base
       json["type"] = "FeatureCollection"
       json["features"] = Array.new(shapes.length) {Hash.new}
       
-			data = Datum.get_related_indicator_type_data(shape, shape_type_id, event_id, indicator_type_id)
+			data = Datum.get_related_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id)
 			shapes.each_with_index do |shape, i|
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and 
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) 
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape_id, data, true, indicator_type_id)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, data, true, indicator_type_id)
 			end
 		end
 		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
@@ -124,7 +124,7 @@ class Shape < ActiveRecord::Base
   			      results[i]["summary_data"] = x
   			      # if getting summary data, use the first record for the shape value
   			      # if ind_id = indicator_type_id
-  			      if isSummary && x.first.indicator_type_id == ind_id
+  			      if isSummary && x.first.indicator_type_id.to_s == ind_id.to_s
       				  properties["data_value"] = x.first.value
       					properties["value"] = x.first.indicator_name_abbrv
       					properties["formatted_value"] = x.first.indicator_name
@@ -139,7 +139,7 @@ class Shape < ActiveRecord::Base
   		        results[i]["data_item"] = d["data_item"][index] 
   			      # if not getting summary data, use this record
   			      # if ind_id = indicator_id
-  			      if !isSummary && d["data_item"][index].indicator_id == ind_id
+  			      if !isSummary && d["data_item"][index].indicator_id.to_s == ind_id.to_s
       				  properties["data_value"] = nil
       					properties["value"] = d["data_item"][index].value
       					properties["formatted_value"] = d["data_item"][index].formatted_value

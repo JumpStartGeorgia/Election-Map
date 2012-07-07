@@ -11,10 +11,24 @@ class Datum < ActiveRecord::Base
 
   validates :indicator_id, :value, :presence => true
 	
+	# instead of returning BigDecimal, convert to string
+  # this will strip away any excess zeros so 234.0000 becomes 234
+  def value
+    if read_attribute(:value).nil?
+      read_attribute(:value)
+    else
+      sprintf("%g", read_attribute(:value))
+    end
+  end
+
 	# format the value if it is a number
 	def formatted_value
 		if !self.value.nil?
-      return sprintf("%g", self.value)
+      if self.value.index(".").nil?
+				return number_with_delimiter(self.value.to_i)
+			else
+				return number_with_precision(self.value.to_f)
+			end      
 		end
 	end
 
@@ -681,6 +695,5 @@ protected
 	def indicator_type_id
 		self[:indicator_type_id]
 	end
-
 
 end

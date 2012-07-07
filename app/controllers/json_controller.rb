@@ -4,12 +4,10 @@ class JsonController < ApplicationController
 	################################################3
 	##### shape jsons
 	################################################3
-  # GET /json/shape/:id
+  # GET /json/shape/:id/shape_type/:shape_type_id
   def shape
 		geometries = Rails.cache.fetch("parent_shape_json_#{I18n.locale}_shape_#{params[:id]}") {
-			#get the parent shape
-			shape = Shape.find(params[:id])
-			Shape.build_json([shape]).to_json
+			Shape.build_json(params[:id], params[:shape_type_id]).to_json
 		}
 
     respond_to do |format|
@@ -54,10 +52,10 @@ logger.debug "++++++++++custom children cache does NOT exist"
 
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_json([shape], params[:indicator_id])
+						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id])
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_json(shape.children, params[:indicator_id])
+						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id])
 					end
 
 					geo.to_json
@@ -128,10 +126,10 @@ logger.debug "++++++++++custom children cache does NOT exist"
 					geo = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_summary_json([shape], params[:event_id], params[:indicator_type_id])
+						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id])
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_summary_json(shape.children, params[:event_id], params[:indicator_type_id])
+						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id])
 					end
 
 					geo.to_json
