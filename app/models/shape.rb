@@ -26,9 +26,13 @@ class Shape < ActiveRecord::Base
 	end
 
 	# get the list of shapes for data download
-	def self.get_shapes_for_download(shape_id, shape_type_id)
+	def self.get_shapes_by_type(shape_id, shape_type_id, includeGeoData = false)
 		if !shape_id.nil? && !shape_type_id.nil?
-			Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
+		  if includeGeoData
+			  Shape.find(shape_id).subtree.where(:shape_type_id => shape_type_id)
+			else
+			  Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
+		  end
 		end
 	end
 
@@ -42,57 +46,22 @@ class Shape < ActiveRecord::Base
   end
 
 	# create the properly formatted json string
-	def self.build_json(shapes, indicator_id=nil)
+	def self.build_json(shape_id, shape_type_id, indicator_id=nil)
     json = Hash.new()
 		start = Time.now
-		if !shapes.nil? && shapes.length > 0
+		if !shape_id.nil? && !shape_type_id.nil?
+		  shapes = get_shapes_by_type(shape_id, shape_type_id, true)
 		  
       json["type"] = "FeatureCollection"
       json["features"] = Array.new(shapes.length) {Hash.new}
 
-			data = Datum.get_related_indicator_data(shapes, indicator_id)
+			data = Datum.get_related_indicator_data(shape_id, indicator_id)
 			shapes.each_with_index do |shape, i|
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and 
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) 
-				json["features"][i]["properties"] = Hash.new
-				json["features"][i]["properties"]["id"] = shape.id
-				json["features"][i]["properties"]["parent_id"] = shape.parent_id
-				json["features"][i]["properties"]["common_id"] = shape.common_id
-				json["features"][i]["properties"]["common_name"] = shape.common_name
-				json["features"][i]["properties"]["has_children"] = shape.has_children?
-				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
-				if !indicator_id.nil?
-          # get the data for this shape
-          index = data.index{|x| x["shape_id"]==shape.id}
-          if !index.nil?
-  				  datum = data[index]
-  					if (!datum.nil? && datum.has_key?("value") && 
-  					    !datum["value"].nil? && datum["value"].downcase != "null")
-  						json["features"][i]["properties"]["value"] = datum["value"]
-  						json["features"][i]["properties"]["formatted_value"] = datum["formatted_value"]
-  						json["features"][i]["properties"]["results"] = datum["results"]
-  		      else
-  		        json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
-  						json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
-  						json["features"][i]["properties"]["results"] = Array.new
-  		      end
-		      else
-		        json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
-						json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
-						json["features"][i]["properties"]["results"] = Array.new
-          end
-=begin
-# old way of getting the data before the d3 pop-ups
-					data = Datum.get_data_for_shape(shape.id, indicator_id)
-					if (!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null")
-  				  json["features"][i]["properties"]["value"] = data[0].value
-          else
-            json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
-          end
-=end
-				end
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, data, true, indicator_id)
 			end
 		end
 		if indicator_id.nil?
@@ -104,76 +73,88 @@ class Shape < ActiveRecord::Base
 	end
 
 	# create the properly formatted json string
-	def self.build_summary_json(shapes, event_id, indicator_type_id)
+	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
     json = Hash.new()
-		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+		  shapes = get_shapes_by_type(shape_id, shape_type_id, true)
+
       json["type"] = "FeatureCollection"
       json["features"] = Array.new(shapes.length) {Hash.new}
       
-			data = Datum.get_related_indicator_type_data(shapes, event_id, indicator_type_id)
+			data = Datum.get_related_indicator_type_data(shape, shape_type_id, event_id, indicator_type_id)
 			shapes.each_with_index do |shape, i|
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and 
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) 
-				json["features"][i]["properties"] = Hash.new
-				json["features"][i]["properties"]["id"] = shape.id
-				json["features"][i]["properties"]["parent_id"] = shape.parent_id
-				json["features"][i]["properties"]["common_id"] = shape.common_id
-				json["features"][i]["properties"]["common_name"] = shape.common_name
-				json["features"][i]["properties"]["has_children"] = shape.has_children?
-				json["features"][i]["properties"]["shape_type_id"] = shape.shape_type_id
-
-        # get the data for this shape
-        index = data.index{|x| x["shape_id"]==shape.id}
-        if !index.nil?
-				  datum = data[index]
-  				if (!datum.nil? && datum.has_key?("value") && 
-  				    !datum["value"].nil? && datum["value"].downcase != "null")
-  				  json["features"][i]["properties"]["data_value"] = datum["data_value"]
-  					json["features"][i]["properties"]["value"] = datum["value"]
-  					json["features"][i]["properties"]["formatted_value"] = datum["formatted_value"]
-  				  json["features"][i]["properties"]["color"] = datum["color"]
-  				  json["features"][i]["properties"]["number_format"] = datum["number_format"]
-  					json["features"][i]["properties"]["results"] = datum["results"]
-  	      else
-  				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
-  				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
-  				  json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
-  				  json["features"][i]["properties"]["color"] = nil
-  				  json["features"][i]["properties"]["number_format"] = nil
-  					json["features"][i]["properties"]["results"] = Array.new
-  	      end
-	      else
-				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
-				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
-				  json["features"][i]["properties"]["formatted_value"] = I18n.t('app.msgs.no_data')
-				  json["features"][i]["properties"]["color"] = nil
-				  json["features"][i]["properties"]["number_format"] = nil
-					json["features"][i]["properties"]["results"] = Array.new
-	      end
-=begin
-# old way of getting the data before the d3 pop-ups
-				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id, 1)
-				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
-				  json["features"][i]["properties"]["data_value"] = data[0].value
-				  json["features"][i]["properties"]["value"] = data[0].attributes["indicator_name"]
-				  json["features"][i]["properties"]["color"] = data[0].attributes["color"]
-				  json["features"][i]["properties"]["number_format"] = data[0].attributes["number_format"]
-				else
-				  json["features"][i]["properties"]["data_value"] = I18n.t('app.msgs.no_data')
-				  json["features"][i]["properties"]["value"] = I18n.t('app.msgs.no_data')
-				  json["features"][i]["properties"]["color"] = nil
-				  json["features"][i]["properties"]["number_format"] = nil
-				end
-=end
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape_id, data, true, indicator_type_id)
 			end
 		end
 		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
+  def self.build_json_properties_for_shape(shape, data, isSummary = false, ind_id)
+    start = Time.now
+    properties = Hash.new
+    if !shape.nil? 
+			properties["id"] = shape.id
+			properties["parent_id"] = shape.parent_id
+			properties["common_id"] = shape.common_id
+			properties["common_name"] = shape.common_name
+			properties["has_children"] = shape.has_children?
+			properties["shape_type_id"] = shape.shape_type_id
+      # pre-load data properties as if no data found
+		  properties["data_value"] = I18n.t('app.msgs.no_data')
+		  properties["value"] = I18n.t('app.msgs.no_data')
+		  properties["formatted_value"] = I18n.t('app.msgs.no_data')
+		  properties["color"] = nil
+		  properties["number_format"] = nil
+			properties["results"] = Array.new
+      
+			# look for data
+			if !data.nil? && !data.empty? && !ind_id.nil?
+  			results = Array.new(data.length) {Hash.new}
+  			i = 0
+  			data.each do |d|
+  			  if d.has_key?("summary_data")
+  			    x = d["summary_data"].select{|x| x.shape_id == shape.id}
+  		      if !x.nil? && !x.empty?
+  			      results[i]["summary_data"] = x
+  			      # if getting summary data, use the first record for the shape value
+  			      # if ind_id = indicator_type_id
+  			      if isSummary && x.first.indicator_type_id == ind_id
+      				  properties["data_value"] = x.first.value
+      					properties["value"] = x.first.indicator_name_abbrv
+      					properties["formatted_value"] = x.first.indicator_name
+      				  properties["number_format"] = x.first.number_format
+      				  properties["color"] = x.first.color
+  		        end
+  			      i+=1 
+  			    end
+  		    elsif d.has_key?("data_item")
+            index = d["data_item"].index{|x| x.shape_id == shape.id}
+            if !index.nil?
+  		        results[i]["data_item"] = d["data_item"][index] 
+  			      # if not getting summary data, use this record
+  			      # if ind_id = indicator_id
+  			      if !isSummary && d["data_item"][index].indicator_id == ind_id
+      				  properties["data_value"] = nil
+      					properties["value"] = d["data_item"][index].value
+      					properties["formatted_value"] = d["data_item"][index].formatted_value
+      				  properties["number_format"] = d["data_item"][index].number_format
+  		        end
+  		        i+=1 
+  	        end
+  	      end
+  		  end
+        properties["results"] = results
+      end
+    end
+		puts "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
+		return properties
+  end
 
 
   def self.csv_header

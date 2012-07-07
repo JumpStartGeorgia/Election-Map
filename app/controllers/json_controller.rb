@@ -76,20 +76,8 @@ logger.debug "++++++++++custom children cache does NOT exist"
     start = Time.now
 		key = key_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[indicator_id]", params[:indicator_id]).gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = Rails.cache.fetch(key) {
-			geo = ''
-			#get the parent shape
-			shape = Shape.find(params[:parent_id])
-			#get the indicator
-		  if !shape.nil?
-		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-		  		# get the parent shape and format for json
-		  		geo = Shape.build_json([shape], params[:indicator_id])
-		  	elsif shape.has_children?
-		  		# get all of the desired children of the parent, and format for json
-					shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-		  		geo = Shape.build_json(shapes, params[:indicator_id])
-		  	end
-		  end
+#					shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
+  		geo = Shape.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id])
 
 			geo.to_json
 		}
@@ -163,20 +151,8 @@ logger.debug "++++++++++custom children cache does NOT exist"
     start = Time.now
 		key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[event_id]", params[:event_id]).gsub("[indicator_type_id]", params[:indicator_type_id]).gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = Rails.cache.fetch(key) {
-			geo = ''
-			#get the parent shape
-			shape = Shape.find(params[:parent_id])
-
-			if !shape.nil?
-		    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-					# get the parent shape and format for json
-					geo = Shape.build_summary_json([shape], params[:event_id], params[:indicator_type_id])
-				elsif shape.has_children?
-		  		# get all of the desired children of the parent, and format for json
-					shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-					geo = Shape.build_summary_json(shapes, params[:event_id], params[:indicator_type_id])
-				end
-			end
+			#shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
+			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id])
 
 			geo.to_json
 		}
