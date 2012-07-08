@@ -15,7 +15,7 @@ class JsonController < ApplicationController
     end
   end
 
-  # GET /json/children_shapes/:parent_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id))
+  # GET /json/children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id(/custom_view/:custom_view)))
   def children_shapes
     start = Time.now
 		geometries = nil
@@ -27,7 +27,9 @@ class JsonController < ApplicationController
 
 			custom_children_cache = nil
 			if !parent_shape.nil?
-				key = key_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s).gsub("[indicator_id]", params[:indicator_id])
+				key = key_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s)
+				  .gsub("[indicator_id]", params[:indicator_id])
+				  .gsub("[shape_type_id]", params[:shape_type_id])
 logger.debug "++++++++++custom children key = #{key}"
 				custom_children_cache = Rails.cache.read(key)
 			end
@@ -52,10 +54,10 @@ logger.debug "++++++++++custom children cache does NOT exist"
 
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id])
+						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:custom_view])
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id])
+						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:custom_view])
 					end
 
 					geo.to_json
@@ -69,13 +71,15 @@ logger.debug "++++++++++custom children cache does NOT exist"
     puts "@ time to render children_shapes json: #{Time.now-start} seconds"    
   end
 
-  # GET /json/custom_children_shapes/:parent_id/indicator/:indicator_id/shape_type/:shape_type_id
+  # GET /json/custom_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator/:indicator_id(/custom_view/:custom_view)
   def custom_children_shapes
     start = Time.now
-		key = key_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[indicator_id]", params[:indicator_id]).gsub("[shape_type_id]", params[:shape_type_id])
+		key = key_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id])
+		  .gsub("[indicator_id]", params[:indicator_id])
+		  .gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = Rails.cache.fetch(key) {
 #					shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-  		geo = Shape.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id])
+  		geo = Shape.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id], params[:custom_view])
 
 			geo.to_json
 		}
@@ -90,7 +94,7 @@ puts "@ time to render custom_children_shapes json: #{Time.now-start} seconds"
 	################################################3
 	##### summary shape jsons
 	################################################3
-  # GET /json/summary_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)
+  # GET /json/summary_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable(/custom_view/:custom_view))
   def summary_children_shapes
     start = Time.now
 		geometries = nil
@@ -99,10 +103,14 @@ puts "@ time to render custom_children_shapes json: #{Time.now-start} seconds"
 		parent_shape = nil
 		if !shape.nil?
 			parent_shape = shape.parent
-
+logger.debug "@@@@@@@@@@@@@ shape = #{shape.inspect}"
+logger.debug "@@@@@@@@@@@@@ parent shape = #{parent_shape.inspect}"
 			custom_children_cache = nil
 			if !parent_shape.nil?
-			key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s).gsub("[event_id]", params[:event_id]).gsub("[indicator_type_id]", params[:indicator_type_id])
+			key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s)
+			  .gsub("[event_id]", params[:event_id])
+			  .gsub("[indicator_type_id]", params[:indicator_type_id])
+			  .gsub("[shape_type_id]", params[:shape_type_id])
 logger.debug "++++++++++custom children key = #{key}"
 				custom_children_cache = Rails.cache.read(key)
 			end
@@ -126,10 +134,10 @@ logger.debug "++++++++++custom children cache does NOT exist"
 					geo = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id])
+						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], params[:custom_view])
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id])
+						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:custom_view])
 					end
 
 					geo.to_json
@@ -144,21 +152,24 @@ logger.debug "++++++++++custom children cache does NOT exist"
   end
 
 
-  # GET /summary_custom_children_shapes/:parent_id/event/:event_id/indicator_type/:indicator_type_id/shape_type/:shape_type
+  # GET /json/summary_custom_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/custom_view/:custom_view)
   def summary_custom_children_shapes
     start = Time.now
-		key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id]).gsub("[event_id]", params[:event_id]).gsub("[indicator_type_id]", params[:indicator_type_id]).gsub("[shape_type_id]", params[:shape_type_id])
+		key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id])
+		      .gsub("[event_id]", params[:event_id])
+		      .gsub("[indicator_type_id]", params[:indicator_type_id])
+		      .gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = Rails.cache.fetch(key) {
 			#shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id])
+			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:custom_view])
 
 			geo.to_json
 		}
 
+    puts "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"    
     respond_to do |format|
       format.json { render json: geometries}
     end
-    puts "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"    
   end
 
 
@@ -182,7 +193,7 @@ logger.debug "++++++++++custom children cache does NOT exist"
 protected
 
 	def key_custom_children_shapes
-		"custom_children_shapes_json_#{I18n.locale}_shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]}"
+		"custom_children_shapes_json_#{I18n.locale}_shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]"
 	end
 
 	def key_summary_custom_children_shapes

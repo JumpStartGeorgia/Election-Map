@@ -91,8 +91,9 @@ logger.debug("+++++++++ parent shape type could not be found")
 						end
 
 						if !flag_redirect
-							@child_shape_type_id = child_shape_type.id
+              @parent_shape_type = parent_shape_type.id
 							@parent_shape_type_name_singular = parent_shape_type.name_singular
+							@child_shape_type_id = child_shape_type.id
 							@child_shape_type_name_singular = child_shape_type.name_singular
 							@child_shape_type_name_plural = child_shape_type.name_plural	
 							if @has_custom_view
@@ -216,6 +217,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
   # GET /indicators/download
   # GET /indicators/download.json
   def download
+    send_data = false
 		if !params[:event_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
       #get the data
       data = Datum.create_csv(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
@@ -236,6 +238,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 		    send_data data.csv_data,
 		      :type => 'text/csv; header=present',
 		      :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
+		    send_data = true
 			end
 
 =begin
@@ -248,8 +251,8 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 =end
 		end
 
-		# if get here, then an error occurred
-		redirect_to :back, :notice => t("app.msgs.no_data_download")
+		# if get here, then an error occurred		
+		redirect_to :back, :notice => t("app.msgs.no_data_download") if !send_data
 
   end
 
@@ -358,22 +361,25 @@ logger.debug " - no matching event found!"
     # shape json paths
 		# - only children shape path needs the indicator id since that is the only layer that is clickable
 		if !params[:shape_id].nil?
-			gon.shape_path = json_shape_path(:id => params[:shape_id], :shape_type_id => @child_shape_type_id)
+			gon.shape_path = json_shape_path(:id => params[:shape_id], :shape_type_id => @parent_shape_type)
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
   			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id], 
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
-  			  :shape_type_id => @child_shape_type_id
+  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s
   			  )
 			elsif params[:view_type] == @summary_view_type_name
   			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id], 
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id], 
-  			  :shape_type_id => @child_shape_type_id, :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       elsif @is_custom_view
 				gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
-				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id)
+				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
+				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s)
   		else
   			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id], 
   			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id, 
+  			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       end
 		end

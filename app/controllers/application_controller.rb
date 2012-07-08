@@ -37,7 +37,6 @@ protected
     { :locale => I18n.locale }
   end
 
-
   def set_event_types
     @event_types = Rails.cache.fetch("event_types") {EventType.all}
 #    @event_types = EventType.all
