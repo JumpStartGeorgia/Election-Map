@@ -2,7 +2,6 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
-//= require openlayers
 //= require fancybox
 //= require vendor_map
 
@@ -32,6 +31,8 @@ var WGS84_google_mercator = new OpenLayers.Projection("EPSG:900913");
 // so have to create local variable to store value;
 var number_format = "";
 
+OpenLayers.ImgPath = gon.openlayers_img_path;
+
 
 // Function called from body tag
 function map_init(){
@@ -53,33 +54,40 @@ function map_init(){
     maxResolution: 156543.0339,
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
     theme: null,
-		controls: [] // turn all controls off
-/*    controls: [
-			new OpenLayers.Control.PanZoomBar(),
-			new OpenLayers.Control.Navigation()
-		]*/
+    controls: []
   };
-
+  
 	var vectorBaseStyle = new OpenLayers.StyleMap({
       "default": new OpenLayers.Style({
           fillColor: "#bfbe8d",
           strokeColor: "#777777",
-          strokeWidth: 1,
-          fillOpacity: opacity
+          strokeWidth: 3,
+          fillOpacity: 0.1
       })
   });
 
   map = new OpenLayers.Map('map', options);
 
-//	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
-
-  vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
-//  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
+  if (gon.event_id != "15") {
+    map.addControl(new OpenLayers.Control.Navigation());
+    map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
+  }
+  
+  if (gon.event_id != "15")
+	  map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
+  
+  if (gon.event_id == "15")
+    vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
+  else
+    vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
-  map.addLayers([vector_base, vector_child]);
-//  map.addLayers([map_layer, vector_base, vector_child]);
+  if (gon.event_id == "15")
+    map.addLayers([vector_base, vector_child]);
+  else
+    map.addLayers([map_layer, vector_base, vector_child]);
+
 
 	// load the base layer
 	var prot = new OpenLayers.Protocol.HTTP({
