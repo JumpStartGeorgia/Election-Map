@@ -1,5 +1,21 @@
 module BuildCache
 
+  def self.build_default_and_custom_cache
+    start = Time.now
+    
+    default_event_cache
+    default_time = Time.now
+    
+    custom_event_indicator_cache
+    custom_time = Time.now
+
+		puts "======================================================== "				
+		puts "======== time to load default events was #{(default_time - start)} seconds"				
+		puts "======== time to load custom view cache was #{(custom_time - default_time)} seconds"				
+		puts "======================================================== "
+    
+  end
+
 	# create the cache for all events and their default view
   def self.default_event_cache
     # turn off the active record logging
@@ -35,27 +51,21 @@ module BuildCache
 					# else, load data for first indicator
 					if indicator_types[0].has_summary
 						I18n.available_locales.each do |locale|
-							# load the parent shape
-#							app.get "/#{locale}/json/shape/#{event.shape_id}"
-
 							# load the children shapes
-							if is_custom_view
-							  app.get "/#{locale}/json/summary_custom_children_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}/shape_type/#{shape_type_id}"
+              if is_custom_view
+							  app.get "/#{locale}/json/summary_custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}"
 							else
-							  app.get "/#{locale}/json/summary_children_shapes/#{event.shape_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}"
+							  app.get "/#{locale}/json/summary_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}"
 						  end
 						end
 					elsif !indicator_types[0].core_indicators.nil? && !indicator_types[0].core_indicators.empty? &&
 								!indicator_types[0].core_indicators[0].indicators.nil? && !indicator_types[0].core_indicators[0].indicators.empty?
 						I18n.available_locales.each do |locale|
-							# load the parent shape
-#							app.get "/#{locale}/json/shape/#{event.shape_id}"
-
 							# load the children shapes
 							if is_custom_view
-							  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/shape_type/#{shape_type_id}"
+							  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}"
 							else
-							  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}"
+							  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}"
 						  end
 						end
 					end
@@ -72,6 +82,24 @@ module BuildCache
     ActiveRecord::Base.logger = old_logger
 
 		puts "============ total time took #{(end_time - start)} seconds"
+  end
+
+	# create cache for all indicators for all events that have a custom view
+  def self.custom_event_indicator_cache
+
+    # create new instance of app
+    app = ActionDispatch::Integration::Session.new(Rails.application)
+
+		# get the events that have custom views
+    custom_views = EventCustomView.all
+		if !custom_views.nil? && !custom_views.empty?
+      custom_views.each do |custom_view|
+        # event must have shape attached to it
+        if !custom_view.event.shape_id.nil?
+          event_indicator_cache(custom_view.event_id, custom_view.descendant_shape_type_id)
+        end
+      end
+    end
   end
 
 	# create cache for all indicators in an event at a shape level
@@ -109,9 +137,9 @@ module BuildCache
       				ind_start = Time.now
     					# load the children shapes
     					if is_custom_view
-    					  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/indicator/#{indicator.id}/shape_type/#{shape_type_id}"
-    					else
-    					  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/parent_clickable/false/indicator/#{indicator.id}"
+							  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}/custom_view/#{is_custom_view}"
+							else
+							  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator.id}/custom_view/#{is_custom_view}"
     				  end
       				puts "=================== "				
     					puts "=================== time to load indicator #{indicator.id} for event #{event.id} was #{(Time.now-ind_start)} seconds"				

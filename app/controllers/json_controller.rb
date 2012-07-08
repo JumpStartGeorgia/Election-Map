@@ -103,8 +103,6 @@ puts "@ time to render custom_children_shapes json: #{Time.now-start} seconds"
 		parent_shape = nil
 		if !shape.nil?
 			parent_shape = shape.parent
-logger.debug "@@@@@@@@@@@@@ shape = #{shape.inspect}"
-logger.debug "@@@@@@@@@@@@@ parent shape = #{parent_shape.inspect}"
 			custom_children_cache = nil
 			if !parent_shape.nil?
 			key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s)

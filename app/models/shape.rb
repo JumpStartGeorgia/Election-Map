@@ -71,9 +71,9 @@ class Shape < ActiveRecord::Base
 			end
 		end
 		if indicator_id.nil?
-			logger.debug "+++ time to build json: #{Time.now-start} seconds with no indicator"
+			puts "+++ time to build json: #{Time.now-start} seconds with no indicator"
 		else
-			logger.debug "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
+			puts "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
 		end
 		return json
 	end
@@ -103,7 +103,7 @@ class Shape < ActiveRecord::Base
 				json["features"][i]["properties"] = build_json_properties_for_shape(shape, data, true, indicator_type_id)
 			end
 		end
-		logger.debug "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
+		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
@@ -164,7 +164,7 @@ class Shape < ActiveRecord::Base
         properties["results"] = results
       end
     end
-		logger.debug "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
+#		puts "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
 		return properties
   end
 
