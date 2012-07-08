@@ -41,7 +41,7 @@ ElectionMap::Application.configure do
 	# Disable/enable fragment and page caching in ActionController
 	config.action_controller.perform_caching = true
 	# The underlying cache store to use.
-	config.cache_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-cache", :expires_in => 1.day, :compress => true }
+	config.cache_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-cache", :expires_in => 30.day, :compress => true }
 	# The session store is completely different from the normal data cache
 	config.session_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-session", :expires_in => 30.minutes, :compress => true }
 
