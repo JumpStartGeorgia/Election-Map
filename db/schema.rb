@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120706103548) do
+ActiveRecord::Schema.define(:version => 20120708130603) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -47,14 +47,17 @@ ActiveRecord::Schema.define(:version => 20120706103548) do
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"
     t.string   "common_id_old"
-    t.text     "value"
+    t.text     "value_old"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "common_name_old"
+    t.decimal  "value",           :precision => 16, :scale => 4
   end
 
+  add_index "data", ["common_id_old", "common_name_old"], :name => "common_id_old"
   add_index "data", ["id"], :name => "index_data_on_id"
   add_index "data", ["indicator_id"], :name => "index_data_on_indicator_id"
+  add_index "data", ["value"], :name => "index_data_on_value"
 
   create_table "datum_translations", :force => true do |t|
     t.integer  "datum_id"
@@ -339,6 +342,7 @@ ActiveRecord::Schema.define(:version => 20120706103548) do
   end
 
   add_index "shapes", ["ancestry"], :name => "index_shapes_on_ancestry"
+  add_index "shapes", ["common_id_old", "common_name_old"], :name => "common_id_old"
   add_index "shapes", ["id"], :name => "index_shapes_on_id"
   add_index "shapes", ["shape_type_id"], :name => "index_shapes_on_shape_type_id"
 

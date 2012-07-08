@@ -3,12 +3,10 @@ class AddQueryIndexes < ActiveRecord::Migration
 	# - foreign keys; sorting; where clause; group by clause
 
   def up
-=begin
 		add_index :events, :event_date
 		add_index :event_indicator_relationships, :sort_order
 		add_index :event_indicator_translations, :name_abbrv
 		add_index :indicator_type_translations, :name
-=end
 #		add_index :shapes, [:shape_type_id, :geometry] # can't do this because geo is text
 		add_index :shape_translations, [:locale, :common_id, :common_name]
 		add_index :datum_translations, [:locale, :common_id, :common_name]
