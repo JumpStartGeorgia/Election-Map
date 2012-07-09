@@ -14,7 +14,7 @@ class Datum < ActiveRecord::Base
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
-    if read_attribute(:value).nil?
+    if read_attribute(:value).nil? || read_attribute(:value).to_s.downcase.strip == "null"
       read_attribute(:value)
     else
       sprintf("%g", read_attribute(:value))
