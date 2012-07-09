@@ -259,7 +259,8 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
   # GET /events/admin
   # GET /events/admin.json
   def admin
-
+logger.debug "env to email: #{ENV['APPLICATION_ERROR_FROM_EMAIL']}"
+logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @event }

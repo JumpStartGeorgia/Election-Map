@@ -45,4 +45,10 @@ ElectionMap::Application.configure do
 	# small smtp server for dev, http://mailcatcher.me/
 	config.action_mailer.smtp_settings = { :address => "127.0.0.1", :port => 1025 }
 
+	# options for exception notification gem
+	config.middleware.use ExceptionNotifier,
+		:email_prefix => "[Election Map App Error (#{Rails.env})] ",
+		:sender_address => ENV['APPLICATION_ERROR_FROM_EMAIL'],
+		:exception_recipients => [ENV['APPLICATION_ERROR_TO_EMAIL']]
+
 end
