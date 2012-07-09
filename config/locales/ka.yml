@@ -66,6 +66,7 @@ ka:
       new_data: New Datum
       new_event_types: New Event Type
       new_events: New Event
+      new_custom_views: New Event Custom View
       new_indicator_scales: New Indicator Scale
       new_indicator_types: New Indicator Type
       new_indicators: New Indicator
@@ -131,6 +132,9 @@ ka:
       indicator_ancestry: Belongs To
       sort_order: Sort Order
       shape_type: Shape Level
+      at_shape_type: At This Shape View
+      custom_shape_type: Show These Shapes
+      is_default_view: Use as Default
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -175,6 +179,7 @@ ka:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
+      custom_views: Event Custom Views
       core_indicators: Unique Indicators
       indicator_types: Indicator Types
       pages: Basic Pages
@@ -238,6 +243,13 @@ ka:
       title: New Event
     show:
       title: Event Details
+  event_custom_views:
+    edit:
+      title: Editing Event Custom View
+    index:
+      title: Events with Custom Views
+    new:
+      title: New Event Custom View
   indicator_scales:
     export:
       title: Export Indicator Scales CSV Template File

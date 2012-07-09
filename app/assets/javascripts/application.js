@@ -12,6 +12,7 @@
 //= require data
 //= require event_types
 //= require events
+//= require event_custom_views
 //= require indicator_scales
 //= require indicators
 //= require pages
