@@ -1,5 +1,4 @@
 class Indicator < ActiveRecord::Base
-#  translates :name, :name_abbrv, :description
   require 'csv'
 
   belongs_to :core_indicator
@@ -8,10 +7,7 @@ class Indicator < ActiveRecord::Base
   has_many :data, :dependent => :destroy
   belongs_to :event
   belongs_to :shape_type
-#  belongs_to :indicator_type
-#  accepts_nested_attributes_for :indicator_translations
-  has_many :indicator_translation_olds
-  attr_accessible :core_indicator_id, :event_id, :shape_type_id, :indicator_type_old, :number_format_old#, :indicator_translations_attributes
+  attr_accessible :core_indicator_id, :event_id, :shape_type_id
   attr_accessor :locale
 
   validates :core_indicator_id, :event_id, :shape_type_id, :presence => true

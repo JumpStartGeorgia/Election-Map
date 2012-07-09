@@ -288,7 +288,7 @@ class Datum < ActiveRecord::Base
 											# populate record
 											datum = Datum.new
 											datum.indicator_id = indicator.first.id
-											datum.value = row[i+1].nil? ? row[i+1] : row[i+1].strip
+											datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
 
 											# add translations
 											I18n.available_locales.each do |locale|

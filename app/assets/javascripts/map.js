@@ -256,7 +256,7 @@ function build_indicator_scale_styles() {
   var theme = new OpenLayers.Style({
       fillColor: "#cfce9d",
       strokeColor: "#777777",
-      strokeWidth: 1,
+      strokeWidth: 2,
       cursor: "pointer",
       fillOpacity: opacity
   });
@@ -314,7 +314,7 @@ function build_indicator_scale_styles() {
     theme.addRules(rules);
 	}
 
-    return new OpenLayers.StyleMap({'default':theme, 'select': {'strokeColor': '#5c81a3', 'fillColor': '#5c81a3', 'fillOpacity': opacity, 'strokeWidth': 2}});
+    return new OpenLayers.StyleMap({'default':theme, 'select': {'fillOpacity': 0.8, 'strokeWidth': 2}});
 }
 
 function build_rule(color, type, value1, value2, isFirst){
