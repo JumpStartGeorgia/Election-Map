@@ -97,7 +97,6 @@ module BuildCache
         # event must have shape attached to it
         if !custom_view.event.shape_id.nil?
           event_indicator_cache(custom_view.event_id, custom_view.descendant_shape_type_id)
-break
         end
       end
     end
