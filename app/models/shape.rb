@@ -46,7 +46,7 @@ class Shape < ActiveRecord::Base
   end
 
 	# create the properly formatted json string
-	def self.build_json(shape_id, shape_type_id, indicator_id=nil, isCustomView = false)
+	def self.build_json(shape_id, shape_type_id, indicator_id=nil)
     json = Hash.new()
 		start = Time.now
 		if !shape_id.nil? && !shape_type_id.nil?
@@ -55,19 +55,12 @@ class Shape < ActiveRecord::Base
       json["type"] = "FeatureCollection"
       json["features"] = Array.new(shapes.length) {Hash.new}
 
-      # get the data for the provided base shape and using the ancestry path to this shape
-      if isCustomView.to_s == "true"
-        shape_path_ids = shape_id
-      else
-        shape_path_ids = shapes[0].ancestor_ids.join('/')
-      end
-			data = Datum.get_related_indicator_data(shape_id, shape_path_ids, indicator_id)
 			shapes.each_with_index do |shape, i|
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and 
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) 
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, data, false, indicator_id)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id)
 			end
 		end
 		if indicator_id.nil?
@@ -79,7 +72,7 @@ class Shape < ActiveRecord::Base
 	end
 
 	# create the properly formatted json string
-	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id, isCustomView = false)
+	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
     json = Hash.new()
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
@@ -88,26 +81,19 @@ class Shape < ActiveRecord::Base
       json["type"] = "FeatureCollection"
       json["features"] = Array.new(shapes.length) {Hash.new}
       
-      # get the data for the provided base shape and using the ancestry path to this shape
-      if isCustomView.to_s == "true"
-        shape_path_ids = shape_id
-      else
-        shape_path_ids = shapes[0].ancestor_ids.join('/')
-      end
-			data = Datum.get_related_indicator_type_data(shape_id, shape_path_ids, shape_type_id, event_id, indicator_type_id)
 			shapes.each_with_index do |shape, i|
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and 
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) 
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, data, true, indicator_type_id)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
 			end
 		end
 		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
-  def self.build_json_properties_for_shape(shape, data, isSummary = false, ind_id)
+  def self.build_json_properties_for_shape(shape, ind_id, event_id=nil, isSummary = false)
     start = Time.now
     properties = Hash.new
     if !shape.nil? 
@@ -125,51 +111,48 @@ class Shape < ActiveRecord::Base
 		  properties["number_format"] = nil
 			properties["results"] = Array.new
 
-			# look for data
-			if !data.nil? && !data.empty? && !ind_id.nil?
-  			results = Array.new(data.length) {Hash.new}
-  			i = 0
-  			data.each do |d|
-  			  if d.has_key?("summary_data")
-  			    startPhase = Time.now
-  			    x = d["summary_data"].select{|x| x.shape_id == shape.id}
-  			    puts "+++++++++ time to pull out shapes data: #{Time.now - startPhase} seconds"
-  		      if !x.nil? && !x.empty?
-  			      results[i]["summary_data"] = x
+      if !ind_id.nil?
+        # get the data for the provided base shape and using the ancestry path to this shape
+        if isSummary
+  			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id)
+        else
+    			data = Datum.get_related_indicator_data(shape.id, ind_id)
+        end
+      
+  			# look for data
+  			results = []
+  			if !data.nil? && !data.empty?
+    			results = Array.new(data.length) {Hash.new}
+    			data.each_with_index do |d,i|
+    			  if d.has_key?("summary_data") && !d["summary_data"].nil? && !d["summary_data"].empty?
+  			      results[i]["summary_data"] = d["summary_data"]
   			      # if getting summary data, use the first record for the shape value
   			      # if ind_id = indicator_type_id
-  			      if isSummary && x.first.indicator_type_id.to_s == ind_id.to_s
-      				  properties["data_value"] = x.first.value
-      					properties["value"] = x.first.indicator_name_abbrv
-      					properties["formatted_value"] = x.first.indicator_name
-      				  properties["number_format"] = x.first.number_format
-      				  properties["color"] = x.first.color
+  			      if isSummary && d["summary_data"].first.indicator_type_id.to_s == ind_id.to_s
+      				  properties["data_value"] = d["summary_data"].first.value
+      					properties["value"] = d["summary_data"].first.indicator_name_abbrv
+      					properties["formatted_value"] = d["summary_data"].first.indicator_name
+      				  properties["number_format"] = d["summary_data"].first.number_format
+      				  properties["color"] = d["summary_data"].first.color
   		        end
-  			      i+=1 
-  			    end
-  		    elsif d.has_key?("data_item")
-  			    startPhase = Time.now
-            index = d["data_item"].index{|x| x.shape_id == shape.id}
-  			    puts "+++++++++ time to find index for shape: #{Time.now - startPhase} seconds"
-            if !index.nil?
-  		        results[i]["data_item"] = d["data_item"][index] 
+    		    elsif d.has_key?("data_item") && !d["data_item"].nil? && !d["data_item"].empty?
+  		        results[i]["data_item"] = d["data_item"].first
   			      # if not getting summary data, use this record
   			      # if ind_id = indicator_id
-  			      if !isSummary && d["data_item"][index].indicator_id.to_s == ind_id.to_s
+  			      if !isSummary && d["data_item"].first.indicator_id.to_s == ind_id.to_s
       				  properties["data_value"] = nil
-      					properties["value"] = d["data_item"][index].value
-      					properties["formatted_value"] = d["data_item"][index].formatted_value
-      				  properties["number_format"] = d["data_item"][index].number_format
+      					properties["value"] = d["data_item"].first.value
+      					properties["formatted_value"] = d["data_item"].first.formatted_value
+      				  properties["number_format"] = d["data_item"].first.number_format
   		        end
-  		        i+=1 
-  	        end
-  	      end
-  		  end
+    	      end
+    		  end
+        end
         properties["results"] = results
       end
     end
-		puts "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
-		puts "+++++++++++++++++++++++++"
+#		puts "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
+#		puts "+++++++++++++++++++++++++"
 		return properties
   end
 

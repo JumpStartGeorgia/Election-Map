@@ -49,15 +49,15 @@ logger.debug "++++++++++custom children cache exists, pulling out desired shapes
 			else
 logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
-				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}") {
+				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}_shape_type_#{params[:shape_type_id]}") {
 					geo = ''
 
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:custom_view])
+						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id])
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:custom_view])
+						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id])
 					end
 
 					geo.to_json
@@ -79,7 +79,7 @@ logger.debug "++++++++++custom children cache does NOT exist"
 		  .gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = Rails.cache.fetch(key) {
 #					shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-  		geo = Shape.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id], params[:custom_view])
+  		geo = Shape.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id])
 
 			geo.to_json
 		}
@@ -128,14 +128,14 @@ logger.debug "++++++++++custom children cache exists, pulling out desired shapes
 			else
 logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
-				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}") {
+				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}_shape_type_#{params[:shape_type_id]}") {
 					geo = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], params[:custom_view])
+						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id])
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:custom_view])
+						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id])
 					end
 
 					geo.to_json
@@ -159,7 +159,7 @@ logger.debug "++++++++++custom children cache does NOT exist"
 		      .gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = Rails.cache.fetch(key) {
 			#shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:custom_view])
+			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id])
 
 			geo.to_json
 		}

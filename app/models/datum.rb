@@ -48,10 +48,10 @@ class Datum < ActiveRecord::Base
 	end
 
 	# get the data value for a shape and core indicator
-	def self.get_data_for_shape_core_indicator(shape_id, shape_path_ids, event_id, shape_type_id, core_indicator_id)
+	def self.get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, core_indicator_id)
     start = Time.now
     x = nil
-		if !shape_id.nil? && !core_indicator_id.nil? && !event_id.nil? && !shape_type_id.nil? && !shape_path_ids.nil?
+		if !shape_id.nil? && !core_indicator_id.nil? && !event_id.nil? && !shape_type_id.nil?
 			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
 			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
@@ -69,11 +69,11 @@ class Datum < ActiveRecord::Base
 			sql << "inner join shape_types as sts on i.shape_type_id = sts.id  "
 			sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale  "
 			sql << "WHERE ci.id = :core_indicator_id AND i.event_id = :event_id AND i.shape_type_id = :shape_type_id "
-			sql << "and (s.id=:shape_id or s.ancestry like concat(:shape_path_ids,'/%') or s.ancestry=:shape_path_ids) "
+			sql << "and s.id=:shape_id "
 			sql << "AND dt.locale = :locale "
       sql << "order by s.id asc "
 			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id, 
-			                  :shape_path_ids => shape_path_ids, :shape_id => shape_id, 
+			                  :shape_id => shape_id, 
 			                  :shape_type_id => shape_type_id, :locale => I18n.locale])
 		end
 		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
@@ -82,10 +82,10 @@ class Datum < ActiveRecord::Base
 
 	# get the max data value for all indicators that belong to the 
 	# indicator type and event for a specific shape
-	def self.get_summary_data_for_shape(shape_id, shape_path_ids, event_id, shape_type_id, indicator_type_id, limit=nil)
+	def self.get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, limit=nil)
     start = Time.now
     x = nil
-		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !shape_type_id.nil? && !shape_path_ids.nil?
+		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !shape_type_id.nil?
 		  # if limit is a string, convert to int
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
@@ -108,57 +108,57 @@ class Datum < ActiveRecord::Base
       sql << "inner join shape_types as sts on i.shape_type_id = sts.id "
       sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale "
 			sql << "WHERE i.event_id = :event_id and i.shape_type_id = :shape_type_id and ci.indicator_type_id = :indicator_type_id "
-			sql << "and (s.id=:shape_id or s.ancestry like concat(:shape_path_ids,'/%') or s.ancestry=:shape_path_ids) "
+			sql << "and s.id=:shape_id "
 			sql << "AND dt.locale = :locale "
       sql << "order by s.id asc, d.value desc "
       sql << "limit :limit" if !limit.nil?
 			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id, 
-			                  :shape_id => shape_id, :shape_path_ids => shape_path_ids,
+			                  :shape_id => shape_id,
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 		end
 		puts "********************* time to query summary data for indicator type: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id} - # of results = #{x.length}"
     return x
 	end
 
-	def self.get_related_indicator_type_data(shape_id, shape_path_ids, shape_type_id, event_id, indicator_type_id)
+	def self.get_related_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
     results = nil
-		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !shape_path_ids.nil?
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
   	  # get the relationships for this indicator type
-  	  results = build_related_indicator_json(shape_id, shape_path_ids, shape_type_id, event_id, 
+  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, 
   	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
     end
 		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
 	
-	def self.get_related_indicator_data(shape_id, shape_path_ids, indicator_id)
+	def self.get_related_indicator_data(shape_id, indicator_id)
 		start = Time.new
     results = nil
-		if !shape_id.nil? && !indicator_id.nil? && !shape_path_ids.nil?
+		if !shape_id.nil? && !indicator_id.nil?
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
 			event = indicator.event
   	  
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shape_id, shape_path_ids, indicator.shape_type_id, event.id, 
+  	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id, 
   	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
     end
 		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return results
   end
 	
-	def self.get_related_core_indicator_data(shape_id, shape_path_ids, shape_type_id, event_id, core_indicator_id)
+	def self.get_related_core_indicator_data(shape_id, shape_type_id, event_id, core_indicator_id)
 		start = Time.now
     results = nil
-		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !core_indicator_id.nil? && !shape_path_ids.nil?
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !core_indicator_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
   	  
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shape_id, shape_path_ids, shape_type_id, event_id, 
+  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, 
   	    event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
     end
 
@@ -167,17 +167,17 @@ class Datum < ActiveRecord::Base
   end
 	
   # build the json string for the provided indicator relationships
-	def self.build_related_indicator_json(shape_id, shape_path_ids, shape_type_id, event_id, relationships)
+	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, relationships)
     results = []
-	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !shape_path_ids.nil? && !relationships.nil? && !relationships.empty?
+	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !relationships.nil? && !relationships.empty?
       results = Array.new(relationships.length) {Hash.new}
 	    relationships.each_with_index do |rel, i|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
-	        results[i][key_summary_data] = get_summary_data_for_shape(shape_id, shape_path_ids, event_id, shape_type_id, rel.related_indicator_type_id)
+	        results[i][key_summary_data] = get_summary_data_for_shape(shape_id, event_id, shape_type_id, rel.related_indicator_type_id)
         elsif !rel.related_core_indicator_id.nil?
           # get the data item for this indciator
-	        results[i][key_data_item] = get_data_for_shape_core_indicator(shape_id, shape_path_ids, event_id, shape_type_id, rel.related_core_indicator_id)
+	        results[i][key_data_item] = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id)
         end
       end
     end
