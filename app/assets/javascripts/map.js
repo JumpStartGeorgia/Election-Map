@@ -60,7 +60,7 @@ function map_init(){
 	var vectorBaseStyle = new OpenLayers.StyleMap({
       "default": new OpenLayers.Style({
           fillColor: "#bfbe8d",
-          strokeColor: "#777777",
+          strokeColor: "#444444",
           strokeWidth: 3,
           fillOpacity: 0.1
       })
@@ -255,8 +255,8 @@ function build_indicator_scale_styles() {
 	var rules = [];
   var theme = new OpenLayers.Style({
       fillColor: "#cfce9d",
-      strokeColor: "#777777",
-      strokeWidth: 2,
+      strokeColor: "#444444",
+      strokeWidth: 1,
       cursor: "pointer",
       fillOpacity: opacity
   });
