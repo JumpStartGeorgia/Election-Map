@@ -23,4 +23,38 @@ $(document).ready(function(){
   $("input:visible:first").focus();
 });
 
+$(function ()
+{
 
+  $('#data-table-container .arrows > div').click(function ()
+  {
+    var direction = $(this).data('direction');
+    var to_show = to_hide = $();
+    var p = $('#data-table');
+
+    hidden = p.find('th.hidden, td.hidden');
+    visible = p.find('th:not(.hidden):not(.cg0), td:not(.hidden):not(.cg0)');
+
+    classes = visible.get(0).getAttribute('class').split(' ');
+    for (i in classes)
+    {
+      if (classes[i].substring(0, 2) != 'cg')
+      {
+        continue;
+      }
+      visi = classes[i].substring(2);
+      if (direction == 'left')
+      {
+        nexti = (+ visi == 1) ? gon.dt_all_cols : + visi - 1;
+      }
+      else if (direction == 'right')
+      {
+        nexti = (+ visi == gon.dt_all_cols) ? 1 : + visi + 1;
+      }
+      visible.addClass('hidden');
+      hidden.filter('.cg' + nexti).removeClass('hidden');
+      break;
+    }
+  });
+
+});

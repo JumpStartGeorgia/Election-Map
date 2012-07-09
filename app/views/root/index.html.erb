@@ -109,6 +109,45 @@
 </section>
 
 
+<% td = @table_data %>
+<% if !td.nil? && !td.empty? %>
+<% cqo = @dt_cols_p - @dt_static_cols %>
+<div id="data-table-container">
+  <h3><%= td[0][0] + ' - ' + td[1][0] %></h3>
+  <h3><%= td[0][1] + ' - ' + td[1][1] %></h3>
+
+  <div class="arrows clearfix">
+    <div class="left" data-direction="left"></div>
+    <div class="right" data-direction="right"></div>
+  </div>
+
+  <table id="data-table">
+    <tr>
+      <% td[0][@dt_skip_cols..(td[0].length - 1)].each_with_index do |value, i| %>
+        <% cgnumber = (i > 0) ? ((i - @dt_static_cols + (cqo - (i - @dt_static_cols) % cqo)) / cqo).to_s : 0 %>
+        <% classname = 'cg' + cgnumber.to_s %>
+        <th <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
+          <%= value %>
+        </th>
+      <% end %>
+    </tr>
+
+    <% td[1..(td.length - 1)].each do |row| %>
+      <tr>
+        <% row[@dt_skip_cols..(row.length - 1)].each_with_index do |value, i| %>
+          <% cgnumber = (i > 0) ? ((i - @dt_static_cols + (cqo - (i - @dt_static_cols) % cqo)) / cqo).to_s : 0 %>
+          <% classname = 'cg' + cgnumber.to_s %>
+          <td <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
+            <%= value %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>
+<% end %>
+
+
 
 <%= form_tag "/#{I18n.locale}/export.svg", :method => :post, :id => "hidden_form" do %>
 	<%=	hidden_field_tag "hidden_form_parent_layer" %>

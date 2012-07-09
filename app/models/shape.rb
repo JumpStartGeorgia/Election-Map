@@ -27,10 +27,7 @@ class Shape < ActiveRecord::Base
 
 	# get the list of shapes for data download
 	def self.get_shapes_for_download(shape_id, shape_type_id)
-		return shape_id.nil? || shape_type_id.nil? ? nil : select("shapes.id, shape_type_id, common_id, common_name, ancestry")
-					.joins(:shape_translations)
-					.where("shapes.shape_type_id = :shape_type_id and shape_translations.locale = :locale and ((shapes.shape_type_id = 1 and shapes.id = :shape_id) or (shapes.shape_type_id = 2 and shapes.ancestry = :shape_id) or (shapes.ancestry like :shape_id_like))", 
-			:shape_id => shape_id, :shape_type_id => shape_type_id, :shape_id_like => "%/#{shape_id}", :locale => I18n.locale)
+		return Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
 	end
 
 	# need this so can access ActionView::Helpers::NumberHelper helpers to format numbers in build_json

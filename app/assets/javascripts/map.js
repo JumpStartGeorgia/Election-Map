@@ -149,6 +149,22 @@ function load_vector_base(resp){
         }
       }
       vector_base.addFeatures(features);
+   /*
+      var shapeWidth = bounds.right - bounds.left;
+      var worldWidth = map.maxExtent.right - map.maxExtent.left;
+      var increaseK = 1 + shapeWidth / worldWidth * 50;
+      console.log(increaseK);
+      if (increaseK > 1.5)
+      {
+        increaseK = 1.5;
+      }
+      else if (increaseK < 1.03)
+      {
+        increaseK = 1.03;
+      }
+      console.log(increaseK);
+      bounds.right = bounds.right * increaseK;
+   */
       map.zoomToExtent(bounds);
     } else {
 console.log('vector_base - no features found');

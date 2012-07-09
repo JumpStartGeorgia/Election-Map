@@ -178,6 +178,13 @@ logger.debug("+++++++++ child shape type could not be found")
   		# reset the parameter that indicates if the shape type changed
   		params[:change_shape_type] = nil
 
+      @table_data = Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], params[:indicator_id])
+      @dt_cols_p = 7  #data columns quantity per turn
+      @dt_skip_cols = 3 #data columns skip quantity, e.g. ["Event", " Map Level", " District ID"]
+      @dt_static_cols = 1 #data static columns quantity, e.g. "District name"
+      
+      
+
   		# set js variables
       set_gon_variables
       
@@ -400,6 +407,10 @@ logger.debug " - no matching event found!"
 		  gon.event_name = event.name if !event.nil?
 		  gon.map_title = @map_title
 	  end
+
+    gon.dt_all_cols = ((@table_data[0].count - @dt_skip_cols).to_f / (@dt_cols_p - @dt_static_cols)).ceil
+    gon.dt_static_cols = @dt_static_cols
+   #dtcc stands for data_table_columns_count
   end
 
   # build an array of indicator scales that will be used in js

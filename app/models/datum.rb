@@ -249,12 +249,7 @@ class Datum < ActiveRecord::Base
   end
 
 
-	def self.create_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
-		obj = OpenStruct.new
-		obj.csv_data = nil
-		obj.msg = nil
-
-		# parameters must be provided
+	def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil)
     if event_id.nil? || shape_type_id.nil? || shape_id.nil?
 logger.debug "not all params provided"
 			return nil
@@ -277,102 +272,127 @@ logger.debug "no shapes were found"
 				else
 					# get data for provided indicator
 		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => :core_indicator_translations}, {:data => :datum_translations})
-		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
-		          :indicator_id => indicator_id, :locale => I18n.locale, 
+		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
+		          :indicator_id => indicator_id, :locale => I18n.locale,
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")
 				end
+			end
 
-		    if indicators.nil? || indicators.empty?
-	logger.debug "no indicators or data found"
-		      return nil
-		    else
-		      # create the csv data
-		      rows =[]
-					row_starter = []
-		      indicators.each_with_index do |ind, index|
-						if index == 0
-							#event
-				      if ind.event.event_translations.nil? || ind.event.event_translations.empty?
-		logger.debug "no event translation found"
-				        return nil
-				      else
-				        row_starter << ind.event.event_translations[0].name
-				      end
-							# shape type
-				      if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.empty?
-		logger.debug "no shape type translation found"
-				        return nil
-				      else
-				        row_starter << ind.shape_type.shape_type_translations[0].name_singular
-				      end
-						end 
+	    if indicators.nil? || indicators.empty?
+logger.debug "no indicators or data found"
+	      return nil
+	    else
+	      # create the csv data
+	      rows = []
+				row_starter = []
+	      indicators.each_with_index do |ind, index|
+					if index == 0
+						#event
+			      if ind.event.event_translations.nil? || ind.event.event_translations.empty?
+	logger.debug "no event translation found"
+			        return nil
+			      else
+			        row_starter << ind.event.event_translations[0].name
+			      end
+						# shape type
+			      if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.empty?
+	logger.debug "no shape type translation found"
+			        return nil
+			      else
+			        row_starter << ind.shape_type.shape_type_translations[0].name_singular
+			      end
+					end 
 
-						if ind.data.nil? || ind.data.empty?
-	logger.debug "no data"
-		          return nil
-						else
-							ind.data.each_with_index do |d, dindex|
-								if index > 0
-									# this is not the first indicator, so get existing row and add to it
-					        row = rows[dindex]
-								else
-									# this is first indicator, create rows
-									row = []
-									# add first couple columns of row (event and shape type)
-									row << row_starter
-									# common id
-									row << d.common_id
-									# common name
-									row << d.common_name
-								end
-								# data
-								row << d.value
+					if ind.data.nil? || ind.data.empty?
+logger.debug "no data"
+	          return nil
+					else
+						ind.data.each_with_index do |d, dindex|
+							if index > 0
+								# this is not the first indicator, so get existing row and add to it
+				        row = rows[dindex]
+							else
+								# this is first indicator, create rows
+								row = []
+								# add first couple columns of row (event and shape type)
+								row << row_starter
+								# common id
+								row << d.common_id
+								# common name
+								row << d.common_name
+							end
+							# data
+							row << d.value
 
-								# only add the row if it is new
-								if index == 0
-								  # add the row to the rows array
-								  rows << row.flatten
-								end
+							# only add the row if it is new
+							if index == 0
+							  # add the row to the rows array
+							  rows << row.flatten
 							end
 						end
-		      end
-
-					# remove any line returns for excel does not like them
-					rows.each do |r|
-						r.each do |c|
-							c.gsub(/\r?\n/, ' ').strip!
-						end
 					end
-		      
-					# use tab as separator for excel does not like ','
+	      end
+
+				# remove any line returns for excel does not like them
+				rows.each do |r|
+					r.each do |c|
+						c.gsub(/\r?\n/, ' ').strip!
+					end
+				end
+
+				data = []
+		    # generate the header
+		    header = []
+				# replace the [Level] placeholder in download_header with the name of the map level
+				# that is located in the row_starter array
+		    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
+		    indicators.each do |i|
+		      header << i.description
+		    end
+		    data << header.flatten
+
+		    # add the rows
+		    rows.each do |r|
+		      data << r
+		    end
+
+	      return data
+			end
+		end
+	end
+
+	def self.create_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
+		obj = OpenStruct.new
+		obj.csv_data = nil
+		obj.msg = nil
+
+    if event_id.nil? || shape_type_id.nil? || shape_id.nil?
+logger.debug "not all params provided"
+			return nil
+    else
+			data = get_table_data(event_id, shape_type_id, shape_id, indicator_id)
+
+	    if data.nil? || data.empty?
+logger.debug "no indicators or data found"
+	      return nil
+	    else
+				# use tab as separator for excel does not like ','
 #					obj.csv_data = CSV.generate(:col_sep => "\t", :force_quotes => true) do |csv|
-					obj.csv_data = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
-				    # generate the header
-				    header = []
-						# replace the [Level] placeholder in download_header with the name of the map level
-						# that is located in the row_starter array
-				    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
-				    indicators.each do |i|
-				      header << i.description
-				    end
-				    csv << header.flatten
-				    
-				    # add the rows
-				    rows.each do |r|
-				      csv << r
-				    end
+				obj.csv_data = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
+			    # add the rows
+			    data.each do |r|
+			      csv << r
+			    end
+				end
 
-					end
-
-					# convert to utf-8
-					# the bom is used to indicate utf-16le which excel requires
+				# convert to utf-8
+				# the bom is used to indicate utf-16le which excel requires
 #				  bom = "\xEF\xBB\xBF".force_encoding("UTF-8") #Byte Order Mark UTF-8
 #					obj.csv_data = (bom + obj.csv_data).force_encoding("UTF-8")
-					
-					
-		      return obj
-				end
+
+
+	      return obj
 			end
 		end
 	end
