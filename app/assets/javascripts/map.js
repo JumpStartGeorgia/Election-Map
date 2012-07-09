@@ -5,6 +5,10 @@
 //= require openlayers
 //= require fancybox
 //= require vendor_map
+//= require d3.v2.min
+//= require jquery.ui
+//= require jquery.slimscroll
+//= require map_popup_svg
 
 window.onload = map_init;
 
@@ -350,6 +354,9 @@ function build_rule(color, type, value1, value2, isFirst){
 	}
 }
 
+
+
+
 function click_handler (feature)
 {
 	// if the feature has children, continue
@@ -376,7 +383,9 @@ function click_handler (feature)
 
 		// load the url
 		window.location.href = url;
+			  
 	}
+	
 }
 
 // add/update the query paramter with the provided name and value
@@ -415,21 +424,56 @@ function update_query_parameter(url, name, name2, value){
 	return url;
 }
 
+/*  Feature popup functions  */
+
+// Rmove feature popups
+function removeFeaturePopups()
+{
+  $(".olPopup").each(function(){
+      $(this).remove();
+  });
+}
+
+// Create the popup for the feature 
+function makeFeaturePopup(feature_data)
+{
+  removeFeaturePopups();  
+  var popup = new OpenLayers.Popup("Feature Popup",
+  feature_data.geometry.bounds.getCenterLonLat(),
+  new OpenLayers.Size(400, 200),
+  "",
+  true);
+  map.addPopup(popup);
+  
+  
+
+  if (feature_data.attributes.results.length > 0)
+  {
+    new elmapsvgpopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
+      limit: 5    
+    });
+  }
+  
+}
+
 // show the map box
 function hover_handler (feature)
 {
   if (gon.view_type == gon.summary_view_type_name){
   	populate_map_box(feature.attributes.common_name, feature.attributes.value, 
-  		feature.attributes.data_value, number_format);
+  	feature.attributes.data_value, number_format);
   } else if (gon.indicator_scale_colors && gon.indicator_scales){
   	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv, 
-  		feature.attributes.value, number_format);
+  	feature.attributes.value, number_format);
   } 
+  // Create the popup
+  makeFeaturePopup(feature);	  
 }
 
 // hide the map box
 function mouseout_handler (feature)
 {
+  //removeFeaturePopups();
 	$('#map-box').hide(0);
 }
 
