@@ -199,7 +199,7 @@ DEPENDENCIES
   dalli (~> 2.0.5)
   devise (= 2.0.4)
   dynamic_form (= 1.1.4)
-  exception_notification (= 2.5.2)
+  exception_notification
   fancybox-rails (~> 0.1.4)
   formtastic (= 2.1.1)
   globalize3 (= 0.2.0)
