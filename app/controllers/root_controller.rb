@@ -1,6 +1,6 @@
 # encoding: utf-8
 #require 'csv_tsv_renderer'
-require 'girl_friday'
+#require 'girl_friday'
 
 class RootController < ApplicationController
   before_filter :authenticate_user!, 
