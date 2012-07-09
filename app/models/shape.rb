@@ -29,7 +29,7 @@ class Shape < ActiveRecord::Base
 	def self.get_shapes_by_type(shape_id, shape_type_id, includeGeoData = false)
 		if !shape_id.nil? && !shape_type_id.nil?
 		  if includeGeoData
-			  Shape.find(shape_id).subtree.where(:shape_type_id => shape_type_id)
+			  Shape.find(shape_id).subtree.where(:shape_type_id => shape_type_id).with_translations(I18n.locale)
 			else
 			  Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
 		  end
@@ -124,14 +124,16 @@ class Shape < ActiveRecord::Base
 		  properties["color"] = nil
 		  properties["number_format"] = nil
 			properties["results"] = Array.new
-      
+
 			# look for data
 			if !data.nil? && !data.empty? && !ind_id.nil?
   			results = Array.new(data.length) {Hash.new}
   			i = 0
   			data.each do |d|
   			  if d.has_key?("summary_data")
+  			    startPhase = Time.now
   			    x = d["summary_data"].select{|x| x.shape_id == shape.id}
+  			    puts "+++++++++ time to pull out shapes data: #{Time.now - startPhase} seconds"
   		      if !x.nil? && !x.empty?
   			      results[i]["summary_data"] = x
   			      # if getting summary data, use the first record for the shape value
@@ -146,7 +148,9 @@ class Shape < ActiveRecord::Base
   			      i+=1 
   			    end
   		    elsif d.has_key?("data_item")
+  			    startPhase = Time.now
             index = d["data_item"].index{|x| x.shape_id == shape.id}
+  			    puts "+++++++++ time to find index for shape: #{Time.now - startPhase} seconds"
             if !index.nil?
   		        results[i]["data_item"] = d["data_item"][index] 
   			      # if not getting summary data, use this record
@@ -164,7 +168,8 @@ class Shape < ActiveRecord::Base
         properties["results"] = results
       end
     end
-#		puts "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
+		puts "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
+		puts "+++++++++++++++++++++++++"
 		return properties
   end
 
