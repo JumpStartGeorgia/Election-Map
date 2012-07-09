@@ -440,7 +440,7 @@ logger.debug "=========== getting data for 1 indicator"
 					# remove any line returns for excel does not like them
 					rows.each do |r|
 						r.each do |c|
-							c.gsub(/\r?\n/, ' ').strip!
+							c.gsub(/\r?\n/, ' ').strip! if !c.nil?
 						end
 					end
 		      
