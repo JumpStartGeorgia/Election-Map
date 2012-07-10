@@ -3,7 +3,7 @@
 #require 'girl_friday'
 
 class RootController < ApplicationController
-  before_filter :authenticate_user!, 
+  before_filter :authenticate_user!,
     :except => [:index, :export, :download]
 
   # GET /
@@ -14,91 +14,101 @@ class RootController < ApplicationController
 		flag_redirect = false
 
 		# get the event type id
+logger.debug "////////////// getting event type id"
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
-		
+
 		# get the events for this event type
+logger.debug "////////////// getting events by type"
     @events = Event.get_events_by_type(params[:event_type_id])
 
 		if @events.nil? || @events.empty?
 			# no events could be found
-logger.debug "+++++++++ no events could be found"
+			logger.debug "+++++++++ no events could be found"
 			flag_redirect = true
 		else
   		# get the current event
+logger.debug "////////////// getting current event"
   		event = get_current_event(params[:event_id])
 
 			if event.nil? || event.shape_id.nil?
 				# event could not be found or the selected event does not have a shape assigned to it
-logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
+				logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
 				flag_redirect = true
 			else
 				# get the shape
+logger.debug "////////////// getting shape"
 				params[:shape_id] = event.shape_id if params[:shape_id].nil?
-logger.debug("+++++++++shape id = #{params[:shape_id]}")
+				logger.debug("+++++++++shape id = #{params[:shape_id]}")
 				@shape = Shape.get_shape_no_geometry(params[:shape_id])
 
 				if @shape.nil?
 					# parent shape could not be found
-logger.debug "+++++++++ parent shape could not be found"
+					logger.debug "+++++++++ parent shape could not be found"
 					flag_redirect = true
 				else
 					# get the shape type id that was clicked
 					params[:shape_type_id] = @shape.shape_type_id if params[:shape_type_id].nil?
 
 					# now get the child shape type id
+logger.debug "////////////// getting parent shape type"
 					parent_shape_type = get_shape_type(params[:shape_type_id])
 					@child_shape_type_id = nil
 
 					if parent_shape_type.nil?
-logger.debug("+++++++++ parent shape type could not be found")
+						logger.debug("+++++++++ parent shape type could not be found")
 						flag_redirect = true
 					else
+logger.debug "////////////// getting event custom view"
 						# if the event has a custom view for the parent shape type, use it
 						custom_view = event.event_custom_views.where(:shape_type_id => parent_shape_type.id)
 						@is_custom_view = false
 						@has_custom_view = false
 						if !custom_view.nil? && !custom_view.empty? && (params[:parent_shape_clickable].nil? || params[:parent_shape_clickable].to_s != "true")
+logger.debug "////////////// has custom view"
 							@has_custom_view = true
 							# set the param if not set yet
 							params[:custom_view] = custom_view.first.is_default_view.to_s if params[:custom_view].nil?
 
 							if params[:custom_view] == "true"
-	logger.debug("+++++++++ parent shape type has custom view of seeing #{custom_view.first.descendant_shape_type_id} shape_type")
+								logger.debug("+++++++++ parent shape type has custom view of seeing shape_type #{custom_view.first.descendant_shape_type_id} ")
 								#found custom view, use it to get the child shape type
 								child_shape_type = custom_view.first.descendant_shape_type
 								custom_child_shape_type = get_child_shape_type(@shape)
 								# indicate custom view is being used
 								@is_custom_view = true
 							else
-	logger.debug("+++++++++ parent shape type has custom view, but not using it")
+								logger.debug("+++++++++ parent shape type has custom view, but not using it")
 								child_shape_type = get_child_shape_type(@shape)
 								custom_child_shape_type = custom_view.first.descendant_shape_type
 							end
 						elsif parent_shape_type.is_root? && !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 				      # if the parent shape is the root and the parent_shape_clickable is set to true,
 				      # make the parent shape also be the child shape
-		logger.debug("+++++++++ parent shape type is root and it should be clickable")
+logger.debug "////////////// child shape type = parent"
+							logger.debug("+++++++++ parent shape type is root and it should be clickable")
 							child_shape_type = parent_shape_type.clone
 						elsif parent_shape_type.has_children?
-	logger.debug("+++++++++ parent shape type is not root or it should not be clickable")
+logger.debug "////////////// getting child shape type"
+							logger.debug("+++++++++ parent shape type is not root or it should not be clickable")
 							# this is not the root, so reset parent shape clickable
 							params[:parent_shape_clickable] = nil
 	#						child_shape_type = get_child_shape_type(params[:shape_type_id])
 							child_shape_type = get_child_shape_type(@shape)
 						else
-	logger.debug("+++++++++ parent shape type is not root and parent shape type does not have children")
+							logger.debug("+++++++++ parent shape type is not root and parent shape type does not have children")
 							flag_redirect = true
 						end
 
 						if !flag_redirect
+logger.debug "////////////// setting @ variables"
               @parent_shape_type = parent_shape_type.id
 							@parent_shape_type_name_singular = parent_shape_type.name_singular
 							@child_shape_type_id = child_shape_type.id
 							@child_shape_type_name_singular = child_shape_type.name_singular
-							@child_shape_type_name_plural = child_shape_type.name_plural	
+							@child_shape_type_name_plural = child_shape_type.name_plural
 							if @has_custom_view
 								@custom_child_shape_type_name_singular = custom_child_shape_type.name_singular
-								@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural	
+								@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural
 							end
 							@map_title = nil
 							# set the map title
@@ -107,33 +117,36 @@ logger.debug("+++++++++ parent shape type could not be found")
 							else
 								@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name + " - " + @child_shape_type_name_plural
 							end
-						end							
+logger.debug "////////////// done setting @ variables"
+						end
 
 					end
 
 					if @child_shape_type_id.nil? || flag_redirect
-logger.debug("+++++++++ child shape type could not be found")
+						logger.debug("+++++++++ child shape type could not be found")
 						flag_redirect = true
 					else
+logger.debug "////////////// getting indicators"
 						# get the indicators for the children shape_type
 						@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id], @child_shape_type_id)
 
 						if @indicator_types.nil? || @indicator_types.empty?
 							# no indicators exist for this event and shape type
-	logger.debug "+++++++++ no indicators exist for this event and shape type"
+							logger.debug "+++++++++ no indicators exist for this event and shape type"
 							flag_redirect = true
 						else
 							# if an indicator is not selected, select the first one in the list
 							# if the first indicator type has a summary, select the summary
 							if params[:indicator_id].nil? && params[:view_type].nil?
+logger.debug "////////////// selecting first indicator"
 								if @indicator_types[0].has_summary
 									params[:view_type] = @summary_view_type_name
 									params[:indicator_type_id] = @indicator_types[0].id
 								elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? ||
-											@indicator_types[0].core_indicators[0].indicators.nil? || 
+											@indicator_types[0].core_indicators[0].indicators.nil? ||
 											@indicator_types[0].core_indicators[0].indicators.empty?
 									# could not find an indicator
-		logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
+									logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
 									flag_redirect = true
 								else
 									params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
@@ -144,6 +157,7 @@ logger.debug("+++++++++ child shape type could not be found")
 							# if the shape type changed, update the indicator_id to be valid for the new shape_type
 							# only if this is not the summary view
 		          if params[:view_type] != @summary_view_type_name
+logger.debug "////////////// getting the current indicator"
 								if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
 
 									# we know the old indicator id and the new shape type
@@ -153,18 +167,20 @@ logger.debug("+++++++++ child shape type could not be found")
 										# could not find a match, reset the indicator id
 										params[:indicator_id] = nil
 									else
-										# save the new value				
+										# save the new value
 										params[:indicator_id] = new_indicator.first.id.to_s
 										@indicator = new_indicator.first
 									end
 								else
-									# get the selected indicator 
+									# get the selected indicator
 									@indicator = Indicator.find(params[:indicator_id])
 								end
+logger.debug "////////////// done getting current indicator"
 							end
 
 							# if have custom view, get indicator if user wants to switch between custom view and non-custom view
 							if @has_custom_view
+logger.debug "////////////// is custom view, getting indicator to switch between views"
 								@custom_indicator_id = nil
 
 								custom_indicator = Indicator.find_new_id(params[:indicator_id], custom_child_shape_type.id)
@@ -180,14 +196,17 @@ logger.debug("+++++++++ child shape type could not be found")
   		# reset the parameter that indicates if the shape type changed
   		params[:change_shape_type] = nil
 
+
   		# set js variables
+logger.debug "////////////// setting gon variables"
       set_gon_variables
-      
+
+logger.debug "//////////////////////////////////////////////////////// done with index action"
     end
 
     if flag_redirect
 			# either data could not be found or param is missing and page could not be loaded
-logger.debug "+++++++++ either data could not be found or param is missing and page could not be loaded, redirecting to home page"
+			logger.debug "+++++++++ either data could not be found or param is missing and page could not be loaded, redirecting to home page"
 			redirect_to root_path
 		else
 			render :layout => 'map'
@@ -210,8 +229,8 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 		end
 			filename << "-#{l Time.now, :format => :file}"
 
-		headers['Content-Type'] = "image/svg+xml; charset=utf-8" 
-    headers['Content-Disposition'] = "attachment; filename=#{clean_filename(filename)}.svg" 
+		headers['Content-Type'] = "image/svg+xml; charset=utf-8"
+    headers['Content-Disposition'] = "attachment; filename=#{clean_filename(filename)}.svg"
   end
 
   # GET /indicators/download
@@ -251,7 +270,7 @@ logger.debug "+++++++++ either data could not be found or param is missing and p
 =end
 		end
 
-		# if get here, then an error occurred		
+		# if get here, then an error occurred
 		redirect_to :back, :notice => t("app.msgs.no_data_download") if !send_data
 
   end
@@ -292,19 +311,16 @@ logger.debug " - event id not provided, looking for first event"
       @events.each do |e|
         if !e.shape_id.nil?
 logger.debug " - found event, saving id"
-        	# - save event_id 
+        	# - save event_id
           params[:event_id] = e.id
           return e
         end
       end
     else
 logger.debug " - event id provided"
-			@events.each do |event|
-				if event.id.to_s == event_id.to_s
-					# found match, return the hash
-					return event
-				end
-			end
+			index = @events.index {|event| event.id.to_s == event_id.to_s}
+			return @events[index] if !index.nil?
+
 			# if get to here then no matching event was found
 logger.debug " - no matching event found!"
 			return nil
@@ -339,38 +355,20 @@ logger.debug " - no matching event found!"
 		end
 	end
 
-	# get the child shape type
-	def get_child_shape_type_old(parent_shape_type_id)
-		if @shape_types.nil? || @shape_types.empty? || parent_shape_type_id.nil?
-      return nil
-    else
-			@shape_types.each do |type|
-				if type.id.to_s == parent_shape_type_id.to_s
-					# found match, return child
-					if type.has_children?
-					  return type.children.first
-					else
-					  return nil
-				  end
-				end
-			end
-		end
-	end
-
-	
   def set_gon_variables
     # shape json paths
 		# - only children shape path needs the indicator id since that is the only layer that is clickable
+
 		if !params[:shape_id].nil?
 			gon.shape_path = json_shape_path(:id => params[:shape_id], :shape_type_id => @parent_shape_type)
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
-  			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id], 
+  			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s
   			  )
 			elsif params[:view_type] == @summary_view_type_name
-  			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id], 
-  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id], 
+  			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id],
+  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       elsif @is_custom_view
@@ -378,8 +376,8 @@ logger.debug " - no matching event found!"
 				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
 				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s)
   		else
-  			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id], 
-  			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id, 
+  			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
+  			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
   			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       end

@@ -40,13 +40,12 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 	# get all indicator scales for an indicator
 	def self.find_by_indicator_id(indicator_id)
 		if !indicator_id.nil?
-			Rails.cache.fetch("indicator_scales_by_indicator_#{indicator_id}") {
+#			Rails.cache.fetch("indicator_scales_by_indicator_#{indicator_id}") {
 				where(:indicator_id => indicator_id)
-			}
-#      where(:indicator_id => indicator_id)
+#			}
 		end
 	end
-	
+
   def self.csv_all_header
     "Event, Shape Type, Indicatory Type, en: Indicator Name, ka: Indicator Name, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
   end
@@ -77,12 +76,12 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
-    logger.debug "processing row #{n}"		
-  
+    logger.debug "processing row #{n}"
+
         # if the event or shape type are not provided, stop
         if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0 ||
             row[idx_indicator_type].nil? || row[idx_indicator_type].strip.length == 0
-  logger.debug "+++++++ event or shape type or indicator type not provided"				
+  logger.debug "+++++++ event or shape type or indicator type not provided"
     		  msg = I18n.t('models.indicator_scale.msgs.no_event_shape_spreadsheet', :row_num => n)
 		      raise ActiveRecord::Rollback
     		  return msg
@@ -95,7 +94,7 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
   				indicator_type = IndicatorType.find_by_name(row[idx_indicator_type].strip)
 
   				if event.nil? || shape_type.nil? || indicator_type.nil?
-  	logger.debug "++++event or shape type or indicator type was not found"				
+  	logger.debug "++++event or shape type or indicator type was not found"
       		  msg = I18n.t('models.indicator_scale.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
@@ -110,9 +109,9 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 			logger.debug "+++ found event and shape type, seeing if indicator record exists"
 							# see if indicator exists for the provided event and shape_type
 							alreadyExists = Indicator.select("indicators.id").includes(:core_indicator => :core_indicator_translations)
-								.where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?', 
+								.where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?',
 									event.id, shape_type.id, indicator_type.id, row[idx_en_ind_name].strip)
-					
+
 		          # if the indicator already exists and deleteExistingRecord is true, delete the indicator scales
 		          if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
 		logger.debug "+++ deleting existing indicator scales"
@@ -125,7 +124,7 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
 							if !alreadyExists.nil? && alreadyExists.length > 0
 			logger.debug "+++ indicator record exists, checking if indicator already has scales"
 			          indicator = alreadyExists[0]
-                
+
                 if indicator.indicator_scales.nil? || indicator.indicator_scales.empty?
 			logger.debug "+++ indicator record has no scales, adding"
   								# populate record
@@ -148,15 +147,15 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
   										i+=columns_per_scale # move on to the next set of indicator scales
   							    end
   							  end
-  							  # save scales if color provided for all scales or 
+  							  # save scales if color provided for all scales or
   							  #  there were between 3 and 13 scales and no color
   		  		logger.debug "+++ num of colors found for this row: #{num_colors_found_for_indicator} and scale length = #{indicator.indicator_scales.length}"
   		  		logger.debug "+++ i = #{i}, lower bound = #{(3*columns_per_scale + index_first_scale)}, upper bound = #{(13*columns_per_scale + index_first_scale)}"
-  							  if ((num_colors_found_for_indicator > 0 && num_colors_found_for_indicator == indicator.indicator_scales.length) || 
+  							  if ((num_colors_found_for_indicator > 0 && num_colors_found_for_indicator == indicator.indicator_scales.length) ||
   							      (i >= (3*columns_per_scale + index_first_scale) && i <= (13*columns_per_scale + index_first_scale)))
-							  
+
   		  		logger.debug "+++ saving record"
-  		  					  # Save if valid 
+  		  					  # Save if valid
   		  				    if indicator.valid?
   		  				      indicator.save
   		  				    else
@@ -189,9 +188,9 @@ logger.debug "+++ num of indicator scales = #{num_levels}"
   		end
 		end
   logger.debug "+++ procssed #{n} rows in CSV file"
-    return msg 
+    return msg
   end
-	
+
 
   def self.create_csv(event_id)
 		obj = OpenStruct.new
@@ -206,7 +205,7 @@ logger.debug "not all params provided"
       # get all of the indicators for this event
 logger.debug "getting all indicator info"
       indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, {:indicator_type => :indicator_type_translations}]}, {:indicator_scales => :indicator_scale_translations})
-        .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
+        .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ",
           :event_id => event_id, :locale => "en")
           .order("shape_types.id ASC, indicator_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
 
@@ -278,7 +277,7 @@ logger.debug "no indicator type translation found"
 						c = "#{c}"
 					end
 				end
-	      
+
       		obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
           # generate the header
           header = []
@@ -299,5 +298,5 @@ logger.debug "no indicator type translation found"
     end
   end
 
-	
+
 end

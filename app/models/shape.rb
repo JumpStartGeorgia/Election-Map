@@ -20,7 +20,7 @@ class Shape < ActiveRecord::Base
 
 	# get the name of the shape (common_id)
 	def self.get_shape_no_geometry(shape_id)
-		return shape_id.nil? ? "" : select("shapes.id, shape_type_id, common_id, common_name, ancestry")
+		return shape_id.nil? ? "" : select("shapes.id, shapes.shape_type_id, shape_translations.common_id, shape_translations.common_name, ancestry")
 					.joins(:shape_translations)
 					.where(:shapes => {:id => shape_id}, :shape_translations => {:locale => I18n.locale}).first
 	end
