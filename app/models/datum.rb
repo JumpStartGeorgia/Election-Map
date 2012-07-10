@@ -1,6 +1,6 @@
 class Datum < ActiveRecord::Base
   translates :common_id, :common_name
-	include ActionView::Helpers::NumberHelper	
+	include ActionView::Helpers::NumberHelper
 
   belongs_to :indicator
   has_many :datum_translations, :dependent => :destroy
@@ -10,7 +10,7 @@ class Datum < ActiveRecord::Base
   attr_accessor :locale
 
   validates :indicator_id, :value, :presence => true
-	
+
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
@@ -28,8 +28,29 @@ class Datum < ActiveRecord::Base
 				return number_with_delimiter(self.value.to_i)
 			else
 				return number_with_precision(self.value.to_f)
-			end      
+			end
 		end
+	end
+
+	# when trying to copy the data model (e.g., d = Datum.all; x = d.first.attributes),
+	# a db call is made for each data item to the translations table
+	# - this will bypass the translations call and give you everything in the Datum object
+	def to_hash_wout_translations
+		{
+			:id => self.id,
+			:value => self.value,
+			:formatted_value => self.formatted_value,
+			:number_format => self.number_format,
+			:color => self.color,
+			:indicator_type_id => self.indicator_type_id,
+			:indicator_id => self.indicator_id,
+			:indicator_name => self.indicator_name,
+			:indicator_name_abbrv => self.indicator_name_abbrv,
+			:shape_id => self.shape_id,
+			:shape_type_name => self.shape_type_name,
+			:shape_common_id => self.shape_common_id,
+			:shape_common_name => self.shape_common_name
+		}
 	end
 
 	# get the data value for a specific shape
@@ -42,7 +63,7 @@ class Datum < ActiveRecord::Base
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
 			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
 			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND dt.locale = :locale "
-	
+
 			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id, :locale => I18n.locale])
 		end
 	end
@@ -72,15 +93,15 @@ class Datum < ActiveRecord::Base
 			sql << "and s.id=:shape_id "
 			sql << "AND dt.locale = :locale "
       sql << "order by s.id asc "
-			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id, 
-			                  :shape_id => shape_id, 
+			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id,
+			                  :shape_id => shape_id,
 			                  :shape_type_id => shape_type_id, :locale => I18n.locale])
 		end
 		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
     return x
 	end
 
-	# get the max data value for all indicators that belong to the 
+	# get the max data value for all indicators that belong to the
 	# indicator type and event for a specific shape
 	def self.get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, limit=nil)
     start = Time.now
@@ -89,7 +110,7 @@ class Datum < ActiveRecord::Base
 		  # if limit is a string, convert to int
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
-		  		  
+
 			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
 			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
@@ -112,7 +133,7 @@ class Datum < ActiveRecord::Base
 			sql << "AND dt.locale = :locale "
       sql << "order by s.id asc, d.value desc "
       sql << "limit :limit" if !limit.nil?
-			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id, 
+			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id,
 			                  :shape_id => shape_id,
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 		end
@@ -127,13 +148,13 @@ class Datum < ActiveRecord::Base
   	  # get the event
   	  event = Event.find(event_id)
   	  # get the relationships for this indicator type
-  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, 
+  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id,
   	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
     end
 		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
-	
+
 	def self.get_related_indicator_data(shape_id, indicator_id)
 		start = Time.new
     results = nil
@@ -141,31 +162,31 @@ class Datum < ActiveRecord::Base
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
 			event = indicator.event
-  	  
+
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id, 
+  	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id,
   	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
     end
 		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return results
   end
-	
+
 	def self.get_related_core_indicator_data(shape_id, shape_type_id, event_id, core_indicator_id)
 		start = Time.now
     results = nil
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !core_indicator_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
-  	  
+
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, 
+  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id,
   	    event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
     end
 
 		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
     return results
   end
-	
+
   # build the json string for the provided indicator relationships
 	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, relationships)
     results = []
@@ -208,7 +229,7 @@ class Datum < ActiveRecord::Base
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
-  puts "**************** processing row #{n}"				
+  puts "**************** processing row #{n}"
 
         if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
   logger.debug "++++event or shape type was not found in spreadsheet"
@@ -224,7 +245,7 @@ class Datum < ActiveRecord::Base
         	puts "**** time to get event and shape type: #{Time.now-startPhase} seconds"
 
 					if event.nil? || shape_type.nil?
-			logger.debug "++++event or shape type was not found"				
+			logger.debug "++++event or shape type was not found"
 		  		  msg = I18n.t('models.datum.msgs.no_event_shape_db', :row_num => n)
 				    raise ActiveRecord::Rollback
 		  		  return msg
@@ -251,10 +272,10 @@ class Datum < ActiveRecord::Base
 									# see if indicator already exists for the provided event and shape_type
 									indicator = Indicator.select("indicators.id")
 										.includes(:core_indicator => :core_indicator_translations)
-										.where('indicators.event_id=:event_id and indicators.shape_type_id=:shape_type_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name', 
+										.where('indicators.event_id=:event_id and indicators.shape_type_id=:shape_type_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name',
 											:event_id => event.id, :shape_type_id => shape_type.id, :name => row[i].strip, :locale => "en")
                 	puts "******** time to look for exisitng indicator: #{Time.now-startPhase} seconds"
-					
+
 									if indicator.nil? || indicator.empty?
 					logger.debug "++++indicator was not found"
 										msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
@@ -265,14 +286,14 @@ class Datum < ActiveRecord::Base
                     startPhase = Time.now
 										# check if data already exists
 										alreadyExists = Datum.select("data.id").joins(:datum_translations)
-											.where(:data => {:indicator_id => indicator.first.id}, 
+											.where(:data => {:indicator_id => indicator.first.id},
 												:datum_translations => {
 													:locale => 'en',
-													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip, 
+													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
 													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip})
 
                   	puts "******** time to look for exisitng data item: #{Time.now-startPhase} seconds"
-					
+
 				            # if the datum already exists and deleteExistingRecord is true, delete the datum
 				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
 					logger.debug "+++++++ deleting existing #{alreadyExists.length} datum records "
@@ -293,8 +314,8 @@ class Datum < ActiveRecord::Base
 											# add translations
 											I18n.available_locales.each do |locale|
 			logger.debug "++++ - adding translations for #{locale}"
-												datum.datum_translations.build(:locale => locale, 
-													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip, 
+												datum.datum_translations.build(:locale => locale,
+													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
 													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip)
 											end
                     	puts "******** time to build data object: #{Time.now-startPhase} seconds"
@@ -342,7 +363,7 @@ class Datum < ActiveRecord::Base
 		end
     logger.debug "++++procssed #{n} rows in CSV file"
   	puts "****************** time to build_from_csv: #{Time.now-start} seconds"
-    return msg 
+    return msg
   end
 
 
@@ -368,16 +389,16 @@ logger.debug "=========== no shapes were found"
 logger.debug "=========== getting data for all indicators"
 					# get data for all indicators
 		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => :core_indicator_translations}, {:data => :datum_translations})
-		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
-		          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale, 
+		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
+		          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale,
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")
 				else
 logger.debug "=========== getting data for 1 indicator"
 					# get data for provided indicator
 		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => :core_indicator_translations}, {:data => :datum_translations})
-		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
-		          :indicator_id => indicator_id, :locale => I18n.locale, 
+		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
+		          :indicator_id => indicator_id, :locale => I18n.locale,
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")
 				end
@@ -405,7 +426,7 @@ logger.debug "=========== getting data for 1 indicator"
 				      else
 				        row_starter << ind.shape_type.shape_type_translations[0].name_singular
 				      end
-						end 
+						end
 
 						if ind.data.nil? || ind.data.empty?
 	logger.debug "=========== no data"
@@ -443,7 +464,7 @@ logger.debug "=========== getting data for 1 indicator"
 							c.gsub(/\r?\n/, ' ').strip! if !c.nil?
 						end
 					end
-		      
+
 					# use tab as separator for excel does not like ','
 #					obj.csv_data = CSV.generate(:col_sep => "\t", :force_quotes => true) do |csv|
 					obj.csv_data = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
@@ -456,7 +477,7 @@ logger.debug "=========== getting data for 1 indicator"
 				      header << i.name
 				    end
 				    csv << header.flatten
-				    
+
 				    # add the rows
 				    rows.each do |r|
 				      csv << r
@@ -468,8 +489,8 @@ logger.debug "=========== getting data for 1 indicator"
 					# the bom is used to indicate utf-16le which excel requires
 #				  bom = "\xEF\xBB\xBF".force_encoding("UTF-8") #Byte Order Mark UTF-8
 #					obj.csv_data = (bom + obj.csv_data).force_encoding("UTF-8")
-					
-					
+
+
 		      return obj
 				end
 			end
@@ -489,14 +510,14 @@ logger.debug "=========== getting data for 1 indicator"
 
 			shapes = Shape.get_shapes_by_type(shape_id, shape_type_id)
       indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:data => :datum_translations})
-        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)", 
-          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale, 
+        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
+          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale,
 					:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
         .order("indicators.id ASC, data.id asc")
 
 			if !indicators.empty?
 				return indicators.first.data
-			end		
+			end
 
 	end
 =end
@@ -507,14 +528,14 @@ logger.debug "=========== getting data for 1 indicator"
 	def self.delete_data(event_id, shape_type_id = nil, indicator_id = nil)
 		msg = nil
 		if !event_id.nil?
-			# get the event				
+			# get the event
 			event = Event.find(event_id)
 			if !event.nil?
 				Datum.transaction do
 					if !shape_type_id.nil? && !indicator_id.nil?
 logger.debug "------ delete data for shape type #{shape_type_id} and indicator #{indicator_id}"
 						# delete all data assigned to shape_type and indicator
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
+						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").where(:id => indicator_id, :shape_type_id => shape_type_id).collect(&:id)])
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
@@ -524,7 +545,7 @@ logger.debug "------ delete data for shape type #{shape_type_id} and indicator #
 					elsif !shape_type_id.nil?
 logger.debug "------ delete data for shape type #{shape_type_id}"
 						# delete all data assigned to shape_type
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
+						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").where(:shape_type_id => shape_type_id).collect(&:id)])
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
@@ -534,7 +555,7 @@ logger.debug "------ delete data for shape type #{shape_type_id}"
 					else
 logger.debug "------ delete all data for event #{event_id}"
 						# delete all data for event
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)", 
+						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").collect(&:id)])
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
@@ -568,7 +589,7 @@ protected
 		"results"
 	end
 
-	# define variables to be used when building json 
+	# define variables to be used when building json
 	# so the data translations table is not called
 	def shape_id=(val)
 		self[:shape_id] = val
