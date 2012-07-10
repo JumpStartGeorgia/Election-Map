@@ -2,9 +2,9 @@ ElectionMap::Application.routes.draw do
 
 
 
-	#--------------------------------	
+	#--------------------------------
 	# all resources should be within the scope block below
-	#--------------------------------	
+	#--------------------------------
 	scope ":locale", locale: /#{I18n.available_locales.join("|")}/ do
 
 		devise_for :users
@@ -81,7 +81,6 @@ ElectionMap::Application.routes.draw do
 		match '/json/custom_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator/:indicator_id(/custom_view/:custom_view)', :to => 'json#custom_children_shapes', :as => :json_custom_children_shapes, :via => :get, :defaults => {:format => 'json'}
 		match '/json/summary_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable(/custom_view/:custom_view))', :to => 'json#summary_children_shapes', :as => :json_summary_children_shapes, :via => :get, :defaults => {:format => 'json'}
 		match '/json/summary_custom_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/custom_view/:custom_view)', :to => 'json#summary_custom_children_shapes', :as => :json_summary_custom_children_shapes, :via => :get, :defaults => {:format => 'json'}
-		match '/json/summary_data/shape/:shape_id/event/:event_id/indicator_type/:indicator_type_id(/limit/:limit)', :to => 'json#summary_data', :as => :json_summary_data, :via => :get, :defaults => {:format => 'json'}
 
 
 		root :to => 'root#index'

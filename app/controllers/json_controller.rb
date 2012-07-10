@@ -6,9 +6,12 @@ class JsonController < ApplicationController
 	################################################3
   # GET /json/shape/:id/shape_type/:shape_type_id
   def shape
+=begin
 		geometries = Rails.cache.fetch("parent_shape_json_#{I18n.locale}_shape_#{params[:id]}") {
 			Shape.build_json(params[:id], params[:shape_type_id]).to_json
 		}
+=end
+		geometries = Shape.build_json(params[:id], params[:shape_type_id]).to_json
 
     respond_to do |format|
       format.json { render json: geometries }
@@ -48,6 +51,18 @@ logger.debug "++++++++++custom children cache exists, pulling out desired shapes
         geometries['features'] = needed
 			else
 logger.debug "++++++++++custom children cache does NOT exist"
+				geo = nil
+				if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+					# get the parent shape and format for json
+					geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id])
+				elsif shape.has_children?
+					# get all of the children of the parent and format for json
+					geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id])
+				end
+
+				geometries = geo.to_json if !geo.nil?
+
+=begin
 				# no cache exists
 				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}_shape_type_#{params[:shape_type_id]}") {
 					geo = ''
@@ -62,13 +77,14 @@ logger.debug "++++++++++custom children cache does NOT exist"
 
 					geo.to_json
 				}
+=end
 			end
 		end
 
     respond_to do |format|
       format.json { render json: geometries}
     end
-    puts "@ time to render children_shapes json: #{Time.now-start} seconds"    
+    puts "@ time to render children_shapes json: #{Time.now-start} seconds"
   end
 
   # GET /json/custom_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator/:indicator_id(/custom_view/:custom_view)
@@ -88,7 +104,7 @@ logger.debug "++++++++++custom children key = #{key}"
     respond_to do |format|
       format.json { render json: geometries}
     end
-puts "@ time to render custom_children_shapes json: #{Time.now-start} seconds"    
+puts "@ time to render custom_children_shapes json: #{Time.now-start} seconds"
   end
 
 	################################################3
@@ -128,6 +144,17 @@ logger.debug "++++++++++custom children cache exists, pulling out desired shapes
 			else
 logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
+				geo = nil
+				if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+					# get the parent shape and format for json
+					geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id])
+				elsif shape.has_children?
+					# get all of the children of the parent and format for json
+					geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id])
+				end
+
+				geometries = geo.to_json if !geo.nil?
+=begin
 				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}_shape_type_#{params[:shape_type_id]}") {
 					geo = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
@@ -140,13 +167,14 @@ logger.debug "++++++++++custom children cache does NOT exist"
 
 					geo.to_json
 				}
+=end
 			end
 		end
 
     respond_to do |format|
       format.json { render json: geometries}
     end
-    puts "@ time to render summary_children_shapes json: #{Time.now-start} seconds"    
+    puts "@ time to render summary_children_shapes json: #{Time.now-start} seconds"
   end
 
 
@@ -164,29 +192,12 @@ logger.debug "++++++++++custom children cache does NOT exist"
 			geo.to_json
 		}
 
-    puts "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"    
+    puts "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"
     respond_to do |format|
       format.json { render json: geometries}
     end
   end
 
-
-	################################################3
-	##### summary data jsons
-	################################################3
-  # GET /json/summary_data/shape/:shape_id/event/:event_id/indicator_type/:indicator_type_id(/limit/:limit)
-  def summary_data
-		if !params[:shape_id].nil? && !params[:event_id].nil? && !params[:indicator_type_id].nil?
-  		data = Rails.cache.fetch("summary_data_json_#{I18n.locale}_shape_#{params[:shape_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_limit_#{params[:limit]}") {
-
-				# get all of the summary data and format for json
-			  Datum.build_summary_json(params[:shape_id], params[:event_id], params[:indicator_type_id], params[:limit]).to_json
-  		}
-    end
-    respond_to do |format|
-      format.json { render json: data}
-    end
-  end
 
 protected
 
