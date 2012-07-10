@@ -5,6 +5,7 @@
 //= require openlayers
 //= require fancybox
 //= require vendor_map
+//= require data_table
 
 window.onload = map_init;
 
