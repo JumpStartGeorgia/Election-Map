@@ -12,11 +12,11 @@
 <body>
 
     <header class="group">
-    
+
      	<section id="top" class="group">
-    
-     		<div class="wrap group"> 
-				<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => 'Election map logo', :title => 'Home'), root_path)%></div> 
+
+     		<div class="wrap group">
+				<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => 'Election map logo', :title => 'Home'), root_path)%></div>
 				<div id="language_form">
 					<ul>
 						<% I18n.available_locales.each do |locale| %>
@@ -28,18 +28,18 @@
 				</div>
 				<div class="logo"><a href="http://www.ndi.org/" target="_blank"><%= image_tag "logo.png", :size => '150x48', :alt => t('.ndi_alt'), :title => t('.ndi_title') %></a></div>
     		</div>
-    
+
    	</section>
-  
-   	<section id="splash" class="group"> 
-			<div class="wrap group"> 
+
+   	<section id="splash" class="group">
+			<div class="wrap group">
 				<% @event_types.each do |type| %>
 					<div class="mode group">
 						<%= link_to type.name, event_type_map_path(:event_type_id => type.id) %>
 					</div>
 				<% end %>
 		</section>
-    
+
      </header>
 
 	<section id="container" class="wrap group">
@@ -54,15 +54,15 @@
 	  	<%= yield %>
 		</section>
 	</section>
-	
+
 	<footer class="group" style="position: static; ">
-		  <% if user_signed_in? %>  
-				<%= "#{t('.signed_in')} #{current_user.email}" %>. 
-				<%= link_to t('.admin'), admin_path %>  
-				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>  
-		  <% else %>  
-				<%= link_to t('.sign_in'), new_user_session_path %>  
-		  <% end %>  
+		  <% if user_signed_in? %>
+				<%= "#{t('.signed_in')} #{current_user.email}" %>.
+				<%= link_to t('.admin'), admin_path %>
+				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
+		  <% else %>
+				<%= link_to t('.sign_in'), new_user_session_path %>
+		  <% end %>
 		<a>|</a>
 		<%= link_to t('.about'), view_pages_path(:name => "about") %>
 		<a>|</a>
@@ -79,17 +79,29 @@
 	<% end %>
 
 	<% if Rails.env.production? %>
-	<!-- google analytics -->
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-12801815-7']);
-		_gaq.push(['_trackPageview']);
-		(function() {
-		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
+		<!-- google analytics -->
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-12801815-7']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+	<% elsif Rails.env.staging? %>
+		<!-- google analytics -->
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-12801815-8']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
 	<% end %>
 </body>
 </html>
