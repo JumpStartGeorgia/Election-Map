@@ -138,7 +138,7 @@ tr.odd_row td, tr.even_row td{
 }
 
 #data-table th, #data-table td {
-  border: 1px solid black;
+  border: 1px solid #000;
   padding: 3px 7px;
 }
 
@@ -149,11 +149,33 @@ tr.odd_row td, tr.even_row td{
   font-weight: bold;
 }
 
+#data-table th.highlighted, td.highlighted {
+/*
+  border-left: 2px solid #fff;
+  border-right: 2px solid #fff;
+  box-shadow: inset 0 0 10px #fff;
+*/
+  background: #0a0a0a;
+  color: #fff;
+  border-color: #fff !important;
+  border-left-width: 2px !important;
+  border-right-width: 2px !important;
+}
+
 #data-table td {
 }
 
 #data-table th.hidden, #data-table td.hidden {
   display: none;
+}
+
+#data-table-container .switchers {
+  margin: 5px 0;
+}
+
+#data-table-container .switchers > * {
+  float: left;
+  margin-right: 5px;
 }
 
 #data-table-container .arrows {

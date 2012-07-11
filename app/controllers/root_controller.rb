@@ -182,8 +182,17 @@ logger.debug("+++++++++ child shape type could not be found")
       @dt_cols_p = 7      #data columns quantity per turn
       @dt_skip_cols = 3   #data columns skip quantity, e.g. ["Event", " Map Level", " District ID"]
       @dt_static_cols = 1 #data static columns quantity, e.g. "District name"
-      
-      
+
+      dt_count = @table_data[0].count
+      @dt_groups = ((dt_count - @dt_skip_cols).to_f / (@dt_cols_p - @dt_static_cols)).ceil #column groups count
+      c = @dt_cols_p - @dt_static_cols
+      s = @dt_skip_cols + @dt_static_cols
+      @dt_dd_titles = []      #dropdown titles
+      @dt_groups.times do |i|
+        @dt_dd_titles << @table_data[0][s..(dt_count - 1)][(c * i)..(c * (i + 1) - 1)]
+      end
+     #@dt_dd_titles = @table_data[0][s..(dt_count - 1)]
+
 
   		# set js variables
       set_gon_variables
@@ -408,8 +417,7 @@ logger.debug " - no matching event found!"
 		  gon.map_title = @map_title
 	  end
 
-    g = ((@table_data[0].count - @dt_skip_cols).to_f / (@dt_cols_p - @dt_static_cols)).ceil
-    gon.dt = {:g => g, :p => @dt_cols_p, :all => @table_data[0].count}
+    gon.dt = {:g => @dt_groups, :p => @dt_cols_p, :all => @table_data[0].count}
   end
 
   # build an array of indicator scales that will be used in js

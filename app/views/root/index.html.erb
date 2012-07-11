@@ -116,21 +116,31 @@
   <h3><%= td[0][0] + ' - ' + td[1][0] %></h3>
   <h3><%= td[0][1] + ' - ' + td[1][1] %></h3>
 
-  <div class="arrows clearfix">
-    <div class="left" data-direction="left"></div>
-    <div class="right" data-direction="right"></div>
-  </div>
+  <div class="switchers clearfix">
+    <div class="arrows">
+      <div class="left" data-direction="left"></div>
+      <div class="right" data-direction="right"></div>
+    </div>
 
-  <select id="">
-    
-  </select>
+    <% j = 0; %>
+    <select id="dt_dd_switcher"><!--data table dropdown switcher-->
+      <% @dt_groups.times do |i| %>
+        <% val = (i + 1).to_s %>
+        <!--<option value="<%= val %>">group #<%= val %></option>-->
+        <% @dt_dd_titles[i].each do |title| %>
+          <% j = j + 1 %>
+          <option data-i="<%= j %>" value="<%= val %>">&nbsp;&nbsp;<%= title %></option>
+        <% end %>
+      <% end %>
+    </select>
+  </div>
 
   <table id="data-table">
     <tr>
       <% td[0][@dt_skip_cols..(td[0].length - 1)].each_with_index do |value, i| %>
         <% cgnumber = (i > 0) ? ((i - @dt_static_cols + (cqo - (i - @dt_static_cols) % cqo)) / cqo).to_s : 0 %>
         <% classname = 'cg' + cgnumber.to_s %>
-        <th <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
+        <th data-i="<%= i %>" <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
           <%= value %>
         </th>
       <% end %>
@@ -141,7 +151,7 @@
         <% row[@dt_skip_cols..(row.length - 1)].each_with_index do |value, i| %>
           <% cgnumber = (i > 0) ? ((i - @dt_static_cols + (cqo - (i - @dt_static_cols) % cqo)) / cqo).to_s : 0 %>
           <% classname = 'cg' + cgnumber.to_s %>
-          <td <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
+          <td data-i="<%= i %>" <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
             <%= value %>
           </td>
         <% end %>
