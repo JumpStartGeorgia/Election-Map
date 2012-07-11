@@ -15,7 +15,7 @@ ElectionMap::Application.configure do
   config.assets.compress = true
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = true 
+  config.assets.compile = true
 
   # Generate digests for assets URLs
   config.assets.digest = true
@@ -42,8 +42,6 @@ ElectionMap::Application.configure do
 	config.action_controller.perform_caching = true
 	# The underlying cache store to use.
 	config.cache_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-cache", :expires_in => 30.day, :compress => true }
-	# The session store is completely different from the normal data cache
-	config.session_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-session", :expires_in => 30.minutes, :compress => true }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"

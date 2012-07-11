@@ -192,11 +192,39 @@ logger.debug "++++++++++custom children cache does NOT exist"
 			geo.to_json
 		}
 
-    puts "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"
+    logger.debug "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"
     respond_to do |format|
       format.json { render json: geometries}
     end
   end
+
+  # GET /json/summary_custom_children_shapes2/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/custom_view/:custom_view)
+  def summary_custom_children_shapes2
+    start = Time.now
+		geometries = nil
+		file_name = key_summary_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id])
+		      .gsub("[event_id]", params[:event_id])
+		      .gsub("[indicator_type_id]", params[:indicator_type_id])
+		      .gsub("[shape_type_id]", params[:shape_type_id])
+		path = "#{Rails.root}/public/json/#{file_name}.json"
+		if File.exists?(path)
+			startPhase = Time.now
+			geometries = File.open(path, "r") {|f| f.read()}
+	    logger.debug "@@ time to read json from file json: #{Time.now-startPhase} seconds"
+		else
+			geometries = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
+
+			startPhase = Time.now
+			File.open(path, 'w') {|f| f.write(geometries)}
+	    logger.debug "@@ time to write json to file json: #{Time.now-startPhase} seconds"
+	end
+
+    logger.debug "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"
+    respond_to do |format|
+      format.json { render json: geometries}
+    end
+  end
+
 
 
 protected
