@@ -249,7 +249,7 @@ class Datum < ActiveRecord::Base
   end
 
 
-	def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil)
+	def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false)
     if event_id.nil? || shape_type_id.nil? || shape_id.nil?
 logger.debug "not all params provided"
 			return nil
@@ -337,7 +337,7 @@ logger.debug "no data"
 				# remove any line returns for excel does not like them
 				rows.each do |r|
 					r.each do |c|
-						c.gsub(/\r?\n/, ' ').strip!
+						c.to_s.gsub(/\r?\n/, ' ').strip!
 					end
 				end
 
@@ -347,9 +347,12 @@ logger.debug "no data"
 				# replace the [Level] placeholder in download_header with the name of the map level
 				# that is located in the row_starter array
 		    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
+		    ind_ids = header.clone
 		    indicators.each do |i|
 		      header << i.description
+		      ind_ids << i.id
 		    end
+		    data << ind_ids.flatten
 		    data << header.flatten
 
 		    # add the rows
