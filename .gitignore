@@ -19,6 +19,6 @@
 /public/assets
 
 # ignore the json data files
-/public/json
+/public/json/*
 
 /config/database.yml
