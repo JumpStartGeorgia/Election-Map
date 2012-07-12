@@ -9,7 +9,7 @@ class Datum < ActiveRecord::Base
   attr_accessible :indicator_id, :value, :datum_translations_attributes
   attr_accessor :locale
 
-  validates :indicator_id, :value, :presence => true
+  validates :indicator_id, :presence => true
 
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
