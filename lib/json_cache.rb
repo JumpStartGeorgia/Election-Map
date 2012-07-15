@@ -4,6 +4,11 @@ module JsonCache
 	### manage files
 	###########################################
 	def self.create_directory(event_id)
+		# make sure json folder exists
+		if !File.exists?(json_file_path.gsub("/[event_id]", ""))
+			FileUtils.mkdir(json_file_path.gsub("/[event_id]", ""))
+		end
+		# check if event folder exists
 		if event_id
 			if !File.exists?(json_file_path.gsub("[event_id]", event_id.to_s))
 				FileUtils.mkdir(json_file_path.gsub("[event_id]", event_id.to_s))
