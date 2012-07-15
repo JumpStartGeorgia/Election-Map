@@ -46,7 +46,7 @@ ka:
         not_update_event: Row %{row_num} - The event could not be updated to indicate this row is the root.
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         root_not_valid: Row %{row_num} - The record for the root row could not be saved.
-        root_shape_not_exist: Row %{row_num} - The root shape for this event was not found.
+        root_shape_not_found: Row %{row_num} - The root shape for this event was not found.
         root_already_exists: Row %{row_num} - The root record already exists.
         parent_shape_not_found: Row %{row_num} - The parent shape could not be found.
         parent_shape_type_not_found: Row %{row_num} - The parent shape type could not be found.
@@ -257,7 +257,7 @@ ka:
       title: Upload a CSV File of Indicator Scales
       download_link_text: Download the CSV template file for Indicator Scales
       instructions: Please note that you can add as many 'Scale Name' columns as you need.
-      help_1: You can provide your own colors or use the application colors.  
+      help_1: You can provide your own colors or use the application colors.
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
       help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
@@ -298,7 +298,7 @@ ka:
       download_link_text: Download the CSV template file for Indicators
       instructions: Please note that you can add as many 'Scale Name' columns as you need.
       important: Important if you are including scales
-      help_1: You can provide your own colors or use the application colors.  
+      help_1: You can provide your own colors or use the application colors.
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
       help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
@@ -353,4 +353,3 @@ ka:
       message: შეტყობინება
     success:
       title: დაგვიკავშირდით
-
