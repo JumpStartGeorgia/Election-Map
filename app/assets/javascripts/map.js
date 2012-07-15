@@ -68,25 +68,16 @@ function map_init(){
 
   map = new OpenLayers.Map('map', options);
 
-  if (gon.event_id != "15") {
-    map.addControl(new OpenLayers.Control.Navigation());
-    map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
-  }
+  map.addControl(new OpenLayers.Control.Navigation());
+  map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
   
-  if (gon.event_id != "15")
-	  map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
+	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
   
-  if (gon.event_id == "15")
-    vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
-  else
-    vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
+  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
-  if (gon.event_id == "15")
-    map.addLayers([vector_base, vector_child]);
-  else
-    map.addLayers([map_layer, vector_base, vector_child]);
+  map.addLayers([map_layer, vector_base, vector_child]);
 
 
 	// load the base layer

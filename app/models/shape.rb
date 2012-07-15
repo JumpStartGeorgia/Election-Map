@@ -130,7 +130,7 @@ class Shape < ActiveRecord::Base
   			      # if getting summary data, use the first record for the shape value
   			      # if ind_id = indicator_type_id
   			      if isSummary && d["summary_data"].first.indicator_type_id.to_s == ind_id.to_s
-      				  properties["data_value"] = d["summary_data"].first.value
+      				  properties["data_value"] = d["summary_data"].first.formatted_value
       					properties["value"] = d["summary_data"].first.indicator_name_abbrv
       					properties["formatted_value"] = d["summary_data"].first.indicator_name
       				  properties["number_format"] = d["summary_data"].first.number_format
@@ -174,7 +174,7 @@ class Shape < ActiveRecord::Base
       idx_parent_name = 3
       idx_common_id = 4
       idx_common_name = 5
-      index_geo = 6
+      idx_geo = 6
 
 
 			Shape.transaction do
@@ -322,7 +322,7 @@ class Shape < ActiveRecord::Base
 		                    parentRoot = root.shape_type_id == parent_shape_type.id &&
 		                      root.common_id == row[idx_parent_id].strip && root.common_name == row[idx_parent_name].strip ? root : nil
 		                    if root.has_children?
-		                      parentChild = root.descendants.select("shapes.id").joins(:shape_translations)
+		                      parentChild = root.descendants.select("shapes.id, shapes.ancestry").joins(:shape_translations)
 		                        .where(:shapes => {:shape_type_id => parent_shape_type.id},
 		                        :shape_translations => {:locale => 'en', :common_id => row[idx_parent_id].strip, :common_name => row[idx_parent_name].strip})
 		                    end
