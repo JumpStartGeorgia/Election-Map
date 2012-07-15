@@ -1,7 +1,7 @@
 # encoding: utf-8
 #require 'csv_tsv_renderer'
 #require 'girl_friday'
-
+require 'json_cache'
 class RootController < ApplicationController
   before_filter :authenticate_user!,
     :except => [:index, :export, :download]
@@ -288,7 +288,7 @@ logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
 
   # GET /events/clear_cache
   def clear_cache
-		Rails.cache.clear
+		JsonCache.clear
   end
 
 	# any mis-match routing errors are directed here
