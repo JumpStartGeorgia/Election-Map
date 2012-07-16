@@ -1,19 +1,18 @@
 /*  Useful functions  */
-this.log=function(a){console.log(a)}
-Array.prototype.__=function(a){this.push(a)}
-this.foreach=function(a,b){if(typeof a.length==="number")for(var c=0;c<a.length;c++)b(c,a[c]);else if(typeof a.length==="undefined")for(var c in a)b(c,a[c])}
+this.log=function(a){console.log(a)};Array.prototype.__=function(a){this.push(a)};this.foreach=function(a,b){if(typeof a.length==="number")for(var c=0;c<a.length;c++)b(c,a[c]);else if(typeof a.length==="undefined")for(var c in a)b(c,a[c])};this.extract=function(a){if(typeof a.length==="number")for(var b=0;b<a.length;b++)this[b]=a[b];else if(typeof a.length==="undefined")for(var b in a)this[b]=a[b]};this.ob=function(){this.code};this.ob.prototype.start=function(a){this.code=a.toString().substring(a.toString().search("{")+1,a.toString().search("}"))};this.ob.prototype.flush=function(){eval(this.code)}
 
 
 /*  Declaring class  */
 var className = "elmapsvgpopup";
 this[className] = function(){
   var svg;
-  this.y_s = 50;
+  this.y_s = 20;
   this.max_value = 0;
   this.max_ind_len = 0;
   this.max = 100;
   this.dist = 25;      
-
+  this.i = 0;
+  
 };
 
 
@@ -70,12 +69,11 @@ this[className].prototype.processTheType = function(id_el, json, options)
     var ths = this;
     
     foreach(json.data, function(index, value){
-      if(value.indicator_name.length>ths.max_ind_len)
-        ths.max_ind_len = value.indicator_name.length;
+      if(value.indicator_name_abbrv.length>ths.max_ind_len)      
+        ths.max_ind_len = value.indicator_name_abbrv.length;
       if(value.value>ths.max_value)
         ths.max_value = value.value;
     });
-    
     
       
     if (options.type == "summary_data"){
@@ -90,11 +88,11 @@ this[className].prototype.processTheType = function(id_el, json, options)
           "x": (ths.max_ind_len*7-10)/2-json.title_summary.length/2-50,
           "y": 40,
           "style": "font-size:15px;"
-        }).text(json.title_summary);
-    
+        }).text(json.title_summary);    
+        ths.y_s = 50;  
     }
         
-        
+    
         
         
     var svgElements = new Array;    
@@ -108,35 +106,55 @@ this[className].prototype.processTheType = function(id_el, json, options)
           "height": 10,
           "style": "fill:"+value.color         
         },{
-          "x": ths.max_ind_len*3+60,
+          "x": 30+ths.max_ind_len*7+80,
           "y": ths.y_s+i*ths.dist,
           "width": ths.max/100*value.value,
           "height": 10,
           "style": "fill:#5c81a3"  
         }];
+        
+        
+        
+        window.maxSVGWidth = 30+ths.max_ind_len*7+80+ths.max/100*json.data[0].value+10;        
+        window.summaryWidthDone = true;
       }               
+      else if (value.indicator_name_abbrv !== "არ არის მონაცემი" && typeof window.summaryWidthDone === "undefined")
+        window.maxSVGWidth = (30+ths.max_ind_len*7+10)+(ths.max_value.toString().length*7+50);
+      else
+        window.maxSVGWidth = 30+ths.max_ind_len*7+10+"არ არის მონაცემი".length*7+50;
+      
+      
+      window.makeline = true;
+      
+      if (window.makeline)  
+      {     
+        svgElements[svgElements.length-1]['Line'] = {
+          "x1": 10,
+          "y1": ths.y_s+ths.i*ths.dist+15,
+          "x2": window.maxSVGWidth-10,
+          "y2": ths.y_s+ths.i*ths.dist+15,
+          "style": "stroke-width:1px;stroke:#CCC" 
+        };
+        
+      }
       
       svgElements[svgElements.length-1]['Text'] = [[{
           "x": 30,
-          "y": ths.y_s+10+i*ths.dist,
+          "y": ths.y_s+10+ths.i*ths.dist,
           "style": "font-size:12px;",
           "class": "title",
           "fullText": value.indicator_name
         }, value.indicator_name_abbrv],
         [{
-          "x": ths.max_ind_len*3,
-          "y": ths.y_s+10+i*ths.dist,
+          "x": 30+ths.max_ind_len*7+10,
+          "y": ths.y_s+10+ths.i*ths.dist,
           "style": "font-size:12px;"  
-        }, value.value+value.number_format]];
+        }, value.value+(value.number_format === null ? "" : value.number_format)]];
         
-       svgElements[svgElements.length-1]['Line'] = {
-          "x1": 10,
-          "y1": ths.y_s+i*ths.dist+15,
-          "x2": ths.max_ind_len*7+55+ths.max/100*json.data[0].value,
-          "y2": ths.y_s+i*ths.dist+15,
-          "style": "stroke-width:1px;stroke:#CCC" 
-        };
-     
+       
+        ths.i++;
+        
+        window.maxSVGHeight = ths.y_s+10+ths.i*ths.dist+10;
     });  
     
     foreach(svgElements, function(index, value){
@@ -159,14 +177,15 @@ this[className].prototype.processTheType = function(id_el, json, options)
 
 this[className].prototype.processJSON = function(id_el, json, options)
 { 
-  var ths = this;
+  var ths = this;  
   foreach(json, function(index, value){
-    if (typeof(value.summary_data) === "object")
+    
+    if (typeof value.summary_data === "object")
     {
       options['type'] = "summary_data"; 
       json = value.summary_data;
     }
-    else if (typeof(value.data_item) === "object")
+    else if (typeof value.data_item === "object")
     {
       options['type'] = "data_item";
       json = {};
@@ -177,7 +196,11 @@ this[className].prototype.processJSON = function(id_el, json, options)
         value: value.data_item.value
       }];
     }  
+    
+    
+
     ths.processTheType(id_el, json, options);
+    
   });
     
   
@@ -189,3 +212,15 @@ this[className].prototype.processJSON = function(id_el, json, options)
     
       
 };
+
+
+
+$(document).mouseover(function(e){
+  window.mouse = {
+    X: e.pageX,
+    Y: e.pageY
+  };
+});
+
+
+

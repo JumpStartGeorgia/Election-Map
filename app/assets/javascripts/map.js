@@ -130,6 +130,7 @@ function map_init(){
 		onUnselect: mouseout_handler,
 		clickFeature: click_handler
   });
+  
   map.addControls([select_child]);
   select_child.activate();
 
@@ -436,23 +437,72 @@ function removeFeaturePopups()
 
 // Create the popup for the feature 
 function makeFeaturePopup(feature_data)
-{
+{  
   removeFeaturePopups();  
   var popup = new OpenLayers.Popup("Feature Popup",
   feature_data.geometry.bounds.getCenterLonLat(),
-  new OpenLayers.Size(400, 200),
+  new OpenLayers.Size(400, 300),
   "",
   true);
-  map.addPopup(popup);
+  //popup.panMapIfOutOfView = true;
+  map.addPopup(popup);  
   
   
-
+  
+  // Popup coordination
+  var jq_popup = $(".olPopup:first"),
+      jq_popup_content = $(".olPopupContent:first"),
+      jq_map = $("#map"),
+      jq_popup_offset = {
+        top: function(use_def){
+         var def_y = mouse.Y-jq_map.offset().top-jq_popup.height()-10;
+         if (def_y<0){
+          jq_popup_offset.left = function(){
+            if (mouse.X-jq_map.offset().left+10+jq_popup.width() < jq_map.width())
+              return mouse.X-jq_map.offset().left+10;
+            else 
+              return mouse.X-jq_map.offset().left-(mouse.X-jq_map.offset().left+10+jq_popup.width()-jq_map.width());
+          };
+          return def_y+def_y*(-1)+10;
+         }
+         return def_y; 
+        },
+        left: function(use_def){          
+          var def_x = mouse.X-jq_map.offset().left-jq_popup.width()/2;
+          if (def_x+jq_popup.width() > jq_map.width() && use_def===false) 
+            return def_x-(def_x+jq_popup.width()-jq_map.width())-50;
+          return def_x;
+        }
+      };
+      
+  jq_popup.css({
+    left: jq_popup_offset.left(true),
+    top: jq_popup_offset.top(true),    
+    width: 0,
+    height: 0
+  });
+      
   if (feature_data.attributes.results.length > 0)
   {
     new elmapsvgpopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
       limit: 5    
     });
+    
+    jq_popup_content.css({
+      width: maxSVGWidth,
+      height: maxSVGHeight
+    });
+    
+    jq_popup.css({
+      width: maxSVGWidth,
+      height: maxSVGHeight      
+    }).css({
+      left: jq_popup_offset.left(false),
+      top: jq_popup_offset.top(false)
+    });
+    
   }
+  
   
 }
 
@@ -475,6 +525,8 @@ function mouseout_handler (feature)
 {
   //removeFeaturePopups();
 	$('#map-box').hide(0);
+	
+	removeFeaturePopups();  
 }
 
 function populate_map_box(title, indicator, value, number_format)
@@ -609,3 +661,5 @@ $(document).ready(function() {
 	// to load pop-up window for export help
   $("a.fancybox").fancybox();
 });
+
+
