@@ -31,7 +31,7 @@ class JsonController < ApplicationController
 				  .gsub("[indicator_id]", params[:indicator_id])
 				  .gsub("[shape_type_id]", params[:shape_type_id])
 				logger.debug "++++++++++custom children key = #{key}"
-				custom_children_cache = Rails.cache.read(key)
+				custom_children_cache = JsonCache.read(params[:event_id], key)
 			end
 
 			if !custom_children_cache.nil?
@@ -83,7 +83,7 @@ class JsonController < ApplicationController
     respond_to do |format|
       format.json { render json: geometries}
     end
-		logger.debug "@ time to render custom_children_shapes json: #{Time.now-start} seconds"
+		logger.debug "@ time to render custom_children_shapes json from file: #{Time.now-start} seconds"
   end
 
 	################################################3
@@ -155,10 +155,10 @@ class JsonController < ApplicationController
 			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
 		}
 
-    logger.debug "@ time to render summary_custom_children_shapes json: #{Time.now-start} seconds"
     respond_to do |format|
       format.json { render json: geometries}
     end
+    logger.debug "@ time to render summary_custom_children_shapes json from file: #{Time.now-start} seconds"
   end
 
 
