@@ -1,3 +1,4 @@
+var f;
 $(function ()
 {
   var p = $('#data-table'),
@@ -34,10 +35,12 @@ $(function ()
 
   function highlight ()
   {
+  /*
     if (gon.dt.p >= gon.dt.all)
     {
       return;
     }
+  */
     var nexti = dd_switcher.val(),
     datai = dd_switcher.children('option:selected').data('i'),
     s = p.find('th:not(cg0)[data-i="' + datai + '"], td:not(cg0)[data-i="' + datai + '"]');
@@ -54,9 +57,31 @@ $(function ()
   dd_switcher.ready(highlight);
   dd_switcher.change(highlight);
 
+
+
+
+
 });
 
+function highlight_shape ()
+{
+  var features = map.layers[1].features;
+  for (i in features)
+  {
+    if (gon.dt.common_name == features[i].data.common_name)
+    {
+      f = features[i];
+      f.style = new OpenLayers.Style();
+      f.style.fillColor = "#4A6884";//"#5c81a3";
+      f.style.strokeColor = "#000000";
+      f.style.strokeWidth = .5;
+      f.style.fillOpacity = 1;
+      f.layer.redraw();
 
+      break;
+    }
+  }
+}
 
 
 

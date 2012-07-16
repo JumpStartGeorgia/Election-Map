@@ -183,6 +183,7 @@ function load_vector_child(resp){
     draw_legend();
 		// now load the values for the hidden form
 		load_hidden_form();
+		highlight_shape();
   } else {
 console.log('vector_child - no features found');
   }

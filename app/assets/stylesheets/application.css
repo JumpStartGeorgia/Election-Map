@@ -139,7 +139,19 @@ tr.odd_row td, tr.even_row td{
 
 #data-table th, #data-table td {
   border: 1px solid #000;
+}
+
+#data-table th, #data-table td > a, #data-table td.cg0 {
   padding: 3px 7px;
+}
+
+#data-table td > a {
+  display: block;
+  text-decoration: none;
+}
+
+#data-table td > a:hover {
+  background: rgba(92, 129, 163, .75);
 }
 
 #data-table th:first-child, #data-table td:first-child {
@@ -165,7 +177,17 @@ tr.odd_row td, tr.even_row td{
   border-color: #000 !important;
 }
 
+td.highlighted > a {
+  color: #333;
+  text-shadow: none;
+}
+
 #data-table td {
+}
+
+#data-table td img {
+  vertical-align: middle;
+  margin-top: -2px;
 }
 
 #data-table th.hidden, #data-table td.hidden {
