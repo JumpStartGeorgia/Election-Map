@@ -15,7 +15,7 @@ class Datum < ActiveRecord::Base
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
     if read_attribute(:value).nil? || read_attribute(:value).to_s.downcase.strip == "null"
-      read_attribute(:value)
+      I18n.t('app.msgs.no_data')
     else
       sprintf("%g", read_attribute(:value))
     end
@@ -23,7 +23,9 @@ class Datum < ActiveRecord::Base
 
 	# format the value if it is a number
 	def formatted_value
-		if !self.value.nil?
+		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
+			return I18n.t('app.msgs.no_data')
+		else
       if self.value.index(".").nil?
 				return number_with_delimiter(self.value.to_i)
 			else
@@ -191,14 +193,24 @@ class Datum < ActiveRecord::Base
 	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, relationships)
     results = []
 	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !relationships.nil? && !relationships.empty?
-      results = Array.new(relationships.length) {Hash.new}
-	    relationships.each_with_index do |rel, i|
+#      results = Array.new(relationships.length) {Hash.new}
+	    relationships.each do |rel|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
-	        results[i][key_summary_data] = get_summary_data_for_shape(shape_id, event_id, shape_type_id, rel.related_indicator_type_id)
+					data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, rel.related_indicator_type_id)
+					if data && !data.empty?
+						data_hash = Hash.new
+						data_hash["summary_data"] = data
+	        	results << data_hash
+					end
         elsif !rel.related_core_indicator_id.nil?
           # get the data item for this indciator
-	        results[i][key_data_item] = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id)
+					data = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id)
+					if data && !data.empty?
+						data_hash = Hash.new
+						data_hash["data_item"] = data
+	        	results << data_hash
+					end
         end
       end
     end
@@ -576,18 +588,6 @@ logger.debug "------ delete all data for event #{event_id}"
 
 
 protected
-
-	def self.key_summary_data
-		"summary_data"
-	end
-
-	def self.key_data_item
-		"data_item"
-	end
-
-	def self.key_results
-		"results"
-	end
 
 	# define variables to be used when building json
 	# so the data translations table is not called

@@ -130,7 +130,7 @@ class Shape < ActiveRecord::Base
   			      # if getting summary data, use the first record for the shape value
   			      # if ind_id = indicator_type_id
   			      if isSummary && d["summary_data"].first.indicator_type_id.to_s == ind_id.to_s
-      				  properties["data_value"] = d["summary_data"].first.formatted_value
+      				  properties["data_value"] = d["summary_data"].first.formatted_value if !d["summary_data"].first.formatted_value.nil?
       					properties["value"] = d["summary_data"].first.indicator_name_abbrv
       					properties["formatted_value"] = d["summary_data"].first.indicator_name
       				  properties["number_format"] = d["summary_data"].first.number_format
@@ -143,8 +143,8 @@ class Shape < ActiveRecord::Base
   			      # if ind_id = indicator_id
   			      if !isSummary && d["data_item"].first.indicator_id.to_s == ind_id.to_s
       				  properties["data_value"] = nil
-      					properties["value"] = d["data_item"].first.value
-      					properties["formatted_value"] = d["data_item"].first.formatted_value
+      					properties["value"] = d["data_item"].first.value if !d["data_item"].first.value.nil?
+      					properties["formatted_value"] = d["data_item"].first.formatted_value if !d["data_item"].first.formatted_value.nil?
       				  properties["number_format"] = d["data_item"].first.number_format
   		        end
     	      end
