@@ -2,14 +2,13 @@
 
 class AddFootnoteCustomViews < ActiveRecord::Migration
   def up
-=begin
     EventCustomView.create_translation_table! :note => :string
     add_index :event_custom_view_translations, :note
-=end
+
 		# add note to existing records
 		EventCustomView.all.each do |custom_view|
-			custom_view.event_custom_view_translations.create(:locale=>"ka", :note=>"თბილისის რაიონების უკვე ერთიანი ამ მხრივ.")
-			custom_view.event_custom_view_translations.create(:locale=>"en", :note=>"Tbilisi districts have been aggregated in this view.")
+			custom_view.event_custom_view_translations.create(:locale=>"ka", :note=>"თბილისის რაიონები უკვე ერთიანი ამ მხრივ. რაიონების სანახავად დაწკაპეთ \"თბილისი\".")
+			custom_view.event_custom_view_translations.create(:locale=>"en", :note=>"Tbilisi districts have been aggregated in this view. Click on Tbilisi to view it's districts.")
 		end
   end
 
