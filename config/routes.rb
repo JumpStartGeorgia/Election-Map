@@ -60,6 +60,7 @@ ElectionMap::Application.routes.draw do
 		match '/routing_error', :to => 'root#routing_error'
 		match '/admin', :to => 'root#admin', :as => :admin, :via => :get
 		match '/clear_cache', :to => 'root#clear_cache', :as => :clear_cache, :via => :get
+		match '/clear_cache_files', :to => 'root#clear_cache_files', :as => :clear_cache_files, :via => :get
 		match '/download/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data, :via => :get
 		match '/contact' => 'messages#new', :as => 'contact', :via => :get
 		match '/contact' => 'messages#create', :as => 'contact', :via => :post

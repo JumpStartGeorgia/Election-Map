@@ -46,17 +46,27 @@ module JsonCache
 		return geometries
 	end
 
+	###########################################
+	### clear cache
+	###########################################
 	# remove the files for the provided event_id
 	# if no id provided, remove all files
-	def self.clear(event_id=nil)
+	def self.clear_all(event_id=nil)
+		clear_cache
+		clear_files(event_id)
+	end
+
+	def self.clear_cache
+		# clear the cache too
+		Rails.cache.clear
+	end
+
+	def self.clear_files(event_id=nil)
 		if event_id
 			FileUtils.rm_rf(json_file_path.gsub("[event_id]", event_id.to_s))
 		else
 			FileUtils.rm_rf(json_file_path.gsub("/[event_id]", ""))
 		end
-
-		# clear the cache too
-		Rails.cache.clear
 	end
 
 	###########################################

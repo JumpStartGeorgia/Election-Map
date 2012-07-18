@@ -19,6 +19,6 @@ class ShapeTypeSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(shape_type)
-		JsonCache.clear
+		JsonCache.clear_all
   end
 end

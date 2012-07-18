@@ -19,6 +19,6 @@ class EventSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(event)
-		JsonCache.clear(event.id)
+		JsonCache.clear_all(event.id)
   end
 end

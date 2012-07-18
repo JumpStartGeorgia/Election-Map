@@ -19,6 +19,6 @@ class CoreIndicatorSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(core_indicator)
-		JsonCache.clear
+		JsonCache.clear_all
   end
 end

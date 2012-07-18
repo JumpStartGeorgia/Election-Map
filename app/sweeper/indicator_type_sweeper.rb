@@ -19,6 +19,6 @@ class IndicatorTypeSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(indicator_type)
-		JsonCache.clear
+		JsonCache.clear_all
   end
 end

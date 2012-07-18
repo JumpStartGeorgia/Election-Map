@@ -19,6 +19,6 @@ class DatumSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(datum)
-		JsonCache.clear
+		JsonCache.clear_all
   end
 end

@@ -183,7 +183,6 @@ ka:
       core_indicators: Unique Indicators
       indicator_types: Indicator Types
       pages: Basic Pages
-      cache: Clear Cache
       csv_header: Upload CSV Files
       indicators: Indicators
       change_indicator_names: Change Indicator Names
@@ -195,6 +194,9 @@ ka:
       delete_header: Delete Records
       delete_shapes: Shapes
       delete_data: Data
+      cache_header: Cache
+      cache: Clear Cache
+      cache_files: Clear File Cache
     index:
       indicator_summary_link: "%{name} შემაჯამებელი"
       export_link_text: ჩამოტვირთეთ მონაცემები
@@ -202,6 +204,9 @@ ka:
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.
+    clear_cache_files:
+      title: Cache Files
+      cleared: The cache files have been deleted.
   data:
     export:
       title: Export Data CSV Template File

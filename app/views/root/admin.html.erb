@@ -25,9 +25,6 @@
 			<li>
 				<%= link_to t('.pages'), pages_path %>
 			</li>
-			<li>
-				<%= link_to t('.cache'), clear_cache_path %>
-			</li>
 		</ul>
 	</div>
 	<div class="admin_panel">
@@ -64,7 +61,15 @@
 			<%= link_to t('.delete_shapes'), delete_shapes_path %>
 			</li>
 		</ul>
+
+		<h3><%= t('.cache_header')%></h3>
+		<ul>
+			<li>
+				<%= link_to t('.cache'), clear_cache_path %>
+			</li>
+			<li>
+				<%= link_to t('.cache_files'), clear_cache_files_path %>
+			</li>
+		</ul>
 	</div>
 </div>
-
-

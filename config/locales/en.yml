@@ -183,7 +183,6 @@ en:
       core_indicators: Unique Indicators
       indicator_types: Indicator Types
       pages: Basic Pages
-      cache: Clear Cache
       csv_header: Upload CSV Files
       indicators: Indicators
       change_indicator_names: Change Indicator Names
@@ -192,6 +191,9 @@ en:
       shapes: Map Shapes
       download_header: Download CSV Files
       download_indicators: Indicators
+      cache_header: Cache
+      cache: Clear Cache
+      cache_files: Clear File Cache
     index:
       indicator_summary_link: "%{name} Summary"
       export_link_text: Export Map
@@ -199,6 +201,9 @@ en:
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.
+    clear_cache_files:
+      title: Cache Files
+      cleared: The cache files have been deleted.
   data:
     export:
       title: Export Data CSV Template File

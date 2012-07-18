@@ -288,7 +288,12 @@ logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
 
   # GET /events/clear_cache
   def clear_cache
-		JsonCache.clear
+		JsonCache.clear_cache
+  end
+
+  # GET /events/clear_cache_files
+  def clear_cache_files
+		JsonCache.clear_all
   end
 
 	# any mis-match routing errors are directed here
