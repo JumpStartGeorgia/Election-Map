@@ -46,7 +46,7 @@ ka:
         not_update_event: Row %{row_num} - The event could not be updated to indicate this row is the root.
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         root_not_valid: Row %{row_num} - The record for the root row could not be saved.
-        root_shape_not_exist: Row %{row_num} - The root shape for this event was not found.
+        root_shape_not_found: Row %{row_num} - The root shape for this event was not found.
         root_already_exists: Row %{row_num} - The root record already exists.
         parent_shape_not_found: Row %{row_num} - The parent shape could not be found.
         parent_shape_type_not_found: Row %{row_num} - The parent shape type could not be found.
@@ -66,6 +66,7 @@ ka:
       new_data: New Datum
       new_event_types: New Event Type
       new_events: New Event
+      new_custom_views: New Event Custom View
       new_indicator_scales: New Indicator Scale
       new_indicator_types: New Indicator Type
       new_indicators: New Indicator
@@ -78,6 +79,7 @@ ka:
       download_csv: ჩამოტვირთეთ CSV ფაილი
       download_data: ჩამოტვირთეთ რუქა
       download_map: ჩამოტვირთეთ მონაცემები
+      custom_view: იხილეთ ყველა %{children_shapes} %{parent_shape}აში
     msgs:
       no_data: არ არის მონაცემი
       delete_confirm: "Are you sure?"
@@ -96,6 +98,16 @@ ka:
       indicator_summary_link: "%{name} შემაჯამებელი"
       has_summary_hint: "If Has Summary is true, an indicator link will be available that will show which indicators that belong to this indicator type won each shape area."
       sort_order_hint: "Sort order is ascending so 1 will be first, 2 second, etc."
+      delete_shapes_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
+      delete_shapes_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
+      delete_data_success_1: "The data records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}' and Indicator - '%{indicator}'."
+      delete_data_success_2: "The data records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
+      delete_data_success_3: "The data records were successfully deleted for Event - '%{event}'."
+      delete_data_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
+      missing_parameters: Pleaes select data from all fields before submitting.
+      select_event: Select Event First
+      select_shape_type: Select Shape Level First
+      no_data_download: No data was found to download.
     common:
       important: Important
       indicator: Indicator
@@ -120,6 +132,10 @@ ka:
       color: Color
       indicator_ancestry: Belongs To
       sort_order: Sort Order
+      shape_type: Shape Level
+      at_shape_type: At This Shape View
+      custom_shape_type: Show These Shapes
+      is_default_view: Use as Default
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -164,10 +180,10 @@ ka:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
+      custom_views: Event Custom Views
       core_indicators: Unique Indicators
       indicator_types: Indicator Types
       pages: Basic Pages
-      cache: Clear Cache
       csv_header: Upload CSV Files
       indicators: Indicators
       change_indicator_names: Change Indicator Names
@@ -176,12 +192,22 @@ ka:
       shapes: Map Shapes
       download_header: Download CSV Files
       download_indicators: Indicators
+      delete_header: Delete Records
+      delete_shapes: Shapes
+      delete_data: Data
+      cache_header: Cache
+      cache: Clear Cache
+      cache_files: Clear File Cache
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
       export_help_text: დახმარება
+      footnote: "აღვნიშნო: %{note}"
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.
+    clear_cache_files:
+      title: Cache Files
+      cleared: The cache files have been deleted.
   data:
     export:
       title: Export Data CSV Template File
@@ -191,6 +217,11 @@ ka:
       instructions: Please note that you can add as many 'Indicator/Value' columns as you need.
       help_1: Data must be provided in every column or no records will be saved.
       delete_records: Delete existing data on file for the provided Event, Shape Type, and Indicator
+    delete:
+      title: Delete Data
+      instructions: "To delete Data records, please select the Event, Shape Level, and Indicator."
+      help_1: "To delete all Data for an Event, leave the Shape Level and Indicator fields empty."
+      help_2: "To delete all Data for an Event and Shape Level, leave the Indicator field empty."
   core_indicators:
     edit:
       title: Editing Indicator
@@ -218,6 +249,13 @@ ka:
       title: New Event
     show:
       title: Event Details
+  event_custom_views:
+    edit:
+      title: Editing Event Custom View
+    index:
+      title: Events with Custom Views
+    new:
+      title: New Event Custom View
   indicator_scales:
     export:
       title: Export Indicator Scales CSV Template File
@@ -225,7 +263,7 @@ ka:
       title: Upload a CSV File of Indicator Scales
       download_link_text: Download the CSV template file for Indicator Scales
       instructions: Please note that you can add as many 'Scale Name' columns as you need.
-      help_1: You can provide your own colors or use the application colors.  
+      help_1: You can provide your own colors or use the application colors.
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
       help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
@@ -266,7 +304,7 @@ ka:
       download_link_text: Download the CSV template file for Indicators
       instructions: Please note that you can add as many 'Scale Name' columns as you need.
       important: Important if you are including scales
-      help_1: You can provide your own colors or use the application colors.  
+      help_1: You can provide your own colors or use the application colors.
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
       help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
@@ -277,15 +315,6 @@ ka:
       help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
       help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
       delete_records: Delete existing indicators and their data records on file for the provided Event and Shape Type(s)
-  locales:
-    edit:
-      title: Editing Language
-    index:
-      title: Languages
-    new:
-      title: New Language
-    show:
-      title: Language Details
   pages:
     edit:
       title: Editing Page
@@ -313,6 +342,12 @@ ka:
       title: Upload a CSV File of Shapes
       download_link_text: Download the CSV template file for Shapes
       delete_records: Delete existing shapes on file for the provided Event and Shape Type(s)
+    delete:
+      title: Delete Shapes
+      instructions: To delete Shape records, please select the event the shapes belong to and what level of shapes you wish to delete.
+      important: Important
+      help_1: "The same set of shape records can be shared with multiple events. When you delete shapes for the selected Event, you may also be deleting shapes for other Events that also use the same set of shape records. "
+      help_2: "For the selected shape level, all shapes at that level and subsequent shape levels that are under the selected level will be deleted.  For instance, if you select 'District', all 'District' shapes will be deleted as well as all 'Precinct' shapes that are under those 'District' shapes."
   messages:
     new:
       title: დაგვიკავშირდით
@@ -324,4 +359,3 @@ ka:
       message: შეტყობინება
     success:
       title: დაგვიკავშირდით
-

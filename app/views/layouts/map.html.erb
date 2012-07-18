@@ -10,11 +10,11 @@
 <body>
 
     <header class="group">
-    
+
      	<section id="top" class="group">
-    
-     		<div class="wrap group"> 
-					<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => t('.logo_alt'), :title => t('.logo_title')), root_path(:locale => I18n.locale))%></div> 
+
+     		<div class="wrap group">
+					<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => t('.logo_alt'), :title => t('.logo_title')), root_path(:locale => I18n.locale))%></div>
 				<div id="language_form">
 					<ul>
 						<% I18n.available_locales.each do |locale| %>
@@ -26,11 +26,11 @@
 				</div>
 				<div class="logo"><a href="http://www.ndi.org/" target="_blank"><%= image_tag "logo.png", :size => '150x48', :alt => t('.ndi_alt'), :title => t('.ndi_title') %></a></div>
     		</div>
-    
+
    	</section>
-  
-   	<section id="splash" class="group"> 
-			<div class="wrap group"> 
+
+   	<section id="splash" class="group">
+			<div class="wrap group">
 				<% @event_types.each do |type| %>
 					<% is_active = type.id.to_s == params[:event_type_id] ? "active" : "not_active" %>
 					<div class="mode group">
@@ -38,24 +38,25 @@
 					</div>
 				<% end %>
 		</section>
-    
+
   </header>
 
 	<section id="container" class="wrap group">
+			<% flash.each do |key, msg| %>
+					<%= content_tag :div, msg, :class => [key, " message"], :id => "notice_ #{key}" %>
+			<% end %>
 
   		<%= yield %>
 
 	</section>
-	
+
 	<footer class="group" style="position: static; ">
-		  <% if user_signed_in? %>  
-				<%= "#{t('.signed_in')} #{current_user.email}" %>. 
-				<%= link_to t('.admin'), admin_path %>  
-				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>  
-		  <% else %>  
-				<%= link_to t('.sign_in'), new_user_session_path %>  
-		  <% end %>  
-		<a>|</a>
+		  <% if user_signed_in? %>
+				<%= "#{t('.signed_in')} #{current_user.email}" %>.
+				<%= link_to t('.admin'), admin_path %>
+				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
+				<a>|</a>
+		  <% end %>
 		<%= link_to t('.about'), view_pages_path(:name => "about") %>
 		<a>|</a>
 		<%= link_to t('.contact'), contact_path %>
@@ -64,7 +65,7 @@
 		<a>|</a>
 		<a href="http://jumpstart.ge" target="_blank" title="<%= t('.js_link_title')%>"><%= t('.js_link_text')%></a>
 	</footer>
-	
+
 	<%= javascript_include_tag "map" %>
 	<%= javascript_tag do %>
 		I18n.defaultLocale = "<%= I18n.default_locale %>";
@@ -73,17 +74,29 @@
 
 
 	<% if Rails.env.production? %>
-	<!-- google analytics -->
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-12801815-7']);
-		_gaq.push(['_trackPageview']);
-		(function() {
-		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
+		<!-- google analytics -->
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-12801815-7']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+	<% elsif Rails.env.staging? %>
+		<!-- google analytics -->
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-12801815-8']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
 	<% end %>
 </body>
 </html>

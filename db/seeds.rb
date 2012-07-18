@@ -1,11 +1,4 @@
 # encoding: utf-8
-=begin
-# Locales **************************************************************************
-
-Locale.delete_all
-
-Locale.create(:language => 'ka' , :name => 'ქართული')
-Locale.create(:language => 'en' , :name => 'English')
 
 # Event Types **************************************************************************
 EventType.destroy_all
@@ -36,6 +29,19 @@ st = ShapeType.create(:id => 6, :ancestry => '1/2/3/5')
 st.shape_type_translations.create(:locale=>"ka", :name_singular=>"მაჟორიტარიული საუბნო", :name_plural=>"მაჟორიტარიული საუბნოები")
 st.shape_type_translations.create(:locale=>"en", :name_singular=>"Majoritarian Precinct", :name_plural=>"Majoritarian Precincts")
 
+st = ShapeType.create(:id => 7, :ancestry => '1/2/3')
+st.shape_type_translations.create(:locale=>"ka", :name_singular=>"თბილისი ოლქი", :name_plural=>"თბილისი ოლქები")
+st.shape_type_translations.create(:locale=>"en", :name_singular=>"Tbilisi District", :name_plural=>"Tbilisi Districts")
+st = ShapeType.create(:id => 8, :ancestry => '1/2/3/7')
+st.shape_type_translations.create(:locale=>"ka", :name_singular=>"თბილისი საუბნო", :name_plural=>"თბილისი საუბნოები")
+st.shape_type_translations.create(:locale=>"en", :name_singular=>"Tbilisi Precinct", :name_plural=>"Tbilisi Precincts")
+st = ShapeType.create(:id => 9, :ancestry => '1/2/3/7')
+st.shape_type_translations.create(:locale=>"ka", :name_singular=>"მაჟორიტარიული თბილისი ოლქი", :name_plural=>"მაჟორიტარიული თბილისი ოლქები")
+st.shape_type_translations.create(:locale=>"en", :name_singular=>"Majoritarian Tbilisi District", :name_plural=>"Majoritarian Tbilisi Districts")
+st = ShapeType.create(:id => 10, :ancestry => '1/2/3/7/9')
+st.shape_type_translations.create(:locale=>"ka", :name_singular=>"მაჟორიტარიული თბილისი საუბნო", :name_plural=>"მაჟორიტარიული თბილისი საუბნოები")
+st.shape_type_translations.create(:locale=>"en", :name_singular=>"Majoritarian Tbilisi Precinct", :name_plural=>"Majoritarian Tbilisi Precincts")
+
 
 
 # Pages **************************************************************************
@@ -52,7 +58,7 @@ page = Page.create(:name => 'export_help')
 page.page_translations.create(:locale => 'ka', :description => '...')
 page.page_translations.create(:locale => 'en', :description => '...')
 
-=end
+
 # Indicator Types **************************************************************************
 IndicatorType.destroy_all
 
@@ -60,5 +66,5 @@ it = IndicatorType.create(:id => 1, :has_summary => false)
 it.indicator_type_translations.create(:locale=>"ka", :name => "ინდიკატორები")
 it.indicator_type_translations.create(:locale=>"en", :name=>"Indicators")
 it = IndicatorType.create(:id => 2, :has_summary => true)
-it.indicator_type_translations.create(:locale=>"ka", :name => "პოლიტიკური შედეგები")
-it.indicator_type_translations.create(:locale=>"en", :name=>"Political Results")
+it.indicator_type_translations.create(:locale=>"ka", :name => "საერთო შედეგები")
+it.indicator_type_translations.create(:locale=>"en", :name=>"Overall Results")

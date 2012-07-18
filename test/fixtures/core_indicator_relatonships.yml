@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  core_indicator_id: 1
+  related_indicator_id: 1
+  sort_order: 1
+
+two:
+  core_indicator_id: 1
+  related_indicator_id: 1
+  sort_order: 1

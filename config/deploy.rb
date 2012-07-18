@@ -9,7 +9,7 @@ require 'capistrano/ext/multistage' # so we can deploy to staging and production
 require "bundler/capistrano" # Load Bundler's capistrano plugin.
 
 # these vars are set in deploy/env.rb
-#set :user, "placeholder" 
+#set :user, "placeholder"
 #set :application, "placeholder"
 
 set(:deploy_to) {"/home/#{user}/#{application}"}
@@ -39,6 +39,7 @@ namespace :deploy do
     sudo "ln -nfs #{current_path}/config/deploy/#{ngnix_conf_file_loc} /etc/nginx/sites-enabled/#{application}"
     sudo "ln -nfs #{current_path}/config/deploy/#{unicorn_init_file_loc} /etc/init.d/unicorn_#{application}"
     run "mkdir -p #{shared_path}/config"
+		run "mkdir -p #{shared_path}/json"
     put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
     puts "Now edit the config files in #{shared_path}."
   end
@@ -46,8 +47,14 @@ namespace :deploy do
 
   task :symlink_config, roles: :app do
     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+    run "ln -nfs #{shared_path}/json #{release_path}/public/json"
   end
   after "deploy:finalize_update", "deploy:symlink_config"
+
+  task :symlink_json, roles: :app do
+    run "ln -nfs #{shared_path}/json #{release_path}/public/json"
+  end
+  after "deploy:symlink", "deploy:symlink_json"
 
   desc "Make sure local git is in sync with remote."
   task :check_revision, roles: :web do

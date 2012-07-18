@@ -12,20 +12,18 @@ ElectionMap::Application.configure do
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
 
-config.cache_store = :memory_store
+#config.cache_store = :memory_store
 
-=begin
 	# Global enable/disable all memcached usage
 	config.perform_caching = true
 	# Disable/enable fragment and page caching in ActionController
 	config.action_controller.perform_caching = true
 	# The underlying cache store to use.
 	config.cache_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-cache", :expires_in => 1.day, :compress => true }
-	# The session store is completely different from the normal data cache
-	config.session_store = :dalli_store, '127.0.0.1:11211', { :namespace => "election-map-#{Rails.env}-session", :expires_in => 30.minutes, :compress => true }
+
 	# this is a hack for development so can cache model objects in development
 	require 'development/memcache_hack'
-=end
+
   # Don't care if the mailer can't send
   config.action_mailer.raise_delivery_errors = false
 
@@ -40,10 +38,17 @@ config.cache_store = :memory_store
 
   # Expands the lines which load the assets
   config.assets.debug = false
-  
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }  
-	
+
+  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
 	# small smtp server for dev, http://mailcatcher.me/
 	config.action_mailer.smtp_settings = { :address => "127.0.0.1", :port => 1025 }
 
+=begin
+	# options for exception notification gem
+	config.middleware.use ExceptionNotifier,
+		:email_prefix => "[Election Map App Error (#{Rails.env})] ",
+		:sender_address => ENV['APPLICATION_ERROR_FROM_EMAIL'],
+		:exception_recipients => [ENV['APPLICATION_ERROR_TO_EMAIL']]
+=end
 end

@@ -73,6 +73,9 @@ div.admin_panel {
 	float: left; 
 	width: 30%;
 }
+div.admin_panel ul li {
+	padding-bottom: 0.5em;
+}
 
 /* admin section navigation */
 div.admin_nav {
@@ -116,7 +119,7 @@ tr.even_row {
 }
 
 tr.odd_row td, tr.even_row td{
-  padding: 3px;
+  padding: 5px;
   font-size: smaller;
 }
 

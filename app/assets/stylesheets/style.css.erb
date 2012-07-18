@@ -304,14 +304,14 @@ a:hover
 }
 
 /* Map */
-#map-container { 
-	position: relative; 
-	width: 900px; 
+#map-container {
+	position: relative;
+	width: 900px;
 	float: left;
     margin-bottom: 25px;
 	}
-#map{ width: 900px; 
-	height: 600px; 
+#map{ width: 900px;
+	height: 600px;
     background: #edecd1;
     border-radius: 4px;
     -moz-border-radius: 4px;
@@ -374,18 +374,18 @@ a:hover
 
 */
 
-#export { 
+#export {
 	display: none;
-	position: absolute; 
-	right: 0px; 
-	top: 579px; 
-	z-index: 999; 
-	background: transparent; 
+	position: absolute;
+	right: 0px;
+	top: 579px;
+	z-index: 999;
+	background: transparent;
 	letter-spacing: -3px;
 /*
-	cursor: pointer; 
-	font-size: 12px; 
-	padding: 5px; 
+	cursor: pointer;
+	font-size: 12px;
+	padding: 5px;
   box-shadow: 0 0 3px #444;
   -moz-box-shadow: 0 0 3px #444;
   -webkit-box-shadow: 0 0 3px #444;
@@ -398,24 +398,24 @@ a:hover
 	*/
 }
 
-#export img { 
+#export img {
 opacity:0.7;
 filter:alpha(opacity=70); /* For IE8 and earlier */
 }
-#export img:hover { 
+#export img:hover {
 opacity:1.0;
 filter:alpha(opacity=100); /* For IE8 and earlier */
 
 }
-#indicator-description { 
-	position: absolute; 
-	left: 0px; 
-	top: 575px; 
-	z-index: 999; 
+#indicator-description {
+	position: absolute;
+	left: 0px;
+	top: 575px;
+	z-index: 999;
   min-width: 200px;
-	background: #6E6E6E; 
+	background: #6E6E6E;
   padding: 5px 10px 6px;
-	padding: 5px; 
+	padding: 5px;
   box-shadow: 0 0 3px #444;
   -moz-box-shadow: 0 0 3px #444;
   -webkit-box-shadow: 0 0 3px #444;
@@ -434,7 +434,7 @@ filter:alpha(opacity=100); /* For IE8 and earlier */
     position: absolute;
     left: 0;
     top: 0;
-		z-index: 999; 
+		z-index: 999;
     min-width: 200px;
     padding: 5px 10px 6px;
     background: #A6A6A6;
@@ -800,7 +800,7 @@ footer > a
 
 #container #content ul
 {
-    list-style: disc; 
+    list-style: disc;
 	margin-left: 1.5em;
 }
 #container #content ol
@@ -948,40 +948,13 @@ textarea
 
 label.error { display: block; margin: 0 !important; }
 
-/* Custom Legend */
-/*
-.legend
-{
-    height: 59px;
-    display: block;
-    background: url(<%=asset_path "legend_bg.png"%>) repeat-x;
-    padding: 5px 15px;
-    float: right;
-}
-
-.legend.middle
-{
-    line-height: 59px;
-}
-
-.legend a
-{
-    font-size: 120%;
-    font-weight: bold;
-}
-
-.legend a img
-{
-    vertical-align: middle;
-    margin-right: 5px;
-}
-*/
-
 /* Legend */
 #legend-container
 {
     display: none;
     width: 100%;
+		background-color: #F7F3E6;
+		color: #000;
 }
 
 #legend
@@ -1005,6 +978,14 @@ label.error { display: block; margin: 0 !important; }
     width: 14px;
     height: 14px;
     margin-right: 4px;
+		border: solid 1px #999;
+}
+
+#footnote {
+	clear:both;
+	padding: 0.3em;
+	font-size: smaller;
+  font-family: verdana, tahoma, arial;
 }
 
 /* for fancybox popup window */

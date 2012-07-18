@@ -5,12 +5,10 @@
 		<% @indicator_types.each do |indicator_type| %>
 			<% if indicator_type.has_summary %>
 				<li>
-					<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s && 
+					<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s &&
 					      @summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
-				  <%= link_to t("app.msgs.indicator_summary_link", :name => indicator_type.name), 
-				    summary_map_path(:event_id => params[:event_id], :event_type_id => params[:event_type_id],
-				      :shape_type_id => params[:shape_type_id], :shape_id => params[:shape_id], 
-				      :indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name), 
+				  <%= link_to indicator_type.name,
+				    summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil)),
 				    :class => is_active %>
 				</li>
 			<% end %>
@@ -18,8 +16,8 @@
 				<% core.indicators.each do |indicator| %>
 					<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
 					<li>
-						<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id, 
-						  :view_type => nil, :indicator_type_id => nil)), 
+						<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
+						  :view_type => nil, :indicator_type_id => nil)),
 							:title => core.description_w_parent, :class => is_active %>
 					</li>
 				<% end %>
@@ -31,11 +29,11 @@
 <% if !@events.nil? && !@events.empty? %>
 	<ul id="events" class="group">
 		<% @events.each_with_index do |event, i| %>
-			<% if !event.shape_id.nil? 
+			<% if !event.shape_id.nil?
 				 is_active = event.id.to_s == params[:event_id].to_s ? "active" : "not_active" %>
 				<li id="<%= event.name.gsub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.length-1%>class="last"<% end %> >
 					<%= link_to event.name, indicator_map_path(
-						:event_id => event.id, :event_type_id => event.event_type_id, 
+						:event_id => event.id, :event_type_id => event.event_type_id,
 						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id
 					), :title => event.name, :class => is_active %><span></span>
 				</li>
@@ -56,12 +54,30 @@
 	</div>
 
 	<div id="export">
+		<% if @has_custom_view %>
+			<% if @summary_view_type_name == params[:view_type] %>
+				<%= link_to(image_tag("switch.png", :alt => t('app.buttons.custom_view')),
+				  summary_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
+					:id => "switch-custom-view", :title => t('app.buttons.custom_view',
+						:children_shapes => @custom_child_shape_type_name_plural,
+						:parent_shape => @parent_shape_type_name_singular)) %>
+			<% else %>
+				<%= link_to(image_tag("switch.png", :alt => t('app.buttons.custom_view')),
+					indicator_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
+					:id => "switch-custom-view", :title => t('app.buttons.custom_view',
+						:children_shapes => @custom_child_shape_type_name_plural,
+						:parent_shape => @parent_shape_type_name_singular)) %>
+			<% end %>
+		<% end %>
+
 		<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>"><%= image_tag "svg.png", :alt => t('app.buttons.download_map')%></a>
-		<%= link_to(image_tag("xls.png", :alt => t('app.buttons.download_data')), 
-			download_data_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"), 
+
+		<%= link_to(image_tag("xls.png", :alt => t('app.buttons.download_data')),
+			download_data_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
 			:id => "export-data", :title => t('app.buttons.download_data')) %>
-		<%= link_to(image_tag("question.png", :alt => t('.export_help_text'), 
-				:title => t('.export_help_text')), 
+
+		<%= link_to(image_tag("question.png", :alt => t('.export_help_text'),
+				:title => t('.export_help_text')),
 				view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
 	</div>
 
@@ -71,6 +87,11 @@
 	<div id="legend-container" class="clear">
 		<ul id="legend">
 		</ul>
+		<% if @custom_view_note %>
+			<div id="footnote">
+				<%= t('.footnote', :note => @custom_view_note) %>
+			</div>
+		<% end %>
 	</div>
 
 	<ul id="shape_layer_navigation" class="group clear">
@@ -108,6 +129,5 @@
 	<%=	hidden_field_tag "hidden_form_scales" %>
 	<%=	hidden_field_tag "hidden_form_colors" %>
 	<%=	hidden_field_tag "hidden_form_datetime" %>
+	<%=	hidden_field_tag "hidden_form_opacity" %>
 <% end %>			
-
-

@@ -13,21 +13,19 @@ class DataController < ApplicationController
 				  msg = Datum.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-            # clear the cache
-            Rails.cache.clear
-						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to upload_data_path #GET
 		      else
 		        # errors
-						flash[:notice] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
+						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to upload_data_path #GET
 		      end 
 				else
-					flash[:notice] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
+					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to upload_data_path #GET
 				end
 			else
-				flash[:notice] = I18n.t('app.msgs.upload.no_file')
+				flash[:error] = I18n.t('app.msgs.upload.no_file')
 	      redirect_to upload_data_path #GET
 			end
 		end
@@ -43,5 +41,48 @@ class DataController < ApplicationController
       :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
   end 
+
+  # GET /data/delete
+  # GET /data/delete.json
+  def delete
+		gon.load_js_data_delete = true
+		@events = Event.get_all_events
+
+		if request.post?
+			if params[:event_id].nil? || params[:event_id] == ""
+				flash[:error] = I18n.t('app.msgs.missing_parameters')
+			else
+				# delete the data
+				params[:shape_type_id] = nil if params[:shape_type_id] == "" || params[:shape_type_id] == "0"
+				params[:indicator_id] = nil if params[:indicator_id] == "" || params[:indicator_id] == "0"
+				msg = Datum.delete_data(params[:event_id], params[:shape_type_id], params[:indicator_id])
+
+				if msg.nil?				
+					if !params[:shape_type_id].nil? && !params[:indicator_id].nil?
+						flash[:success] = I18n.t('app.msgs.delete_data_success_1', 
+						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip, 
+							:indicator => params[:indicator_name])
+					elsif !params[:shape_type_id].nil?
+						flash[:success] = I18n.t('app.msgs.delete_data_success_2', 
+						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
+					else
+						flash[:success] = I18n.t('app.msgs.delete_data_success_3', 
+						  :event => params[:event_name])
+					end
+
+          # reset params
+          params[:event_id] = nil
+          params[:shape_type_id] = nil
+          params[:indicator_id] = nil
+        
+				else
+      		gon.event_id = params[:event_id]
+      		gon.shape_type_id = params[:shape_type_id]
+      		gon.indicator_type_id = params[:indicator_id]
+					flash[:error] = I18n.t('app.msgs.delete_data_fail', :msg => msg)
+				end
+			end
+		end
+  end
 
 end

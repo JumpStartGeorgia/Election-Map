@@ -37,7 +37,6 @@ protected
     { :locale => I18n.locale }
   end
 
-
   def set_event_types
     @event_types = Rails.cache.fetch("event_types") {EventType.all}
 #    @event_types = EventType.all
@@ -59,6 +58,7 @@ protected
     # tile url
     lang = I18n.locale.to_s == 'ka' ? 'ka' : 'en'
     gon.tile_url = "http://tile.mapspot.ge/#{lang}/${z}/${x}/${y}.png"
+    gon.openlayers_img_path = "/assets/img/"
 	end
 
 	# name for summary view type
@@ -76,6 +76,18 @@ protected
 		filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
 	end
 	
+	# create an array of items, ordered by ancestry value
+	def ancestry_options(items, &block)
+    return ancestry_options(items){ |i| "#{'-' * i.depth} #{i.name}" } unless block_given?
+
+    result = []
+    items.map do |item|
+      result << {"name" => yield(item), "id" => item.id}
+    end
+    result
+  end
+
+
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier
 		  .exception_notification(request.env, exception)
