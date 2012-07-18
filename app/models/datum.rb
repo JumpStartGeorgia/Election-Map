@@ -45,13 +45,17 @@ class Datum < ActiveRecord::Base
 			:number_format => self.number_format,
 			:color => self.color,
 			:indicator_type_id => self.indicator_type_id,
+			:indicator_type_name => self.indicator_type_name,
 			:indicator_id => self.indicator_id,
 			:indicator_name => self.indicator_name,
 			:indicator_name_abbrv => self.indicator_name_abbrv,
+			:shape_type_name => self.shape_type_name
+=begin
+,
 			:shape_id => self.shape_id,
-			:shape_type_name => self.shape_type_name,
 			:shape_common_id => self.shape_common_id,
 			:shape_common_name => self.shape_common_name
+=end
 		}
 	end
 
@@ -113,7 +117,7 @@ class Datum < ActiveRecord::Base
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
 
-			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, "
+			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, itt.name as 'indicator_type_name', "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
 			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
@@ -126,6 +130,7 @@ class Datum < ActiveRecord::Base
 			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id and dt.locale = cit.locale "
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id "
 			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and dt.locale = cit_parent.locale "
+			sql << "inner join indicator_type_translations as itt on ci.indicator_type_id = itt.indicator_type_id and dt.locale = itt.locale "
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
 			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
       sql << "inner join shape_types as sts on i.shape_type_id = sts.id "
@@ -644,6 +649,12 @@ protected
 	end
 	def indicator_type_id
 		self[:indicator_type_id]
+	end
+	def indicator_type_name=(val)
+		self[:indicator_type_name] = val
+	end
+	def indicator_type_name
+		self[:indicator_type_name]
 	end
 
 end

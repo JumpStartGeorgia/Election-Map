@@ -103,6 +103,7 @@ class Shape < ActiveRecord::Base
 			properties["common_name"] = shape.common_name
 			properties["has_children"] = shape.has_children?
 			properties["shape_type_id"] = shape.shape_type_id
+			properties["shape_type_name"] = shape.shape_type.name_singular
       # pre-load data properties as if no data found
 		  properties["data_value"] = I18n.t('app.msgs.no_data')
 		  properties["value"] = I18n.t('app.msgs.no_data')
@@ -110,6 +111,10 @@ class Shape < ActiveRecord::Base
 		  properties["color"] = nil
 		  properties["number_format"] = nil
 			properties["results"] = Array.new
+			title = Hash.new
+			title["location"] = "#{shape.shape_type.name_singular}: #{shape.common_name}"
+			title["title"] = I18n.t('app.msgs.no_data')
+			title["title_abbrv"] = ""
 
       if !ind_id.nil?
         # get the data for the provided base shape and using the ancestry path to this shape
@@ -135,6 +140,8 @@ class Shape < ActiveRecord::Base
       					properties["formatted_value"] = d["summary_data"].first.indicator_name
       				  properties["number_format"] = d["summary_data"].first.number_format
       				  properties["color"] = d["summary_data"].first.color
+								# set the title hash
+								title["title"] = d["summary_data"].first.indicator_type_name
   		        end
     		    elsif d.has_key?("data_item") && !d["data_item"].nil? && !d["data_item"].empty?
 							# use to_hash_wout_translations to avoid datum_translations getting called for each record
@@ -146,10 +153,20 @@ class Shape < ActiveRecord::Base
       					properties["value"] = d["data_item"].first.value if !d["data_item"].first.value.nil?
       					properties["formatted_value"] = d["data_item"].first.formatted_value if !d["data_item"].first.formatted_value.nil?
       				  properties["number_format"] = d["data_item"].first.number_format
+								# set the title hash
+								title["title"] = d["data_item"].first.indicator_name
+								title["title_abbrv"] = d["data_item"].first.indicator_name_abbrv
   		        end
     	      end
     		  end
-        end
+					# add title to the results
+					results.insert(0, Hash.new)
+					results[0]["title"] = title
+				else
+					# there is no data, so just add title
+					results = Array.new(1) {Hash.new}
+					results[0]["title"] = title
+				end
         properties["results"] = results
       end
     end
