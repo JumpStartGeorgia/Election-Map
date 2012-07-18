@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120715063231) do
+ActiveRecord::Schema.define(:version => 20120718085049) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -70,6 +70,18 @@ ActiveRecord::Schema.define(:version => 20120715063231) do
   add_index "datum_translations", ["id"], :name => "index_datum_translations_on_id"
   add_index "datum_translations", ["locale", "common_id", "common_name"], :name => "index_datum_translations_on_locale_and_common_id_and_common_name"
   add_index "datum_translations", ["locale"], :name => "index_datum_translations_on_locale"
+
+  create_table "event_custom_view_translations", :force => true do |t|
+    t.integer  "event_custom_view_id"
+    t.string   "locale"
+    t.string   "note"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "event_custom_view_translations", ["event_custom_view_id"], :name => "index_48b367b2590fc1cdf17fcdd1f7bf83cb36810d32"
+  add_index "event_custom_view_translations", ["locale"], :name => "index_event_custom_view_translations_on_locale"
+  add_index "event_custom_view_translations", ["note"], :name => "index_event_custom_view_translations_on_note"
 
   create_table "event_custom_views", :force => true do |t|
     t.integer  "event_id"

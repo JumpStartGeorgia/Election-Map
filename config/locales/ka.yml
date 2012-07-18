@@ -201,6 +201,7 @@ ka:
       indicator_summary_link: "%{name} შემაჯამებელი"
       export_link_text: ჩამოტვირთეთ მონაცემები
       export_help_text: დახმარება
+      footnote: "აღვნიშნო: %{note}"
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.

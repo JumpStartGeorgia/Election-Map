@@ -198,6 +198,7 @@ en:
       indicator_summary_link: "%{name} Summary"
       export_link_text: Export Map
       export_help_text: Export Help
+      footnote: "Note: %{note}"
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.

@@ -60,7 +60,7 @@ logger.debug "////////////// getting parent shape type"
 					else
 logger.debug "////////////// getting event custom view"
 						# if the event has a custom view for the parent shape type, use it
-						custom_view = event.event_custom_views.where(:shape_type_id => parent_shape_type.id)
+						custom_view = event.event_custom_views.where(:shape_type_id => parent_shape_type.id).with_translations(I18n.locale)
 						@is_custom_view = false
 						@has_custom_view = false
 						if !custom_view.nil? && !custom_view.empty? && (params[:parent_shape_clickable].nil? || params[:parent_shape_clickable].to_s != "true")
@@ -76,6 +76,8 @@ logger.debug "////////////// has custom view"
 								custom_child_shape_type = get_child_shape_type(@shape)
 								# indicate custom view is being used
 								@is_custom_view = true
+								# save the note for this custom view
+								@custom_view_note = custom_view.first.note
 							else
 								logger.debug("+++++++++ parent shape type has custom view, but not using it")
 								child_shape_type = get_child_shape_type(@shape)
@@ -401,7 +403,7 @@ logger.debug " - no matching event found!"
 			gon.indicator_scale_colors = IndicatorScale.get_colors(@indicator.id)
 		end
 
-		# if summary view type set indicator_description for legend title
+		# if summary view type, set indicator_description for legend title
 		if params[:view_type] == @summary_view_type_name
 			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular)
 		end

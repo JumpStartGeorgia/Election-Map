@@ -87,6 +87,11 @@
 	<div id="legend-container" class="clear">
 		<ul id="legend">
 		</ul>
+		<% if @custom_view_note %>
+			<div id="footnote">
+				<%= t('.footnote', :note => @custom_view_note) %>
+			</div>
+		<% end %>
 	</div>
 
 	<ul id="shape_layer_navigation" class="group clear">

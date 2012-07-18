@@ -84,6 +84,7 @@ module JsonCache
 		puts "======================================================== "
 		puts "======== time to load default events was #{(default_time - start)} seconds"
 		puts "======== time to load custom view cache was #{(custom_time - default_time)} seconds"
+		puts "======== total time was #{(Time.now - start)} seconds"
 		puts "======================================================== "
 
   end
