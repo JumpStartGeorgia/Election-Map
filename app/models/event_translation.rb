@@ -1,5 +1,5 @@
 class EventTranslation < ActiveRecord::Base
-  attr_accessible :event_id, :name, :name_abbrv, :locale
+  attr_accessible :event_id, :name, :locale, :name_abbrv
   belongs_to :event
 
   validates :name, :locale, :presence => true

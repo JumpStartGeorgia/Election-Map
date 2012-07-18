@@ -10,9 +10,9 @@ class SplitEvents < ActiveRecord::Migration
 		# change the current 'event' type to presidential
 		ets = EventTypeTranslation.where(:event_type_id => 1)
 		ets.each do |et|
-			if et.locale = 'en'
+			if et.locale == 'en'
 				et.name = 'Presidential'
-			elsif et.locale = 'ka'
+			elsif et.locale == 'ka'
 				et.name = 'მდგომარეობით'
 			end
 			et.save
@@ -65,7 +65,7 @@ class SplitEvents < ActiveRecord::Migration
 		ets.each do |et|
 			if et.locale == 'en'
 				et.name = 'Elections'
-			elsif et.locale = 'ka'
+			elsif et.locale == 'ka'
 				et.name = 'არჩევნები'
 			end
 			et.save

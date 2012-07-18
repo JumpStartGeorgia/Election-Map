@@ -7,5 +7,5 @@ class EventType < ActiveRecord::Base
   attr_accessible :id, :sort_order, :event_type_translations_attributes
   attr_accessor :locale
 
-	default_scope with_translations(I18n.locale).order('sort_order')
+	default_scope lambda {with_translations(I18n.locale).order('sort_order')}
 end
