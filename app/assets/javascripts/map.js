@@ -40,7 +40,7 @@ function map_init(){
 	if (gon.indicator_scale_colors && gon.indicator_scales){
 		gon.indicator_scale_colors.splice(0,0,color_nodata);
 		gon.indicator_scales.splice(0,0,scale_nodata);
-	} 
+	}
 
 	// if gon.indicator_number_format has a value, save it
 	if (gon.indicator_number_format){
@@ -56,7 +56,7 @@ function map_init(){
     theme: null,
     controls: []
   };
-  
+
 	var vectorBaseStyle = new OpenLayers.StyleMap({
       "default": new OpenLayers.Style({
           fillColor: "#bfbe8d",
@@ -70,9 +70,9 @@ function map_init(){
 
   map.addControl(new OpenLayers.Control.Navigation());
   map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
-  
+
 	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
-  
+
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
@@ -134,7 +134,7 @@ function map_init(){
 // after protocol has read in json
 function load_vector_base(resp){
 	if (resp.success()){
-		var features = resp.features;         
+		var features = resp.features;
     var bounds;
 		if(features) {
       if(features.constructor != Array) {
@@ -175,7 +175,7 @@ function populate_summary_data(){
   if (gon.view_type == gon.summary_view_type_name) {
 	  gon.indicator_scale_colors = [color_nodata];
 	  gon.indicator_scales = [scale_nodata];
-  	
+
     var names = [gon.indicator_scales[0].name];
     for (var i=0; i<vector_child.features.length; i++)
     {
@@ -205,12 +205,12 @@ function populate_summary_data(){
 function draw_legend()
 {
   var legend = $('#legend');
-  
+
   if (gon.view_type == gon.summary_view_type_name) {
     // create legend
     for (var i=0; i<gon.indicator_scales.length; i++)
     {
-      legend.append('<li><span style="background-color: ' + gon.indicator_scale_colors[i] + ';"></span> ' + gon.indicator_scales[i].name + '</li>');
+      legend.append('<li><span style="background-color: ' + gon.indicator_scale_colors[i] + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + gon.indicator_scales[i].name + '</li>');
 		}
 	} else  if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 		var color = "";
@@ -222,8 +222,8 @@ function draw_legend()
 				color = gon.indicator_scale_colors[i];
 			}
 
-      legend.append('<li><span style="background-color: ' + color + ';"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
-		} 
+      legend.append('<li><span style="background-color: ' + color + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
+		}
 	} else {
 		// no legend
 		legend.innerHTML = "";
@@ -252,7 +252,7 @@ function build_indicator_scale_styles() {
       fillOpacity: opacity
   });
 	if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
-		
+
 		// look at each scale and create the builder
 		for (var i=0; i<gon.indicator_scales.length; i++){
 			var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
@@ -321,7 +321,7 @@ function build_rule(color, type, value1, value2, isFirst){
 			name: "between " + value1 + " and " + value2,
 			filter: new OpenLayers.Filter.Logical({
 		        type: OpenLayers.Filter.Logical.AND,
-		        filters: [ 
+		        filters: [
 		            new OpenLayers.Filter.Comparison({
 		                type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
 		                property: "value",
@@ -360,7 +360,7 @@ function click_handler (feature)
 		url = update_query_parameter(url, "shape_type_id", "shape_type", feature.attributes.shape_type_id);
 
 		// add/update the event_id parameter
-		// - when switching between event types, the event id is not set in the url 
+		// - when switching between event types, the event id is not set in the url
 		//   so it needs to be added
 		url = update_query_parameter(url, "event_id", "event", gon.event_id);
 
@@ -408,7 +408,7 @@ function update_query_parameter(url, name, name2, value){
 		// not in query string yet, add it
 		// if this is the first query string, add the ?, otherwise add &
 		url += url.indexOf("?") > 0 ? "&" : "?"
-		url += name + "=" + value;		
+		url += name + "=" + value;
 	}
 	return url;
 }
@@ -417,12 +417,12 @@ function update_query_parameter(url, name, name2, value){
 function hover_handler (feature)
 {
   if (gon.view_type == gon.summary_view_type_name){
-  	populate_map_box(feature.attributes.common_name, feature.attributes.value, 
+  	populate_map_box(feature.attributes.common_name, feature.attributes.value,
   		feature.attributes.data_value, number_format);
   } else if (gon.indicator_scale_colors && gon.indicator_scales){
-  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv, 
+  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv,
   		feature.attributes.formatted_value, number_format);
-  } 
+  }
 }
 
 // hide the map box
@@ -493,6 +493,7 @@ function load_hidden_form()
 			$("#hidden_form_scales").val(scales.join("||"));
 			$("#hidden_form_colors").val(colors.join("||"));
 			$("#hidden_form_datetime").val((new Date()).getTime());
+			$("#hidden_form_opacity").val(opacity);
 
 
 			// submit the hidden form
@@ -553,7 +554,7 @@ function format_number2(value) {
 	if (isNaN(value)){
 		return value;
 	} else {
-		numFormat.setNumber(value); 
+		numFormat.setNumber(value);
 		return numFormat.toFormatted();
 	}
 }
