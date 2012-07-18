@@ -3,8 +3,21 @@
 # Event Types **************************************************************************
 EventType.destroy_all
 
-EventType.create(:event_type_translations_attributes => {"0"=>{:name=>"არჩევნები", :locale=>"ka"}, "1"=>{:name=>"Elections", :locale=>"en"}})
-EventType.create(:event_type_translations_attributes => {"0"=>{:name=>"ამომრჩეველთა სია", :locale=>"ka"}, "1"=>{:name=>"Voters List", :locale=>"en"}})
+et = EventType.create(:id => 1, :sort_order => 1)
+et.event_type_translations.create(:name=>"არჩევნები", :locale=>"ka")
+et.event_type_translations.create(:name=>"Elections", :locale=>"en")
+et = EventType.create(:id => 2, :sort_order => 5)
+et.event_type_translations.create(:name=>"ამომრჩეველთა სია", :locale=>"ka")
+et.event_type_translations.create(:name => "Voters List", :locale=>"en")
+et = EventType.create(:id => 3, :sort_order => 2)
+et.event_type_translations.create(:name=>"საპარლამენტო", :locale=>"ka")
+et.event_type_translations.create(:name => "Parliamentary", :locale=>"en")
+et = EventType.create(:id => 4, :sort_order => 3)
+et.event_type_translations.create(:name=>"აჭარის", :locale=>"ka")
+et.event_type_translations.create(:name => "Adjara SC", :locale=>"en")
+et = EventType.create(:id => 5, :sort_order => 4)
+et.event_type_translations.create(:name=>"ადგილობრივი", :locale=>"ka")
+et.event_type_translations.create(:name => "Local", :locale=>"en")
 
 
 # Shape Types **************************************************************************

@@ -3,6 +3,7 @@
 <table>
   <tr>
     <th><%= t('app.common.name') %></th>
+    <th><%= t('app.common.sort_order') %></th>
     <th></th>
     <th></th>
     <th></th>
@@ -11,6 +12,7 @@
 <% @event_types.each do |event_type| %>
 <tr class="<%= cycle("odd_row", "even_row")%>">
     <td><%= event_type.name %></td>
+    <td><%= event_type.sort_order %></td>
     <td><%= link_to t('app.buttons.show'), event_type %></td>
     <td><%= link_to t('app.buttons.edit'), edit_event_type_path(event_type) %></td>
     <td><%= link_to t('app.buttons.delete'), event_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
@@ -22,5 +24,3 @@
 	<%= link_to t('app.buttons.new_event_types'), new_event_type_path %>
 	<%= link_to t('app.buttons.admin'), admin_path %>
 </div>
-
-

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120718085049) do
+ActiveRecord::Schema.define(:version => 20120718125648) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -149,12 +149,14 @@ ActiveRecord::Schema.define(:version => 20120718085049) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "name_abbrv"
   end
 
   add_index "event_translations", ["event_id"], :name => "index_event_translations_on_event_id"
   add_index "event_translations", ["id"], :name => "index_event_translations_on_id"
   add_index "event_translations", ["locale"], :name => "index_event_translations_on_locale"
   add_index "event_translations", ["name"], :name => "index_event_translations_on_name"
+  add_index "event_translations", ["name_abbrv"], :name => "index_event_translations_on_name_abbrv"
 
   create_table "event_type_translations", :force => true do |t|
     t.integer  "event_type_id"
@@ -172,9 +174,11 @@ ActiveRecord::Schema.define(:version => 20120718085049) do
   create_table "event_types", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "sort_order", :default => 1
   end
 
   add_index "event_types", ["id"], :name => "index_event_types_on_id"
+  add_index "event_types", ["sort_order"], :name => "index_event_types_on_sort_order"
 
   create_table "events", :force => true do |t|
     t.integer  "event_type_id"
