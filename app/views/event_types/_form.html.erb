@@ -1,9 +1,9 @@
 <%= semantic_form_for @event_type do |f| %>
 	<%= f.semantic_errors %>
 	<%= f.inputs :for => :event_type_translations do |event_type_translation, i| %>
-		
+
 		<% formLocale = I18n.available_locales[i-1] %>
-		
+
 		<div id="form-<%= formLocale %>" class="multilanguage">
 			<h3><%= t("app.language.#{formLocale}") %></h3>
 
@@ -12,6 +12,8 @@
 		</div>
 
 	<% end %>
+
+	<%= f.input :sort_order %>
 
 	<%= f.actions :submit, :reset, :cancel %>
 <% end %>

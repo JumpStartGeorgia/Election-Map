@@ -3,6 +3,7 @@
 <table>
   <tr>
     <th><%= t('app.common.name') %></th>
+    <th><%= t('app.common.name_abbrv') %></th>
     <th><%= t('app.common.event_type') %></th>
     <th><%= t('app.common.event_date') %></th>
     <th><%= t('app.common.parent_shape') %></th>
@@ -13,6 +14,7 @@
 <% @events.each do |event| %>
   <tr class="<%= cycle("odd_row", "even_row")%>">
     <td><%= link_to event.name, event %></td>
+    <td><%= event.name_abbrv %></td>
     <td><%= event.event_type.name %></td>
     <td><%= event.event_date %></td>
     <td><%= event.shape_id %></td>

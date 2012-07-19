@@ -31,11 +31,11 @@
 
    	</section>
 
-   	<section id="splash" class="group">
-			<div class="wrap group">
+   	<section id="splash">
 				<% @event_types.each do |type| %>
-					<div class="mode group">
-						<%= link_to type.name, event_type_map_path(:event_type_id => type.id) %>
+					<div class="mode">
+  					<% is_active = type.id.to_s == params[:event_type_id] ? "active" : "not_active" %>
+						<%= link_to type.name, event_type_map_path(:event_type_id => type.id), :class => is_active %>
 					</div>
 				<% end %>
 		</section>
