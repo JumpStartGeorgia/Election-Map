@@ -57,6 +57,9 @@ page.page_translations.create(:locale => 'en', :description => '...')
 page = Page.create(:name => 'export_help')
 page.page_translations.create(:locale => 'ka', :description => '...')
 page.page_translations.create(:locale => 'en', :description => '...')
+page = Page.create(:name => 'data_source')
+page.page_translations.create(:locale => 'ka', :description => '...')
+page.page_translations.create(:locale => 'en', :description => '...')
 
 
 # Indicator Types **************************************************************************
