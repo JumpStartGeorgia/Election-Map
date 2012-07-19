@@ -49,17 +49,17 @@ st.shape_type_translations.create(:locale=>"en", :name_singular=>"Majoritarian T
 Page.destroy_all
 
 page = Page.create(:name => 'about')
-page.page_translations.create(:locale => 'ka', :description => '...')
-page.page_translations.create(:locale => 'en', :description => '...')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
 page = Page.create(:name => 'terms')
-page.page_translations.create(:locale => 'ka', :description => '...')
-page.page_translations.create(:locale => 'en', :description => '...')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
 page = Page.create(:name => 'export_help')
-page.page_translations.create(:locale => 'ka', :description => '...')
-page.page_translations.create(:locale => 'en', :description => '...')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
 page = Page.create(:name => 'data_source')
-page.page_translations.create(:locale => 'ka', :description => '...')
-page.page_translations.create(:locale => 'en', :description => '...')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
 
 
 # Indicator Types **************************************************************************
