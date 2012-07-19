@@ -34,47 +34,12 @@ class SplitEvents < ActiveRecord::Migration
 		et.event_type_translations.create(:name=>"ადგილობრივი", :locale=>"ka")
 		et.event_type_translations.create(:name => "Local", :locale=>"en")
 
-		# reassign the events to the types
-		events = Event.where(:event_type_id => 1)
-		# parl = 3,12,17,18
-		ev = events.select{|x| [3,12,17,18].include?(x.id)}
-		ev.each do |e|
-			e.event_type_id = 3
-			e.save
-		end
-		# adjara = 13,14,19,20
-		ev = events.select{|x| [13,14,19,20].include?(x.id)}
-		ev.each do |e|
-			e.event_type_id = 4
-			e.save
-		end
-		# local = 11,15,16
-		ev = events.select{|x| [11,15,16].include?(x.id)}
-		ev.each do |e|
-			e.event_type_id = 5
-			e.save
-		end
-
 		# clear cache
 		Rails.cache.clear
   end
 
   def down
-		EventType.destroy_all("id in (3,4,5)")
-		ets = EventTypeTranslation.where(:event_type_id => 1)
-		ets.each do |et|
-			if et.locale == 'en'
-				et.name = 'Elections'
-			elsif et.locale == 'ka'
-				et.name = 'არჩევნები'
-			end
-			et.save
-		end
-		events = Event.where("event_type_id != 2")
-		events.each do |e|
-			e.event_type_id = 1
-			e.save
-		end
+		EventType.unscoped.destroy_all("id in (3,4,5)")
 
 		remove_index :event_types, :sort_order
 		remove_column :event_types, :sort_order
