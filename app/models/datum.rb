@@ -109,7 +109,9 @@ class Datum < ActiveRecord::Base
 
 	# get the max data value for all indicators that belong to the
 	# indicator type and event for a specific shape
+
 	def self.get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, limit=nil)
+
     start = Time.now
     x = nil
 		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !shape_type_id.nil?
@@ -117,9 +119,11 @@ class Datum < ActiveRecord::Base
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
 
+
 			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, itt.name as 'indicator_type_name', "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
 #			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
+
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
@@ -133,6 +137,7 @@ class Datum < ActiveRecord::Base
 			sql << "inner join indicator_type_translations as itt on ci.indicator_type_id = itt.indicator_type_id and dt.locale = itt.locale "
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
 			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
+
 #      sql << "inner join shape_types as sts on i.shape_type_id = sts.id "
 #      sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale "
 			sql << "WHERE i.event_id = :event_id and i.shape_type_id = :shape_type_id and ci.indicator_type_id = :indicator_type_id "
@@ -143,15 +148,18 @@ class Datum < ActiveRecord::Base
 			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id,
 			                  :shape_id => shape_id,
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
+
 		end
 		puts "********************* time to query summary data for indicator type: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id} - # of results = #{x.length}"
     return x
 	end
 
+
 	def self.get_related_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
     results = nil
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+
   	  # get the event
   	  event = Event.find(event_id)
   	  # get the relationships for this indicator type

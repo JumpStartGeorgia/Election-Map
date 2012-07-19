@@ -82,11 +82,15 @@ class Shape < ActiveRecord::Base
       json["features"] = Array.new(shapes.length) {Hash.new}
 
 			shapes.each_with_index do |shape, i|
+
+
 				json["features"][i]["type"] = "Feature"
 				# have to parse it for the geo is already in json format and
 				# transforming it to json again escapes the "" and breaks openlayers
+
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
 				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
+
 			end
 		end
 		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"

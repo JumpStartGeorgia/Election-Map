@@ -158,8 +158,10 @@ class JsonController < ApplicationController
     respond_to do |format|
       format.json { render json: geometries}
     end
+
     logger.debug "@ time to render summary_custom_children_shapes json from file: #{Time.now-start} seconds"
   end
+
 
 protected
 
@@ -170,5 +172,4 @@ protected
 	def key_summary_custom_children_shapes
 		"summary_custom_children_shapes_json_#{I18n.locale}_shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]"
 	end
-
 end
