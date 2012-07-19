@@ -52,12 +52,19 @@ class AddEventAbbrvNames < ActiveRecord::Migration
 		et.save
 
 
-		#adjara - leave as is
-		ets = event_translations.select{|x| [13,14,19,20].include?(x.event_id) }
-		ets.each do |et|
-			et.name_abbrv = et.name
-			et.save
-		end
+		#adjara
+    et = event_translations.select{|x| x.event_id == 13 }.first
+    et.name_abbrv = '2008 Supreme Council - Party List'
+		et.save
+    et = event_translations.select{|x| x.event_id == 14 }.first
+    et.name_abbrv = '2008 Supreme Council - Majoritarian'
+		et.save
+    et = event_translations.select{|x| x.event_id == 19 }.first
+    et.name_abbrv = '2008 Supreme Council - Party List Re-run'
+		et.save
+    et = event_translations.select{|x| x.event_id == 20 }.first
+    et.name_abbrv = '2008 Adjara Supreme Council - Majoritarian Re-run'
+		et.save
 
 		#local
     et = event_translations.select{|x| x.event_id == 11 }.first
@@ -124,12 +131,20 @@ class AddEventAbbrvNames < ActiveRecord::Migration
 		et.save
 
 
-		#adjara - leave as is
-		ets = event_translations.select{|x| [13,14,19,20].include?(x.event_id) }
-		ets.each do |et|
-			et.name_abbrv = et.name
-			et.save
-		end
+		#adjara
+    et = event_translations.select{|x| x.event_id == 13 }.first
+    et.name_abbrv = '2008 უმაღლესი საბჭოს არჩევნები, პარტიული სია'
+		et.save
+    et = event_translations.select{|x| x.event_id == 14 }.first
+    et.name_abbrv = '2008 უმაღლესი საბჭოს არჩევნები, მაჟორიტარული'
+		et.save
+    et = event_translations.select{|x| x.event_id == 19 }.first
+    et.name_abbrv = '2008 უმაღლესი საბჭოს ხელახალი არჩევნები, პარტიული სია'
+		et.save
+    et = event_translations.select{|x| x.event_id == 20 }.first
+    et.name_abbrv = '2008 უმაღლესი საბჭოს ხელახალი არჩევნები, მაჟორიტარული'
+		et.save
+
 
 		#local
     et = event_translations.select{|x| x.event_id == 11 }.first
