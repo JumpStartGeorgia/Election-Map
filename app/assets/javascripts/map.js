@@ -447,6 +447,7 @@ function makeFeaturePopup(feature_data)
   //popup.panMapIfOutOfView = true;
   map.addPopup(popup);  
   
+  
   // Popup coordination
   var jq_popup = $(".olPopup:first"),
       jq_popup_content = $(".olPopupContent:first"),
@@ -472,15 +473,14 @@ function makeFeaturePopup(feature_data)
           return def_x;
         }
       };
-      
-  jq_popup.css({
+
+  /*jq_popup.css({
     left: jq_popup_offset.left(true),
     top: jq_popup_offset.top(true),    
     width: 0,
     height: 0
-  });
+  });*/
   
-
   
   if (feature_data.attributes.results.length > 0)
   {
@@ -520,7 +520,6 @@ function hover_handler (feature)
   } 
   // Create the popup
   makeFeaturePopup(feature);	  
-
 }
 
 // hide the map box

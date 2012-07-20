@@ -76,54 +76,59 @@ this[className].prototype.processTheType = function(id_el, json, options)
     
     
     if (ths.title instanceof Array)
-      ths.title = ths.title[0].title;                
-    
+      ths.title = ths.title[0].title;                    
     
     if (typeof ths.title === "object" && this.title_written !== true)
     {
       
-      
-      th_title = typeof ths.title.title_abbrv !== "undefined" && ths.title.title_abbrv instanceof String && ths.title.title_abbrv.length > 0 ? ths.title.title_abbrv : ths.title.title;
-      
-    
-    
-      
-      if (options['type'] === "title"){
-        window.maxSVGWidth = 30+ths.title.location*5+50;
-        window.maxSVGHeight = 200;
-      }
-    
-      this.SVGElement("text", {
-        "x": window.maxSVGWidth/2-ths.title.location.length*5,
-        "y": 20,
-        "style": "font-size:15px;"
-      }).text(ths.title.location);
-      
-      
-      
-       
-      this.SVGElement("text", {
-        "x": window.maxSVGWidth/2-th_title.length*5,
-        "y": 40,
-        "style": "font-size:15px;"
-      }).text( th_title );    
-      
-
-      
-      if (options['type'] === "title")
+      if (typeof th_title === "undefined")        
       {
-
-        delete th_title;
-        return ;
+        th_title = typeof ths.title.title_abbrv !== "undefined" && ths.title.title_abbrv instanceof String && ths.title.title_abbrv.length > 0 ? ths.title.title_abbrv : ths.title.title;
+        
       }
-            
-      delete th_title;
+        
+                    
+      if (options['type'] === "title") 
+      {
+        window.maxSVGWidth = 30+(ths.title.location.length>th_title.length ? ths.title.location.length : th_title.length)*5+50;
+        window.maxSVGHeight = 50;        
+      }
       
       
+      if (typeof window.maxSVGWidth !== "undefined")     
+      {
+    
+        this.SVGElement("text", {
+          "x": (window.maxSVGWidth/2-ths.title.location.length*4),
+          "y": 20,
+          "style": "font-size:15px;"
+        }).text(ths.title.location);
+        
+
+        this.SVGElement("text", {
+          "x": (window.maxSVGWidth/2-th_title.length*4),
+          "y": 40,
+          "style": "font-size:15px;"
+        }).text( th_title );    
+        
+
+        
+        if (options['type'] === "title")
+        {
+          delete th_title;
+          return ;
+        }
+              
+        delete th_title;
+        
+        
+        
+        this.title_written = true;
+        
+          
+      }
       
-      this.title_written = true;
-      
-      ths.y_s = 50;  
+      ths.y_s = 50;
       
     }
     
@@ -253,7 +258,7 @@ this[className].prototype.processJSON = function(id_el, json, options)
     });
   }
   else 
-  {
+  {    
     options['type'] = "title";
     ths.processTheType(id_el,json, options);
   }
