@@ -278,11 +278,22 @@ this[className].prototype.processJSON = function(id_el, json, options)
 };
 
 
+
+function mapFreeze(feature)
+{
+    map.controls[2].deactivate();
+    makeFeaturePopup(feature, true, true, function(){           
+      map.controls[2].activate();
+    });    
+}
+
+
 $(document).mouseover(function(e){
   window.mouse = {
     X: e.pageX,
     Y: e.pageY
   };
+  mapFreeze(map.layers[2].features[8]);
 });
 
 

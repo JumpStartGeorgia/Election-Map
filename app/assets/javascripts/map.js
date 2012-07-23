@@ -434,9 +434,15 @@ function removeFeaturePopups()
 }
 
 // Create the popup for the feature 
-function makeFeaturePopup(feature_data)
+function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 {  
-
+  
+  if (typeof(stright) === "undefined")
+    stright = false;
+  
+  if (stright && $(".olPopupCloseBox:first").length !== 0)
+    return ;
+    
   removeFeaturePopups();  
   
   var popup = new OpenLayers.Popup("Feature Popup",
@@ -445,7 +451,14 @@ function makeFeaturePopup(feature_data)
   "",
   true);
   //popup.panMapIfOutOfView = true;
-  map.addPopup(popup);  
+  map.addPopup(popup);
+  
+  if (close_button){
+    var popup_close = $(".olPopupCloseBox:first");
+    popup_close.css({
+      background: "#000"
+    }).click(close_button_func);
+  }
   
   
   // Popup coordination
@@ -480,8 +493,9 @@ function makeFeaturePopup(feature_data)
     width: 0,
     height: 0
   });*/
-  
-  
+    
+   
+   
   if (feature_data.attributes.results.length > 0)
   {
   
@@ -497,10 +511,15 @@ function makeFeaturePopup(feature_data)
     jq_popup.css({
       width: window.maxSVGWidth,
       height: window.maxSVGHeight      
-    }).css({
-      left: jq_popup_offset.left(false),
-      top: jq_popup_offset.top(false)
     });
+    
+    if (!stright)   
+    {
+      jq_popup.css({
+        left: jq_popup_offset.left(false),
+        top: jq_popup_offset.top(false)
+      });
+    }
     
   }
   
