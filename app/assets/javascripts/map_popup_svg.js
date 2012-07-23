@@ -154,7 +154,7 @@ this[className].prototype.processTheType = function(id_el, json, options)
           "height": 10,
           "style": "fill:"+value.color         
         },{
-          "x": 30+ths.max_ind_len*7+80,
+          "x": 30+ths.max_ind_len*7+60,
           "y": ths.y_s+i*ths.dist,
           "width": ths.max/100*value.value,
           "height": 10,
@@ -238,6 +238,10 @@ this[className].prototype.processJSON = function(id_el, json, options)
     foreach(json, function(index, value){    
       if (typeof value.summary_data === "object")
       {
+
+        foreach(value.summary_data, function(ind, val){
+          val.value = val.formatted_value;
+        });
         options['type'] = "summary_data"; 
         json.data = value.summary_data;
       }
@@ -272,7 +276,6 @@ this[className].prototype.processJSON = function(id_el, json, options)
     
       
 };
-
 
 
 $(document).mouseover(function(e){
