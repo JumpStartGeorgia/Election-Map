@@ -131,8 +131,10 @@ function map_init(){
   });
   
   map.addControls([select_child]);
+  
   select_child.activate();
 
+  
 }
 
 // load the features and set the bound
@@ -170,8 +172,10 @@ function load_vector_child(resp){
     draw_legend();
 		// now load the values for the hidden form
 		load_hidden_form();
+		
+		//mapFreeze(map.layers[2].features[17]);
   } else {
-console.log('vector_child - no features found');
+    console.log('vector_child - no features found');
   }
 }
 
@@ -456,7 +460,11 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
   if (close_button){
     var popup_close = $(".olPopupCloseBox:first");
     popup_close.css({
-      background: "#000"
+      "width": "30px",
+      "height": "30px",
+      "background-image": "url('/assets/fancybox.png')",
+      "background-position": "right top",
+      "cursor": "pointer"
     }).click(close_button_func);
   }
   
