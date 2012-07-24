@@ -157,7 +157,7 @@ tr.odd_row td, tr.even_row td{
 #data-table th:first-child, #data-table td:first-child {
 }
 
-#data-table th:not(:first-child), #data-table td:not(:first-child) {
+#data-table th:not(.cg0), #data-table td:not(.cg0) {
   text-align: center;
 }
 

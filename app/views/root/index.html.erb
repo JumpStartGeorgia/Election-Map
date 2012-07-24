@@ -154,7 +154,7 @@
           <% classname = 'cg' + cgnumber.to_s %>
           <td data-i="<%= i %>" <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
             <% if i > 0 %>
-            <%= link_to(value, indicator_map_path(params.merge(:indicator_id => @dt.indicator_ids[i],  :common_name => row[0]))) %>
+            <%= link_to(value, indicator_map_path(params.merge(:indicator_id => @dt.indicator_ids[i],  :common_name => row[0], :view_type => nil))) %>
               <%# link_to(image_tag('data_table_marker.svg'), indicator_map_path(params.merge(:indicator_id => @dt.indicator_ids[i],  :common_name => row[0]))) %>
             <% else %>
               <%= value %>
