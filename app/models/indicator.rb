@@ -1,5 +1,4 @@
 class Indicator < ActiveRecord::Base
-#  translates :name, :name_abbrv, :description
   require 'csv'
 
   belongs_to :core_indicator
@@ -8,14 +7,11 @@ class Indicator < ActiveRecord::Base
   has_many :data, :dependent => :destroy
   belongs_to :event
   belongs_to :shape_type
-#  belongs_to :indicator_type
-#  accepts_nested_attributes_for :indicator_translations
-  has_many :indicator_translation_olds
-  attr_accessible :core_indicator_id, :event_id, :shape_type_id, :indicator_type_old, :number_format_old#, :indicator_translations_attributes
+  attr_accessible :core_indicator_id, :event_id, :shape_type_id
   attr_accessor :locale
 
   validates :core_indicator_id, :event_id, :shape_type_id, :presence => true
-  
+
 #  scope :l10n , joins(:indicator_translations).where('locale = ?',I18n.locale)
 #  scope :by_name , order('name').l10n
 
@@ -44,13 +40,13 @@ class Indicator < ActiveRecord::Base
     self.core_indicator.number_format
   end
 
-	# the shape_type has changed, get the indicator that 
+	# the shape_type has changed, get the indicator that
   # matches the indicator from the last shape type
 	def self.find_new_id(old_indicator, new_shape_type)
 		if (old_indicator.nil? || new_shape_type.nil?)
-			return nil		
+			return nil
 		else
-			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}") {
+#			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}") {
 				sql = "select inew.* "
 				sql << "from indicators as iold "
 				sql << "inner join indicators as inew on iold.event_id = inew.event_id "
@@ -59,41 +55,21 @@ class Indicator < ActiveRecord::Base
         sql << "inner join core_indicator_translations as citold on ciold.id = citold.core_indicator_id "
         sql << "inner join core_indicator_translations as citnew on cinew.id = citnew.core_indicator_id and citold.name_abbrv = citnew.name_abbrv and citold.locale = citnew.locale "
 				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and citold.locale = :locale"
-		
+
 				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => I18n.locale])
-			}
-=begin
-sql = "select inew.* "
-sql << "from indicators as iold "
-sql << "inner join indicators as inew on iold.event_id = inew.event_id and iold.core_indicator_id = inew.core_indicator_id "
-sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type"
-
-find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type])
-
-
-      sql = "select inew.* "
-      sql << "from indicators as iold "
-      sql << "inner join indicators as inew on iold.event_id = inew.event_id  "
-      sql << "inner join indicator_translations as itold on iold.id = itold.indicator_id "
-      sql << "inner join indicator_translations as itnew on inew.id = itnew.indicator_id and itold.name_abbrv = itnew.name_abbrv and itold.locale = itnew.locale "
-      sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and itold.locale = :locale"
-
-      find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => locale])
-=end
-
+#			}
 		end
 	end
 
 	def self.find_by_event_shape_type(event_id, shape_type_id)
 		if event_id.nil? || shape_type_id.nil?
-			return nil		
+			return nil
 		else
-			Rails.cache.fetch("indicators_by_event_#{event_id}_shape_type_#{shape_type_id}_#{I18n.locale}") {
+#			Rails.cache.fetch("indicators_by_event_#{event_id}_shape_type_#{shape_type_id}_#{I18n.locale}") {
 				includes({:core_indicator => :core_indicator_translations})
-				.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id}, 
+				.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id},
 							:core_indicator_translations => {:locale => I18n.locale})
-			}
-#      where(:event_id => event_id, :shape_type_id => shape_type_id)
+#			}
 		end
 	end
 
@@ -131,13 +107,13 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
-    logger.debug "++++processing row #{n}"		
+    logger.debug "++++processing row #{n}"
 
         # if the event or shape type are not provided, stop
         if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0 ||
             row[idx_indicator_type].nil? || row[idx_indicator_type].strip.length == 0 ||
 						row[idx_en_ind_name].nil? || row[idx_en_ind_name].strip.length == 0
-  logger.debug "+++++++ event, shape type, indicator type, or indicator name not provided"				
+  logger.debug "+++++++ event, shape type, indicator type, or indicator name not provided"
     		  msg = I18n.t('models.indicator.msgs.no_event_shape_spreadsheet', :row_num => n)
   	      raise ActiveRecord::Rollback
     		  return msg
@@ -152,17 +128,17 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
 					core_indicator = CoreIndicator.find_by_name(row[idx_en_ind_name].strip)
 
   				if event.nil? || shape_type.nil? || indicator_type.nil? || core_indicator.nil?
-  	logger.debug "++++event or shape type or indicator type or core indicator was not found"				
+  	logger.debug "++++event or shape type or indicator type or core indicator was not found"
 		  		  msg = I18n.t('models.indicator.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
 		logger.debug "++++found event, shape type, indicator type and core indicator, seeing if record already exists"
 						# see if indicator already exists for the provided event and shape_type
-						alreadyExists = Indicator.includes(:core_indicator)
-						  .where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.indicator_type_id = ? and core_indicators.id = ?', 
+						alreadyExists = Indicator.select("indicators.id").includes(:core_indicator)
+						  .where('indicators.event_id = ? and indicators.shape_type_id = ? and core_indicators.id = ? and core_indicators.indicator_type_id = ? ',
 						    event.id, shape_type.id, indicator_type.id, core_indicator.id)
-				
+
 	          # if the indicator already exists and deleteExistingRecord is true, delete the indicator
 	          if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
 	logger.debug "+++++++ deleting existing indicator"
@@ -171,7 +147,7 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
 	            end
 	            alreadyExists = nil
 	          end
-				
+
 						if alreadyExists.nil? || alreadyExists.empty?
 		logger.debug "++++record does not exist, populate obj"
 							# populate record
@@ -200,16 +176,16 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
 									i+=columns_per_scale # move on to the next set of indicator scales
 						    end
 						  end
-						  # save if no scales provided 
+						  # save if no scales provided
 						  #  or if scales color provided for all scales
 						  #  or there were between 3 and 13 scales and no color
 	  		logger.debug "+++++++ num of colors found for this row: #{num_colors_found_for_indicator} and scale length = #{ind.indicator_scales.length}"
 	  		logger.debug "+++++++ i = #{i}, lower bound = #{(3*columns_per_scale + index_first_scale)}, upper bound = #{(13*columns_per_scale + index_first_scale)}"
-						  if ((i==index_first_scale) || 
-						      (num_colors_found_for_indicator > 0 && num_colors_found_for_indicator == ind.indicator_scales.length) || 
+						  if ((i==index_first_scale) ||
+						      (num_colors_found_for_indicator > 0 && num_colors_found_for_indicator == ind.indicator_scales.length) ||
 						      (i >= (3*columns_per_scale + index_first_scale) && i <= (13*columns_per_scale + index_first_scale)))
 	  		logger.debug "++++saving record"
-	  					  # Save if valid 
+	  					  # Save if valid
 	  				    if ind.valid?
 	  				      ind.save
 	  				    else
@@ -235,7 +211,7 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
   		end
 		end
   logger.debug "++++procssed #{n} rows in CSV file"
-    return msg 
+    return msg
   end
 
 =begin
@@ -262,12 +238,12 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
 		    n += 1
 		    # SKIP: header i.e. first row OR blank row
 		    next if n == 1 or row.join.blank?
-    logger.debug "++++processing row #{n}"		
+    logger.debug "++++processing row #{n}"
 
         # if the event or shape type are not provided, stop
         if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0 ||
             row[idx_indicator_type].nil? || row[idx_indicator_type].strip.length == 0
-  logger.debug "+++++++ event or shape type not provided"				
+  logger.debug "+++++++ event or shape type not provided"
     		  msg = I18n.t('models.indicator.msgs.no_event_shape_spreadsheet', :row_num => n)
   	      raise ActiveRecord::Rollback
     		  return msg
@@ -280,13 +256,13 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
   				indicator_type = IndicatorType.find_by_name(row[idx_indicator_type].strip)
 
   				if event.nil? || shape_type.nil? || indicator_type.nil?
-  	logger.debug "++++event or shape type or indicator type was not found"				
+  	logger.debug "++++event or shape type or indicator type was not found"
 		  		  msg = I18n.t('models.indicator.msgs.no_event_shape_db', :row_num => n)
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
             # only conintue if all values are present
-            if row[idx_old_en_ind_name].nil? || row[idx_en_ind_name].nil? || row[idx_en_ind_abbrv_name].nil? || row[idx_en_ind_desc].nil? || 
+            if row[idx_old_en_ind_name].nil? || row[idx_en_ind_name].nil? || row[idx_en_ind_abbrv_name].nil? || row[idx_en_ind_desc].nil? ||
                 row[idx_ka_ind_name].nil? || row[idx_ka_ind_abbrv_name].nil? || row[idx_ka_ind_desc].nil?
         		  msg = I18n.t('models.indicator.msgs.missing_data_spreadsheet', :row_num => n)
   logger.debug "+++++**missing data in row"
@@ -296,16 +272,16 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
 			logger.debug "++++found event and shape type, seeing if record already exists"
 							# see if indicator already exists for the provided event and shape_type
 							alreadyExists = Indicator.includes({:core_indicator => :core_indicator_translations})
-							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?', 
+							  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.indicator_type_id = ? and core_indicator_translations.locale="en" and core_indicator_translations.name= ?',
 							    event.id, shape_type.id, indicator_type.id, row[idx_old_en_ind_name].strip)
-					
+
 							if !alreadyExists.nil? && alreadyExists.length > 0
 			logger.debug "++++found indicator record, populate obj"
 								# update record
 								# - alreadyExists only has en translation record, need to have all translations
 								ind = Indicator.find(alreadyExists[0].id)
 								if !row[idx_number_format].nil? && row[idx_number_format].strip.length > 0
-									ind.number_format = row[idx_number_format].strip 
+									ind.number_format = row[idx_number_format].strip
 								else
 									ind.number_format = nil
 								end
@@ -320,7 +296,7 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
                 end
 
 	  		logger.debug "++++saving record"
-	  					  # Save if valid 
+	  					  # Save if valid
 	  				    if ind.valid?
     		logger.debug "++++ - about to save"
 	  				      ind.save
@@ -343,7 +319,7 @@ find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_
   		end
 		end
   logger.debug "++++procssed #{n} rows in CSV file"
-    return msg 
+    return msg
   end
 =end
   def self.create_csv(event_id, names_only)
@@ -360,17 +336,17 @@ logger.debug "not all params provided"
       if names_only
 logger.debug "getting indicator names only"
         indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, {:indicator_type => :indicator_type_translations}]})
-          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
+          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ",
             :event_id => event_id, :locale => "en")
           .order("shape_types.id ASC, indicator_type_translations.name ASC, indicators.id ASC")
-      else 
+      else
 logger.debug "getting all indicator info"
         indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, {:indicator_type => :indicator_type_translations}]}, {:indicator_scales => :indicator_scale_translations})
-          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ", 
+          .where("indicators.event_id = :event_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_type_translations.locale = :locale ",
             :event_id => event_id, :locale => "en")
           .order("shape_types.id ASC, indicator_type_translations.name ASC, indicators.id ASC, indicator_scales.id ASC")
       end
-      
+
       if indicators.nil? || indicators.empty?
 logger.debug "no indicators found"
 				obj.msg = I18n.t('models.indicator.msgs.no_indicators')
@@ -417,7 +393,7 @@ logger.debug "no indicator type translation found"
           end
 
           row << ind.number_format
-          
+
           if !names_only
             # add the scales
             i = 0
@@ -431,7 +407,7 @@ logger.debug "no indicator type translation found"
               max_num_scales = i if i > max_num_scales
             end
           end
-          
+
           # add the row to the rows array
           rows << row
         end
@@ -443,7 +419,7 @@ logger.debug "no indicator type translation found"
 						c = "#{c}"
 					end
 				end
-        
+
 				obj.csv_data = CSV.generate(:col_sep=>',') do |csv|
           # generate the header
           header = []
@@ -452,7 +428,7 @@ logger.debug "no indicator type translation found"
             header << csv_scale_header
           end
           csv << header.flatten
-          
+
           # add the rows
           rows.each do |r|
             csv << r

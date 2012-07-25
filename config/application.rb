@@ -61,6 +61,10 @@ module ElectionMap
 		# how to send email
 		config.action_mailer.delivery_method = :smtp
 
+    # Configure sensitive parameters which will be filtered from the log file.
+    config.filter_parameters += [:password]
+    
+#    config.threadsafe! # enable threadsafe for girl_friday
 
   end
 end

@@ -15,21 +15,19 @@ class IndicatorsController < ApplicationController
 				  msg = Indicator.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-            # clear the cache
-            Rails.cache.clear
-						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to upload_indicators_path #GET
 		      else
 		        # errors
-						flash[:notice] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
+						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to upload_indicators_path #GET
 		      end 
 				else
-					flash[:notice] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
+					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to upload_indicators_path #GET
 				end
 			else
-				flash[:notice] = I18n.t('app.msgs.upload.no_file')
+				flash[:error] = I18n.t('app.msgs.upload.no_file')
 	      redirect_to upload_indicators_path #GET
 			end
 		end
@@ -56,19 +54,19 @@ class IndicatorsController < ApplicationController
 				  msg = Indicator.change_names_from_csv(params[:file])
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-						flash[:notice] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 				    redirect_to change_name_indicators_path #GET
 		      else
 		        # errors
-						flash[:notice] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
+						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to change_name_indicators_path #GET
 		      end 
 				else
-					flash[:notice] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
+					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to change_name_indicators_path #GET
 				end
 			else
-				flash[:notice] = I18n.t('app.msgs.upload.no_file')
+				flash[:error] = I18n.t('app.msgs.upload.no_file')
 	      redirect_to change_name_indicators_path #GET
 			end
 		end
@@ -103,7 +101,7 @@ class IndicatorsController < ApplicationController
 
       if event.nil?
         # no matching event found
-				flash[:notice] = I18n.t('app.msgs.download.unknow_event')
+				flash[:error] = I18n.t('app.msgs.download.unknow_event')
 	      redirect_to download_indicators_path #GET
       else
         #get the data
@@ -123,10 +121,10 @@ filename ="Indicator_Names_Scales_for_"
           obj = Indicator.create_csv(params[:event_id], false)
         end
         if !obj.msg.nil?
-  				flash[:notice] = I18n.t('app.msgs.download.error', :event_name => event.name, :msg => obj.msg)
+  				flash[:error] = I18n.t('app.msgs.download.error', :event_name => event.name, :msg => obj.msg)
   	      redirect_to download_indicators_path #GET
 				elsif obj.csv_data.nil? || obj.csv_data.empty?
-  				flash[:notice] = I18n.t('app.msgs.download.no_records', :event_name => event.name)
+  				flash[:error] = I18n.t('app.msgs.download.no_records', :event_name => event.name)
   	      redirect_to download_indicators_path #GET
         else
           # send the file
@@ -142,5 +140,19 @@ filename ="Indicator_Names_Scales_for_"
 		end
   end
 
+	# GET /indicators/event/:event_id/shape_type/:shape_type_id.json
+	def by_event_shape_type
+		indicators = Indicator.find_by_event_shape_type(params[:event_id], params[:shape_type_id])
+
+		# build array with id and names
+		custom_ary = []
+		indicators.each do |ind|
+			custom_ary << {:id => ind.id, :name => ind.name, :name_abbrv => ind.name_abbrv}
+		end
+			
+    respond_to do |format|
+      format.json { render json: custom_ary.sort_by {|e| e[:name]} }
+    end
+	end
 
 end

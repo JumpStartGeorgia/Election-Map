@@ -27,8 +27,8 @@
 
 	<% if !params[:hidden_form_colors].nil? && params[:hidden_form_colors].length > 0 %>
 		<% params[:hidden_form_colors].split("||").each_with_index do |color, i| %>
-			<rect x="<%= 180*(i-5*(i/5))+7 %>" y="<%= i/5*25+662 %>" width="15" height="15" 
-				style="fill:<%= color %>; stroke:black; stroke-width:1;" />
+			<rect x="<%= 180*(i-5*(i/5))+7 %>" y="<%= i/5*25+662 %>" width="15" height="15"
+				style="fill:<%= color %>; stroke:black; stroke-width:1; fill-opacity: <%= params[:hidden_form_opacity]%>;" />
 		<% end %>
 	<% end %>
 

@@ -4,10 +4,13 @@
   <b><%= t('app.common.name') %>:</b>
   <%= @event_type.name %>
 </p>
+<p>
+  <b><%= t('app.common.sort_order') %>:</b>
+  <%= @event_type.sort_order %>
+</p>
 
 <div class="admin_nav">
 	<%= link_to t('app.buttons.edit'), edit_event_type_path(@event_type) %>
 	<%= link_to t('app.buttons.list'), event_types_path %>
 	<%= link_to t('app.buttons.admin'), admin_path %>
 </div>
-
