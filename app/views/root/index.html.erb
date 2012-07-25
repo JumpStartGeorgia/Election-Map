@@ -1,32 +1,6 @@
 <% title @map_title %>
 
-<% if !@indicator_types.nil? && !@indicator_types.empty? %>
-	<ul id="indicators" class="group">
-		<% @indicator_types.each do |indicator_type| %>
-			<% if indicator_type.has_summary %>
-				<li>
-					<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s &&
-					      @summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
-
-				  <%= link_to indicator_type.name,
-				    summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil)),
-
-				    :class => is_active %>
-				</li>
-			<% end %>
-			<% indicator_type.core_indicators.each do |core| %>
-				<% core.indicators.each do |indicator| %>
-					<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
-					<li>
-						<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
-						  :view_type => nil, :indicator_type_id => nil)),
-							:title => core.description_w_parent, :class => is_active %>
-					</li>
-				<% end %>
-			<% end %>
-		<% end %>
-	</ul>
-<% end %>
+<%= render :partial => "root/indicator_menu_scales"%>
 
 <% if !@events.nil? && !@events.empty? %>
 	<ul id="events" class="group">

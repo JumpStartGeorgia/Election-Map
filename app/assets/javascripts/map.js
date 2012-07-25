@@ -2,12 +2,13 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
 //= require fancybox
 //= require vendor_map
 //= require d3.v2.min
-//= require jquery.ui
 //= require jquery.slimscroll
 //= require map_popup_svg
+//= require indicator_menu_scale
 
 window.onload = map_init;
 
@@ -129,7 +130,7 @@ function map_init(){
 		onUnselect: mouseout_handler,
 		clickFeature: click_handler
   });
-  
+
   map.addControls([select_child]);
   select_child.activate();
 
@@ -382,9 +383,9 @@ function click_handler (feature)
 
 		// load the url
 		window.location.href = url;
-			  
+
 	}
-	
+
 }
 
 // add/update the query paramter with the provided name and value
@@ -433,21 +434,21 @@ function removeFeaturePopups()
   });
 }
 
-// Create the popup for the feature 
+// Create the popup for the feature
 function makeFeaturePopup(feature_data)
-{  
+{
 
-  removeFeaturePopups();  
-  
+  removeFeaturePopups();
+
   var popup = new OpenLayers.Popup("Feature Popup",
   feature_data.geometry.bounds.getCenterLonLat(),
   new OpenLayers.Size(400, 300),
   "",
   true);
   //popup.panMapIfOutOfView = true;
-  map.addPopup(popup);  
-  
-  
+  map.addPopup(popup);
+
+
   // Popup coordination
   var jq_popup = $(".olPopup:first"),
       jq_popup_content = $(".olPopupContent:first"),
@@ -459,16 +460,16 @@ function makeFeaturePopup(feature_data)
           jq_popup_offset.left = function(){
             if (mouse.X-jq_map.offset().left+10+jq_popup.width() < jq_map.width())
               return mouse.X-jq_map.offset().left+10;
-            else 
+            else
               return mouse.X-jq_map.offset().left-(mouse.X-jq_map.offset().left+10+jq_popup.width()-jq_map.width());
           };
           return def_y+def_y*(-1)+10;
          }
-         return def_y; 
+         return def_y;
         },
-        left: function(use_def){          
+        left: function(use_def){
           var def_x = mouse.X-jq_map.offset().left-jq_popup.width()/2;
-          if (def_x+jq_popup.width() > jq_map.width() && use_def===false) 
+          if (def_x+jq_popup.width() > jq_map.width() && use_def===false)
             return def_x-(def_x+jq_popup.width()-jq_map.width())-50;
           return def_x;
         }
@@ -476,35 +477,35 @@ function makeFeaturePopup(feature_data)
 
   /*jq_popup.css({
     left: jq_popup_offset.left(true),
-    top: jq_popup_offset.top(true),    
+    top: jq_popup_offset.top(true),
     width: 0,
     height: 0
   });*/
-  
-  
+
+
   if (feature_data.attributes.results.length > 0)
   {
-  
+
     new elmapsvgpopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
-      limit: 5    
+      limit: 5
     });
-    
+
     jq_popup_content.css({
       width: window.maxSVGWidth,
       height: window.maxSVGHeight
     });
-    
+
     jq_popup.css({
       width: window.maxSVGWidth,
-      height: window.maxSVGHeight      
+      height: window.maxSVGHeight
     }).css({
       left: jq_popup_offset.left(false),
       top: jq_popup_offset.top(false)
     });
-    
+
   }
-  
-  
+
+
 }
 
 // show the map box
@@ -512,14 +513,14 @@ function hover_handler (feature)
 {
   if (gon.view_type == gon.summary_view_type_name)
   {
-  	populate_map_box(feature.attributes.common_name, feature.attributes.value, 
+  	populate_map_box(feature.attributes.common_name, feature.attributes.value,
   	feature.attributes.data_value, number_format);
   } else if (gon.indicator_scale_colors && gon.indicator_scales){
-  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv, 
+  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv,
   	feature.attributes.value, number_format);
-  } 
+  }
   // Create the popup
-  makeFeaturePopup(feature);	  
+  makeFeaturePopup(feature);
 }
 
 // hide the map box
@@ -527,9 +528,9 @@ function mouseout_handler (feature)
 {
   //removeFeaturePopups();
 	$('#map-box').hide(0);
-	
-	removeFeaturePopups();  
-	
+
+	removeFeaturePopups();
+
 }
 
 function populate_map_box(title, indicator, value, number_format)
@@ -664,5 +665,3 @@ $(document).ready(function() {
 	// to load pop-up window for export help
   $("a.fancybox").fancybox();
 });
-
-

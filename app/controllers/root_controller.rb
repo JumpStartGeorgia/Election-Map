@@ -152,6 +152,7 @@ logger.debug "////////////// selecting first indicator"
 									flag_redirect = true
 								else
 									params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
+									params[:indicator_type_id] = @indicator_types[0].id
 								end
 							end
 
@@ -177,6 +178,8 @@ logger.debug "////////////// getting the current indicator"
 									# get the selected indicator
 									@indicator = Indicator.find(params[:indicator_id])
 								end
+								# save the indicator type id so the indicator menu works
+								params[:indicator_type_id] = @indicator.core_indicator.indicator_type_id if params[:indicator_type_id].nil?
 logger.debug "////////////// done getting current indicator"
 							end
 
@@ -365,7 +368,6 @@ logger.debug " - no matching event found!"
   def set_gon_variables
     # shape json paths
 		# - only children shape path needs the indicator id since that is the only layer that is clickable
-
 		if !params[:shape_id].nil?
 			gon.shape_path = json_shape_path(:id => params[:shape_id], :shape_type_id => @parent_shape_type)
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
@@ -420,6 +422,9 @@ logger.debug " - no matching event found!"
 		  gon.event_name = event.name if !event.nil?
 		  gon.map_title = @map_title
 	  end
+
+		# indicate indicator menu/scale block should be loaded
+		gon.indicator_menu_scale = true
   end
 
   # build an array of indicator scales that will be used in js

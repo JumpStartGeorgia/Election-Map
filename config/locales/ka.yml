@@ -204,6 +204,8 @@ ka:
       export_link_text: ჩამოტვირთეთ მონაცემები
       export_help_text: დახმარება
       footnote: "აღვნიშნო: %{note}"
+    indicator_menu_scales:
+      indicator_header: ინდიკატორები
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.

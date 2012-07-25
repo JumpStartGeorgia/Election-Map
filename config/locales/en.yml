@@ -201,6 +201,8 @@ en:
       export_link_text: Export Map
       export_help_text: Export Help
       footnote: "Note: %{note}"
+    indicator_menu_scales:
+      indicator_header: Indicators
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.

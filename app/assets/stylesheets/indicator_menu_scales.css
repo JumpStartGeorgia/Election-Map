@@ -1,0 +1,50 @@
+div#indicator_menu_scale {
+	width: 225px;
+	padding: 0;
+	margin: 0;
+}
+
+div#indicator_menu_scale h3#indicator_menu_header {
+	cursor: pointer;
+	padding: 0.5em;
+	text-transform:uppercase;
+	font-size: 14pt;
+	font-weight: bold;
+	background: #2985C4;
+}
+
+div#indicator_menu_scale div#indicator_menu_tabs{
+	width: 225px;
+	font-size: 9pt;
+	height: 150px;
+	overflow: hidden;
+	padding: 0;
+}
+div#indicator_menu_scale div#indicator_menu_tabs ul li a {
+	color: #000;
+	text-shadow: none;
+}
+div#indicator_menu_scale div#indicator_menu_tabs div.indicator_links {
+	height: 105px;
+	overflow: auto;
+	padding: 0;
+	margin: 0;
+}
+div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li{
+	list-style: none;
+	padding: 0.2em 0.5em;
+}
+div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li a {
+	padding: 0.3em;
+	display: block;
+}
+div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li a.active {
+	padding: 0.3em;
+	display: block;
+	background: #5F646A;
+	color: #fff;
+}
+div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li a:hover {
+	background: #5F646A;
+	color: #fff;
+}
