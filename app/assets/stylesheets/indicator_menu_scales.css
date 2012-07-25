@@ -1,4 +1,5 @@
 div#indicator_menu_scale {
+	float: left;
 	width: 225px;
 	padding: 0;
 	margin: 0;
@@ -9,6 +10,7 @@ div#indicator_menu_scale h3 {
 	font-size: 14pt;
 	font-weight: bold;
 	background: #2985C4;
+	color: #fff;
 }
 
 div#indicator_menu_scale h3#indicator_menu_header {

@@ -223,64 +223,30 @@ a:hover
 /* Events */
 #events
 {
-    margin: 5px 25px 0 0;
-    width: 200px;
-    float: left;
+  margin: 0;
 }
 
-#events > li
+#events h3
 {
-    position: relative;
-    padding: 0 10px 30px 0;
-    border-right: 10px solid #888;
-    text-align: right;
+	padding: 0.5em;
+	font-size: 14pt;
+	font-weight: bold;
+	background: #2985C4;
+	color: #fff;
+	text-transform:uppercase;
 }
 
-#events > li.first
+#events > ul > li
 {
-    padding-bottom: 25px;
-}
-
-#events > li.last
-{
-    padding-bottom: 0;
-}
-
-#events li > span
-{
-    position: absolute;
-    right: -10px;
-    top: 0;
-    display: block;
-    background: #999;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-}
-
-#events li > span.active
-{
-    background: #B0B0B0;
-    box-shadow: 0 0 2px #444;
-    -webkit-box-shadow: 0 0 2px #444;
-    -moz-box-shadow: 0 0 2px #444;
-}
-
-#events li.first > span
-{
-    top: -3px;
-}
-
-#events li.last > span
-{
-    top: auto;
-    bottom: -3px;
+	float: left;
+	margin: 0;
+	padding: 0;
 }
 
 #events a
 {
+		display: block;
+		padding: 0.5em;
     color: #BBB;
     text-decoration: none;
     font-size: 108.3%;
