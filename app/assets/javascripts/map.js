@@ -239,13 +239,13 @@ function draw_legend()
 	// show the indicator descritpion if provided
 	if (gon.indicator_description) {
 		$('#indicator_description').append(gon.indicator_description);
-	  $('#indicator_description').show(500);
+	  $('#indicator_description').slideDown(500);
 	} else {
 		$('#indicator_description').innerHTML = "";
 	  $('#indicator_description').hide(0);
 	}
 
-  $('#legend_container').show(500);
+  $('#legend_container').slideDown(500);
 }
 
 // build the color mapping for the indicators
@@ -512,16 +512,6 @@ function makeFeaturePopup(feature_data)
 // show the map box
 function hover_handler (feature)
 {
-/*
-  if (gon.view_type == gon.summary_view_type_name)
-  {
-  	populate_map_box(feature.attributes.common_name, feature.attributes.value,
-  	feature.attributes.data_value, number_format);
-  } else if (gon.indicator_scale_colors && gon.indicator_scales){
-  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv,
-  	feature.attributes.value, number_format);
-  }
-*/
   // Create the popup
   makeFeaturePopup(feature);
 }
@@ -536,36 +526,6 @@ function mouseout_handler (feature)
 
 }
 
-function populate_map_box(title, indicator, value, number_format)
-{
-		var box = $('#map-box');
-    if (title)
-    {
-        box.children('h1').text(title);
-    }
-		// under summary, the indicator name is the value so if the indicator = no data, do not show it
-    if (indicator && indicator != gon.no_data_text)
-    {
-      box.children('#map-box-content').children('#map-box-indicator').text(indicator + ":");
-    } else {
-      box.children('#map-box-content').children('#map-box-indicator').text("");
-    }
-    if (value)
-    {
-			// make the number pretty
-			// if the value is a number, apply the number_format
-			if (!isNaN(value) && number_format){
-				value += number_format;
-			}
-      box.children('#map-box-content').children('#map-box-value').text(value);
-    } else {
-      box.children('#map-box-content').children('#map-box-value').text("");
-    }
-    if (title || (indicator && value))
-    {
-        box.show(0);
-    }
-}
 
 // load the hidden form with the values so the export link works
 function load_hidden_form()
@@ -606,7 +566,7 @@ function load_hidden_form()
 		});
 
 		// show the export links
-		$('#export').show(500);
+		$('#export').slideDown(500);
 
 	} else {
 		// hide the export links
