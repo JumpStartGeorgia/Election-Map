@@ -119,6 +119,66 @@
 </section>
 
 
+<% td = @dt.data %>
+<% if !td.nil? && !td.empty? %>
+<% cqo = @dt.cols_p - @dt.static_cols %>
+<div id="data-table-container">
+  <h3><%= td[0][0] + ' - ' + td[1][0] %></h3>
+  <h3><%= td[0][1] + ' - ' + td[1][1] %></h3>
+
+  <div class="switchers clearfix">
+    <div class="arrows">
+      <div class="left" data-direction="left"></div>
+      <div class="right" data-direction="right"></div>
+    </div>
+
+    <% j = 0; %>
+    <select id="dt_dd_switcher"><!--data table dropdown switcher-->
+      <option disabled selected="selected"></option>
+      <% @dt.groups.times do |i| %>
+        <% val = (i + 1).to_s %>
+        <!--<option value="<%= val %>">group #<%= val %></option>-->
+        <% @dt.dd_titles[i].each do |title| %>
+          <% j = j + 1 %>
+          <% selected = @dt.indicator_ids[j].to_s == params[:indicator_id].to_s ? 'selected="selected"'.html_safe : '' %>
+          <option <%= selected %> data-i="<%= j %>" value="<%= val %>"><%= title %></option>
+        <% end %>
+      <% end %>
+    </select>
+  </div>
+
+  <table id="data-table">
+    <tr>
+      <% td[0].each_with_index do |value, i| %>
+        <% cgnumber = (i > 0) ? ((i - @dt.static_cols + (cqo - (i - @dt.static_cols) % cqo)) / cqo).to_s : 0 %>
+        <% classname = 'cg' + cgnumber.to_s %>
+        <th data-i="<%= i %>" <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
+          <%= value %>
+        </th>
+      <% end %>
+    </tr>
+
+    <% td[1..(td.length - 1)].each do |row| %>
+      <tr>
+        <% row.each_with_index do |value, i| %>
+          <% cgnumber = (i > 0) ? ((i - @dt.static_cols + (cqo - (i - @dt.static_cols) % cqo)) / cqo).to_s : 0 %>
+          <% classname = 'cg' + cgnumber.to_s %>
+          <td data-i="<%= i %>" <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
+            <% if i > 0 %>
+            <%= link_to(value, indicator_map_path(params.merge(:indicator_id => @dt.indicator_ids[i],  :common_name => row[0], :view_type => nil))) %>
+              <%# link_to(image_tag('data_table_marker.svg'), indicator_map_path(params.merge(:indicator_id => @dt.indicator_ids[i],  :common_name => row[0]))) %>
+            <% else %>
+              <%= value %>
+            <% end %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>
+<% end %>
+
+
 
 <%= form_tag "/#{I18n.locale}/export.svg", :method => :post, :id => "hidden_form" do %>
 	<%=	hidden_field_tag "hidden_form_parent_layer" %>
