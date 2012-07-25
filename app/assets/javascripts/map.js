@@ -470,12 +470,13 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
   
   
   // Popup coordination
-  var jq_popup = $(".olPopup:first"),
+  var jq_popup = $(".olPopup:first"),      
       jq_popup_content = $(".olPopupContent:first"),
       jq_map = $("#map"),
+      jq_ol_container = jq_map.find("div:first").find("div:first"),
       jq_popup_offset = {
         top: function(use_def){
-         var def_y = mouse.Y-jq_map.offset().top-jq_popup.height()-10;
+         var def_y = mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
          if (def_y<0){
           jq_popup_offset.left = function(){
             if (mouse.X-jq_map.offset().left+10+jq_popup.width() < jq_map.width())
@@ -488,7 +489,7 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
          return def_y; 
         },
         left: function(use_def){          
-          var def_x = mouse.X-jq_map.offset().left-jq_popup.width()/2;
+          var def_x = mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
           if (def_x+jq_popup.width() > jq_map.width() && use_def===false) 
             return def_x-(def_x+jq_popup.width()-jq_map.width())-50;
           return def_x;
@@ -522,7 +523,7 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
     });
     
     if (!stright)   
-    {
+    {      
       jq_popup.css({
         left: jq_popup_offset.left(false),
         top: jq_popup_offset.top(false)
