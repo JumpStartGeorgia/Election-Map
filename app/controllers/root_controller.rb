@@ -35,6 +35,9 @@ logger.debug "////////////// getting current event"
 				logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
 				flag_redirect = true
 			else
+				# save the event name
+				@event_name = event.name
+
 				# get the shape
 logger.debug "////////////// getting shape"
 				params[:shape_id] = event.shape_id if params[:shape_id].nil?
@@ -417,9 +420,8 @@ logger.debug " - no matching event found!"
 
     # save the map title for export
 		if !params[:event_id].nil?
-		  event = get_current_event(params[:event_id])
-		  gon.event_id = event.id if !event.nil?
-		  gon.event_name = event.name if !event.nil?
+		  gon.event_id = params[:event_id]
+		  gon.event_name = @event_name
 		  gon.map_title = @map_title
 	  end
 

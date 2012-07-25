@@ -25,7 +25,7 @@ div#indicator_menu_scale h3#indicator_description {
 div#indicator_menu_scale div#indicator_menu_tabs{
 	width: 225px;
 	font-size: 9pt;
-	height: 150px;
+	height: 200px;
 	overflow: hidden;
 	padding: 0;
 }
@@ -34,7 +34,7 @@ div#indicator_menu_scale div#indicator_menu_tabs ul li a {
 	text-shadow: none;
 }
 div#indicator_menu_scale div#indicator_menu_tabs div.indicator_links {
-	height: 105px;
+	height: 155px;
 	overflow: auto;
 	padding: 0;
 	margin: 0;

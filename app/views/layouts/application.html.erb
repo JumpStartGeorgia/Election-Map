@@ -16,7 +16,7 @@
      	<section id="top" class="group">
 
      		<div class="wrap group">
-				<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => 'Election map logo', :title => 'Home'), root_path)%></div>
+					<div id="app_title"><%= link_to t('.title'), root_path(:locale => I18n.locale)%></div>
 				<div id="language_form">
 					<ul>
 						<% I18n.available_locales.each do |locale| %>
@@ -32,12 +32,7 @@
    	</section>
 
    	<section id="splash">
-				<% @event_types.each do |type| %>
-					<div class="mode">
-  					<% is_active = type.id.to_s == params[:event_type_id] ? "active" : "not_active" %>
-						<%= link_to type.name, event_type_map_path(:event_type_id => type.id), :class => is_active %>
-					</div>
-				<% end %>
+			<%= render :partial => "layouts/event_menu"%>
 		</section>
 
      </header>

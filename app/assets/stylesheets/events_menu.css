@@ -1,0 +1,59 @@
+div#events_menu {
+  margin: 0 auto;
+  width: 1125px;
+	padding: 0;
+	text-align: left;
+}
+
+div#events_menu h3#events_menu_header {
+	cursor: pointer;
+	text-transform:uppercase;
+	padding: 0.5em;
+	font-size: 16pt;
+	font-weight: bold;
+	color: #fff;
+	float: left;
+	width: 150px;
+	line-height: 60px;
+	text-decoration: underline;
+}
+div#events_menu h3#events_menu_header:hover {
+	color: #ccc;
+}
+div#events_menu h4#current_event {
+	padding: 0.5em;
+	font-size: 12pt;
+	font-weight: bold;
+	color: #fff;
+	line-height: 64px;
+}
+
+div#events_menu div#events_menu_tabs{
+	width: 575px;
+	font-size: 9pt;
+	padding: 0;
+	margin-top: -20px;
+}
+div#events_menu div#events_menu_tabs ul li a {
+	color: #000;
+	text-shadow: none;
+}
+div#events_menu div#events_menu_tabs ul.menu_list li{
+	list-style: none;
+	padding: 0.2em 0.5em;
+	line-height: 12px;
+}
+div#events_menu div#events_menu_tabs ul.menu_list li a {
+	padding: 0.3em;
+	display: block;
+}
+div#events_menu div#events_menu_tabs ul.menu_list li a.active {
+	padding: 0.3em;
+	display: block;
+	background: #5F646A;
+	color: #fff;
+}
+div#events_menu div#events_menu_tabs ul.menu_list li a:hover {
+	background: #5F646A;
+	color: #fff;
+}

@@ -8,4 +8,5 @@ class EventType < ActiveRecord::Base
   attr_accessor :locale
 
 	default_scope lambda {with_translations(I18n.locale).order('sort_order')}
+
 end

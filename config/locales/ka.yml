@@ -137,12 +137,10 @@ ka:
       custom_shape_type: Show These Shapes
       is_default_view: Use as Default
   contact_mailer:
-    subject: "[Election Map] Contact Form"
+    subject: "[Georgia Election Data] Contact Form"
   layouts:
     application:
-      title: Election Map
-      logo_alt: Map of Georgia in different colors
-      logo_title: მთავარი გვერდი
+      title: საქართველოს საარჩევნო მონაცემები
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი
       ndi_title: ეროვნული დემოკრატიული ინსტიტუტი
       signed_in: Signed in as
@@ -158,9 +156,7 @@ ka:
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
       js_link_text: აგებულია ჯამპსტარტ ჯორჯიას მიერ
     map:
-      title: Election Map
-      logo_alt: Map of Georgia in different colors
-      logo_title: მთავარი გვერდი
+      title: საქართველოს საარჩევნო მონაცემები
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი
       ndi_title: ეროვნული დემოკრატიული ინსტიტუტი
       signed_in: Signed in as
@@ -175,6 +171,8 @@ ka:
       terms: გამოყენების წესები
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
       js_link_text: აგებულია ჯამპსტარტ ჯორჯიას მიერ
+    event_menu:
+      header: არჩევნების
   root:
     admin:
       title: Administration Section

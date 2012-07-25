@@ -9,6 +9,7 @@
 //= require jquery.slimscroll
 //= require map_popup_svg
 //= require indicator_menu_scale
+//= require event_menu
 
 window.onload = map_init;
 
