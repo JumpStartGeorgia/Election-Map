@@ -6,6 +6,11 @@
 </p>
 
 <p>
+  <b><%= t('app.common.name_abbrv') %>:</b>
+  <%= @event.name_abbrv %>
+</p>
+
+<p>
   <b><%= t('app.common.event_type') %>:</b>
   <%= @event.event_type.name %>
 </p>
@@ -25,5 +30,3 @@
 	<%= link_to t('app.buttons.list'), events_path %>
 	<%= link_to t('app.buttons.admin'), admin_path %>
 </div>
-
-

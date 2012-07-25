@@ -10,7 +10,7 @@ class Shape < ActiveRecord::Base
   attr_accessor :locale
 
   validates :shape_type_id, :geometry, :presence => true
-  
+
 	# get the name of the shape (common_id)
 	def self.get_shape_name(shape_id)
 		return shape_id.nil? ? "" : select("common_id")
@@ -20,14 +20,20 @@ class Shape < ActiveRecord::Base
 
 	# get the name of the shape (common_id)
 	def self.get_shape_no_geometry(shape_id)
-		return shape_id.nil? ? "" : select("shapes.id, shape_type_id, common_id, common_name, ancestry")
+		return shape_id.nil? ? "" : select("shapes.id, shapes.shape_type_id, shape_translations.common_id, shape_translations.common_name, ancestry")
 					.joins(:shape_translations)
 					.where(:shapes => {:id => shape_id}, :shape_translations => {:locale => I18n.locale}).first
 	end
 
 	# get the list of shapes for data download
-	def self.get_shapes_for_download(shape_id, shape_type_id)
-		return Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
+	def self.get_shapes_by_type(shape_id, shape_type_id, includeGeoData = false)
+		if !shape_id.nil? && !shape_type_id.nil?
+		  if includeGeoData
+			  Shape.find(shape_id).subtree.where(:shape_type_id => shape_type_id).with_translations(I18n.locale)
+			else
+			  Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
+		  end
+		end
 	end
 
 	# need this so can access ActionView::Helpers::NumberHelper helpers to format numbers in build_json
@@ -40,88 +46,138 @@ class Shape < ActiveRecord::Base
   end
 
 	# create the properly formatted json string
-	def self.build_json(shapes, indicator_id=nil)
-		json = ''
-		if !shapes.nil? && shapes.length > 0
-			json = '{ "type": "FeatureCollection","features": ['
+	def self.build_json(shape_id, shape_type_id, indicator_id=nil)
+    json = Hash.new()
+		start = Time.now
+		if !shape_id.nil? && !shape_type_id.nil?
+		  shapes = get_shapes_by_type(shape_id, shape_type_id, true)
+
+      json["type"] = "FeatureCollection"
+      json["features"] = Array.new(shapes.length) {Hash.new}
+
 			shapes.each_with_index do |shape, i|
-				json << '{ "type": "Feature", "geometry": '
-				json << shape.geometry
-				json << ', "properties": {'
-				json << '"id":"'
-				json << shape.id.to_s
-				json << '", "parent_id":"'
-				shape.parent_id.nil? ? json << "" : json << shape.parent_id.to_s
-				json << '", "common_id":"'
-				json << shape.common_id
-				json << '", "common_name":"'
-			  json << shape.common_name if !shape.common_name.nil?
-				json << '", "has_children":"'
-				json << shape.has_children?.to_s
-				json << '", "shape_type_id":"'
-				json << shape.shape_type_id.to_s
-				json << '", "value":"'
-				if !indicator_id.nil?
-					data = Datum.get_data_for_shape(shape.id, indicator_id)
-					(!data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null") ? json << data[0].value : json << I18n.t('app.msgs.no_data')
-				end
-				json << '"}}'
-				json << ',' if i < shapes.length-1 # do not add comma for the last shape
+				json["features"][i]["type"] = "Feature"
+				# have to parse it for the geo is already in json format and
+				# transforming it to json again escapes the "" and breaks openlayers
+				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id)
 			end
-			json << ']}'
+		end
+		if indicator_id.nil?
+			puts "+++ time to build json: #{Time.now-start} seconds with no indicator"
+		else
+			puts "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
 		end
 		return json
 	end
 
 	# create the properly formatted json string
-	def self.build_summary_json(shapes, event_id, indicator_type_id)
-		json = ''
-		if !shapes.nil? && !shapes.empty? && !event_id.nil? && !indicator_type_id.nil?
-			json = '{ "type": "FeatureCollection","features": ['
+	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
+		start = Time.now
+    json = Hash.new()
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+		  shapes = get_shapes_by_type(shape_id, shape_type_id, true)
+
+      json["type"] = "FeatureCollection"
+      json["features"] = Array.new(shapes.length) {Hash.new}
+
 			shapes.each_with_index do |shape, i|
-				json << '{ "type": "Feature", "geometry": '
-				json << shape.geometry
-				json << ', "properties": {'
-				json << '"id":"'
-				json << shape.id.to_s
-				json << '", "parent_id":"'
-				shape.parent_id.nil? ? json << "" : json << shape.parent_id.to_s
-				json << '", "common_id":"'
-				json << shape.common_id
-				json << '", "common_name":"'
-			  json << shape.common_name if !shape.common_name.nil?
-				json << '", "has_children":"'
-				json << shape.has_children?.to_s
-				json << '", "shape_type_id":"'
-				json << shape.shape_type_id.to_s
 
-				data = Datum.get_summary_data_for_shape(shape.id, event_id, indicator_type_id, 1)
-				if !data.nil? && data.length == 1 && !data[0].value.nil? && data[0].value.downcase != "null"
-					json << '", "data_value":"'
-					json << data[0].value
-					json << '", "value":"'
-					json << data[0].attributes["indicator_name"]
-					json << '", "color":"'
-					json << data[0].attributes["color"] if !data[0].attributes["color"].nil? 
-					json << '", "number_format":"'
-					json << data[0].attributes["number_format"] if !data[0].attributes["number_format"].nil? 
-				else
-					json << '", "data_value":"'
-					json << I18n.t('app.msgs.no_data')
-					json << '", "value":"'
-					json << I18n.t('app.msgs.no_data')
-					json << '", "color":"'
-					json << '", "number_format":"'
-				end
 
-				json << '"}}'
-				json << ',' if i < shapes.length-1 # do not add comma for the last shape
+				json["features"][i]["type"] = "Feature"
+				# have to parse it for the geo is already in json format and
+				# transforming it to json again escapes the "" and breaks openlayers
+
+				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
+
 			end
-			json << ']}'
 		end
+		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
+  def self.build_json_properties_for_shape(shape, ind_id, event_id=nil, isSummary = false)
+    start = Time.now
+    properties = Hash.new
+    if !shape.nil?
+			properties["id"] = shape.id
+			properties["parent_id"] = shape.parent_id
+			properties["common_id"] = shape.common_id
+			properties["common_name"] = shape.common_name
+			properties["has_children"] = shape.has_children?
+			properties["shape_type_id"] = shape.shape_type_id
+			properties["shape_type_name"] = shape.shape_type.name_singular
+      # pre-load data properties as if no data found
+		  properties["data_value"] = I18n.t('app.msgs.no_data')
+		  properties["value"] = I18n.t('app.msgs.no_data')
+		  properties["formatted_value"] = I18n.t('app.msgs.no_data')
+		  properties["color"] = nil
+		  properties["number_format"] = nil
+			properties["results"] = Array.new
+			title = Hash.new
+			title["location"] = "#{shape.shape_type.name_singular}: #{shape.common_name}"
+			title["title"] = I18n.t('app.msgs.no_data')
+			title["title_abbrv"] = ""
+
+      if !ind_id.nil?
+        # get the data for the provided base shape and using the ancestry path to this shape
+        if isSummary
+  			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id)
+        else
+    			data = Datum.get_related_indicator_data(shape.id, ind_id)
+        end
+
+  			# look for data
+  			results = []
+  			if !data.nil? && !data.empty?
+    			results = Array.new(data.length) {Hash.new}
+    			data.each_with_index do |d,i|
+    			  if d.has_key?("summary_data") && !d["summary_data"].nil? && !d["summary_data"].empty?
+							# use to_hash_wout_translations to avoid datum_translations getting called for each record
+  			      results[i]["summary_data"] = d["summary_data"].collect{|x| x.to_hash_wout_translations}
+  			      # if getting summary data, use the first record for the shape value
+  			      # if ind_id = indicator_type_id
+  			      if isSummary && d["summary_data"].first.indicator_type_id.to_s == ind_id.to_s
+      				  properties["data_value"] = d["summary_data"].first.formatted_value if !d["summary_data"].first.formatted_value.nil?
+      					properties["value"] = d["summary_data"].first.indicator_name_abbrv
+      					properties["formatted_value"] = d["summary_data"].first.indicator_name
+      				  properties["number_format"] = d["summary_data"].first.number_format
+      				  properties["color"] = d["summary_data"].first.color
+								# set the title hash
+								title["title"] = d["summary_data"].first.indicator_type_name
+  		        end
+    		    elsif d.has_key?("data_item") && !d["data_item"].nil? && !d["data_item"].empty?
+							# use to_hash_wout_translations to avoid datum_translations getting called for each record
+  		        results[i]["data_item"] = d["data_item"].first.to_hash_wout_translations
+  			      # if not getting summary data, use this record
+  			      # if ind_id = indicator_id
+  			      if !isSummary && d["data_item"].first.indicator_id.to_s == ind_id.to_s
+      				  properties["data_value"] = nil
+      					properties["value"] = d["data_item"].first.value if !d["data_item"].first.value.nil?
+      					properties["formatted_value"] = d["data_item"].first.formatted_value if !d["data_item"].first.formatted_value.nil?
+      				  properties["number_format"] = d["data_item"].first.number_format
+								# set the title hash
+								title["title"] = d["data_item"].first.indicator_name
+								title["title_abbrv"] = d["data_item"].first.indicator_name_abbrv
+  		        end
+    	      end
+    		  end
+					# add title to the results
+					results.insert(0, Hash.new)
+					results[0]["title"] = title
+				else
+					# there is no data, so just add title
+					results = Array.new(1) {Hash.new}
+					results[0]["title"] = title
+				end
+        properties["results"] = results
+      end
+    end
+#		puts "++++++ time to build json properties for shape #{shape.id}: #{Time.now-start} seconds"
+#		puts "+++++++++++++++++++++++++"
+		return properties
+  end
 
 
   def self.csv_header
@@ -129,44 +185,56 @@ class Shape < ActiveRecord::Base
   end
 
     def self.build_from_csv(file, deleteExistingRecord)
+      start = Time.now
 	    infile = file.read
 	    n, msg = 0, ""
 			old_root_id = nil
-			
+      idx_event = 0
+      idx_shape_type = 1
+      idx_parent_id = 2
+      idx_parent_name = 3
+      idx_common_id = 4
+      idx_common_name = 5
+      idx_geo = 6
+
 
 			Shape.transaction do
 			  CSV.parse(infile, :col_sep => "\t") do |row|
-
+          startRow = Time.now
 			    n += 1
 			    # SKIP: header i.e. first row OR blank row
 			    next if n == 1 or row.join.blank?
-    logger.debug "++++processing row #{n}"		
+    puts "++++processing row #{n}"
 
-	        if row[0].nil? || row[0].strip.length == 0 || row[1].nil? || row[1].strip.length == 0
+	        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
     logger.debug "++++event or shape type was not found in spreadsheet"
       		  msg = I18n.t('models.shape.msgs.no_event_shape_spreadsheet', :row_num => n)
 			      raise ActiveRecord::Rollback
             return msg
 					else
+					  startPhase = Time.now
 		    		# get the event id
-		    		event = Event.find_by_name(row[0].strip)
+		    		event = Event.find_by_name(row[idx_event].strip)
 		    		# get the shape type id
-		    		shape_type = ShapeType.find_by_name_singular(row[1].strip)
+		    		shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
+          	puts "**** time to load event and shape type: #{Time.now-startPhase} seconds"
 
 		    		if event.nil? || shape_type.nil?
-		  logger.debug "++++event or shape type was not found"		
+		  logger.debug "++++event or shape type was not found"
 		    		  msg = I18n.t('models.shape.msgs.no_event_shape_db', :row_num => n)
 					    raise ActiveRecord::Rollback
 		          return msg
 		    		else
 		  logger.debug "++++found event and shape type, get root shape"
+              startPhase = Time.now
 		          # get the root shape
 		          root = Shape.joins(:shape_translations)
 		                  .where(:shapes => {:id => event.shape_id}, :shape_translations => {:locale => 'en'}).first
-		      
+            	puts "**** time to get root shape: #{Time.now-startPhase} seconds"
+
 		          # if the root shape already exists and deleteExistingRecord is true, delete the shape
-							#  if this is the root record (row[2] is nil)
-		          if !root.nil? && deleteExistingRecord && (row[2].nil? || row[2].strip.length == 0)
+							#  if this is the root record (row[idx_parent_id] is nil)
+		          if !root.nil? && deleteExistingRecord && (row[idx_parent_id].nil? || row[idx_parent_id].strip.length == 0)
 		logger.debug "+++++++ deleting existing root shape and all of its descendants"
 									# save the existing root id so at the end all events with this root can be updated
 									old_root_id = root.id
@@ -177,16 +245,19 @@ class Shape < ActiveRecord::Base
 
 		          if root.nil?
 		  logger.debug "++++root does not exist"
-		            if row[2].nil? || row[2].strip.length == 0
+		            if row[idx_parent_id].nil? || row[idx_parent_id].strip.length == 0
 		              # no root exists in db, but this is the root, so add it
+                  startPhase = Time.now
 		  logger.debug "++++adding root shape"
-                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[6].strip
+                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip
 									# add translations
 									I18n.available_locales.each do |locale|
-										shape.shape_translations.create(:locale => locale, :common_id => row[4].strip, :common_name => row[5].strip)
+										shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
 									end
+                  puts "******** time to create root shape: #{Time.now-startPhase} seconds"
 
 		              if shape.valid?
+                    startPhase = Time.now
 		                # update the event to have this as the root
 		  logger.debug "++++updating event to map to this root shape"
 
@@ -204,6 +275,7 @@ class Shape < ActiveRecord::Base
 						            end
 											end
 										end
+										puts "******** time to update shape_id for events: #{Time.now-startPhase} seconds"
 		              else
 		                # could not create shape
 		          		  msg = I18n.t('models.shape.msgs.root_not_valid', :row_num => n)
@@ -222,24 +294,26 @@ class Shape < ActiveRecord::Base
 		    logger.debug "++++root already exists"
 		            # found root, continue
 	              # only conintue if all values are present
-	              if row[2].nil? || row[3].nil? || row[4].nil? || row[5].nil? || row[6].nil?
+	              if row[idx_parent_id].nil? || row[idx_parent_name].nil? || row[idx_common_id].nil? || row[idx_common_name].nil? || row[idx_geo].nil?
 	          		  msg = I18n.t('models.shape.msgs.missing_data_spreadsheet', :row_num => n)
 	    logger.debug "++++**missing data in row"
 	                raise ActiveRecord::Rollback
 	                return msg
 			          else
 			            # if this is row 2, see if this row is also a root and the same
-				          if n==2 && row[2].nil? && root.shape_type_id == shape_type.id && 
-											root.common_id == row[4].strip && root.common_name == row[5].strip
+				          if n==2 && row[idx_parent_id].nil? && root.shape_type_id == shape_type.id &&
+											root.common_id == row[idx_common_id].strip && root.common_name == row[idx_common_name].strip
 				      		  msg = I18n.t('models.shape.msgs.root_already_exists', :row_num => n)
 				  logger.debug "++++**root record already exists!"
 				            raise ActiveRecord::Rollback
 				            return msg
 		              else
+                    startPhase = Time.now
 		    logger.debug "++++chekcing if row already in db"
-		                alreadyExists = root.descendants.joins(:shape_translations)
-		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[6].strip}, 
-		                    :shape_translations => {:locale => 'en', :common_id => row[4].strip, :common_name => row[5].strip})
+		                alreadyExists = root.descendants.select("shapes.id").joins(:shape_translations)
+		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[idx_geo].strip},
+		                    :shape_translations => {:locale => 'en', :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip})
+                  	puts "**** time to get existing shape: #{Time.now-startPhase} seconds"
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
 		                if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
@@ -263,16 +337,17 @@ class Shape < ActiveRecord::Base
 		                    return msg
 		                  else
 		      logger.debug "++++getting parent shape"
+		                    startPhase = Time.now
 		                    # check if the root has descendants
 		                    # have to check the root object by iteself and then check for through the descendants
-		                    parentRoot = root.shape_type_id == parent_shape_type.id && 
-		                      root.common_id == row[2].strip && root.common_name == row[3].strip ? root : nil
+		                    parentRoot = root.shape_type_id == parent_shape_type.id &&
+		                      root.common_id == row[idx_parent_id].strip && root.common_name == row[idx_parent_name].strip ? root : nil
 		                    if root.has_children?
-		                      parentChild = root.descendants.joins(:shape_translations)
-		                        .where(:shapes => {:shape_type_id => parent_shape_type.id}, 
-		                        :shape_translations => {:locale => 'en', :common_id => row[2].strip, :common_name => row[3].strip})
+		                      parentChild = root.descendants.select("shapes.id, shapes.ancestry").joins(:shape_translations)
+		                        .where(:shapes => {:shape_type_id => parent_shape_type.id},
+		                        :shape_translations => {:locale => 'en', :common_id => row[idx_parent_id].strip, :common_name => row[idx_parent_name].strip})
 		                    end
-		                
+
 		                    # see if a parent node was found
 		                    if (parentRoot.nil?) && (parentChild.nil? || parentChild.empty?)
 		        logger.debug "++++no parent shape found"
@@ -286,6 +361,8 @@ class Shape < ActiveRecord::Base
 		                      parent = parentChild.first
 		                    end
 		        logger.debug "++++parent = #{parent}"
+          	            puts "**** time to find parent shape: #{Time.now-startPhase} seconds"
+
 		                    if parent.nil?
 		                      # did not find parent shape
 			              		  msg = I18n.t('models.shape.msgs.parent_shape_not_found', :row_num => n)
@@ -300,16 +377,18 @@ class Shape < ActiveRecord::Base
 													# if this is the district Khobi, use the geo that is provided at the bottom of this class
 													# - the khobi district geo that has something bad in it and the string gets cut off
 													#################################
-													if row[5].strip.downcase == "khobi"
+													startPhase = Time.now
+													if row[idx_common_name].strip.downcase == "khobi"
           logger.debug "++++++++++++++ found khobi, using geo data hardcoded into app"
 			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => khobi_district_geometry
 													else
-			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[6].strip
+			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip
 													end
 													# add translations
 													I18n.available_locales.each do |locale|
-														shape.shape_translations.create(:locale => locale, :common_id => row[4].strip, :common_name => row[5].strip)
+														shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
 													end
+                        	puts "************ time to create shape record: #{Time.now-startPhase} seconds"
 
 		                      if !shape.valid?
 		                        # could not create shape
@@ -329,23 +408,27 @@ class Shape < ActiveRecord::Base
 		                end
 		              end
 		            end
-		          end  
-		        end  
+		          end
+		        end
 	        end
+          puts "************ time to process row: #{Time.now-startRow} seconds"
         end
 
   logger.debug "++++updating ka records with ka text in shape_names"
+        startPhase = Time.now
 				# ka translation is hardcoded as en in the code above
 				# update all ka records with the apropriate ka translation
 				# update common ids
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_id = sn.ka where st.locale = 'ka' and st.common_id = sn.en")
 				# update common names
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_name = sn.ka where st.locale = 'ka' and st.common_name = sn.en")
+      	puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
-			end 
+			end
   logger.debug "++++procssed #{n} rows in CSV file"
-      return msg 
-    end    
+	    puts "****************** time to build_from_csv: #{Time.now-start} seconds"
+      return msg
+    end
 
 
 		# delete all shapes that are assigned to the
@@ -354,7 +437,7 @@ class Shape < ActiveRecord::Base
 		def self.delete_shapes(event_id, shape_type_id)
 			msg = nil
 			if !event_id.nil? && !shape_type_id.nil?
-				# get the event				
+				# get the event
 				event = Event.find(event_id)
 				if !event.nil? && !event.shape_id.nil? && !event.shape.nil?
 					# get the shape type
@@ -378,7 +461,7 @@ class Shape < ActiveRecord::Base
 							end
 
 							# delete the shapes
-		          if !Shape.destroy_all(["id in (:shape_ids) and shape_type_id in (:shape_type_ids)", 
+		          if !Shape.destroy_all(["id in (:shape_ids) and shape_type_id in (:shape_type_ids)",
 								:shape_ids => event.shape.subtree_ids, :shape_type_ids => shape_type.subtree_ids])
 
 								msg = "error occurred while deleting records"

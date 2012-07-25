@@ -46,7 +46,7 @@ ka:
         not_update_event: Row %{row_num} - The event could not be updated to indicate this row is the root.
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         root_not_valid: Row %{row_num} - The record for the root row could not be saved.
-        root_shape_not_exist: Row %{row_num} - The root shape for this event was not found.
+        root_shape_not_found: Row %{row_num} - The root shape for this event was not found.
         root_already_exists: Row %{row_num} - The root record already exists.
         parent_shape_not_found: Row %{row_num} - The parent shape could not be found.
         parent_shape_type_not_found: Row %{row_num} - The parent shape type could not be found.
@@ -66,6 +66,7 @@ ka:
       new_data: New Datum
       new_event_types: New Event Type
       new_events: New Event
+      new_custom_views: New Event Custom View
       new_indicator_scales: New Indicator Scale
       new_indicator_types: New Indicator Type
       new_indicators: New Indicator
@@ -94,6 +95,7 @@ ka:
       message_sent: თქვენი შეტყობინება გაგზავნილია! მადლობა რომ დაგვიკავშირდით.
       core_indicator_color_share: "If no color provided and indicator belongs to another indicator, the other indicatr's color will be used"
       map_summary_legend_title: "%{shape_type} გამარჯვებულები"
+      indicator_summary_link: "%{name} შემაჯამებელი"
       has_summary_hint: "If Has Summary is true, an indicator link will be available that will show which indicators that belong to this indicator type won each shape area."
       sort_order_hint: "Sort order is ascending so 1 will be first, 2 second, etc."
       delete_shapes_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
@@ -105,6 +107,7 @@ ka:
       missing_parameters: Pleaes select data from all fields before submitting.
       select_event: Select Event First
       select_shape_type: Select Shape Level First
+      no_data_download: No data was found to download.
     common:
       important: Important
       indicator: Indicator
@@ -130,6 +133,9 @@ ka:
       indicator_ancestry: Belongs To
       sort_order: Sort Order
       shape_type: Shape Level
+      at_shape_type: At This Shape View
+      custom_shape_type: Show These Shapes
+      is_default_view: Use as Default
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -146,6 +152,7 @@ ka:
       or: or
       sign_up: Sign Up
       about: პროექტის შესახებ
+      data_source: მონაცემთა წყარო
       contact: დაგვიკავშირდით
       terms: გამოყენების წესები
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
@@ -163,6 +170,7 @@ ka:
       or: or
       sign_up: Sign Up
       about: პროექტის შესახებ
+      data_source: მონაცემთა წყარო
       contact: დაგვიკავშირდით
       terms: გამოყენების წესები
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
@@ -174,10 +182,10 @@ ka:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
+      custom_views: Event Custom Views
       core_indicators: Unique Indicators
       indicator_types: Indicator Types
       pages: Basic Pages
-      cache: Clear Cache
       csv_header: Upload CSV Files
       indicators: Indicators
       change_indicator_names: Change Indicator Names
@@ -189,13 +197,19 @@ ka:
       delete_header: Delete Records
       delete_shapes: Shapes
       delete_data: Data
+      cache_header: Cache
+      cache: Clear Cache
+      cache_files: Clear File Cache
     index:
-      indicator_summary_link: "%{name} შემაჯამებელი"
       export_link_text: ჩამოტვირთეთ მონაცემები
       export_help_text: დახმარება
+      footnote: "აღვნიშნო: %{note}"
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.
+    clear_cache_files:
+      title: Cache Files
+      cleared: The cache files have been deleted.
   data:
     export:
       title: Export Data CSV Template File
@@ -237,6 +251,13 @@ ka:
       title: New Event
     show:
       title: Event Details
+  event_custom_views:
+    edit:
+      title: Editing Event Custom View
+    index:
+      title: Events with Custom Views
+    new:
+      title: New Event Custom View
   indicator_scales:
     export:
       title: Export Indicator Scales CSV Template File
@@ -244,7 +265,7 @@ ka:
       title: Upload a CSV File of Indicator Scales
       download_link_text: Download the CSV template file for Indicator Scales
       instructions: Please note that you can add as many 'Scale Name' columns as you need.
-      help_1: You can provide your own colors or use the application colors.  
+      help_1: You can provide your own colors or use the application colors.
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
       help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
@@ -285,7 +306,7 @@ ka:
       download_link_text: Download the CSV template file for Indicators
       instructions: Please note that you can add as many 'Scale Name' columns as you need.
       important: Important if you are including scales
-      help_1: You can provide your own colors or use the application colors.  
+      help_1: You can provide your own colors or use the application colors.
       help_1_1: "If you provide your own colors, each indicator scale must have a color."
       help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
       help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
@@ -340,4 +361,3 @@ ka:
       message: შეტყობინება
     success:
       title: დაგვიკავშირდით
-

@@ -1,14 +1,14 @@
 development:
     adapter:  mysql2 
-    database: 
-    username: 
-    password: 
+    database:
+    username:
+    password:
     encoding: utf8
 #    host: localhost 
 #    port: 
     socket: /tmp/mysql.sock
     reconnect: true
-    pool: 6
+    pool: 10
 
 staging:
     adapter:  mysql2
@@ -19,7 +19,7 @@ staging:
     host: 127.0.0.1
     port: 
     reconnect: true
-    pool: 6
+    pool: 10
 
 production:
     adapter:  mysql2
@@ -30,5 +30,5 @@ production:
     host: 127.0.0.1
     port: 
     reconnect: true
-    pool: 6
+    pool: 10
 

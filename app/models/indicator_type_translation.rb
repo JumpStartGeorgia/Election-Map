@@ -1,6 +1,6 @@
 class IndicatorTypeTranslation < ActiveRecord::Base
   attr_accessible :indicator_type_id, :name, :description, :locale
-  belongs_to :indicator
+  belongs_to :indicator_type
 
   validates :name, :locale, :presence => true
   # this will always call validation to fail due to the translations being 

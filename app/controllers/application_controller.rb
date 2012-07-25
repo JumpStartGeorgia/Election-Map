@@ -37,7 +37,6 @@ protected
     { :locale => I18n.locale }
   end
 
-
   def set_event_types
     @event_types = Rails.cache.fetch("event_types") {EventType.all}
 #    @event_types = EventType.all
@@ -59,6 +58,7 @@ protected
     # tile url
     lang = I18n.locale.to_s == 'ka' ? 'ka' : 'en'
     gon.tile_url = "http://tile.mapspot.ge/#{lang}/${z}/${x}/${y}.png"
+    gon.openlayers_img_path = "/assets/img/"
 	end
 
 	# name for summary view type

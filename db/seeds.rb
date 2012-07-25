@@ -3,8 +3,21 @@
 # Event Types **************************************************************************
 EventType.destroy_all
 
-EventType.create(:event_type_translations_attributes => {"0"=>{:name=>"არჩევნები", :locale=>"ka"}, "1"=>{:name=>"Elections", :locale=>"en"}})
-EventType.create(:event_type_translations_attributes => {"0"=>{:name=>"ამომრჩეველთა სია", :locale=>"ka"}, "1"=>{:name=>"Voters List", :locale=>"en"}})
+et = EventType.create(:id => 1, :sort_order => 1)
+et.event_type_translations.create(:name=>"არჩევნები", :locale=>"ka")
+et.event_type_translations.create(:name=>"Elections", :locale=>"en")
+et = EventType.create(:id => 2, :sort_order => 5)
+et.event_type_translations.create(:name=>"ამომრჩეველთა სია", :locale=>"ka")
+et.event_type_translations.create(:name => "Voters List", :locale=>"en")
+et = EventType.create(:id => 3, :sort_order => 2)
+et.event_type_translations.create(:name=>"საპარლამენტო", :locale=>"ka")
+et.event_type_translations.create(:name => "Parliamentary", :locale=>"en")
+et = EventType.create(:id => 4, :sort_order => 3)
+et.event_type_translations.create(:name=>"აჭარის", :locale=>"ka")
+et.event_type_translations.create(:name => "Adjara SC", :locale=>"en")
+et = EventType.create(:id => 5, :sort_order => 4)
+et.event_type_translations.create(:name=>"ადგილობრივი", :locale=>"ka")
+et.event_type_translations.create(:name => "Local", :locale=>"en")
 
 
 # Shape Types **************************************************************************
@@ -49,14 +62,17 @@ st.shape_type_translations.create(:locale=>"en", :name_singular=>"Majoritarian T
 Page.destroy_all
 
 page = Page.create(:name => 'about')
-page.page_translations.create(:locale => 'ka', :description => '...')
-page.page_translations.create(:locale => 'en', :description => '...')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
 page = Page.create(:name => 'terms')
-page.page_translations.create(:locale => 'ka', :description => '...')
-page.page_translations.create(:locale => 'en', :description => '...')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
 page = Page.create(:name => 'export_help')
-page.page_translations.create(:locale => 'ka', :description => '...')
-page.page_translations.create(:locale => 'en', :description => '...')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
+page = Page.create(:name => 'data_source')
+page.page_translations.create(:locale => 'ka', :title => '', :description => '...')
+page.page_translations.create(:locale => 'en', :title => '', :description => '...')
 
 
 # Indicator Types **************************************************************************
@@ -66,5 +82,5 @@ it = IndicatorType.create(:id => 1, :has_summary => false)
 it.indicator_type_translations.create(:locale=>"ka", :name => "ინდიკატორები")
 it.indicator_type_translations.create(:locale=>"en", :name=>"Indicators")
 it = IndicatorType.create(:id => 2, :has_summary => true)
-it.indicator_type_translations.create(:locale=>"ka", :name => "პოლიტიკური შედეგები")
-it.indicator_type_translations.create(:locale=>"en", :name=>"Political Results")
+it.indicator_type_translations.create(:locale=>"ka", :name => "საერთო შედეგები")
+it.indicator_type_translations.create(:locale=>"en", :name=>"Overall Results")

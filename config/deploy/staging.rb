@@ -11,4 +11,3 @@ set :github_repo_name, "Election-Map" # name of git hub repo
 set :git_branch_name, "master" # name of branch to deploy
 set :rails_env, "staging" # name of environment: production, staging, ...
 ##################################
-

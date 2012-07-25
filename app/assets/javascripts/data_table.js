@@ -65,8 +65,8 @@ $(function ()
 
 function highlight_shape ()
 {
-  var features = map.layers[1].features;
-  for (i in features)
+  var features = map.layers[2].features;
+  for (i = 0, num = features.length; i < num; i ++)
   {
     if (gon.dt.common_name == features[i].data.common_name)
     {
@@ -78,7 +78,7 @@ function highlight_shape ()
       f.style.fillOpacity = 1;
       f.layer.redraw();
 
-      break;
+      return f;
     }
   }
 }

@@ -11,6 +11,9 @@
 				<%= link_to t('.event_types'), event_types_path %>
 			</li>
 			<li>
+				<%= link_to t('.custom_views'), event_custom_views_path %>
+			</li>
+			<li>
 				<%= link_to t('.indicator_types'), indicator_types_path %>
 			</li>
 			<li>
@@ -21,9 +24,6 @@
 			</li>
 			<li>
 				<%= link_to t('.pages'), pages_path %>
-			</li>
-			<li>
-				<%= link_to t('.cache'), clear_cache_path %>
 			</li>
 		</ul>
 	</div>
@@ -61,7 +61,15 @@
 			<%= link_to t('.delete_shapes'), delete_shapes_path %>
 			</li>
 		</ul>
+
+		<h3><%= t('.cache_header')%></h3>
+		<ul>
+			<li>
+				<%= link_to t('.cache'), clear_cache_path %>
+			</li>
+			<li>
+				<%= link_to t('.cache_files'), clear_cache_files_path %>
+			</li>
+		</ul>
 	</div>
 </div>
-
-

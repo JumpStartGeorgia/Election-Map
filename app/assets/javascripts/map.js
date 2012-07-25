@@ -2,10 +2,13 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
-//= require openlayers
 //= require fancybox
 //= require vendor_map
 //= require data_table
+//= require d3.v2.min
+//= require jquery.ui
+//= require jquery.slimscroll
+//= require map_popup_svg
 
 window.onload = map_init;
 
@@ -15,7 +18,7 @@ var scale_nodata = [];
 var color_nodata = gon.no_data_color;
 scale_nodata['name'] = gon.no_data_text;
 scale_nodata['color'] = color_nodata;
-var opacity = "1.0";
+var opacity = "0.6";
 var map_opacity = "0.9";
 
 // define number formatting for data values
@@ -33,6 +36,8 @@ var WGS84_google_mercator = new OpenLayers.Projection("EPSG:900913");
 // so have to create local variable to store value;
 var number_format = "";
 
+OpenLayers.ImgPath = gon.openlayers_img_path;
+
 
 // Function called from body tag
 function map_init(){
@@ -40,7 +45,7 @@ function map_init(){
 	if (gon.indicator_scale_colors && gon.indicator_scales){
 		gon.indicator_scale_colors.splice(0,0,color_nodata);
 		gon.indicator_scales.splice(0,0,scale_nodata);
-	} 
+	}
 
 	// if gon.indicator_number_format has a value, save it
 	if (gon.indicator_number_format){
@@ -54,33 +59,35 @@ function map_init(){
     maxResolution: 156543.0339,
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
     theme: null,
-		controls: [] // turn all controls off
-		/* for future use
-    controls: [
-			new OpenLayers.Control.PanZoomBar({})
-		]*/
+    controls: []
   };
 
 	var vectorBaseStyle = new OpenLayers.StyleMap({
       "default": new OpenLayers.Style({
           fillColor: "#bfbe8d",
-          strokeColor: "#777777",
-          strokeWidth: 1,
-          fillOpacity: opacity
+          strokeColor: "#444444",
+          strokeWidth: 3,
+          fillOpacity: 0.1
       })
   });
 
   map = new OpenLayers.Map('map', options);
 
-//	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
+  map.addControl(new OpenLayers.Control.Navigation());
+  map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
 
-  vector_base = new OpenLayers.Layer.Vector("Base Layer", {isBaseLayer: true, styleMap: vectorBaseStyle});
-//  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
+/*
+  // CAUSES "Cross-origin image load denied by Cross-Origin Resource Sharing policy." ERROR IN CHROME
+	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
+*/
+	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {tileOptions: {crossOriginKeyword: null}, isBaseLayer: true, opacity: map_opacity});
+
+  vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
   vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
-  map.addLayers([vector_base, vector_child]);
-//  map.addLayers([map_layer, vector_base, vector_child]);
+  map.addLayers([map_layer, vector_base, vector_child]);
+
 
 	// load the base layer
 	var prot = new OpenLayers.Protocol.HTTP({
@@ -127,6 +134,7 @@ function map_init(){
 		onUnselect: mouseout_handler,
 		clickFeature: click_handler
   });
+
   map.addControls([select_child]);
   select_child.activate();
 
@@ -136,7 +144,7 @@ function map_init(){
 // after protocol has read in json
 function load_vector_base(resp){
 	if (resp.success()){
-		var features = resp.features;         
+		var features = resp.features;
     var bounds;
 		if(features) {
       if(features.constructor != Array) {
@@ -194,7 +202,7 @@ function populate_summary_data(){
   if (gon.view_type == gon.summary_view_type_name) {
 	  gon.indicator_scale_colors = [color_nodata];
 	  gon.indicator_scales = [scale_nodata];
-  	
+
     var names = [gon.indicator_scales[0].name];
     for (var i=0; i<vector_child.features.length; i++)
     {
@@ -208,7 +216,7 @@ function populate_summary_data(){
       }
 
 			// see if the number format has already been saved
-			if (number_format.length == 0){
+			if (number_format.length == 0 && vector_child.features[i].attributes.number_format != null){
 				number_format = vector_child.features[i].attributes.number_format;
 			}
     }
@@ -224,12 +232,12 @@ function populate_summary_data(){
 function draw_legend()
 {
   var legend = $('#legend');
-  
+
   if (gon.view_type == gon.summary_view_type_name) {
     // create legend
     for (var i=0; i<gon.indicator_scales.length; i++)
     {
-      legend.append('<li><span style="background-color: ' + gon.indicator_scale_colors[i] + ';"></span> ' + gon.indicator_scales[i].name + '</li>');
+      legend.append('<li><span style="background-color: ' + gon.indicator_scale_colors[i] + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + gon.indicator_scales[i].name + '</li>');
 		}
 	} else  if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 		var color = "";
@@ -241,8 +249,8 @@ function draw_legend()
 				color = gon.indicator_scale_colors[i];
 			}
 
-      legend.append('<li><span style="background-color: ' + color + ';"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
-		} 
+      legend.append('<li><span style="background-color: ' + color + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
+		}
 	} else {
 		// no legend
 		legend.innerHTML = "";
@@ -265,13 +273,13 @@ function build_indicator_scale_styles() {
 	var rules = [];
   var theme = new OpenLayers.Style({
       fillColor: "#cfce9d",
-      strokeColor: "#777777",
+      strokeColor: "#444444",
       strokeWidth: 1,
       cursor: "pointer",
       fillOpacity: opacity
   });
 	if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
-		
+
 		// look at each scale and create the builder
 		for (var i=0; i<gon.indicator_scales.length; i++){
 			var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
@@ -324,7 +332,7 @@ function build_indicator_scale_styles() {
     theme.addRules(rules);
 	}
 
-    return new OpenLayers.StyleMap({'default':theme, 'select': {'strokeColor': '#5c81a3', 'fillColor': '#5c81a3', 'fillOpacity': opacity, 'strokeWidth': 2}});
+    return new OpenLayers.StyleMap({'default':theme, 'select': {'fillOpacity': 0.8, 'strokeWidth': 2}});
 }
 
 function build_rule(color, type, value1, value2, isFirst){
@@ -340,7 +348,7 @@ function build_rule(color, type, value1, value2, isFirst){
 			name: "between " + value1 + " and " + value2,
 			filter: new OpenLayers.Filter.Logical({
 		        type: OpenLayers.Filter.Logical.AND,
-		        filters: [ 
+		        filters: [
 		            new OpenLayers.Filter.Comparison({
 		                type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
 		                property: "value",
@@ -368,19 +376,21 @@ function build_rule(color, type, value1, value2, isFirst){
 	}
 }
 
+
+
+
 function click_handler (feature)
 {
 	// if the feature has children, continue
-	if (feature.attributes.has_children == "true"){
+	if (feature.attributes.has_children == true){
 		// add/update the shape_id parameter
-
 		var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
 
 		// add/update the shape_type_id parameter
 		url = update_query_parameter(url, "shape_type_id", "shape_type", feature.attributes.shape_type_id);
 
 		// add/update the event_id parameter
-		// - when switching between event types, the event id is not set in the url 
+		// - when switching between event types, the event id is not set in the url
 		//   so it needs to be added
 		url = update_query_parameter(url, "event_id", "event", gon.event_id);
 
@@ -394,7 +404,9 @@ function click_handler (feature)
 
 		// load the url
 		window.location.href = url;
+			  
 	}
+	
 }
 
 // add/update the query paramter with the provided name and value
@@ -428,27 +440,118 @@ function update_query_parameter(url, name, name2, value){
 		// not in query string yet, add it
 		// if this is the first query string, add the ?, otherwise add &
 		url += url.indexOf("?") > 0 ? "&" : "?"
-		url += name + "=" + value;		
+		url += name + "=" + value;
 	}
 	return url;
+}
+
+/*  Feature popup functions  */
+
+// Rmove feature popups
+function removeFeaturePopups()
+{
+  $(".olPopup").each(function(){
+      $(this).remove();
+  });
+}
+
+// Create the popup for the feature 
+function makeFeaturePopup(feature_data)
+{  
+
+  removeFeaturePopups();  
+  
+  var popup = new OpenLayers.Popup("Feature Popup",
+  feature_data.geometry.bounds.getCenterLonLat(),
+  new OpenLayers.Size(400, 300),
+  "",
+  true);
+  //popup.panMapIfOutOfView = true;
+  map.addPopup(popup);  
+  
+  
+  // Popup coordination
+  var jq_popup = $(".olPopup:first"),
+      jq_popup_content = $(".olPopupContent:first"),
+      jq_map = $("#map"),
+      jq_popup_offset = {
+        top: function(use_def){
+         var def_y = mouse.Y-jq_map.offset().top-jq_popup.height()-10;
+         if (def_y<0){
+          jq_popup_offset.left = function(){
+            if (mouse.X-jq_map.offset().left+10+jq_popup.width() < jq_map.width())
+              return mouse.X-jq_map.offset().left+10;
+            else 
+              return mouse.X-jq_map.offset().left-(mouse.X-jq_map.offset().left+10+jq_popup.width()-jq_map.width());
+          };
+          return def_y+def_y*(-1)+10;
+         }
+         return def_y; 
+        },
+        left: function(use_def){          
+          var def_x = mouse.X-jq_map.offset().left-jq_popup.width()/2;
+          if (def_x+jq_popup.width() > jq_map.width() && use_def===false) 
+            return def_x-(def_x+jq_popup.width()-jq_map.width())-50;
+          return def_x;
+        }
+      };
+
+  /*jq_popup.css({
+    left: jq_popup_offset.left(true),
+    top: jq_popup_offset.top(true),    
+    width: 0,
+    height: 0
+  });*/
+  
+  
+  if (feature_data.attributes.results.length > 0)
+  {
+  
+    new elmapsvgpopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
+      limit: 5    
+    });
+    
+    jq_popup_content.css({
+      width: window.maxSVGWidth,
+      height: window.maxSVGHeight
+    });
+    
+    jq_popup.css({
+      width: window.maxSVGWidth,
+      height: window.maxSVGHeight      
+    }).css({
+      left: jq_popup_offset.left(false),
+      top: jq_popup_offset.top(false)
+    });
+    
+  }
+  
+  
 }
 
 // show the map box
 function hover_handler (feature)
 {
-  if (gon.view_type == gon.summary_view_type_name){
+  if (gon.view_type == gon.summary_view_type_name)
+  {
   	populate_map_box(feature.attributes.common_name, feature.attributes.value, 
-  		feature.attributes.data_value, number_format);
+  	feature.attributes.data_value, number_format);
   } else if (gon.indicator_scale_colors && gon.indicator_scales){
   	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv, 
-  		feature.attributes.value, number_format);
+  	feature.attributes.value, number_format);
   } 
+  // Create the popup
+  makeFeaturePopup(feature);	  
 }
 
 // hide the map box
 function mouseout_handler (feature)
 {
+  //removeFeaturePopups();
 	$('#map-box').hide(0);
+	
+	removeFeaturePopups();  
+	
 }
 
 function populate_map_box(title, indicator, value, number_format)
@@ -468,12 +571,11 @@ function populate_map_box(title, indicator, value, number_format)
     if (value)
     {
 			// make the number pretty
-			var x = format_number(value);
 			// if the value is a number, apply the number_format
-			if (!isNaN(x) && number_format){
-				x += number_format;
+			if (!isNaN(value) && number_format){
+				value += number_format;
 			}
-      box.children('#map-box-content').children('#map-box-value').text(x);
+      box.children('#map-box-content').children('#map-box-value').text(value);
     } else {
       box.children('#map-box-content').children('#map-box-value').text("");
     }
@@ -514,6 +616,7 @@ function load_hidden_form()
 			$("#hidden_form_scales").val(scales.join("||"));
 			$("#hidden_form_colors").val(colors.join("||"));
 			$("#hidden_form_datetime").val((new Date()).getTime());
+			$("#hidden_form_opacity").val(opacity);
 
 
 			// submit the hidden form
@@ -574,7 +677,7 @@ function format_number2(value) {
 	if (isNaN(value)){
 		return value;
 	} else {
-		numFormat.setNumber(value); 
+		numFormat.setNumber(value);
 		return numFormat.toFormatted();
 	}
 }
@@ -583,3 +686,5 @@ $(document).ready(function() {
 	// to load pop-up window for export help
   $("a.fancybox").fancybox();
 });
+
+
