@@ -237,14 +237,14 @@ function draw_legend()
 
 	// show the indicator descritpion if provided
 	if (gon.indicator_description) {
-		$('#indicator-description').append(gon.indicator_description);
-	  $('#indicator-description').show(500);
+		$('#indicator_description').append(gon.indicator_description);
+	  $('#indicator_description').show(500);
 	} else {
-		$('#indicator-description').innerHTML = "";
-	  $('#indicator-description').hide(0);
+		$('#indicator_description').innerHTML = "";
+	  $('#indicator_description').hide(0);
 	}
 
-  $('#legend-container').show(500);
+  $('#legend_container').show(500);
 }
 
 // build the color mapping for the indicators

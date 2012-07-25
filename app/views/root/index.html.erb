@@ -57,18 +57,11 @@
 				view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
 	</div>
 
-	<div id="indicator-description">
-	</div>
-
-	<div id="legend-container" class="clear">
-		<ul id="legend">
-		</ul>
-		<% if @custom_view_note %>
-			<div id="footnote">
-				<%= t('.footnote', :note => @custom_view_note) %>
-			</div>
-		<% end %>
-	</div>
+	<% if @custom_view_note %>
+		<div id="footnote">
+			<%= t('.footnote', :note => @custom_view_note) %>
+		</div>
+	<% end %>
 
 	<ul id="shape_layer_navigation" class="group clear">
 		<% if @shape_types.length > 0 %>
