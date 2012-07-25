@@ -511,6 +511,7 @@ function makeFeaturePopup(feature_data)
 // show the map box
 function hover_handler (feature)
 {
+/*
   if (gon.view_type == gon.summary_view_type_name)
   {
   	populate_map_box(feature.attributes.common_name, feature.attributes.value,
@@ -519,6 +520,7 @@ function hover_handler (feature)
   	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv,
   	feature.attributes.value, number_format);
   }
+*/
   // Create the popup
   makeFeaturePopup(feature);
 }
