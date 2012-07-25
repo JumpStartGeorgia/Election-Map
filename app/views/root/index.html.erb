@@ -134,6 +134,7 @@
 
     <% j = 0; %>
     <select id="dt_dd_switcher"><!--data table dropdown switcher-->
+      <option disabled selected="selected"></option>
       <% @dt.groups.times do |i| %>
         <% val = (i + 1).to_s %>
         <!--<option value="<%= val %>">group #<%= val %></option>-->

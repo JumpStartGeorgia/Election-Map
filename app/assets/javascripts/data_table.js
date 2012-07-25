@@ -41,9 +41,17 @@ $(function ()
       return;
     }
   */
-    var nexti = dd_switcher.val(),
-    datai = dd_switcher.children('option:selected').data('i'),
-    s = p.find('th:not(cg0)[data-i="' + datai + '"], td:not(cg0)[data-i="' + datai + '"]');
+    var nexti = dd_switcher.val();
+    if (empty(nexti))
+    {
+      return;
+    }
+    var datai = dd_switcher.children('option:selected').data('i');
+    if (empty(datai))
+    {
+      return;
+    }
+    var s = p.find('th:not(cg0)[data-i="' + datai + '"], td:not(cg0)[data-i="' + datai + '"]');
     p.find('th.highlighted, td.highlighted').removeClass('highlighted');
     s.addClass('highlighted');
 
@@ -62,6 +70,11 @@ $(function ()
 
 
 });
+
+function empty(variable)
+{
+  return (variable == null || variable == undefined || typeof variable == 'undefined' || variable == '');
+}
 
 function highlight_shape ()
 {
