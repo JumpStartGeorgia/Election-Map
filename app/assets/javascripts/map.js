@@ -3,13 +3,13 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
+//= require indicator_menu_scale
+//= require event_menu
 //= require fancybox
 //= require vendor_map
 //= require d3.v2.min
 //= require jquery.slimscroll
 //= require map_popup_svg
-//= require indicator_menu_scale
-//= require event_menu
 
 window.onload = map_init;
 

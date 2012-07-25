@@ -8,6 +8,8 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
+//= require event_menu
 //= require fancybox
 //= require data
 //= require event_types
@@ -18,7 +20,6 @@
 //= require pages
 //= require shape_types
 //= require shapes
-//= require event_menu
 
 // set focus to first text box on page
 $(document).ready(function(){
