@@ -58,7 +58,7 @@ function map_init(){
     units: 'm',
     maxResolution: 156543.0339,
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-    restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
+    //restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
     theme: null,
     controls: []
   };
@@ -194,7 +194,9 @@ function load_vector_child(resp){
 		// now load the values for the hidden form
 		load_hidden_form();
 
-		mapFreeze(highlight_shape());
+	
+		if (highlight_shape() !== undefined)
+  		mapFreeze(highlight_shape());
 
   } else {
     console.log('vector_child - no features found');

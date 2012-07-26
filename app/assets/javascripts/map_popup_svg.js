@@ -279,9 +279,8 @@ this[className].prototype.processJSON = function(id_el, json, options)
 
 function unhighlight_shape(feature)
 {
-  
   feature.style = f_style_backup;
-  feature.layer.redraw();
+  feature.layer.redraw(); 
 }
 
 
