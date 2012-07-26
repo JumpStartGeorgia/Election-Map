@@ -14,7 +14,6 @@ class Datum < ActiveRecord::Base
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
-logger.debug "++++++++++++++++++++++++ value - get"
     if read_attribute(:value).nil? || read_attribute(:value).to_s.downcase.strip == "null"
       I18n.t('app.msgs.no_data')
     else
@@ -24,7 +23,6 @@ logger.debug "++++++++++++++++++++++++ value - get"
 
 	# format the value if it is a number
 	def formatted_value
-logger.debug "++++++++++++++++++++++++ formatted_value - get"
 		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
 			return I18n.t('app.msgs.no_data')
 		else
@@ -37,12 +35,9 @@ logger.debug "++++++++++++++++++++++++ formatted_value - get"
 	end
 
 	def number_format
-logger.debug "++++++++++++++++++++++++ number_format - get"
 		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
-logger.debug "++++++++++++++++++++++++ - value is nil/no data so returning nil"
 			return nil
 		else
-logger.debug "++++++++++++++++++++++++ - value exists, so returning number format"
 			return read_attribute(:number_format)
 		end
 	end
