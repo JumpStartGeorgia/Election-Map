@@ -166,10 +166,10 @@ this[className].prototype.processTheType = function(id_el, json, options)
         window.maxSVGWidth = 30+ths.max_ind_len*7+80+ths.max/100*json.data[0].value+10;
         window.summaryWidthDone = true;
       }
-      else if (value.indicator_name_abbrv !== "არ არის მონაცემი" && typeof window.summaryWidthDone === "undefined")
+      else if (value.indicator_name_abbrv !== gon.no_data_text && typeof window.summaryWidthDone === "undefined")
         window.maxSVGWidth = (30+ths.max_ind_len*7+10)+(ths.max_value.toString().length*7+50);
       else
-        window.maxSVGWidth = 30+ths.max_ind_len*7+10+"არ არის მონაცემი".length*7+50;
+        window.maxSVGWidth = 30+ths.max_ind_len*7+10+gon.no_data_text.length*7+50;
 
 
       window.makeline = true;
@@ -255,6 +255,7 @@ this[className].prototype.processJSON = function(id_el, json, options)
           number_format: value.data_item.number_format,
           value: value.data_item.formatted_value
         }];
+
       }
 
       ths.processTheType(id_el, json, options);
