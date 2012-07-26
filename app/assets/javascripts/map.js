@@ -589,6 +589,7 @@ function populate_map_box(title, indicator, value, number_format)
     {
         box.show(0);
     }
+    
 }
 
 // load the hidden form with the values so the export link works

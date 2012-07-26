@@ -274,7 +274,7 @@ this[className].prototype.processJSON = function(id_el, json, options)
     //  svgtipsify(value, 150, 30, "tipsy");      
     //});
     
-      
+    
 };
 
 
