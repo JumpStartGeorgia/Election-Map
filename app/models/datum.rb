@@ -111,7 +111,7 @@ class Datum < ActiveRecord::Base
 			                  :shape_id => shape_id,
 			                  :shape_type_id => shape_type_id, :locale => I18n.locale])
 		end
-		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
+#		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
     return x
 	end
 
@@ -158,7 +158,7 @@ class Datum < ActiveRecord::Base
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 
 		end
-		puts "********************* time to query summary data for indicator type: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id} - # of results = #{x.length}"
+#		puts "********************* time to query summary data for indicator type: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id} - # of results = #{x.length}"
     return x
 	end
 
@@ -174,7 +174,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, shape_type_id, event_id,
   	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
     end
-		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+#		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
 
@@ -190,7 +190,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id,
   	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
     end
-		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
+#		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return results
   end
 
@@ -205,7 +205,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, shape_type_id, event_id,
   	    event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
     end
-		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
+#		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
     return results
   end
 
