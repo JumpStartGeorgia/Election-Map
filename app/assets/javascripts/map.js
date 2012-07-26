@@ -77,7 +77,8 @@ function map_init(){
   map.addControl(new OpenLayers.Control.Navigation());
   map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
 
-	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
+	// include tileOptions to avoid getting cross-origin image load errors
+	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity, tileOptions: {crossOriginKeyword: null} });
 
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
