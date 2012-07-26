@@ -5,6 +5,7 @@ require 'json_cache'
 class RootController < ApplicationController
   before_filter :authenticate_user!,
     :except => [:index, :export, :download]
+	require 'ostruct'
 
   # GET /
   # GET /.json
@@ -198,6 +199,33 @@ logger.debug "////////////// is custom view, getting indicator to switch between
   		# reset the parameter that indicates if the shape type changed
   		params[:change_shape_type] = nil
 
+      dt = OpenStruct.new(
+        'cols_p'      => 7, #data columns count per turn
+        'skip_cols'   => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
+        'static_cols' => 1, #data static columns count, e.g. "District name"
+
+        'data'        => Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], nil, true),
+        'dd_titles'   => []
+      )
+      dt.indicator_ids = dt.data[0]
+      dt.data = dt.data[1..- 1]
+
+      s = dt.skip_cols + dt.static_cols
+      dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
+      dt.data.each_with_index do |val, i|
+        dt.data[i] = dt.data[i][dt.skip_cols..- 1]
+      end
+
+      dt_count = dt.data[0].count
+      # column groups count
+      dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+      c = dt.cols_p - dt.static_cols
+      # dropdown titles
+      dt.groups.times do |i|
+        dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
+      end
+
+      @dt = dt
 
   		# set js variables
 logger.debug "////////////// setting gon variables"
@@ -420,6 +448,9 @@ logger.debug " - no matching event found!"
 		  gon.event_name = event.name if !event.nil?
 		  gon.map_title = @map_title
 	  end
+
+    gon.dt = {:g => @dt.groups, :p => @dt.cols_p, :all => @dt.data[0].count}
+    gon.dt[:common_name] = params[:common_name].nil? ? false : params[:common_name]
   end
 
   # build an array of indicator scales that will be used in js

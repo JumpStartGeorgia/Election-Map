@@ -391,12 +391,7 @@ class Datum < ActiveRecord::Base
   end
 
 
-	def self.create_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
-		obj = OpenStruct.new
-		obj.csv_data = nil
-		obj.msg = nil
-
-		# parameters must be provided
+	def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false)
     if event_id.nil? || shape_type_id.nil? || shape_id.nil?
 logger.debug "=========== not all params provided"
 			return nil
@@ -426,13 +421,14 @@ logger.debug "=========== getting data for 1 indicator"
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
 		        .order("indicators.id ASC, data.id asc")
 				end
+			end
 
 		    if indicators.nil? || indicators.empty?
 	logger.debug "=========== no indicators or data found"
 		      return nil
 		    else
 		      # create the csv data
-		      rows =[]
+		      rows = []
 					row_starter = []
 		      indicators.each_with_index do |ind, index|
 						if index == 0
@@ -478,45 +474,74 @@ logger.debug "=========== getting data for 1 indicator"
 								  # add the row to the rows array
 								  rows << row.flatten
 								end
-							end
-						end
-		      end
 
-					# remove any line returns for excel does not like them
-					rows.each do |r|
-						r.each do |c|
-							c.gsub(/\r?\n/, ' ').strip! if !c.nil?
 						end
 					end
+	      end
 
-					# use tab as separator for excel does not like ','
+
+				# remove any line returns for excel does not like them
+				rows.each do |r|
+					r.each do |c|
+						c.to_s.gsub(/\r?\n/, ' ').strip!
+					end
+				end
+
+				data = []
+		    # generate the header
+		    header = []
+				# replace the [Level] placeholder in download_header with the name of the map level
+				# that is located in the row_starter array
+		    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
+		    ind_ids = header.clone
+		    indicators.each do |i|
+		      header << i.description
+		      ind_ids << i.id
+		    end
+		    data << ind_ids.flatten
+		    data << header.flatten
+
+		    # add the rows
+		    rows.each do |r|
+		      data << r
+		    end
+
+	      return data
+			end
+		end
+	end
+
+	def self.create_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
+		obj = OpenStruct.new
+		obj.csv_data = nil
+		obj.msg = nil
+
+    if event_id.nil? || shape_type_id.nil? || shape_id.nil?
+logger.debug "not all params provided"
+			return nil
+    else
+			data = get_table_data(event_id, shape_type_id, shape_id, indicator_id)
+
+	    if data.nil? || data.empty?
+logger.debug "no indicators or data found"
+	      return nil
+	    else
+				# use tab as separator for excel does not like ','
 #					obj.csv_data = CSV.generate(:col_sep => "\t", :force_quotes => true) do |csv|
-					obj.csv_data = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
-				    # generate the header
-				    header = []
-						# replace the [Level] placeholder in download_header with the name of the map level
-						# that is located in the row_starter array
-				    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
-				    indicators.each do |i|
-				      header << i.name
-				    end
-				    csv << header.flatten
+				obj.csv_data = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
+			    # add the rows
+			    data.each do |r|
+			      csv << r
+			    end
+				end
 
-				    # add the rows
-				    rows.each do |r|
-				      csv << r
-				    end
-
-					end
-
-					# convert to utf-8
-					# the bom is used to indicate utf-16le which excel requires
+				# convert to utf-8
+				# the bom is used to indicate utf-16le which excel requires
 #				  bom = "\xEF\xBB\xBF".force_encoding("UTF-8") #Byte Order Mark UTF-8
 #					obj.csv_data = (bom + obj.csv_data).force_encoding("UTF-8")
 
 
-		      return obj
-				end
+	      return obj
 			end
 		end
 	end

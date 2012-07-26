@@ -123,3 +123,132 @@ tr.odd_row td, tr.even_row td{
   font-size: smaller;
 }
 
+
+
+
+
+#data-table-container {
+  width: 1000px;
+}
+
+#data-table {
+  font-size: 11px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#data-table th, #data-table td {
+  border: 1px solid #000;
+}
+
+#data-table th, #data-table td > a, #data-table td.cg0 {
+  padding: 3px 7px;
+}
+
+#data-table td > a {
+  display: block;
+  text-decoration: none;
+}
+
+#data-table td > a:hover {
+  background: rgba(92, 129, 163, .75);
+}
+
+#data-table th:first-child, #data-table td:first-child {
+}
+
+#data-table th:not(.cg0), #data-table td:not(.cg0) {
+  text-align: center;
+}
+
+#data-table th {
+  font-weight: bold;
+}
+
+#data-table th.highlighted, td.highlighted {
+/*
+  background: #0a0a0a;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #fff;
+  box-shadow: inset 0 0 5px #333;
+*/
+  background: #fff;
+  color: #333;
+  border-color: #000 !important;
+}
+
+td.highlighted > a {
+  color: #333;
+  text-shadow: none;
+}
+
+#data-table td {
+}
+
+#data-table td img {
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+#data-table th.hidden, #data-table td.hidden {
+  display: none;
+}
+
+#data-table-container .switchers {
+  margin: 5px 0;
+}
+
+#data-table-container .switchers > * {
+  float: left;
+  margin-right: 5px;
+}
+
+#data-table-container .arrows {
+
+}
+
+#data-table-container .arrows > div {
+  width: 45px;
+  height: 29px;
+  border: 1px solid #fff;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  background: #fff url('/assets/data_table_arrow_left.png') no-repeat center;
+  float: left;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+}
+
+#data-table-container .arrows > div:hover {
+  border-color: #DFDFDF;
+  background-color: #EFEFEF;
+}
+
+#data-table-container .arrows > div:active {
+  border-color: #AFAFAF;
+  box-shadow: inset 0 0 2px #bFbFbF;
+}
+
+#data-table-container .arrows .left {
+}
+
+#data-table-container .arrows .right {
+  margin-left: 1px;
+  -ms-transform:rotate(180deg); /* IE 9 */
+  -moz-transform:rotate(180deg); /* Firefox */
+  -webkit-transform:rotate(180deg); /* Safari and Chrome */
+  -o-transform:rotate(180deg); /* Opera */
+}
+
+
+
+
+
+
+
+
+
+

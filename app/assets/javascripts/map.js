@@ -4,6 +4,7 @@
 //= require jquery_ujs
 //= require fancybox
 //= require vendor_map
+//= require data_table
 //= require d3.v2.min
 //= require jquery.ui
 //= require jquery.slimscroll
@@ -75,7 +76,11 @@ function map_init(){
   map.addControl(new OpenLayers.Control.Navigation());
   map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
 
+/*
+  // CAUSES "Cross-origin image load denied by Cross-Origin Resource Sharing policy." ERROR IN CHROME
 	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
+*/
+	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {tileOptions: {crossOriginKeyword: null}, isBaseLayer: true, opacity: map_opacity});
 
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
@@ -129,7 +134,7 @@ function map_init(){
 		onUnselect: mouseout_handler,
 		clickFeature: click_handler
   });
-  
+
   map.addControls([select_child]);
   
   select_child.activate();
@@ -155,6 +160,22 @@ function load_vector_base(resp){
         }
       }
       vector_base.addFeatures(features);
+   /*
+      var shapeWidth = bounds.right - bounds.left;
+      var worldWidth = map.maxExtent.right - map.maxExtent.left;
+      var increaseK = 1 + shapeWidth / worldWidth * 50;
+      console.log(increaseK);
+      if (increaseK > 1.5)
+      {
+        increaseK = 1.5;
+      }
+      else if (increaseK < 1.03)
+      {
+        increaseK = 1.03;
+      }
+      console.log(increaseK);
+      bounds.right = bounds.right * increaseK;
+   */
       map.zoomToExtent(bounds);
     } else {
 console.log('vector_base - no features found');
@@ -172,8 +193,9 @@ function load_vector_child(resp){
     draw_legend();
 		// now load the values for the hidden form
 		load_hidden_form();
-		
-		//mapFreeze(map.layers[2].features[17]);
+
+		highlight_shape();
+
   } else {
     console.log('vector_child - no features found');
   }
