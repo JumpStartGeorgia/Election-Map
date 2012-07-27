@@ -58,6 +58,7 @@ function map_init(){
     units: 'm',
     maxResolution: 156543.0339,
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
+    restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
     theme: null,
     controls: []
   };
@@ -75,6 +76,12 @@ function map_init(){
 
   map.addControl(new OpenLayers.Control.Navigation());
   map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
+  
+  map.events.register('zoomend', this, function(){
+    var zoomLevel = map.zoom;
+    if (zoomLevel < 7) 
+      map.zoomTo(7);      
+  });
 
 /*
   // CAUSES "Cross-origin image load denied by Cross-Origin Resource Sharing policy." ERROR IN CHROME
@@ -136,8 +143,9 @@ function map_init(){
   });
 
   map.addControls([select_child]);
+  
   select_child.activate();
-
+  
 }
 
 // load the features and set the bound
@@ -191,9 +199,13 @@ function load_vector_child(resp){
     draw_legend();
 		// now load the values for the hidden form
 		load_hidden_form();
-		highlight_shape();
+
+	  var f = highlight_shape();
+		if ( f !== undefined)
+  		mapFreeze(f);
+
   } else {
-console.log('vector_child - no features found');
+    console.log('vector_child - no features found');
   }
 }
 
@@ -456,9 +468,15 @@ function removeFeaturePopups()
 }
 
 // Create the popup for the feature 
-function makeFeaturePopup(feature_data)
+function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 {  
-
+  
+  if (typeof(stright) === "undefined")
+    stright = false;
+  
+  if (stright && $(".olPopupCloseBox:first").length !== 0)
+    return ;
+    
   removeFeaturePopups();  
   
   var popup = new OpenLayers.Popup("Feature Popup",
@@ -467,32 +485,31 @@ function makeFeaturePopup(feature_data)
   "",
   true);
   //popup.panMapIfOutOfView = true;
-  map.addPopup(popup);  
+  map.addPopup(popup);
+  
+  if (close_button){
+    var popup_close = $(".olPopupCloseBox:first");
+    popup_close.css({
+      "width": "30px",
+      "height": "30px",
+      "background-image": "url('/assets/fancybox.png')",
+      "background-position": "right top",
+      "cursor": "pointer"
+    }).click(close_button_func);
+  }
   
   
   // Popup coordination
-  var jq_popup = $(".olPopup:first"),
+  var jq_popup = $(".olPopup:first"),      
       jq_popup_content = $(".olPopupContent:first"),
       jq_map = $("#map"),
+      jq_ol_container = jq_map.find("div:first").find("div:first"),
       jq_popup_offset = {
         top: function(use_def){
-         var def_y = mouse.Y-jq_map.offset().top-jq_popup.height()-10;
-         if (def_y<0){
-          jq_popup_offset.left = function(){
-            if (mouse.X-jq_map.offset().left+10+jq_popup.width() < jq_map.width())
-              return mouse.X-jq_map.offset().left+10;
-            else 
-              return mouse.X-jq_map.offset().left-(mouse.X-jq_map.offset().left+10+jq_popup.width()-jq_map.width());
-          };
-          return def_y+def_y*(-1)+10;
-         }
-         return def_y; 
+         return mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
         },
-        left: function(use_def){          
-          var def_x = mouse.X-jq_map.offset().left-jq_popup.width()/2;
-          if (def_x+jq_popup.width() > jq_map.width() && use_def===false) 
-            return def_x-(def_x+jq_popup.width()-jq_map.width())-50;
-          return def_x;
+        left: function(use_def){               
+          return mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
         }
       };
 
@@ -502,8 +519,9 @@ function makeFeaturePopup(feature_data)
     width: 0,
     height: 0
   });*/
-  
-  
+    
+   
+   
   if (feature_data.attributes.results.length > 0)
   {
   
@@ -519,10 +537,47 @@ function makeFeaturePopup(feature_data)
     jq_popup.css({
       width: window.maxSVGWidth,
       height: window.maxSVGHeight      
-    }).css({
-      left: jq_popup_offset.left(false),
-      top: jq_popup_offset.top(false)
     });
+    
+    if (!stright)   
+    {      
+      jq_popup.css({
+        left: jq_popup_offset.left(false),
+        top: jq_popup_offset.top(false)
+      });
+    }
+    
+    jq_popup.css((function(){
+      // initialize nesecary variables
+      var pos = {},
+          position_left = parseInt(jq_popup.css('left')),
+          position_top = parseInt(jq_popup.css('top')),
+          popup_width = parseInt(jq_popup.width()),
+          popup_height = parseInt(jq_popup.height()),
+          parent_width = parseInt(jq_map.width()),
+          parent_height = parseInt(jq_map.height()),
+          ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
+          ol_container_top = parseInt(jq_ol_container.css('top'))*(-1);
+          
+      // calculate positions 
+        if (position_left+popup_width > parent_width) 
+          position_left -= (position_left+popup_width-parent_width)+ol_container_left;
+        
+        if (position_left < 0)
+          position_left += position_left*(-1)+ol_container_left;
+        
+        if (position_top+popup_height > parent_height)
+          position_top -= (position_top+popup_height-parent_height)+ol_container_top;
+          
+        if (position_top < 0)
+          position_top += position_top*(-1)+ol_container_top;
+          
+      // set final positions
+        pos.left = position_left;
+        pos.top = position_top;
+
+      return pos;
+    }).apply());
     
   }
   
@@ -583,6 +638,7 @@ function populate_map_box(title, indicator, value, number_format)
     {
         box.show(0);
     }
+    
 }
 
 // load the hidden form with the values so the export link works

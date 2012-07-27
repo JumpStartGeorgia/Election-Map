@@ -264,7 +264,7 @@ this[className].prototype.processJSON = function(id_el, json, options)
   else 
   {    
     options['type'] = "title";
-    ths.processTheType(id_el,json, options);
+    ths.processTheType(id_el, json, options);
   }
     
   
@@ -274,16 +274,33 @@ this[className].prototype.processJSON = function(id_el, json, options)
     //  svgtipsify(value, 150, 30, "tipsy");      
     //});
     
-      
+    
 };
+
+function unhighlight_shape(feature)
+{
+  feature.style = f_style_backup;
+  feature.layer.redraw(); 
+}
+
+
+function mapFreeze(feature)
+{    
+  map.controls[2].deactivate();
+  makeFeaturePopup(feature, true, true, function(){           
+    map.controls[2].activate();
+    unhighlight_shape(feature);
+  });    
+  
+}
+
 
 
 $(document).mouseover(function(e){
   window.mouse = {
     X: e.pageX,
     Y: e.pageY
-  };
+  };  
 });
-
 
 

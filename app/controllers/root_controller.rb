@@ -204,7 +204,7 @@ logger.debug "////////////// is custom view, getting indicator to switch between
         'skip_cols'   => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
         'static_cols' => 1, #data static columns count, e.g. "District name"
 
-        'data'        => Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], nil, true),
+        'data'        => Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], nil, true, true),
         'dd_titles'   => []
       )
       dt.indicator_ids = dt.data[0]

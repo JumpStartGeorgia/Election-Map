@@ -391,7 +391,7 @@ class Datum < ActiveRecord::Base
   end
 
 
-	def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false)
+	def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false, pretty_data = false)
     if event_id.nil? || shape_type_id.nil? || shape_id.nil?
 logger.debug "=========== not all params provided"
 			return nil
@@ -407,19 +407,19 @@ logger.debug "=========== no shapes were found"
 				if indicator_id.nil?
 logger.debug "=========== getting data for all indicators"
 					# get data for all indicators
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => :core_indicator_translations}, {:data => :datum_translations})
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
 		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
 		          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale,
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
-		        .order("indicators.id ASC, data.id asc")
+		        .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
 				else
 logger.debug "=========== getting data for 1 indicator"
 					# get data for provided indicator
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => :core_indicator_translations}, {:data => :datum_translations})
+		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
 		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
 		          :indicator_id => indicator_id, :locale => I18n.locale,
 							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
-		        .order("indicators.id ASC, data.id asc")
+		        .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
 				end
 			end
 
@@ -467,7 +467,11 @@ logger.debug "=========== getting data for 1 indicator"
 									row << d.common_name
 								end
 								# data
-								row << d.value
+								if pretty_data
+									row << d.formatted_value
+								else
+									row << d.value
+								end
 
 								# only add the row if it is new
 								if index == 0

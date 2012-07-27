@@ -1,4 +1,4 @@
-var f;
+var f, f_style_backup;
 $(function ()
 {
   var p = $('#data-table'),
@@ -82,8 +82,12 @@ function highlight_shape ()
   for (i = 0, num = features.length; i < num; i ++)
   {
     if (gon.dt.common_name == features[i].data.common_name)
-    {
-      f = features[i];
+    {      
+      f = features[i];      
+      
+      // backup feature styles
+      f_style_backup = f.style;
+      
       f.style = new OpenLayers.Style();
       f.style.fillColor = "#4A6884";//"#5c81a3";
       f.style.strokeColor = "#000000";
