@@ -58,7 +58,7 @@ function map_init(){
     units: 'm',
     maxResolution: 156543.0339,
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-    //restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
+    restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
     theme: null,
     controls: []
   };
@@ -76,6 +76,12 @@ function map_init(){
 
   map.addControl(new OpenLayers.Control.Navigation());
   map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
+  
+  map.events.register('zoomend', this, function(){
+    var zoomLevel = map.zoom;
+    if (zoomLevel < 7) 
+      map.zoomTo(7);      
+  });
 
 /*
   // CAUSES "Cross-origin image load denied by Cross-Origin Resource Sharing policy." ERROR IN CHROME
@@ -194,9 +200,9 @@ function load_vector_child(resp){
 		// now load the values for the hidden form
 		load_hidden_form();
 
-	
-		if (highlight_shape() !== undefined)
-  		mapFreeze(highlight_shape());
+	  var f = highlight_shape();
+		if ( f !== undefined)
+  		mapFreeze(f);
 
   } else {
     console.log('vector_child - no features found');
@@ -500,23 +506,10 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
       jq_ol_container = jq_map.find("div:first").find("div:first"),
       jq_popup_offset = {
         top: function(use_def){
-         var def_y = mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
-         if (def_y<0){
-          jq_popup_offset.left = function(){
-            if (mouse.X-jq_map.offset().left+10+jq_popup.width() < jq_map.width())
-              return mouse.X-jq_map.offset().left+10;
-            else 
-              return mouse.X-jq_map.offset().left-(mouse.X-jq_map.offset().left+10+jq_popup.width()-jq_map.width());
-          };
-          return def_y+def_y*(-1)+10;
-         }
-         return def_y; 
+         return mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
         },
-        left: function(use_def){          
-          var def_x = mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
-          if (def_x+jq_popup.width() > jq_map.width() && use_def===false) 
-            return def_x-(def_x+jq_popup.width()-jq_map.width())-50;
-          return def_x;
+        left: function(use_def){               
+          return mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
         }
       };
 
@@ -553,6 +546,38 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
         top: jq_popup_offset.top(false)
       });
     }
+    
+    jq_popup.css((function(){
+      // initialize nesecary variables
+      var pos = {},
+          position_left = parseInt(jq_popup.css('left')),
+          position_top = parseInt(jq_popup.css('top')),
+          popup_width = parseInt(jq_popup.width()),
+          popup_height = parseInt(jq_popup.height()),
+          parent_width = parseInt(jq_map.width()),
+          parent_height = parseInt(jq_map.height()),
+          ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
+          ol_container_top = parseInt(jq_ol_container.css('top'))*(-1);
+          
+      // calculate positions 
+        if (position_left+popup_width > parent_width) 
+          position_left -= (position_left+popup_width-parent_width)+ol_container_left;
+        
+        if (position_left < 0)
+          position_left += position_left*(-1)+ol_container_left;
+        
+        if (position_top+popup_height > parent_height)
+          position_top -= (position_top+popup_height-parent_height)+ol_container_top;
+          
+        if (position_top < 0)
+          position_top += position_top*(-1)+ol_container_top;
+          
+      // set final positions
+        pos.left = position_left;
+        pos.top = position_top;
+
+      return pos;
+    }).apply());
     
   }
   
