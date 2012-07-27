@@ -1,5 +1,5 @@
 class IndicatorType < ActiveRecord::Base
-  translates :name, :description
+  translates :name, :description, :summary_name
 
   has_many :indicator_type_translations, :dependent => :destroy
   has_many :core_indicators

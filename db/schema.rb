@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120719070949) do
+ActiveRecord::Schema.define(:version => 20120727094438) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -236,6 +236,7 @@ ActiveRecord::Schema.define(:version => 20120719070949) do
     t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "summary_name"
   end
 
   add_index "indicator_type_translations", ["id"], :name => "index_indicator_type_translations_on_id"

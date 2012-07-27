@@ -17,7 +17,7 @@
 								<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s &&
 											@summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
 
-								<%= link_to indicator_type.name,
+								<%= link_to indicator_type.summary_name,
 									summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil)),
 
 									:class => is_active %>

@@ -151,10 +151,9 @@ en:
       sign_in: Sign In
       or: or
       sign_up: Sign Up
-      about: About Project
+      about: About
       data_source: Data Source
       contact: Contact Us
-      terms: Terms of Use
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by JumpStart Georgia
     map:
@@ -169,10 +168,9 @@ en:
       sign_in: Sign In
       or: or
       sign_up: Sign Up
-      about: About Project
+      about: About
       data_source: Data Source
       contact: Contact Us
-      terms: Terms of Use
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by JumpStart Georgia
     event_menu:
