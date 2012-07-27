@@ -203,6 +203,7 @@ ka:
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
       export_help_text: დახმარება
+      winner: გამარჯვებული
       footnote: "აღვნიშნო: %{note}"
     clear_cache:
       title: Cache

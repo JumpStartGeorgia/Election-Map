@@ -391,129 +391,136 @@ class Datum < ActiveRecord::Base
   end
 
 
-	def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false, pretty_data = false)
-    if event_id.nil? || shape_type_id.nil? || shape_id.nil?
-logger.debug "=========== not all params provided"
-			return nil
+def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false, pretty_data = false)
+  if event_id.nil? || shape_type_id.nil? || shape_id.nil?
+  logger.debug "=========== not all params provided"
+  return nil
     else
-			# get the shapes we need data for
-			shapes = Shape.get_shapes_by_type(shape_id, shape_type_id)
+      # get the shapes we need data for
+      shapes = Shape.get_shapes_by_type(shape_id, shape_type_id)
 
-			if shapes.nil? || shapes.empty?
+      if shapes.nil? || shapes.empty?
 logger.debug "=========== no shapes were found"
-				return nil
-		  else
-				# get the data for the provided parameters
-				if indicator_id.nil?
+        return nil
+      else
+        # get the data for the provided parameters
+        if indicator_id.nil?
 logger.debug "=========== getting data for all indicators"
-					# get data for all indicators
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
-		        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
-		          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale,
-							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
-		        .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
-				else
+          # get data for all indicators
+          indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
+            .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
+              :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale,
+              :common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
+            .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
+        else
 logger.debug "=========== getting data for 1 indicator"
-					# get data for provided indicator
-		      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
-		        .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
-		          :indicator_id => indicator_id, :locale => I18n.locale,
-							:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
-		        .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
-				end
-			end
+          # get data for provided indicator
+          indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
+            .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
+              :indicator_id => indicator_id, :locale => I18n.locale,
+              :common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
+            .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
+        end
+      end
 
-		    if indicators.nil? || indicators.empty?
-	logger.debug "=========== no indicators or data found"
-		      return nil
-		    else
-		      # create the csv data
-		      rows = []
-					row_starter = []
-		      indicators.each_with_index do |ind, index|
-						if index == 0
-							#event
-				      if ind.event.event_translations.nil? || ind.event.event_translations.empty?
-		logger.debug "=========== no event translation found"
-				        return nil
-				      else
-				        row_starter << ind.event.event_translations[0].name
-				      end
-							# shape type
-				      if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.empty?
-		logger.debug "=========== no shape type translation found"
-				        return nil
-				      else
-				        row_starter << ind.shape_type.shape_type_translations[0].name_singular
-				      end
-						end
+        if indicators.nil? || indicators.empty?
+  logger.debug "=========== no indicators or data found"
+          return nil
+        else
+          # create the csv data
+          rows = []
+          row_starter = []
+          maxvalue = {}
+          winner = {}
+          indicators.each_with_index do |ind, index|
+            if index == 0
+              #event
+              if ind.event.event_translations.nil? || ind.event.event_translations.empty?
+    logger.debug "=========== no event translation found"
+                return nil
+              else
+                row_starter << ind.event.event_translations[0].name
+              end
+              # shape type
+              if ind.shape_type.shape_type_translations.nil? || ind.shape_type.shape_type_translations.empty?
+    logger.debug "=========== no shape type translation found"
+                return nil
+              else
+                row_starter << ind.shape_type.shape_type_translations[0].name_singular
+              end
+            end
 
-						if ind.data.nil? || ind.data.empty?
-	logger.debug "=========== no data"
-		          return nil
-						else
-							ind.data.each_with_index do |d, dindex|
-								if index > 0
-									# this is not the first indicator, so get existing row and add to it
-					        row = rows[dindex]
-								else
-									# this is first indicator, create rows
-									row = []
-									# add first couple columns of row (event and shape type)
-									row << row_starter
-									# common id
-									row << d.common_id
-									# common name
-									row << d.common_name
-								end
-								# data
-								if pretty_data
-									row << d.formatted_value
-								else
-									row << d.value
-								end
+            if ind.data.nil? || ind.data.empty?
+  logger.debug "=========== no data"
+              return nil
+            else
+              ind.data.each_with_index do |d, dindex|
+                if ind.core_indicator.indicator_type.has_summary &&
+                   (maxvalue[d.common_name].nil? || d.value.to_f > maxvalue[d.common_name])
+                  maxvalue[d.common_name] = d.value.to_f
+                  winner[d.common_name] = ind.description
+                end
 
-								# only add the row if it is new
-								if index == 0
-								  # add the row to the rows array
-								  rows << row.flatten
-								end
+                if index > 0
+                  # this is not the first indicator, so get existing row and add to it
+                  row = rows[dindex]
+                else
+                  # this is first indicator, create rows
+                  row = []
+                  # add first couple columns of row (event and shape type)
+                  row << row_starter
+                  # common id
+                  row << d.common_id
+                  # common name
+                  row << d.common_name
+                end
+                # data
+                if pretty_data
+                  row << d.formatted_value
+                else
+                  row << d.value
+                end
 
-						end
-					end
-	      end
+                # only add the row if it is new
+                if index == 0
+                  # add the row to the rows array
+                  rows << row.flatten
+                end
 
+            end
+          end
+        end
 
-				# remove any line returns for excel does not like them
-				rows.each do |r|
-					r.each do |c|
-						c.to_s.gsub(/\r?\n/, ' ').strip!
-					end
-				end
+        # remove any line returns for excel does not like them
+        rows.each do |r|
+          r.each do |c|
+            c.to_s.gsub(/\r?\n/, ' ').strip!
+          end
+        end
 
-				data = []
-		    # generate the header
-		    header = []
-				# replace the [Level] placeholder in download_header with the name of the map level
-				# that is located in the row_starter array
-		    header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
-		    ind_ids = header.clone
-		    indicators.each do |i|
-		      header << i.description
-		      ind_ids << i.id
-		    end
-		    data << ind_ids.flatten
-		    data << header.flatten
+        data = []
+        # generate the header
+        header = []
+        # replace the [Level] placeholder in download_header with the name of the map level
+        # that is located in the row_starter array
+        header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
+        ind_ids = header.clone
+        indicators.each do |i|
+          header << i.description
+          ind_ids << i.id
+        end
+        data << ind_ids.flatten
+        data << header.flatten
 
-		    # add the rows
-		    rows.each do |r|
-		      data << r
-		    end
+        # add the rows
+        rows.each do |r|
+          data << r
+        end
 
-	      return data
-			end
-		end
-	end
+        return {:data => data, :winner => winner}
+      end
+    end
+  end
 
 	def self.create_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
 		obj = OpenStruct.new
