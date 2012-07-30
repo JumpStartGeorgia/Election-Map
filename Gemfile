@@ -48,3 +48,12 @@ group :production do
 	gem 'unicorn', '4.2.1' # http server
 end
 
+# bootstrap
+gem "formtastic", "2.1.1"
+
+group :assets do
+  gem 'sass-rails', '3.1.4'
+  gem "twitter-bootstrap-rails", "~> 2.1.0"
+end
+
+

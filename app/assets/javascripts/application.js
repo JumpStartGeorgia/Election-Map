@@ -8,6 +8,7 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
+//= require twitter/bootstrap
 //= require fancybox
 //= require data
 //= require event_types
