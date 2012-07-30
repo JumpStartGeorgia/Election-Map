@@ -458,7 +458,7 @@ logger.debug "=========== getting data for 1 indicator"
                 if ind.core_indicator.indicator_type.has_summary &&
                    (maxvalue[d.common_name].nil? || d.value.to_f > maxvalue[d.common_name])
                   maxvalue[d.common_name] = d.value.to_f
-                  winner[d.common_name] = ind.description
+                  winner[d.common_name] = ind.name
                 end
 
                 if index > 0
