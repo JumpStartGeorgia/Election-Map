@@ -201,24 +201,18 @@ logger.debug "////////////// is custom view, getting indicator to switch between
 
       get_data = Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], nil, true, true)
       dt = OpenStruct.new(
-        'cols_p'      => 7, #data columns count per turn
-        'skip_cols'   => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
-        'static_cols' => 1, #data static columns count, e.g. "District name"
+        'cols_p'        => 7, #data columns count per turn
+        'skip_cols'     => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
+        'static_cols'   => 1, #data static columns count, e.g. "District name"
 
-        'data'        => get_data[:data],
-        'winner'      => get_data[:winner],
-        'dd_titles'   => []
+        'data'          => get_data[:data],
+        'indicator_ids' => get_data[:indicator_ids],
+        'dd_titles'     => []
       )
-      #abort dt.inspect
-      dt.indicator_ids = dt.data[0]
-      dt.data = dt.data[1..- 1]
-
       s = dt.skip_cols + dt.static_cols
       dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
       dt.data.each_with_index do |val, i|
         dt.data[i] = dt.data[i][dt.skip_cols..- 1]
-        m = (i > 0) ? [dt.winner[dt.data[i][0]]] : [t('root.index.winner')]
-        dt.data[i] = dt.data[i][0..0] + m + dt.data[i][1..-1]
       end
 
       dt_count = dt.data[0].count

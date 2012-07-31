@@ -505,19 +505,26 @@ logger.debug "=========== getting data for 1 indicator"
         # that is located in the row_starter array
         header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
         ind_ids = header.clone
-        indicators.each do |i|
+        indicators.each_with_index do |i, idx|
           header << i.description
           ind_ids << i.id
+          if idx == 1
+            
+          end
         end
-        data << ind_ids.flatten
+        flattened = header[0].length
+        header = header[0..0] + [I18n.t('root.index.winner')] + header[1..-1]
+        ind_ids = ind_ids.flatten
         data << header.flatten
 
         # add the rows
         rows.each do |r|
+          # r[3] has to be the common_name
+          r = r[0..flattened-1] + [winner[r[3]]] + r[flattened..-1]
           data << r
         end
 
-        return {:data => data, :winner => winner}
+        return {:data => data, :indicator_ids => ind_ids}
       end
     end
   end
@@ -531,7 +538,8 @@ logger.debug "=========== getting data for 1 indicator"
 logger.debug "not all params provided"
 			return nil
     else
-			data = get_table_data(event_id, shape_type_id, shape_id, indicator_id)
+      dt = get_table_data(event_id, shape_type_id, shape_id, indicator_id)
+			data = dt[:data]
 
 	    if data.nil? || data.empty?
 logger.debug "no indicators or data found"
