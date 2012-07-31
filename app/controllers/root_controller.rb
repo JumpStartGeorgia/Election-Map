@@ -210,19 +210,34 @@ logger.debug "////////////// is custom view, getting indicator to switch between
         'dd_titles'     => []
       )
       s = dt.skip_cols + dt.static_cols
-      dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
+     #dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
+      dt.indicator_ids = dt.indicator_ids[s..- 1]
       dt.data.each_with_index do |val, i|
         dt.data[i] = dt.data[i][dt.skip_cols..- 1]
       end
 
+      # selected indicator id
+      if params[:indicator_id].nil?
+        if params[:view_type] == 'summary'
+          dt.sid = 'winner_ind'
+        else
+          dt.sid = ''
+        end
+      else
+        dt.sid = params[:indicator_id]
+      end
+      dt.sid = dt.sid.to_s
+
       dt_count = dt.data[0].count
       # column groups count
-      dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-      c = dt.cols_p - dt.static_cols
+      #dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+      #c = dt.cols_p - dt.static_cols
       # dropdown titles
-      dt.groups.times do |i|
-        dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
-      end
+      #dt.groups.times do |i|
+      #  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
+      #end
+      dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+      dt.dd_titles = dt.data[0][dt.static_cols..-1]
 
       @dt = dt
 

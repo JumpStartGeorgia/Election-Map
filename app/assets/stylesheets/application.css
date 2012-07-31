@@ -139,6 +139,10 @@ tr.odd_row td, tr.even_row td{
 
 #data-table th, #data-table td {
   border: 1px solid #000;
+  transition: background .5s;
+  -moz-transition: background .5s;
+  -webkit-transition: background .5s;
+  -o-transition: background .5s;
 }
 
 #data-table th, #data-table td > a, #data-table td.cg0 {
@@ -166,12 +170,6 @@ tr.odd_row td, tr.even_row td{
 }
 
 #data-table th.highlighted, td.highlighted {
-/*
-  background: #0a0a0a;
-  border-left: 2px solid #fff;
-  border-right: 2px solid #fff;
-  box-shadow: inset 0 0 5px #333;
-*/
   background: #fff;
   color: #333;
   border-color: #000 !important;
@@ -237,10 +235,10 @@ td.highlighted > a {
 
 #data-table-container .arrows .right {
   margin-left: 1px;
-  -ms-transform:rotate(180deg); /* IE 9 */
-  -moz-transform:rotate(180deg); /* Firefox */
-  -webkit-transform:rotate(180deg); /* Safari and Chrome */
-  -o-transform:rotate(180deg); /* Opera */
+  -ms-transform:rotate(180deg);
+  -moz-transform:rotate(180deg);
+  -webkit-transform:rotate(180deg);
+  -o-transform:rotate(180deg);
 }
 
 

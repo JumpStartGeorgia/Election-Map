@@ -508,12 +508,10 @@ logger.debug "=========== getting data for 1 indicator"
         indicators.each_with_index do |i, idx|
           header << i.description
           ind_ids << i.id
-          if idx == 1
-            
-          end
         end
         flattened = header[0].length
         header = header[0..0] + [I18n.t('root.index.winner')] + header[1..-1]
+        ind_ids = ind_ids[0..0] + ['winner_ind'] + ind_ids[1..-1]
         ind_ids = ind_ids.flatten
         data << header.flatten
 
