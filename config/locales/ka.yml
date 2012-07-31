@@ -136,6 +136,8 @@ ka:
       at_shape_type: At This Shape View
       custom_shape_type: Show These Shapes
       is_default_view: Use as Default
+      num_indicator_types: "# Indicator Type Relationships"
+      num_indicators: "# Indicator Relationships"
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -182,7 +184,8 @@ ka:
       events: Event Names
       shape_types: Shape Types
       event_types: Event Types
-      custom_views: Event Custom Views
+      custom_views: Create Custom Event Views
+      indicator_relationships: Customize Popup Data
       core_indicators: Unique Indicators
       indicator_types: Indicator Types
       pages: Basic Pages
@@ -258,6 +261,15 @@ ka:
       title: Events with Custom Views
     new:
       title: New Event Custom View
+  event_indicator_relationships:
+    edit:
+      title: Editing Event Indicator Relationship
+    index:
+      title: Events with Indicator Relationships
+    new:
+      title: New Event Indicator Relationship
+    show:
+      title: Event Indicator Relationship
   indicator_scales:
     export:
       title: Export Indicator Scales CSV Template File

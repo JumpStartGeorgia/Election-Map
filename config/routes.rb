@@ -42,6 +42,7 @@ ElectionMap::Application.routes.draw do
 		end
 	  resources :events
 	  resources :event_custom_views
+	  resources :event_indicator_relationships
 	  resources :event_types
 	  resources :pages
 	  resources :shapes do

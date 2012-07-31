@@ -1,0 +1,26 @@
+<%= semantic_form_for(@event_custom_view) do |f| %>
+	<%= f.error_messages %>
+
+	<%= f.inputs do %>
+		<%= f.input :event %>
+
+			<li class="select input optional" id="event_custom_view_shape_type_input">
+			<%= label_tag "event_custom_view_shape_type_id", t('app.common.at_shape_type'), :class => "label" %>
+			<%= select_tag "event_custom_view_shape_type_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe, :name => "event_custom_view[shape_type_id]" %>
+			</li>
+
+			<li class="select input optional" id="event_custom_view_descendant_shape_type_input">
+			<%= label_tag "event_custom_view_descendant_shape_type_id", t('app.common.custom_shape_type'), :class => "label"%>
+			<%= select_tag "event_custom_view_descendant_shape_type_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe, :name => "event_custom_view[descendant_shape_type_id]" %>
+			</li>
+<%
+=begin
+		<%= f.input :shape_type, :as => :select, :collection => ShapeType.all.collect {|x| [x.name_singular, x.id]} %>
+		<%= f.input :descendant_shape_type, :as => :select, :collection => ShapeType.all.collect {|x| [x.name_singular, x.id]} %>
+<%
+=end %>
+		<%= f.input :is_default_view, :as => :radio %>
+	<% end %>
+
+	<%= f.actions :submit, :reset, :cancel %>
+<% end %>
