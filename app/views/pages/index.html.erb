@@ -1,6 +1,7 @@
 <% title t('.title') %>
 
-<table>
+<table class="table table-striped">
+<thead>
   <tr>
     <th><%= t('app.common.name')%></th>
     <th><%= t('app.common.title')%></th>
@@ -9,23 +10,28 @@
     <th></th>
     <th></th>
   </tr>
-
+  </thead>
+  <tbody>
 <% @pages.each do |page| %>
-  <tr class="<%= cycle("odd_row", "even_row")%>">
+  <tr>
     <td><%= page.name %></td>
     <td><%= page.title %></td>
     <td><%= page.description %></td>
-    <td><%= link_to t('app.buttons.show'), page %></td>
-    <td><%= link_to t('app.buttons.edit'), edit_page_path(page) %></td>
-    <td><%= link_to t('app.buttons.delete'), page, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
+    <td><%= link_to t('app.buttons.show'), page, :class => 'btn btn-mini' %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_page_path(page), :class => 'btn btn-mini' %></td>
+    <td><%= link_to t('app.buttons.delete'), page, :confirm => t('app.msgs.delete_confirm'), :method => :delete,
+    :class => 'btn btn-mini btn-danger' %></td>
   </tr>
 <% end %>
+</tbody>
 </table>
 
 <br />
 
-<div class="admin_nav">
-	<%= link_to t('app.buttons.new_pages'), new_page_path %>	
-	<%= link_to t('app.buttons.admin'), admin_path %>
+<div class="form-actions">
+	<%= link_to t('app.buttons.new_pages'), new_page_path,
+  :class => 'btn btn-primary' %>	
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
 </div>
 

@@ -2,10 +2,13 @@
 
 <%= render 'form' %>
 
-<div class="admin_nav">
-	<%= link_to t('app.buttons.show'), @page %>
-	<%= link_to t('app.buttons.list'), pages_path %>
-	<%= link_to t('app.buttons.admin'), admin_path %>
+<div class="form-actions">
+	<%= link_to t('app.buttons.show'), @page,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.list'), pages_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
 </div>
 
 

@@ -12,6 +12,13 @@
 //= require jquery.slimscroll
 //= require map_popup_svg
 
+
+// set focus to first text box on page
+$(document).ready(function(){
+  $("input:visible:first").focus();
+});
+
+
 window.onload = map_init;
 
 // Define global variables which can be used in all functions

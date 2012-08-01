@@ -41,14 +41,33 @@
       <!-- Navbar header -->
       <div class="navbar-inner head">            
         <div class="container">        
-          <a class="brand" href="/">
-            <img src="/assets/header-text.png"/>
-          </a>                              
-          <% I18n.available_locales.each do |locale| %>
-				<% if locale != I18n.locale %>
-			      <%= link_to t("app.language.#{locale}"), params.merge(:locale => locale), html_options = {:class => "btn btn-lang"} %>
-				<% end %>
- 			 <% end %> 			  		 			 
+          <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale), :class=>"brand")%>
+
+          <div class="nav-collapse">
+            <ul class="nav pull-right">
+              <% if user_signed_in? %>
+              <li>
+   		         <%= current_user.email %>
+							</li>
+              <li>
+   		         <%= link_to t('.admin'), admin_path %>
+							</li>
+              <li>
+   		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
+							</li>
+              <% end %>
+  						<% I18n.available_locales.each do |locale| %>
+  							<% if locale != I18n.locale %>
+  								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+  							<% end %>
+  						<% end %>
+            </ul>
+          </div>
         </div>        
       </div>
       
@@ -109,13 +128,7 @@
 
            <div class="span8 footer-nav">          
               <p>
-                  <% if user_signed_in? %>
-				         <%= t('.signed_in') + " " + current_user.email %>
-				         <%= link_to t('.admin'), admin_path %>
-				         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
-				         <a>|</a>
-		            <% end %>
-                  <%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
+                <%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
 		            <a>|</a>
 		            <%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
 		            <a>|</a>

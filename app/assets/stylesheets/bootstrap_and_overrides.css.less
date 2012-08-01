@@ -46,19 +46,35 @@ body {
 .navbar-inner.head {
    height: 87px;
    background: url("/assets/header-bg.jpg") !important;  
+   color: #fff;
+}
+
+.navbar-inner.head a {
+   color: #fff !important;
+   padding: 0 1em !important;
+}
+
+.navbar-inner.head a:hover {
+   text-shadow: #000 1px 1px 3px;
+ 
+  transition: text-shadow .5s;  
+  -webkit-transition: text-shadow .5s;
+  -moz-transition: text-shadow .5s;
+  -o-transition: text-shadow .5s;  
 }
 
 .navbar-inner.head .container {
    width: 1300px;
    height: 100%;        
+   padding-top: 28px;      
 }
 
 .navbar-inner.head .brand {
    padding: 0;
    margin: 0;
-   margin-top: 28px;  
-   float: left;
 }
+
+
 
 
 // Navbar inner bottom
@@ -157,28 +173,6 @@ body {
 }
 
 
-// Language button
-.btn.btn-lang {
-   float: right;
-   background: none !important;
-   border: none !important;
-   box-shadow: none !important;
-  
-   transition: text-shadow .5s;  
-   -webkit-transition: text-shadow .5s;
-   -moz-transition: text-shadow .5s;
-   -o-transition: text-shadow .5s;  
-
-   border-radius: none !important;
-   float: right;
-   margin-top: 28px;      
-   color: #FFFFFF;
-}
-
-.btn.btn-lang:hover {
-   text-shadow: #000 1px 1px 3px;
-}
-
 
 // Container
 
@@ -189,9 +183,8 @@ body {
 }
 
 .content h2 {
-   width: 100px;   
-   margin: 0 auto;
-   font-size: 16px;
+   margin: 0.5em 0;
+   font-size: 16pt;
    font-family: Arial;
    color: #000;
 }

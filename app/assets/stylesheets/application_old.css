@@ -1,0 +1,250 @@
+/*
+ * This is a manifest file that'll automatically include all the stylesheets available in this directory
+ * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+ * the top of the compiled file, but it's generally better to create a new file per style scope.
+ *= require fancybox
+ *= require formtastic
+ *= require vendor
+ *= require_self
+ *= require_tree .
+*/
+
+/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
+
+/* clear floats */
+.clearfix:after, .clear:after {
+    visibility: hidden;
+    display: block;
+    content: "";
+    clear: both;
+    height: 0;
+}
+* html .clearfix, * html .clear	{ zoom: 1; } /* IE6 */
+*:first-child+html .clearfix, *:first-child+html .clear { zoom: 1; } /* IE7 */
+
+/* Multi language tabs*/
+
+ul.select-form-language {
+	list-style: none;
+	padding: 10px 10px 10px 0px;
+	margin-bottom: 0;
+}
+ul.select-form-language li {
+	display: inline;
+	padding:10px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+ul.select-form-language li a{
+	margin: -10px;
+	padding:10px;
+}
+div.multilanguage {
+	border-radius: 8px;
+	padding-left: 10px;
+}
+
+ul.select-form-language li#tab-en {
+	background-color:#bbb;
+	color:#eee;
+}
+div#form-en {
+	background-color:#bbb;
+}
+
+ul.select-form-language li#tab-ka {
+	background-color:#999;
+	color:#eee;
+}
+div#form-ka {
+	background-color:#999;
+}
+
+.hidden { display: none; }
+
+
+abbr {
+	padding-left:5px;
+	color:#A00;
+	font-weight:bold;
+	font-size:125%;
+}
+
+/* admin panels */
+div.admin_panel {
+	float: left;
+	width: 30%;
+}
+div.admin_panel ul li {
+	padding-bottom: 0.5em;
+}
+
+/* admin section navigation */
+div.admin_nav {
+	padding: 1em;
+	background-color: #aaa;
+	margin-top: 3em;
+	font-size: 10pt;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+div.admin_nav a, div.admin_nav a:visited {
+	padding: 0.3em;
+	color: #fff !important;
+	background-color: #305178;
+	border: solid 2px #fff;
+	text-decoration: none;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+div.admin_nav a:hover {
+	padding: 0.3em;
+	color: #222 !important;
+	background-color: #ddd;
+	border: solid 2px #222;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+/* alternating row styles for tables in admin index pages */
+tr.odd_row {
+  background-color: #c0c0c0;
+}
+
+tr.even_row {
+  background-color: #e0e0e0;
+}
+
+tr.odd_row td, tr.even_row td{
+  padding: 5px;
+  font-size: smaller;
+}
+
+/* override fancy box z-index */
+#fancybox-content {
+	z-index: 1200 !important;
+}
+
+/* data table */
+#data-table-container {
+  width: 1000px;
+}
+
+#data-table {
+  font-size: 11px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#data-table th, #data-table td {
+  border: 1px solid #000;
+}
+
+#data-table th, #data-table td > a, #data-table td.cg0 {
+  padding: 3px 7px;
+}
+
+#data-table td > a {
+  display: block;
+  text-decoration: none;
+}
+
+#data-table td > a:hover {
+  background: rgba(92, 129, 163, .75);
+}
+
+#data-table th:first-child, #data-table td:first-child {
+}
+
+#data-table th:not(.cg0), #data-table td:not(.cg0) {
+  text-align: center;
+}
+
+#data-table th {
+  font-weight: bold;
+}
+
+#data-table th.highlighted, td.highlighted {
+/*
+  background: #0a0a0a;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #fff;
+  box-shadow: inset 0 0 5px #333;
+*/
+  background: #fff;
+  color: #333;
+  border-color: #000 !important;
+}
+
+td.highlighted > a {
+  color: #333;
+  text-shadow: none;
+}
+
+#data-table td {
+}
+
+#data-table td img {
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+#data-table th.hidden, #data-table td.hidden {
+  display: none;
+}
+
+#data-table-container .switchers {
+  margin: 5px 0;
+}
+
+#data-table-container .switchers > * {
+  float: left;
+  margin-right: 5px;
+}
+
+#data-table-container .arrows {
+
+}
+
+#data-table-container .arrows > div {
+  width: 45px;
+  height: 29px;
+  border: 1px solid #fff;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  background: #fff url('/assets/data_table_arrow_left.png') no-repeat center;
+  float: left;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+}
+
+#data-table-container .arrows > div:hover {
+  border-color: #DFDFDF;
+  background-color: #EFEFEF;
+}
+
+#data-table-container .arrows > div:active {
+  border-color: #AFAFAF;
+  box-shadow: inset 0 0 2px #bFbFbF;
+}
+
+#data-table-container .arrows .left {
+}
+
+#data-table-container .arrows .right {
+  margin-left: 1px;
+  -ms-transform:rotate(180deg); /* IE 9 */
+  -moz-transform:rotate(180deg); /* Firefox */
+  -webkit-transform:rotate(180deg); /* Safari and Chrome */
+  -o-transform:rotate(180deg); /* Opera */
+}

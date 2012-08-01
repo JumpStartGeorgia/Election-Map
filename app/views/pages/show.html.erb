@@ -15,8 +15,11 @@
 </p>
 <%= simple_format(@page.description, {}, :sanitize => false) %>
 
-<div class="admin_nav">
-	<%= link_to t('app.buttons.edit'), edit_page_path(@page) %>
-	<%= link_to t('app.buttons.list'), pages_path %>
-	<%= link_to t('app.buttons.admin'), admin_path %>
+<div class="form-actions">
+	<%= link_to t('app.buttons.edit'), edit_page_path(@page),
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.list'), pages_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
 </div>

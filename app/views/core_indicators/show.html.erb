@@ -37,9 +37,12 @@
   <%= @core_indicator.parent.name if !@core_indicator.ancestry.nil? %>
 </p>
 
-<div class="admin_nav">
-	<%= link_to t('app.buttons.edit'), edit_core_indicator_path(@core_indicator) %>
-	<%= link_to t('app.buttons.list'), core_indicators_path %>
-	<%= link_to t('app.buttons.admin'), admin_path %>
+<div class="form-actions">
+	<%= link_to t('app.buttons.edit'), edit_core_indicator_path(@core_indicator),
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.list'), core_indicators_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
 </div>
 
