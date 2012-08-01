@@ -139,6 +139,24 @@ en:
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
+    application-bootstrap:
+      title: Election Map
+      logo_alt: Map of Georgia in different colors
+      logo_title: Home
+      ndi_alt: National Democratic Institute
+      ndi_title: National Democratic Institute
+      signed_in: Signed in as
+      admin: Admin
+      sign_out: Sign Out
+      sign_in: Sign In
+      or: or
+      sign_up: Sign Up
+      about: About Project
+      data_source: Data Source
+      contact: Contact Us
+      terms: Terms of Use
+      js_link_title: "Visit JumpStart Georgia's website"
+      js_link_text: Built by
     application:
       title: Election Map
       logo_alt: Map of Georgia in different colors

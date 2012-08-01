@@ -31,56 +31,185 @@ body {
 // Example:
 // @linkColor: #ff0000;
 
-@font-face {
-  font-family: helvetic-roman;
-  src: url("/assets/HelveticaLTStd-Roman.otf");
-}
-
-@font-face {
-  font-family: helvetic-bold;
-  src: url("/assets/HelveticaLTStd-BoldCond.otf");
-}
-
 body {
-  background: #EFEFEF !important;
+  background: url("/assets/body-bg.jpg") !important;
 }
 
+// Navbar
 .navbar.navbar-fixed-top {
-  height: 86px;  
+  height: 140px;  
 }
 
-.navbar.navbar-fixed-top, .navbar-inner {
-  background: url("/assets/header-border-bg.jpg") !important;
+// Navbar inner head
+.navbar-inner.head {
+   height: 87px;
+   background: url("/assets/header-bg.jpg") !important;  
 }
 
-.navbar-inner, .navbar-inner .container {
-  height: 100%;  
+.navbar-inner.head .container {
+   width: 1300px;
+   height: 100%;        
 }
 
-.navbar .brand {
-  padding-top: 28px;
-  font-family: helvetic-bold;
-  font-weight: bold;
-  font-size: 30px;
-  color: #FFF;  
+.navbar-inner.head .brand {
+   padding: 0;
+   margin: 0;
+   margin-top: 28px;  
+   float: left;
 }
 
 
+// Navbar inner bottom
+.navbar-inner.bottom {
+   height: 53px;  
+   background: #EFEFEF !important;
+}
+
+.navbar-inner.bottom .container {
+   height: 100%;
+   width: 1400px;  
+}
+
+.navbar-inner.bottom .navmenu {   
+   width: 160px;   
+   height: 100%;
+   float: left;
+   background: url("/assets/arrow.png") !important;
+   cursor: pointer;
+   margin: 0;
+   padding: 0;
+}
+
+.navbar-inner.bottom .navmenu p {
+   float: left;
+   text-transform: uppercase;
+   color: #2583c1;
+   font-family: Arial;              
+}
+
+.navbar-inner.bottom .navmenu p.link-text {   
+   float: left;
+   font-size: 16px;
+   font-weight: bold;
+   padding: 19px 0 0 28px;
+   width: 90px;
+}
+
+.navbar-inner.bottom .navmenu p.spec-char {   
+   width: 10px;
+   margin-left: 10px;
+   margin-top: 20px;
+}
+
+.navbar-inner.bottom .navmenu-select {
+   float: left;
+   width: 400px;
+   height: 100%;
+   border: 1px solid #000;
+   margin-left: 10px;
+}
+
+
+
+// Language button
 .btn.btn-lang {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  border-radius: none !important;
-  float: right;
-  margin-top: 28px;      
-  color: #FFFFFF;
+   float: right;
+   background: none !important;
+   border: none !important;
+   box-shadow: none !important;
+  
+   transition: text-shadow .5s;  
+   -webkit-transition: text-shadow .5s;
+   -moz-transition: text-shadow .5s;
+   -o-transition: text-shadow .5s;  
+
+   border-radius: none !important;
+   float: right;
+   margin-top: 28px;      
+   color: #FFFFFF;
+}
+
+.btn.btn-lang:hover {
+   text-shadow: #000 1px 1px 3px;
+}
+
+a {
+   transition: text-shadow .5s;  
+   -webkit-transition: text-shadow .5s;
+   -moz-transition: text-shadow .5s;
+   -o-transition: text-shadow .5s;  
+}
+
+a:hover {
+   text-shadow: #000 1px 1px 3px;
 }
 
 
+// Footer 
 .footer {
-  width: 100%;
-  height: 48px;
-  background: #464646 !important;
+   min-height: 64px !important;
+   min-width: 100%;
+   background: #D4D4D4 !important;
+   padding: 0;
+   margin: 0;
+   position: absolute;
+   bottom: 0;
+   
 }
+
+.footer .container {  
+   width: 1300px;
+   min-height: 64px !important;
+   background: #D4D4D4 !important;
+   margin: 0 auto;
+}
+
+
+// Footer navigation
+.span8.footer-nav {
+   text-align: center;  
+}
+
+.span8.footer-nav p {
+   margin-top: 28px;   
+}
+
+.span8.footer-nav p a {
+   padding: 0 10px 0 10px;      
+}
+
+.span8.footer-nav p, .span8.footer-nav p a {
+   font-family: Arial;
+   color: #454545;   
+}
+
+// Footer ndi logo
+.span2.ndi-logo {
+   float: left;
+   margin-top: 10px;
+}
+
+// Footer JS logo
+.span2.js-logo {
+   float: right;
+   margin-top: 28px;
+}
+
+
+.span2.js-logo p {
+   margin: 0;
+   text-align: left;
+   width: 50px;
+   float: left;
+   color: #454545;   
+}
+
+.span2.js-logo a img {
+   margin-top: -7px;
+   float: right;
+}
+
+
+
 
 

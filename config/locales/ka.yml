@@ -139,6 +139,24 @@ ka:
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
+    application-bootstrap:
+      title: Election Map
+      logo_alt: Map of Georgia in different colors
+      logo_title: მთავარი გვერდი
+      ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი
+      ndi_title: ეროვნული დემოკრატიული ინსტიტუტი
+      signed_in: Signed in as
+      admin: ადმინისტრატო
+      sign_out: Sign Out
+      sign_in: შესვლა
+      or: or
+      sign_up: Sign Up
+      about: პროექტის შესახებ
+      data_source: მონაცემთა წყარო
+      contact: დაგვიკავშირდით
+      terms: გამოყენების წესები
+      js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
+      js_link_text: აგებულია
     application:
       title: Election Map
       logo_alt: Map of Georgia in different colors

@@ -35,61 +35,92 @@
     <%= favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon' %>
   </head>
   <body>
-
+      
     <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="/">Georgia Election Data</a>
-          <a class="btn btn-lang">
-                  ქართული
-          </a>
-          <!--<div class="container nav-collapse">
-            <ul class="nav">
-              <li><%= link_to "Link1", "/path1"  %></li>
-              <li><%= link_to "Link2", "/path2"  %></li>
-              <li><%= link_to "Link3", "/path3"  %></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
+      <!-- Navbar header -->
+      <div class="navbar-inner head">            
+        <div class="container">        
+          <a class="brand" href="/">
+            <img src="/assets/header-text.png"/>
+          </a>                              
+          <% I18n.available_locales.each do |locale| %>
+				<% if locale != I18n.locale %>
+			      <%= link_to t("app.language.#{locale}"), params.merge(:locale => locale), html_options = {:class => "btn btn-lang"} %>
+				<% end %>
+ 			 <% end %> 			  		 			 
+        </div>        
       </div>
+      
+      <!-- Navbar footer -->
+      <div class="navbar-inner bottom">      
+         <div class="container">
+            <div class="navmenu">               
+               <p class="link-text">
+                  elections 
+               </p>
+               <p class="spec-char">
+                  &#x25BC;
+               </p>
+            </div>
+            <div class="navmenu-select">
+            </div>
+         </div>         
+      </div>      
     </div>
 
 
     <div class="container">
-<% if false %>    
+
       <div class="content">
+
         <div class="row">
            <div class="span9">
            </div>
-            <div class="span3">
-              <div class="well sidebar-nav">
-                <h3>Sidebar</h3>
-                <ul class="nav nav-list">
-                  <li class="nav-header">Sidebar</li>
-                  <li><%= link_to "Link1", "/path1"  %></li>
-                  <li><%= link_to "Link2", "/path2"  %></li>
-                  <li><%= link_to "Link3", "/path3"  %></li>
-                </ul>
-              </div><!--/.well -->
-            </div><!--/span-->
-        </div><!--/row-->
-      </div><!--/content-->
-<% end %>
-      <footer class="footer">
-        <p>&copy; Company 2012</p>
-      </footer>
+            <div class="span3">              
+            </div>
+        </div>
 
-    </div> <!-- /container -->
+      </div>   
+    </div>
+    
+    
+    <div class="footer row">
+      <div class="container">
+           <div class="span2 ndi-logo">
+               <a href="http://www.ndi.org" target="_blank">
+                  <img src="/assets/ndi-logo.png"/>
+               </a>
+           </div>
 
+           <div class="span8 footer-nav">          
+              <p>
+                  <% if user_signed_in? %>
+				         <%= t('.signed_in') + " " + current_user.email %>
+				         <%= link_to t('.admin'), admin_path %>
+				         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
+				         <a>|</a>
+		            <% else %>
+		               <%= link_to t('.sign_in'), "/#{locale}/admin" %>
+		               <a>|</a>
+		            <% end %>
+                  <%= link_to t('.about'), view_pages_path(:name => "about") %>
+                  <a>|</a>
+                  <%= link_to t('.contact'), contact_path %>
+                  <a>|</a>
+                  <%= link_to t('.terms'), view_pages_path(:name => "terms") %>
+              </p>
+           </div>
 
-    <!-- Javascripts
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+           <div class="span2 js-logo">
+               <p><%= t(".js_link_text") %>:</p>
+               <a href="http://www.jumpstart.ge" target="_blank">            
+                   <img src="/assets/jumpstart-logo.png"/>
+               </a>
+           </div>
+      </div>
+    </div>
+    
+       
     <%= javascript_include_tag "application" %>
 
   </body>
