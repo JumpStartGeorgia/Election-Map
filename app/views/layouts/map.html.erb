@@ -50,9 +50,9 @@
 				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
 				<a>|</a>
 		  <% end %>
-		<%= link_to t('.about'), view_pages_path(:name => "about") %>
+		<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
 		<a>|</a>
-		<%= link_to t('.data_source'), view_pages_path(:name => "data_source") %>
+		<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
 		<a>|</a>
 		<%= link_to t('.contact'), contact_path %>
 		<a>|</a>
