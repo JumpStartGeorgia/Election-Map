@@ -137,7 +137,7 @@ en:
       custom_shape_type: Show These Shapes
       is_default_view: Use as Default
   contact_mailer:
-    subject: "[Election Map] Contact Form"
+    subject: "[Georgia Election Data] Contact Form"
   layouts:
     application-bootstrap:
       title: Election Map
@@ -158,7 +158,7 @@ en:
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by
     application:
-      title: Election Map
+      title: Georgia Election Data
       logo_alt: Map of Georgia in different colors
       logo_title: Home
       ndi_alt: National Democratic Institute
@@ -169,14 +169,13 @@ en:
       sign_in: Sign In
       or: or
       sign_up: Sign Up
-      about: About Project
+      about: About
       data_source: Data Source
       contact: Contact Us
-      terms: Terms of Use
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by JumpStart Georgia
     map:
-      title: Election Map
+      title: Georgia Election Data
       logo_alt: Map of Georgia in different colors
       logo_title: Home
       ndi_alt: National Democratic Institute
@@ -187,12 +186,13 @@ en:
       sign_in: Sign In
       or: or
       sign_up: Sign Up
-      about: About Project
+      about: About
       data_source: Data Source
       contact: Contact Us
-      terms: Terms of Use
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by JumpStart Georgia
+    event_menu:
+      header: Elections
   root:
     admin:
       title: Administration Section
@@ -220,6 +220,8 @@ en:
       export_help_text: Export Help
       winner: winner
       footnote: "Note: %{note}"
+    indicator_menu_scales:
+      indicator_header: Indicators
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.

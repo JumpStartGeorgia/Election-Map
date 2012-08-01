@@ -2,11 +2,13 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
+//= require indicator_menu_scale
+//= require event_menu
 //= require fancybox
 //= require vendor_map
 //= require data_table
 //= require d3.v2.min
-//= require jquery.ui
 //= require jquery.slimscroll
 //= require map_popup_svg
 
@@ -76,18 +78,15 @@ function map_init(){
 
   map.addControl(new OpenLayers.Control.Navigation());
   map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
-  
+
   map.events.register('zoomend', this, function(){
     var zoomLevel = map.zoom;
-    if (zoomLevel < 7) 
-      map.zoomTo(7);      
+    if (zoomLevel < 7)
+      map.zoomTo(7);
   });
 
-/*
-  // CAUSES "Cross-origin image load denied by Cross-Origin Resource Sharing policy." ERROR IN CHROME
-	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity});
-*/
-	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {tileOptions: {crossOriginKeyword: null}, isBaseLayer: true, opacity: map_opacity});
+	// include tileOptions to avoid getting cross-origin image load errors
+	map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity, tileOptions: {crossOriginKeyword: null} });
 
   vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
@@ -143,9 +142,9 @@ function map_init(){
   });
 
   map.addControls([select_child]);
-  
+
   select_child.activate();
-  
+
 }
 
 // load the features and set the bound
@@ -270,14 +269,14 @@ function draw_legend()
 
 	// show the indicator descritpion if provided
 	if (gon.indicator_description) {
-		$('#indicator-description').append(gon.indicator_description);
-	  $('#indicator-description').show(500);
+		$('#indicator_description').append(gon.indicator_description);
+	  $('#indicator_description').slideDown(500);
 	} else {
-		$('#indicator-description').innerHTML = "";
-	  $('#indicator-description').hide(0);
+		$('#indicator_description').innerHTML = "";
+	  $('#indicator_description').hide(0);
 	}
 
-  $('#legend-container').show(500);
+  $('#legend_container').slideDown(500);
 }
 
 // build the color mapping for the indicators
@@ -344,7 +343,7 @@ function build_indicator_scale_styles() {
     theme.addRules(rules);
 	}
 
-    return new OpenLayers.StyleMap({'default':theme, 'select': {'fillOpacity': 0.8, 'strokeWidth': 2}});
+    return new OpenLayers.StyleMap({'default':theme, 'select': {'fillOpacity': 0.9, 'strokeColor': '#000','strokeWidth': 2}});
 }
 
 function build_rule(color, type, value1, value2, isFirst){
@@ -416,9 +415,9 @@ function click_handler (feature)
 
 		// load the url
 		window.location.href = url;
-			  
+
 	}
-	
+
 }
 
 // add/update the query paramter with the provided name and value
@@ -467,18 +466,18 @@ function removeFeaturePopups()
   });
 }
 
-// Create the popup for the feature 
+// Create the popup for the feature
 function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
-{  
-  
+{
+
   if (typeof(stright) === "undefined")
     stright = false;
-  
+
   if (stright && $(".olPopupCloseBox:first").length !== 0)
     return ;
-    
-  removeFeaturePopups();  
-  
+
+  removeFeaturePopups();
+
   var popup = new OpenLayers.Popup("Feature Popup",
   feature_data.geometry.bounds.getCenterLonLat(),
   new OpenLayers.Size(400, 300),
@@ -486,7 +485,7 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
   true);
   //popup.panMapIfOutOfView = true;
   map.addPopup(popup);
-  
+
   if (close_button){
     var popup_close = $(".olPopupCloseBox:first");
     popup_close.css({
@@ -497,10 +496,10 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
       "cursor": "pointer"
     }).click(close_button_func);
   }
-  
-  
+
+
   // Popup coordination
-  var jq_popup = $(".olPopup:first"),      
+  var jq_popup = $(".olPopup:first"),
       jq_popup_content = $(".olPopupContent:first"),
       jq_map = $("#map"),
       jq_ol_container = jq_map.find("div:first").find("div:first"),
@@ -508,45 +507,43 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
         top: function(use_def){
          return mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
         },
-        left: function(use_def){               
+        left: function(use_def){
           return mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
         }
       };
 
   /*jq_popup.css({
     left: jq_popup_offset.left(true),
-    top: jq_popup_offset.top(true),    
+    top: jq_popup_offset.top(true),
     width: 0,
     height: 0
   });*/
-    
-   
-   
+
   if (feature_data.attributes.results.length > 0)
   {
-  
+
     new elmapsvgpopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
-      limit: 5    
+      limit: 5
     });
-    
+
     jq_popup_content.css({
       width: window.maxSVGWidth,
       height: window.maxSVGHeight
     });
-    
+
     jq_popup.css({
       width: window.maxSVGWidth,
-      height: window.maxSVGHeight      
+      height: window.maxSVGHeight
     });
-    
-    if (!stright)   
-    {      
+
+    if (!stright)
+    {
       jq_popup.css({
         left: jq_popup_offset.left(false),
         top: jq_popup_offset.top(false)
       });
     }
-    
+
     jq_popup.css((function(){
       // initialize nesecary variables
       var pos = {},
@@ -558,55 +555,42 @@ function makeFeaturePopup(feature_data, stright, close_button, close_button_func
           parent_height = parseInt(jq_map.height()),
           ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
           ol_container_top = parseInt(jq_ol_container.css('top'))*(-1);
-          
-      // calculate positions 
-        if (position_left+popup_width > parent_width) 
+
+      // calculate positions
+        if (position_left+popup_width > parent_width)
           position_left -= (position_left+popup_width-parent_width)+ol_container_left;
-        
+
         if (position_left < 0)
           position_left += position_left*(-1)+ol_container_left;
-        
+
         if (position_top+popup_height > parent_height)
           position_top -= (position_top+popup_height-parent_height)+ol_container_top;
-          
+
         if (position_top < 0)
           position_top += position_top*(-1)+ol_container_top;
-          
+
       // set final positions
         pos.left = position_left;
         pos.top = position_top;
 
       return pos;
     }).apply());
-    
   }
-  
-  
+
+
 }
 
-// show the map box
+// show the popups
 function hover_handler (feature)
 {
-  if (gon.view_type == gon.summary_view_type_name)
-  {
-  	populate_map_box(feature.attributes.common_name, feature.attributes.value, 
-  	feature.attributes.data_value, number_format);
-  } else if (gon.indicator_scale_colors && gon.indicator_scales){
-  	populate_map_box(feature.attributes.common_name, gon.indicator_name_abbrv, 
-  	feature.attributes.value, number_format);
-  } 
   // Create the popup
-  makeFeaturePopup(feature);	  
+  makeFeaturePopup(feature);
 }
 
-// hide the map box
+// hide the popups
 function mouseout_handler (feature)
 {
-  //removeFeaturePopups();
-	$('#map-box').hide(0);
-	
-	removeFeaturePopups();  
-	
+  removeFeaturePopups();
 }
 
 function populate_map_box(title, indicator, value, number_format)
@@ -638,8 +622,9 @@ function populate_map_box(title, indicator, value, number_format)
     {
         box.show(0);
     }
-    
+
 }
+
 
 // load the hidden form with the values so the export link works
 function load_hidden_form()
@@ -680,7 +665,7 @@ function load_hidden_form()
 		});
 
 		// show the export links
-		$('#export').show(500);
+		$('#export').slideDown(500);
 
 	} else {
 		// hide the export links
@@ -742,5 +727,3 @@ $(document).ready(function() {
 	// to load pop-up window for export help
   $("a.fancybox").fancybox();
 });
-
-

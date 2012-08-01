@@ -36,6 +36,10 @@ logger.debug "////////////// getting current event"
 				logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
 				flag_redirect = true
 			else
+				# save the event name
+				@event_name = event.name
+				@event_description = event.description
+
 				# get the shape
 logger.debug "////////////// getting shape"
 				params[:shape_id] = event.shape_id if params[:shape_id].nil?
@@ -153,6 +157,7 @@ logger.debug "////////////// selecting first indicator"
 									flag_redirect = true
 								else
 									params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
+									params[:indicator_type_id] = @indicator_types[0].id
 								end
 							end
 
@@ -178,6 +183,8 @@ logger.debug "////////////// getting the current indicator"
 									# get the selected indicator
 									@indicator = Indicator.find(params[:indicator_id])
 								end
+								# save the indicator type id so the indicator menu works
+								params[:indicator_type_id] = @indicator.core_indicator.indicator_type_id if params[:indicator_type_id].nil?
 logger.debug "////////////// done getting current indicator"
 							end
 
@@ -244,8 +251,8 @@ logger.debug "//////////////////////////////////////////////////////// done with
 			logger.debug "+++++++++ either data could not be found or param is missing and page could not be loaded, redirecting to home page"
 			redirect_to root_path
 		else
-			#render :layout => 'map'
-			render :layout => "application-bootstrap"
+			render :layout => 'map'
+			#render :layout => "application-bootstrap"
 		end
 	end
 
@@ -399,7 +406,6 @@ logger.debug " - no matching event found!"
   def set_gon_variables
     # shape json paths
 		# - only children shape path needs the indicator id since that is the only layer that is clickable
-
 		if !params[:shape_id].nil?
 			gon.shape_path = json_shape_path(:id => params[:shape_id], :shape_type_id => @parent_shape_type)
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
@@ -449,12 +455,15 @@ logger.debug " - no matching event found!"
 
     # save the map title for export
 		if !params[:event_id].nil?
-		  event = get_current_event(params[:event_id])
-		  gon.event_id = event.id if !event.nil?
-		  gon.event_name = event.name if !event.nil?
+		  gon.event_id = params[:event_id]
+		  gon.event_name = @event_name
 		  gon.map_title = @map_title
 	  end
 
+		# indicate indicator menu/scale block should be loaded
+		gon.indicator_menu_scale = true
+
+		# data table
     gon.dt = {:g => @dt.groups, :p => @dt.cols_p, :all => @dt.data[0].count}
     gon.dt[:common_name] = params[:common_name].nil? ? false : params[:common_name]
   end

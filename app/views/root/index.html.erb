@@ -1,60 +1,32 @@
 
 <% title @map_title %>
 
-<% if !@indicator_types.nil? && !@indicator_types.empty? %>
-	<ul id="indicators" class="group">
-		<% @indicator_types.each do |indicator_type| %>
-			<% if indicator_type.has_summary %>
-				<li>
-					<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s &&
-					      @summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
-
-				  <%= link_to indicator_type.name,
-				    summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil)),
-
-				    :class => is_active %>
-				</li>
-			<% end %>
-			<% indicator_type.core_indicators.each do |core| %>
-				<% core.indicators.each do |indicator| %>
-					<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
-					<li>
-						<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
-						  :view_type => nil, :indicator_type_id => nil)),
-							:title => core.description_w_parent, :class => is_active %>
-					</li>
-				<% end %>
-			<% end %>
-		<% end %>
-	</ul>
-<% end %>
-
-<% if !@events.nil? && !@events.empty? %>
-	<ul id="events" class="group">
-		<% @events.each_with_index do |event, i| %>
-			<% if !event.shape_id.nil?
-				 is_active = event.id.to_s == params[:event_id].to_s ? "active" : "not_active" %>
-				<li id="<%= event.name.gsub(' ', '-') %>" <% if i==0%>class="first"<% elsif i==@events.length-1%>class="last"<% end %> >
-					<%= link_to event.name, indicator_map_path(
-						:event_id => event.id, :event_type_id => event.event_type_id,
-						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id
-					), :title => event.name, :class => is_active %><span></span>
+<ul id="shape_layer_navigation" class="group clear">
+	<% if @shape_types.length > 0 %>
+		<% @shape_types.each do |type| %>
+			<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
+				<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
+					<% if type.has_children? %>
+					  <% if @summary_view_type_name == params[:view_type] %>
+							<%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+            <% else %>
+							<%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+            <% end %>
+					<% else %>
+						<%= type.name_singular %>
+					<% end %>
 				</li>
 			<% end %>
 		<% end %>
-	</ul>
-<% end %>
+	<% end %>
+</ul>
 
+<div class="clear">
 <section id="map-container" class="group">
 
   <div id="map"></div>
 
 	<div id="map-title"><%= @map_title%></div>
-
-	<div id="map-box" style="display: none">
-		<h1>&nbsp;</h1>
-		<div id="map-box-content"><span id="map-box-indicator"></span>&nbsp;<span id="map-box-value"></span></div>
-	</div>
 
 	<div id="export">
 		<% if @has_custom_view %>
@@ -84,41 +56,21 @@
 				view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
 	</div>
 
-	<div id="indicator-description">
-	</div>
+	<% if @custom_view_note %>
+		<div id="footnote">
+			<%= t('.footnote', :note => @custom_view_note) %>
+		</div>
+	<% end %>
 
-	<div id="legend-container" class="clear">
-		<ul id="legend">
-		</ul>
-		<% if @custom_view_note %>
-			<div id="footnote">
-				<%= t('.footnote', :note => @custom_view_note) %>
-			</div>
-		<% end %>
+	<div id='event_description'>
+		<h3><%= "#{@event_name}:" %></h3>
+		<%= simple_format(@event_description, {}, :sanitize => false) %>
 	</div>
-
-	<ul id="shape_layer_navigation" class="group clear">
-		<% if @shape_types.length > 0 %>
-			<% @shape_types.each do |type| %>
-				<% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
-					<li class="<%= type.id == @child_shape_type_id ? "active" : "not_active" %>">
-						<% if type.has_children? %>
-						  <% if @summary_view_type_name == params[:view_type] %>
-  							<%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
-              <% else %>
-  							<%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
-              <% end %>
-						<% else %>
-							<%= type.name_singular %>
-						<% end %>
-					</li>
-				<% end %>
-			<% end %>
-		<% end %>
-	</ul>
 
 </section>
 
+<%= render :partial => "root/indicator_menu_scales"%>
+</div>
 
 <% td = @dt.data %>
 <% if !td.nil? && !td.empty? %>

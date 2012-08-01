@@ -8,6 +8,8 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
+//= require event_menu
 //= require twitter/bootstrap
 //= require fancybox
 //= require data
@@ -24,5 +26,3 @@
 $(document).ready(function(){
   $("input:visible:first").focus();
 });
-
-

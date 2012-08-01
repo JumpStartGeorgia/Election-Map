@@ -137,7 +137,7 @@ ka:
       custom_shape_type: Show These Shapes
       is_default_view: Use as Default
   contact_mailer:
-    subject: "[Election Map] Contact Form"
+    subject: "[Georgia Election Data] Contact Form"
   layouts:
     application-bootstrap:
       title: Election Map
@@ -158,9 +158,7 @@ ka:
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
       js_link_text: აგებულია
     application:
-      title: Election Map
-      logo_alt: Map of Georgia in different colors
-      logo_title: მთავარი გვერდი
+      title: საქართველოს საარჩევნო მონაცემები
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი
       ndi_title: ეროვნული დემოკრატიული ინსტიტუტი
       signed_in: Signed in as
@@ -169,16 +167,13 @@ ka:
       sign_in: შესვლა
       or: or
       sign_up: Sign Up
-      about: პროექტის შესახებ
+      about: შესახებ
       data_source: მონაცემთა წყარო
       contact: დაგვიკავშირდით
-      terms: გამოყენების წესები
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
       js_link_text: აგებულია ჯამპსტარტ ჯორჯიას მიერ
     map:
-      title: Election Map
-      logo_alt: Map of Georgia in different colors
-      logo_title: მთავარი გვერდი
+      title: საქართველოს საარჩევნო მონაცემები
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი
       ndi_title: ეროვნული დემოკრატიული ინსტიტუტი
       signed_in: Signed in as
@@ -187,12 +182,13 @@ ka:
       sign_in: შესვლა
       or: or
       sign_up: Sign Up
-      about: პროექტის შესახებ
+      about: შესახებ
       data_source: მონაცემთა წყარო
       contact: დაგვიკავშირდით
-      terms: გამოყენების წესები
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
       js_link_text: აგებულია ჯამპსტარტ ჯორჯიას მიერ
+    event_menu:
+      header: არჩევნების
   root:
     admin:
       title: Administration Section
@@ -223,6 +219,8 @@ ka:
       export_help_text: დახმარება
       winner: გამარჯვებული
       footnote: "აღვნიშნო: %{note}"
+    indicator_menu_scales:
+      indicator_header: ინდიკატორები
     clear_cache:
       title: Cache
       cleared: The cache has been cleared.

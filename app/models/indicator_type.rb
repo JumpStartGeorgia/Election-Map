@@ -1,5 +1,5 @@
 class IndicatorType < ActiveRecord::Base
-  translates :name, :description
+  translates :name, :description, :summary_name
 
   has_many :indicator_type_translations, :dependent => :destroy
   has_many :core_indicators
@@ -30,7 +30,7 @@ class IndicatorType < ActiveRecord::Base
 				.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id},
 						:indicator_type_translations => {:locale => I18n.locale},
 						:core_indicator_translations => {:locale => I18n.locale})
-				.order("indicator_types.sort_order asc, core_indicator_translations.name asc")
+				.order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv asc")
 #			}
 		end
 	end
