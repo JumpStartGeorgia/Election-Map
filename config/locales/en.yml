@@ -200,6 +200,7 @@ en:
     index:
       export_link_text: Export Map
       export_help_text: Export Help
+      winner: winner
       footnote: "Note: %{note}"
     indicator_menu_scales:
       indicator_header: Indicators

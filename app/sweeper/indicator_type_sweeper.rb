@@ -1,6 +1,6 @@
 class IndicatorTypeSweeper < ActionController::Caching::Sweeper
-	require 'json_cache'
   observe IndicatorType # This sweeper is going to keep an eye on the IndicatorType model
+	require 'json_cache'
 
   # If our sweeper detects that a IndicatorType was created call this
   def after_create(indicator_type)

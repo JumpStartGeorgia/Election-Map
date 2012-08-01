@@ -10,6 +10,7 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require event_menu
+//= require twitter/bootstrap
 //= require fancybox
 //= require data
 //= require event_types

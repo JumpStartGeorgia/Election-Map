@@ -216,6 +216,21 @@ ActiveRecord::Schema.define(:version => 20120801084025) do
   add_index "indicator_scales", ["id"], :name => "index_indicator_scales_on_id"
   add_index "indicator_scales", ["indicator_id"], :name => "index_indicator_scales_on_indicator_id"
 
+  create_table "indicator_translation_olds", :force => true do |t|
+    t.integer  "indicator_id"
+    t.string   "locale"
+    t.string   "name"
+    t.string   "name_abbrv"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "description"
+  end
+
+  add_index "indicator_translation_olds", ["id"], :name => "index_indicator_translation_olds_on_id"
+  add_index "indicator_translation_olds", ["indicator_id"], :name => "index_indicator_translations_on_indicator_id"
+  add_index "indicator_translation_olds", ["locale"], :name => "index_indicator_translations_on_locale"
+  add_index "indicator_translation_olds", ["name"], :name => "index_indicator_translations_on_name"
+
   create_table "indicator_translations", :force => true do |t|
     t.integer  "indicator_id"
     t.string   "locale"
