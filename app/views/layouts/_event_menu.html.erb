@@ -20,7 +20,7 @@
 								<%= link_to event.name, indicator_map_path(
 									:event_id => event.id, :event_type_id => event.event_type_id,
 									:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id
-								), :title => event.name, :class => is_active %>
+								), :title => strip_tags(event.description), :class => is_active %>
 							</li>
 						<% end %>
 					<% end %>
