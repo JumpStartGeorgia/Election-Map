@@ -234,3 +234,43 @@ div.admin_panel ul li {
   list-style:disc;
   margin-left: 1em;	
 }
+
+/* Multi language forms*/
+
+ul.select-form-language {
+	list-style: none;
+	padding: 10px 10px 10px 0px;
+	margin-bottom: 0;
+}
+ul.select-form-language li {
+	display: inline;
+	padding:10px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+ul.select-form-language li a{
+	margin: -10px;
+	padding:10px;
+}
+div.multilanguage {
+	border-radius: 8px;
+	padding-left: 10px;
+}
+
+ul.select-form-language li#tab-en {
+	background-color:#bbb;
+	color:#eee;
+}
+div#form-en {
+	background-color:#bbb;
+}
+
+ul.select-form-language li#tab-ka {
+	background-color:#999;
+	color:#eee;
+}
+div#form-ka {
+	background-color:#999;
+}
+
+.hidden { display: none; }
