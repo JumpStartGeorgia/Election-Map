@@ -251,8 +251,8 @@ logger.debug "//////////////////////////////////////////////////////// done with
 			logger.debug "+++++++++ either data could not be found or param is missing and page could not be loaded, redirecting to home page"
 			redirect_to root_path
 		else
-			render :layout => 'map'
-			#render :layout => "application-bootstrap"
+			#render :layout => 'map'
+			render :layout => "application-bootstrap"
 		end
 	end
 

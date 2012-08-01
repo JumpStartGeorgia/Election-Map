@@ -1,10 +1,4 @@
-<div id="events_menu">
-	<div class="clear">
-		<h3 id="events_menu_header"><%= "#{t('.header')} >"%></h3>
-		<h4 id="current_event"><%= @event_name %></h4>
-	</div>
-	
-	<div id="events_menu_tabs">
+<div id="events_menu_tabs">
 		<ul>
 			<% @event_types.each do |event_type| %>
 				<% is_active = event_type.id.to_s == params[:event_type_id].to_s ? "ui-tabs-selected ui-state-active" : "" %>
@@ -29,4 +23,3 @@
 			</div>
 		<% end %>
 	</div>
-</div>

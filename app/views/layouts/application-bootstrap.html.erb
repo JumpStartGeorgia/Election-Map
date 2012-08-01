@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    	
     <title><%= content_for?(:title) ? yield(:title) : "ElectionMap" %></title>
+    <%= include_gon %>
     <%= csrf_meta_tags %>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -52,36 +53,50 @@
       </div>
       
       <!-- Navbar footer -->
-      <div class="navbar-inner bottom">      
+      <div class="navbar-inner bottom">               
          <div class="container">
-            <div class="navmenu">               
+            <div class="navmenu" id="navmenu">               
                <p class="link-text">
-                  elections 
+                  <%= t('.header') %> 
                </p>
                <p class="spec-char">
                   &#x25BC;
                </p>
             </div>
             <div class="navmenu-select">
-            </div>
-         </div>         
-      </div>      
+               <p>
+                  <%= @event_name %>
+               </p>
+            </div>            
+         </div>                                    
+      </div>            
+      <%= render :partial => "layouts/event_menu_tabs" %>
     </div>
-
-
-    <div class="container">
-
-      <div class="content">
-
-        <div class="row">
-           <div class="span9">
-           </div>
-            <div class="span3">              
-            </div>
-        </div>
-
-      </div>   
-    </div>
+    
+    
+    
+    
+		<div id="wrap">
+			<div id="main" class="container">
+		    <div class="content">
+		      <div class="row">
+		         <div class="span12">
+								<% flash.each do |key, msg| %>
+									<div class="alert <%= flash_translation(key) %> fade in">
+										<a href="#" data-dismiss="alert" class="close">×</a>
+										<%= msg %>
+									</div>
+								<% end %>
+								
+								<% if params[:controller] != "root" && params[:action] != "index" %>
+                           <h2><%= yield(:title) %></h2>
+                        <% end %>
+								<%= yield %>
+		          </div>
+		      </div><!--/row-->
+		    </div><!--/content-->
+	    </div> <!-- /container -->
+    </div><!--/wrap-->
     
     
     <div class="footer row">
@@ -99,15 +114,12 @@
 				         <%= link_to t('.admin'), admin_path %>
 				         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
 				         <a>|</a>
-		            <% else %>
-		               <%= link_to t('.sign_in'), "/#{locale}/admin" %>
-		               <a>|</a>
 		            <% end %>
-                  <%= link_to t('.about'), view_pages_path(:name => "about") %>
-                  <a>|</a>
-                  <%= link_to t('.contact'), contact_path %>
-                  <a>|</a>
-                  <%= link_to t('.terms'), view_pages_path(:name => "terms") %>
+                  <%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
+		            <a>|</a>
+		            <%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
+		            <a>|</a>
+		            <%= link_to t('.contact'), contact_path %>
               </p>
            </div>
 
@@ -121,7 +133,12 @@
     </div>
     
        
-    <%= javascript_include_tag "application" %>
+    
+    <%= javascript_include_tag "map" %>
+    <%= javascript_tag do %>
+		I18n.defaultLocale = "<%= I18n.default_locale %>";
+		I18n.locale = "<%= I18n.locale %>";
+	<% end %>
 
   </body>
 </html>

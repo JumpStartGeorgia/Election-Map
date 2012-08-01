@@ -1,12 +1,14 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 	require 'ostruct'
-
+	
+   layout "application-bootstrap"  
+   
   before_filter :set_locale
   before_filter :set_event_types
   before_filter :set_shape_types
   before_filter :set_default_values
-	before_filter :set_gon_data
+   before_filter :set_gon_data
 	before_filter :set_summary_view_type_name
 
 	unless Rails.application.config.consider_all_requests_local
