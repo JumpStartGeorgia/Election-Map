@@ -1,5 +1,5 @@
 class Event < ActiveRecord::Base
-  translates :name, :name_abbrv
+  translates :name, :name_abbrv, :description
 
   has_many :event_translations, :dependent => :destroy
   has_many :indicators

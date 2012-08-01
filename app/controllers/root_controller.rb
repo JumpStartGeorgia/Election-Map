@@ -37,6 +37,7 @@ logger.debug "////////////// getting current event"
 			else
 				# save the event name
 				@event_name = event.name
+				@event_description = event.description
 
 				# get the shape
 logger.debug "////////////// getting shape"

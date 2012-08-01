@@ -60,6 +60,11 @@
 		</div>
 	<% end %>
 
+	<div id='event_description'>
+		<h3><%= "#{@event_name}:" %></h3>
+		<%= simple_format(@event_description, {}, :sanitize => false) %>
+	</div>
+
 </section>
 
 <%= render :partial => "root/indicator_menu_scales"%>

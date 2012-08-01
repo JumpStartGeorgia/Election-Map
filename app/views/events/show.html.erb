@@ -11,6 +11,11 @@
 </p>
 
 <p>
+  <b><%= t('app.common.description') %>:</b>
+</p>
+<%= simple_format(@event.description, {}, :sanitize => false) %>
+
+<p>
   <b><%= t('app.common.event_type') %>:</b>
   <%= @event.event_type.name %>
 </p>

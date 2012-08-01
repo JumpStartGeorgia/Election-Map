@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120801075423) do
+ActiveRecord::Schema.define(:version => 20120801084025) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -150,6 +150,7 @@ ActiveRecord::Schema.define(:version => 20120801075423) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name_abbrv"
+    t.text     "description"
   end
 
   add_index "event_translations", ["event_id"], :name => "index_event_translations_on_event_id"

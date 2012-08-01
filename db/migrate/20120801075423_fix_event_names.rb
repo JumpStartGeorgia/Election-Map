@@ -25,7 +25,7 @@ class FixEventNames < ActiveRecord::Migration
 
 		#adjara
     et = event_translations.select{|x| x.event_id == 13 }.first
-    et.name = '2008 Adjara Supreme Council - Party List '
+    et.name = '2008 Adjara Supreme Council - Party List'
 		et.save
     et = event_translations.select{|x| x.event_id == 14 }.first
     et.name = '2008 Adjara Supreme Council - Majoritarian'
