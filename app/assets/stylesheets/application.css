@@ -205,36 +205,55 @@ td.highlighted > a {
 
 }
 
-#data-table-container .arrows > div {
-  width: 45px;
-  height: 29px;
-  border: 1px solid #fff;
+#data-table-container .arrows .arrow-container {
+  float: left;
+  position: relative;
+  margin-right: 1px;
+}
+
+#data-table-container .arrows .arrow-container .overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: rgba(255, 255, 255, .8);
+  cursor: default;
+  display: none;
+}
+
+#data-table-container .arrows .arrow-container,
+#data-table-container .arrows .arrow,
+#data-table-container .arrow-container .overlay {
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
-  background: #fff url('/assets/data_table_arrow_left.png') no-repeat center;
-  float: left;
-  cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
 }
 
-#data-table-container .arrows > div:hover {
+#data-table-container .arrows .arrow {
+  width: 45px;
+  height: 29px;
+  border: 1px solid #fff;
+  background: #fff url('/assets/data_table_arrow_left.png') no-repeat center;
+  float: left;
+  cursor: pointer;
+}
+
+#data-table-container .arrows .arrow:hover {
   border-color: #DFDFDF;
   background-color: #EFEFEF;
 }
 
-#data-table-container .arrows > div:active {
+#data-table-container .arrows .arrow:active {
   border-color: #AFAFAF;
   box-shadow: inset 0 0 2px #bFbFbF;
 }
 
-#data-table-container .arrows .left {
+#data-table-container .arrows .arrow.left {
 }
 
-#data-table-container .arrows .right {
-  margin-left: 1px;
+#data-table-container .arrows .arrow-container-right {
   -ms-transform:rotate(180deg);
   -moz-transform:rotate(180deg);
   -webkit-transform:rotate(180deg);

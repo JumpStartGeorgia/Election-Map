@@ -458,7 +458,7 @@ logger.debug "=========== getting data for 1 indicator"
                 if ind.core_indicator.indicator_type.has_summary &&
                    (maxvalue[d.common_name].nil? || d.value.to_f > maxvalue[d.common_name])
                   maxvalue[d.common_name] = d.value.to_f
-                  winner[d.common_name] = ind.name
+                  winner[d.common_name] = {:name => ind.name, :indicator_type_id => ind.core_indicator.indicator_type_id}
                 end
 
                 if index > 0
@@ -515,14 +515,16 @@ logger.debug "=========== getting data for 1 indicator"
         ind_ids = ind_ids.flatten
         data << header.flatten
 
+        indicator_type_ids = {}
         # add the rows
         rows.each do |r|
           # r[3] has to be the common_name
-          r = r[0..flattened-1] + [winner[r[3]]] + r[flattened..-1]
+          r = r[0..flattened-1] + [winner[r[3]][:name]] + r[flattened..-1]
+          indicator_type_ids[winner[r[3]][:name]] = winner[r[3]][:indicator_type_id]
           data << r
         end
 
-        return {:data => data, :indicator_ids => ind_ids}
+        return {:data => data, :indicator_ids => ind_ids, :indicator_type_ids => indicator_type_ids}
       end
     end
   end

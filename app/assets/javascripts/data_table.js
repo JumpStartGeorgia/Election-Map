@@ -2,9 +2,13 @@ var f, f_style_backup;
 $(function ()
 {
   var p = $('#data-table'),
-  dd_switcher = $('#dt_dd_switcher');
+  dd_switcher = $('#dt_dd_switcher'),
+  left_arrow_overlay = $('#data-table-container .arrow-container-left .overlay'),
+  right_arrow_overlay = $('#data-table-container .arrow-container-right .overlay'),
+  left_arrow_overlay_visible = false,
+  right_arrow_overlay_visible = false;
 
-  $('#data-table-container .arrows > div').click(function ()
+  $('#data-table-container .arrows .arrow').click(function ()
   {
     if (gon.dt.p >= gon.dt.all)
     {
@@ -25,12 +29,34 @@ $(function ()
       visi = classes[i].substring(2);
       break;
     }
-    nexti = (direction == 'left') ? ((+ visi == 1) ? gon.dt.g : + visi - 1) : ((+ visi == gon.dt.g) ? 1 : + visi + 1);
+    //nexti = (direction == 'left') ? ((+ visi == 1) ? gon.dt.g : + visi - 1) : ((+ visi == gon.dt.g) ? 1 : + visi + 1);
+    if (direction == 'left')
+    {
+      if (+ visi == 1)
+      {
+        //nexti = gon.dt.g;
+        return false;
+      }
+      nexti = + visi - 1;
+    }
+    else if (direction == 'right')
+    {
+      if (+ visi == gon.dt.g)
+      {
+        //nexti = 1;
+        return false;
+      }
+      nexti = + visi + 1;
+    }
+    else
+    {
+      return false;
+    }
+
+    disable_arrows(nexti);
+
     visible.addClass('hidden');
     hidden.filter('.cg' + nexti).removeClass('hidden');
-  /*
-    dd_switcher.val(nexti);
-  */
   });
 
   function highlight ()
@@ -44,8 +70,12 @@ $(function ()
     var nexti = dd_switcher.val();
     if (empty(nexti))
     {
+      disable_arrows(1);
       return;
     }
+
+    disable_arrows(nexti);
+
     var datai = dd_switcher.children('option:selected').data('i');
     if (empty(datai))
     {
@@ -60,6 +90,31 @@ $(function ()
 
     visible.addClass('hidden');
     hidden.removeClass('hidden');
+  }
+
+
+  function disable_arrows (nexti)
+  {
+    if (nexti == 1)
+    {
+      left_arrow_overlay.show(0);
+      left_arrow_overlay_visible = true;
+    }
+    else if (nexti == gon.dt.g)
+    {
+      right_arrow_overlay.show(0);
+      right_arrow_overlay_visible = true;
+    }
+    if (nexti < gon.dt.g && right_arrow_overlay_visible)
+    {
+      right_arrow_overlay.hide(0);
+      right_arrow_overlay_visible = false;
+    }
+    else if (nexti > 1 && left_arrow_overlay_visible)
+    {
+      left_arrow_overlay.hide(0);
+      left_arrow_overlay_visible = false;
+    }
   }
 
   dd_switcher.ready(highlight);

@@ -201,24 +201,24 @@ logger.debug "////////////// is custom view, getting indicator to switch between
 
       get_data = Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], nil, true, true)
       dt = OpenStruct.new(
-        'cols_p'        => 7, #data columns count per turn
-        'skip_cols'     => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
-        'static_cols'   => 1, #data static columns count, e.g. "District name"
+        'cols_p'             => 7, #data columns count per turn
+        'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
+        'static_cols'        => 1, #data static columns count, e.g. "District name"
 
-        'data'          => get_data[:data],
-        'indicator_ids' => get_data[:indicator_ids],
-        'dd_titles'     => []
+        'data'               => get_data[:data],
+        'indicator_ids'      => get_data[:indicator_ids],
+        'indicator_type_ids' => get_data[:indicator_type_ids],
+        'dd_titles'          => []
       )
       s = dt.skip_cols + dt.static_cols
-     #dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
-      dt.indicator_ids = dt.indicator_ids[s..- 1]
+      dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
       dt.data.each_with_index do |val, i|
         dt.data[i] = dt.data[i][dt.skip_cols..- 1]
       end
 
       # selected indicator id
       if params[:indicator_id].nil?
-        if params[:view_type] == 'summary'
+        if params[:view_type] == @summary_view_type_name
           dt.sid = 'winner_ind'
         else
           dt.sid = ''
