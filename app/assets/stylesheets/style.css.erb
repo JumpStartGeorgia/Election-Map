@@ -240,7 +240,8 @@ header {
     -moz-box-shadow: 0 0 10px #444;
 }
 
-
+/* fixes issue with bootstrap css and openlayers tile images */
+#map img { max-width:none; }
 
 #export {
 	display: none;
