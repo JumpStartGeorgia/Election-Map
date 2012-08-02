@@ -205,7 +205,7 @@ logger.debug "////////////// is custom view, getting indicator to switch between
 
   		# reset the parameter that indicates if the shape type changed
   		params[:change_shape_type] = nil
-
+=begin
       get_data = Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], nil, true, true)
       dt = OpenStruct.new(
         'cols_p'      => 7, #data columns count per turn
@@ -238,7 +238,7 @@ logger.debug "////////////// is custom view, getting indicator to switch between
       end
 
       @dt = dt
-
+=end
   		# set js variables
 logger.debug "////////////// setting gon variables"
       set_gon_variables
@@ -464,8 +464,8 @@ logger.debug " - no matching event found!"
 		gon.indicator_menu_scale = true
 
 		# data table
-    gon.dt = {:g => @dt.groups, :p => @dt.cols_p, :all => @dt.data[0].count}
-    gon.dt[:common_name] = params[:common_name].nil? ? false : params[:common_name]
+#    gon.dt = {:g => @dt.groups, :p => @dt.cols_p, :all => @dt.data[0].count}
+#    gon.dt[:common_name] = params[:common_name].nil? ? false : params[:common_name]
   end
 
   # build an array of indicator scales that will be used in js

@@ -1,9 +1,9 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 	require 'ostruct'
-	
-   layout "application-bootstrap"  
-   
+
+   layout "application-bootstrap"
+
   before_filter :set_locale
   before_filter :set_event_types
   before_filter :set_shape_types
@@ -40,12 +40,24 @@ protected
   end
 
   def set_event_types
-    @event_types = Rails.cache.fetch("event_types") {EventType.all}
+logger.debug "---********----- event type cache"
+    @event_types = Rails.cache.fetch("event_types_#{I18n.locale}") {
+			x = EventType.all
+			# do this to force a call to the db to get the data
+			# so the data will actually be cached
+			x.collect{|x| x}
+		}
 #    @event_types = EventType.all
   end
 
   def set_shape_types
-    @shape_types = Rails.cache.fetch("shape_types") {ShapeType.all}
+logger.debug "---********----- shape type cache"
+    @shape_types = Rails.cache.fetch("shape_types") {
+			ShapeType.with_translations(I18n.locale)
+			# do this to force a call to the db to get the data
+			# so the data will actually be cached
+			x.collect{|x| x}
+		}
 #    @shape_types = ShapeType.all
   end
 
