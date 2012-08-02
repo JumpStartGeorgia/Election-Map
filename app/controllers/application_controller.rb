@@ -1,13 +1,13 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery
+   protect_from_forgery
 	require 'ostruct'
 
    layout "application-bootstrap"
 
-  before_filter :set_locale
-  before_filter :set_event_types
-  before_filter :set_shape_types
-  before_filter :set_default_values
+   before_filter :set_locale
+   before_filter :set_event_types
+   before_filter :set_shape_types
+   before_filter :set_default_values
    before_filter :set_gon_data
 	before_filter :set_summary_view_type_name
 
@@ -53,7 +53,7 @@ logger.debug "---********----- event type cache"
   def set_shape_types
 logger.debug "---********----- shape type cache"
     @shape_types = Rails.cache.fetch("shape_types") {
-			ShapeType.with_translations(I18n.locale)
+			x = ShapeType.with_translations(I18n.locale)
 			# do this to force a call to the db to get the data
 			# so the data will actually be cached
 			x.collect{|x| x}
