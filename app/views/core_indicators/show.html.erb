@@ -1,39 +1,39 @@
 <% title t('.title') %>
 
 <p>
-  <b><%= t("app.common.name") %>:</b>
+  <strong><%= t("app.common.name") %>:</strong>
   <%= @core_indicator.name %>
 </p>
 
 <p>
-  <b><%= t("app.common.name_abbrv") %>:</b>
+  <strong><%= t("app.common.name_abbrv") %>:</strong>
   <%= @core_indicator.name_abbrv %>
 </p>
 
 <p>
-  <b><%= t("app.common.description") %>:</b>
+  <strong><%= t("app.common.description") %>:</strong>
   <%= @core_indicator.description %>
 </p>
 
 <p>
-  <b><%= t("app.common.indicator_type") %>:</b>
+  <strong><%= t("app.common.indicator_type") %>:</strong>
   <%= @core_indicator.indicator_type.name %>
 </p>
 
 <p>
-  <b><%= t("app.common.number_format") %>:</b>
+  <strong><%= t("app.common.number_format") %>:</strong>
   <%= @core_indicator.number_format %>
 </p>
 
 <p>
-  <b><%= t("app.common.color") %>:</b>
+  <strong><%= t("app.common.color") %>:</strong>
   <% if !@core_indicator.indicator_color.nil? && !@core_indicator.indicator_color.empty? %>
 	  <span style="background-color: <%= "#{@core_indicator.indicator_color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 	<% end %>
 </p>
 
 <p>
-  <b><%= t("app.common.indicator_ancestry") %>:</b>
+  <strong><%= t("app.common.indicator_ancestry") %>:</strong>
   <%= @core_indicator.parent.name if !@core_indicator.ancestry.nil? %>
 </p>
 
@@ -45,4 +45,3 @@
 	<%= link_to t('app.buttons.admin'), admin_path,
   :class => 'btn' %>
 </div>
-

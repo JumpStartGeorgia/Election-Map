@@ -21,5 +21,10 @@
 		<%= f.input :shape_id %>
 	<% end %>
 
-	<%= f.actions :submit, :reset, :cancel %>
+	<div class="form-actions">
+	  <%= f.submit nil, :class => 'btn btn-success' %>
+	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
+	  <%= link_to t('app.buttons.cancel'), events_path, :class => 'btn btn-mini btn-warning' %>
+	</div>
+
 <% end %>

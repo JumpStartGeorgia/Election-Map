@@ -1,7 +1,7 @@
 class ShapesController < ApplicationController
   require 'csv'
   before_filter :authenticate_user!
-	cache_sweeper :shape_type_sweeper, :only => [:upload, :delete]
+	cache_sweeper :shape_sweeper, :only => [:upload, :delete]
 
 
   # GET /shapes/upload
@@ -20,7 +20,7 @@ class ShapesController < ApplicationController
 		        # errors
 						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to upload_shapes_path #GET
-		      end 
+		      end
 				else
 					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to upload_shapes_path #GET
@@ -38,11 +38,11 @@ class ShapesController < ApplicationController
     filename ="shapes_template"
     csv_data = CSV.generate(:col_sep=>',') do |csv|
       csv << Shape.csv_header
-    end 
+    end
     send_data csv_data,
       :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
-  end 
+  end
 
   # GET /shapes/delete
   # GET /shapes/delete.json
@@ -57,14 +57,14 @@ class ShapesController < ApplicationController
 				# delete the shapes
 				msg = Shape.delete_shapes(params[:event_id], params[:shape_type_id])
 
-				if msg.nil?				
-					flash[:success] = I18n.t('app.msgs.delete_shapes_success', 
+				if msg.nil?
+					flash[:success] = I18n.t('app.msgs.delete_shapes_success',
 					  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
 
           # reset params
           params[:event_id] = nil
           params[:shape_type_id] = nil
-          
+
 				else
       		gon.event_id = params[:event_id]
       		gon.shape_type_id = params[:shape_type_id]

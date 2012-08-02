@@ -1,17 +1,17 @@
 <% title t('.title') %>
 
 <p>
-  <b><%= t('app.common.name')%>:</b>
+  <strong><%= t('app.common.name')%>:</strong>
   <%= @page.name %>
 </p>
 
 <p>
-  <b><%= t('app.common.title')%>:</b>
+  <strong><%= t('app.common.title')%>:</strong>
   <%= @page.title %>
 </p>
 
 <p>
-  <b><%= t('app.common.description')%>:</b>
+  <strong><%= t('app.common.description')%>:</strong>
 </p>
 <%= simple_format(@page.description, {}, :sanitize => false) %>
 

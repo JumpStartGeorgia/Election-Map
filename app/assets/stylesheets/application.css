@@ -9,7 +9,7 @@
  *= require scaffold
  *= require tipsy
  *= require indicator_menu_scales
- *= require formtastic-bootstrap  
+ *= require formtastic-bootstrap
   *= require_self
 
 */
@@ -52,6 +52,14 @@ h3 {
   font-size: 16pt;
   font-weight: bold;
   padding: 0.5em 0;
+}
+
+strong {
+	font-weight: bold;
+}
+
+p {
+margin: 0.5em 0;
 }
 
 /* Map */
@@ -232,7 +240,7 @@ filter:alpha(opacity=100); /* For IE8 and earlier */
 div.admin_panel ul li {
 	padding-bottom: 0.5em;
   list-style:disc;
-  margin-left: 1em;	
+  margin-left: 1em;
 }
 
 /* Multi language forms*/

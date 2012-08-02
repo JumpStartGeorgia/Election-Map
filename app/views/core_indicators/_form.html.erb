@@ -1,9 +1,9 @@
 <%= semantic_form_for @core_indicator do |f| %>
 	<%= f.semantic_errors %>
 	<%= f.inputs :for => :core_indicator_translations do |core_indicator_translation, i| %>
-		
+
 		<% formLocale = I18n.available_locales[i-1] %>
-		
+
 		<div id="form-<%= formLocale %>" class="multilanguage">
 			<h3><%= t("app.language.#{formLocale}") %></h3>
 
@@ -18,11 +18,17 @@
     <%= f.input :indicator_type %>
     <%= f.input :number_format %>
     <%= f.input :color, :hint => t("app.msgs.core_indicator_color_share") %>
-    <li class="string input optional stringish">
-    <%= label_tag "core_indicator_ancestry", t("app.common.indicator_ancestry"), :class => "label"%>
-    <%= collection_select "core_indicator", "ancestry", @core_indicators, "id", "name", {:include_blank => true, :selected => @core_indicator.ancestry} %>
-    </li>
+    <div class="select control-group optional stringish">
+	    <%= label_tag "core_indicator_ancestry", t("app.common.indicator_ancestry"), :class => "control-label"%>
+				<div class="controls">
+			  <%= collection_select "core_indicator", "ancestry", @core_indicators, "id", "name", {:include_blank => true, :selected => @core_indicator.ancestry} %>
+	    </div>
+    </div>
   <% end %>
 
-	<%= f.actions :submit, :reset, :cancel %>
+	<div class="form-actions">
+	  <%= f.submit nil, :class => 'btn btn-success' %>
+	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
+	  <%= link_to t('app.buttons.cancel'), core_indicators_path, :class => 'btn btn-mini btn-warning' %>
+	</div>
 <% end %>

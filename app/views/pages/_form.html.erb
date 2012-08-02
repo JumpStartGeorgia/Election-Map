@@ -6,9 +6,9 @@
 	<% end %>
 
 	<%= f.inputs :for => :page_translations do |page_translation, i| %>
-		
+
 		<% formLocale = I18n.available_locales[i-1] %>
-		
+
 		<div id="form-<%= formLocale %>" class="multilanguage">
 			<h3><%= t("app.language.#{formLocale}") %></h3>
 
@@ -19,5 +19,9 @@
 
 	<% end %>
 
-	<%= f.actions :submit, :reset, :cancel %>
+	<div class="form-actions">
+	  <%= f.submit nil, :class => 'btn btn-success' %>
+	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
+	  <%= link_to t('app.buttons.cancel'), pages_path, :class => 'btn btn-mini btn-warning' %>
+	</div>
 <% end %>

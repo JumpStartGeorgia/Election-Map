@@ -1,32 +1,32 @@
 <% title t('.title') %>
 
 <p>
-  <b><%= t('app.common.name') %>:</b>
+  <strong><%= t('app.common.name') %>:</strong>
   <%= @event.name %>
 </p>
 
 <p>
-  <b><%= t('app.common.name_abbrv') %>:</b>
+  <strong><%= t('app.common.name_abbrv') %>:</strong>
   <%= @event.name_abbrv %>
 </p>
 
 <p>
-  <b><%= t('app.common.description') %>:</b>
+  <strong><%= t('app.common.description') %>:</strong>
 </p>
 <%= simple_format(@event.description, {}, :sanitize => false) %>
 
 <p>
-  <b><%= t('app.common.event_type') %>:</b>
+  <strong><%= t('app.common.event_type') %>:</strong>
   <%= @event.event_type.name %>
 </p>
 
 <p>
-  <b><%= t('app.common.event_date') %>:</b>
+  <strong><%= t('app.common.event_date') %>:</strong>
   <%= @event.event_date %>
 </p>
 
 <p>
-  <b><%= t('app.common.parent_shape') %>:</b>
+  <strong><%= t('app.common.parent_shape') %>:</strong>
   <%= @event.shape_id %>
 </p>
 

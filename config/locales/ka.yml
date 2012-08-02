@@ -63,6 +63,8 @@ ka:
       delete: წაშლა
       edit: დამუშავება
       show: Show
+      cancel: გაუქმება
+      reset: გადატვირთვა
       new_data: New Datum
       new_event_types: New Event Type
       new_events: New Event

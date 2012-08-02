@@ -53,7 +53,7 @@ logger.debug "---********----- event type cache"
   def set_shape_types
 logger.debug "---********----- shape type cache"
     @shape_types = Rails.cache.fetch("shape_types") {
-			ShapeType.with_translations(I18n.locale)
+			x = ShapeType.with_translations(I18n.locale)
 			# do this to force a call to the db to get the data
 			# so the data will actually be cached
 			x.collect{|x| x}
