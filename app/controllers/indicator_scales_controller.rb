@@ -1,6 +1,6 @@
 class IndicatorScalesController < ApplicationController
   before_filter :authenticate_user!
-	cache_sweeper :indicator_sweeper, :only => [:upload]
+	cache_sweeper :indicator_scale_sweeper, :only => [:upload]
 
 	# GET /indicator_scales/upload
 	# GET /indicator_scales/upload.json
@@ -17,7 +17,7 @@ class IndicatorScalesController < ApplicationController
 			      # errors
 						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 					  redirect_to upload_indicator_scales_path #GET
-			    end 
+			    end
 				else
 					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 			    redirect_to upload_indicator_scales_path #GET
@@ -35,10 +35,10 @@ class IndicatorScalesController < ApplicationController
 	  filename ="indicator_sacles_template"
 	  csv_data = CSV.generate(:col_sep=>',') do |csv|
 	    csv << IndicatorScale.csv_all_header
-	  end 
+	  end
 	  send_data csv_data,
 	    :type => 'text/csv; charset=utf-8; header=present',
 	    :disposition => "attachment; filename=#{filename}.csv"
-	end 
+	end
 
 end

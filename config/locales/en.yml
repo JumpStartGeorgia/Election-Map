@@ -63,6 +63,8 @@ en:
       delete: Delete
       edit: Edit
       show: Show
+      cancel: Cancel
+      reset: Reset
       new_data: New Datum
       new_event_types: New Event Type
       new_events: New Event

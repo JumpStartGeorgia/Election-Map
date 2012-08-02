@@ -8,16 +8,14 @@
     <th><%= t('app.common.parent_shape')%></th>
     <th></th>
     <th></th>
-    <th></th>
   </tr>
   </thead>
   <tbody>
 <% @shape_types.each do |shape_type| %>
   <tr>
-    <td><%= shape_type.name_singular %></td>
+    <td><%= link_to shape_type.name_singular, shape_type %></td>
     <td><%= shape_type.name_plural %></td>
     <td><%= shape_type.parent.name_singular if !shape_type.parent.nil? %></td>
-    <td><%= link_to t('app.buttons.show'), shape_type, :class => 'btn btn-mini' %></td>
     <td><%= link_to t('app.buttons.edit'), edit_shape_type_path(shape_type), :class => 'btn btn-mini' %></td>
     <td><%= link_to t('app.buttons.delete'), shape_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete,
     :class => 'btn btn-mini btn-danger' %></td>
@@ -32,4 +30,3 @@
 	<%= link_to t('app.buttons.admin'), admin_path,
   :class => 'btn' %>
 </div>
-

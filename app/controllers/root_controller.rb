@@ -466,6 +466,9 @@ logger.debug " - no matching event found!"
 		# data table
 #    gon.dt = {:g => @dt.groups, :p => @dt.cols_p, :all => @dt.data[0].count}
 #    gon.dt[:common_name] = params[:common_name].nil? ? false : params[:common_name]
+
+		# load openlayers js
+		gon.openlayers = true
   end
 
   # build an array of indicator scales that will be used in js
