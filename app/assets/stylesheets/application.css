@@ -139,10 +139,10 @@ tr.odd_row td, tr.even_row td{
 
 #data-table th, #data-table td {
   border: 1px solid #000;
-  transition: background .5s;
-  -moz-transition: background .5s;
-  -webkit-transition: background .5s;
-  -o-transition: background .5s;
+  transition: background-color .5s;
+  -moz-transition: background-color .5s;
+  -webkit-transition: background-color .5s;
+  -o-transition: background-color .5s;
 }
 
 #data-table th, #data-table td > a, #data-table td.cg0 {
@@ -191,6 +191,24 @@ td.highlighted > a {
 #data-table th.hidden, #data-table td.hidden {
   display: none;
 }
+
+#data-table th.header {
+  cursor: pointer;
+  background-image: url(/assets/asc+desc.gif);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+#data-table th.headerSortUp {
+  background-image: url(/assets/asc.gif);
+  background-color: rgba(51, 153, 255, .8);
+}
+
+#data-table th.headerSortDown {
+  background-image: url(/assets/desc.gif);
+  background-color: rgba(51, 153, 255, .8);
+} 
+
 
 #data-table-container .switchers {
   margin: 5px 0;

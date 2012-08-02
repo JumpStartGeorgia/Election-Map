@@ -4,6 +4,7 @@
 //= require jquery_ujs
 //= require fancybox
 //= require vendor_map
+//= require jquery.tablesorter.min
 //= require data_table
 //= require d3.v2.min
 //= require jquery.ui
@@ -200,9 +201,14 @@ function load_vector_child(resp){
 		// now load the values for the hidden form
 		load_hidden_form();
 
-	  var f = highlight_shape();
-		if ( f !== undefined)
-  		mapFreeze(f);
+    if (typeof highlight_shape == 'function')
+    {
+	    var f = highlight_shape();
+		  if ( f !== undefined)
+		  {
+    		mapFreeze(f);
+    	}
+    }
 
   } else {
     console.log('vector_child - no features found');

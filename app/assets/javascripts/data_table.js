@@ -8,6 +8,9 @@ $(function ()
   left_arrow_overlay_visible = false,
   right_arrow_overlay_visible = false;
 
+  p.tablesorter(); 
+    
+
   $('#data-table-container .arrows .arrow').click(function ()
   {
     if (gon.dt.p >= gon.dt.all)
@@ -142,7 +145,7 @@ function highlight_shape ()
       
       // backup feature styles
       f_style_backup = f.style;
-      
+
       f.style = new OpenLayers.Style();
       f.style.fillColor = "#4A6884";//"#5c81a3";
       f.style.strokeColor = "#000000";
