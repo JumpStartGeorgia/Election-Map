@@ -7,15 +7,13 @@
     <th><%= t('app.common.sort_order') %></th>
     <th></th>
     <th></th>
-    <th></th>
   </tr>
 </thead>
 <tbody>
 <% @event_types.each do |event_type| %>
 <tr>
-    <td><%= event_type.name %></td>
+    <td><%= link_to event_type.name, event_type %></td>
     <td><%= event_type.sort_order %></td>
-    <td><%= link_to t('app.buttons.show'), event_type, :class => 'btn btn-mini' %></td>
     <td><%= link_to t('app.buttons.edit'), edit_event_type_path(event_type), :class => 'btn btn-mini' %></td>
     <td><%= link_to t('app.buttons.delete'), event_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete,
     :class => 'btn btn-mini btn-danger' %></td>

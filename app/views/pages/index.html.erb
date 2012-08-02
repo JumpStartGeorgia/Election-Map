@@ -8,16 +8,14 @@
     <th><%= t('app.common.description')%></th>
     <th></th>
     <th></th>
-    <th></th>
   </tr>
   </thead>
   <tbody>
 <% @pages.each do |page| %>
   <tr>
-    <td><%= page.name %></td>
+    <td><%= link_to page.name, page %></td>
     <td><%= page.title %></td>
     <td><%= page.description %></td>
-    <td><%= link_to t('app.buttons.show'), page, :class => 'btn btn-mini' %></td>
     <td><%= link_to t('app.buttons.edit'), edit_page_path(page), :class => 'btn btn-mini' %></td>
     <td><%= link_to t('app.buttons.delete'), page, :confirm => t('app.msgs.delete_confirm'), :method => :delete,
     :class => 'btn btn-mini btn-danger' %></td>
@@ -30,8 +28,7 @@
 
 <div class="form-actions">
 	<%= link_to t('app.buttons.new_pages'), new_page_path,
-  :class => 'btn btn-primary' %>	
+  :class => 'btn btn-primary' %>
 	<%= link_to t('app.buttons.admin'), admin_path,
   :class => 'btn' %>
 </div>
-
