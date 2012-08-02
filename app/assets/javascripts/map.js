@@ -3,21 +3,31 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
-//= require indicator_menu_scale
-//= require event_menu
+//= require twitter/bootstrap
 //= require fancybox
-//= require vendor_map
-//= require data_table
 //= require d3.v2.min
 //= require jquery.slimscroll
+
+//= require vendor_map
+
+//= require data
+//= require data_table
+//= require event_custom_views
+//= require event_menu
+//= require indicator_menu_scale
 //= require map_popup_svg
+//= require shapes
 
 
 // set focus to first text box on page
 $(document).ready(function(){
   $("input:visible:first").focus();
+
+	// to load pop-up window for export help
+  $("a.fancybox").fancybox();
 });
 
+if (gon.openlayers){
 
 window.onload = map_init;
 
@@ -729,10 +739,4 @@ function format_number2(value) {
 		return numFormat.toFormatted();
 	}
 }
-
-$(document).ready(function() {
-	// to load pop-up window for export help
-  $("a.fancybox").fancybox();
-});
-
-
+}
