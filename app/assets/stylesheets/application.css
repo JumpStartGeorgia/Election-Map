@@ -62,6 +62,19 @@ p {
 margin: 0.5em 0;
 }
 
+ul.standard, ol.standard, ul.standard ul, ol.standard ol,
+ul.standard ol, ol.standard ul {
+	margin-left: 40px;
+}
+ul.standard li {
+	list-style-type:disc;
+	line-height: 1.1;
+}
+ol.standard li {
+	list-style-type:decimal;
+	line-height: 1.1;
+}
+
 /* Map */
 #map-container {
 	position: relative;

@@ -1,6 +1,6 @@
 class IndicatorScalesController < ApplicationController
   before_filter :authenticate_user!
-	cache_sweeper :indicator_scales_sweeper, :only => [:upload]
+	cache_sweeper :indicator_scale_sweeper, :only => [:upload]
 
 	# GET /indicator_scales/upload
 	# GET /indicator_scales/upload.json

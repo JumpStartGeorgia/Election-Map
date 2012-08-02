@@ -9,12 +9,18 @@
 		<p>
 			<%= t('.which_download') %>
 			<br />
+			<label class="radio">
 			<%= radio_button_tag 'download_option', 'names' %>
-			<%= label_tag 'download_option_names', t('.name_label') %>
+			<%= t('.name_label') %>
+			</label>
+			<label class="radio">
 			<%= radio_button_tag 'download_option', 'scales' %>
-			<%= label_tag 'download_option_scales', t('.scale_label')%>
+			<%= t('.scale_label')%>
+			</label>
+			<label class="radio">
 			<%= radio_button_tag 'download_option', 'both', true %>
-			<%= label_tag 'download_option_both', t('.both_label')%>
+			<%= t('.both_label')%>
+			</label>
 		</p>
 	</div>
 	<div>
@@ -26,4 +32,3 @@
 	<%= link_to t('app.buttons.admin'), admin_path,
   :class => 'btn' %>
 </div>
-
