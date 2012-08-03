@@ -12,7 +12,7 @@ en:
     - Fri
     - Sat
     abbr_month_names:
-    - 
+    -
     - Jan
     - Feb
     - Mar
@@ -38,7 +38,7 @@ en:
       long: ! '%B %d, %Y'
       short: ! '%b %d'
     month_names:
-    - 
+    -
     - January
     - February
     - March
@@ -155,7 +155,7 @@ en:
       precision: 2
       separator: .
       significant: false
-      strip_insignificant_zeros: false
+      strip_insignificant_zeros: true
     human:
       decimal_units:
         format: ! '%n %u'

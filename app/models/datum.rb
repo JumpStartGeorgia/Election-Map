@@ -15,9 +15,9 @@ class Datum < ActiveRecord::Base
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
     if read_attribute(:value).nil? || read_attribute(:value).to_s.downcase.strip == "null"
-      I18n.t('app.msgs.no_data')
+      return I18n.t('app.msgs.no_data')
     else
-      sprintf("%g", read_attribute(:value))
+			return number_with_precision(read_attribute(:value))
     end
   end
 
@@ -26,11 +26,7 @@ class Datum < ActiveRecord::Base
 		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
 			return I18n.t('app.msgs.no_data')
 		else
-      if self.value.index(".").nil?
-				return number_with_delimiter(self.value.to_i)
-			else
-				return number_with_precision(self.value.to_f)
-			end
+			return number_with_delimiter(number_with_precision(self.value))
 		end
 	end
 
