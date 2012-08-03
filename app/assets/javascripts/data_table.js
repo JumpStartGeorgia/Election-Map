@@ -8,7 +8,7 @@ $(function ()
   left_arrow_overlay_visible = false,
   right_arrow_overlay_visible = false;
 
-  p.tablesorter(); 
+  p.tablesorter();
     
 
   $('#data-table-container .arrows .arrow').click(function ()
