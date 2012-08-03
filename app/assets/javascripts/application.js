@@ -21,6 +21,7 @@
 //= require pages
 //= require shape_types
 //= require shapes
+//= require map.export
 
 // set focus to first text box on page
 $(document).ready(function(){

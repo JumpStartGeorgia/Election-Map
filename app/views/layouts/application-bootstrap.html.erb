@@ -121,30 +121,30 @@
     <footer class="footer">
 			<div class="container">
 			  <div class="content">
-			    <div class="row">
-						<div class="span2 ndi-logo">
-							 <a href="http://www.ndi.org" target="_blank">
-									<img src="/assets/ndi-logo.png"/>
-							 </a>
-						</div>
+					<div class="ndi-logo">
+						 <a href="http://www.ndi.org" target="_blank">
+								<img src="/assets/ndi-logo.png"/>
+						 </a>
+					</div>
 
-						<div class="span8 footer-nav">
-							<p>
-								<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
-								<a>|</a>
-								<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
-								<a>|</a>
-								<%= link_to t('.contact'), contact_path %>
-							</p>
-						</div>
+               <div class="js-logo">
+						 <p><%= t(".js_link_text") %>:</p>
+						 <a href="http://www.jumpstart.ge" target="_blank">
+								 <img src="/assets/jumpstart-logo.png"/>
+						 </a>
+					</div>               
+               
+					<div class="footer-nav">
+						<p>
+							<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
+							<a>|</a>
+							<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
+							<a>|</a>
+							<%= link_to t('.contact'), contact_path %>
+						</p>
+					</div>
 
-						<div class="span2 js-logo">
-							 <p><%= t(".js_link_text") %>:</p>
-							 <a href="http://www.jumpstart.ge" target="_blank">
-									 <img src="/assets/jumpstart-logo.png"/>
-							 </a>
-						</div>
-		      </div><!--/row-->
+					
 		    </div><!--/content-->
 	    </div> <!-- /container -->
     </footer>

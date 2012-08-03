@@ -63,16 +63,20 @@ body {
 }
 
 .navbar-inner.head .container {
-/*   width: 1300px;*/
+   width: 100%;
    height: 100%;
    padding-top: 28px;
 }
 
 .navbar-inner.head .brand {
-   padding: 0;
-   margin: 0;
+   padding: 0 !important;
+   margin: 0 !important;
+   padding-left: 28px !important;
 }
 
+.navbar-inner.head .container .nav-collapse a {
+   padding-right: 28px !important;
+}
 
 
 
@@ -84,7 +88,7 @@ body {
 
 .navbar-inner.bottom .container {
    height: 100%;
-/*   width: 1400px;  */
+   width: 100%;
 }
 
 .navbar-inner.bottom .navmenu {
@@ -108,7 +112,7 @@ body {
    float: left;
    font-size: 16px;
    font-weight: bold;
-   padding: 19px 0 0 28px;
+   padding: 10px 0 0 28px;
    width: 90px;
 }
 
@@ -116,6 +120,8 @@ body {
    width: 10px;
    margin-left: 10px;
    margin-top: 20px;
+   font-family: Arial;
+   font-size: 10px;
 }
 
 .navbar-inner.bottom .navmenu-select {
@@ -198,43 +204,47 @@ body {
 }
 
 .footer .container {
-/*   width: 1300px;*/
+   width: 100%;
    min-height: 64px !important;
    background: #D4D4D4 !important;
    margin: 0 auto;
 }
 
 // Footer navigation
-.span8.footer-nav {
+.footer-nav {
    text-align: center;
+   margin: 0 auto !important;
 }
 
-.span8.footer-nav p {
+.footer-nav p {
    margin-top: 28px;
 }
 
-.span8.footer-nav p a {
+.footer-nav p a {
    padding: 0 10px 0 10px;
 }
 
-.span8.footer-nav p, .span8.footer-nav p a {
+.footer-nav p, .footer-nav p a {
    font-family: Arial;
    color: #454545;
 }
 
 // Footer ndi logo
-.span2.ndi-logo {
-/*   float: left;*/
-   margin-top: 16px;
+.ndi-logo {
+   float: left;
+   margin-top: -10px;
+   margin-left: 28px;
 }
 
 // Footer JS logo
-.span2.js-logo {
-/*   float: right;*/
-   margin-top: 28px;
+.js-logo {
+   float: right;
+   margin: 0 !important;
+   margin-right: 28px !important;
+   
 }
 
-.span2.js-logo p {
+.js-logo p {
    margin: 0;
    text-align: left;
    width: 50px;
@@ -244,7 +254,7 @@ body {
 	text-align: right;
 }
 
-.span2.js-logo a img {
+.js-logo a img {
    margin-top: -7px;
    float: right;
 }
@@ -297,5 +307,87 @@ div#indicator_menu_scale h3 {
    font-family: Arial, Sanserif;
    font-size: 12px;
    color: #626262;
+}
+
+// Export
+#export {
+   // Export position
+   position: relative;
+   left: 15px;
+   top: 80% !important;
+   
+
+   background: #e26561 !important;
+   width: 88px;
+   height: 22px;
+   
+   display: block !important;
+   cursor: pointer;
+   
+   
+   // Border radius
+   -webkit-border-radius: 2px;
+   -moz-border-radius: 2px;
+   border-radius: 2px;
+   
+      
+   // Export font and text
+   font-size: 12px;
+   font-family: Arial;
+   font-weight: bold;
+   text-transform: uppercase;
+   color: #FFF;
+}
+
+#export p {  
+   margin: 0; 
+   position: absolute;
+   width: 78px;
+   height: 12px;
+   top: 5px;
+   left: 5px;  
+   letter-spacing: 1px;
+}
+
+#export-map, #export-data, #export .fancybox {   
+   width: 27px;
+   height: 12px;   
+   display: none;
+   letter-spacing: 1px;
+   color: #FFF;
+   
+   // Transitions
+   -webkit-transition: opacity .4s;
+   -moz-transition: opacity .4s;
+   -o-transition: opacity .4s;
+   transition: opacity .4s;
+   
+}
+
+#export-map {
+   position: absolute;
+   left: 97px;
+   top: 5px;       
+}
+
+#export-data {
+   position: absolute;
+   left: 136px;
+   top: 5px;
+}
+
+
+#export .fancybox {
+   position: absolute;
+   left: 175px;
+   top: 5px;
+} 
+
+
+
+#export-map:hover, #export-data:hover, #export .fancybox:hover {
+   text-decoration: none;
+   background: none;
+   opacity: .5;
 }
 
