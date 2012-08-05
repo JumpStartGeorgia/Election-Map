@@ -88,23 +88,24 @@ class Datum < ActiveRecord::Base
 		if !shape_id.nil? && !core_indicator_id.nil? && !event_id.nil? && !shape_type_id.nil?
 			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
-#			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv' "
 			sql << "FROM data as d  "
-			sql << "inner join datum_translations as dt on d.id = dt.datum_id  "
 			sql << "inner join indicators as i on d.indicator_id = i.id  "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id  "
-			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id and dt.locale = cit.locale  "
+			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id  "
-			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and dt.locale = cit_parent.locale  "
+			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and cit.locale = cit_parent.locale  "
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
-			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale  "
-#			sql << "inner join shape_types as sts on i.shape_type_id = sts.id  "
-#			sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale  "
+      case I18n.locale.to_s
+        when 'en'
+          sql << "and d.common_id_en = s.common_id_en and d.common_name_en = s.common_name_en "
+        else
+          sql << "and d.common_id_ka = s.common_id_ka and d.common_name_ka = s.common_name_ka "
+      end
 			sql << "WHERE ci.id = :core_indicator_id AND i.event_id = :event_id AND i.shape_type_id = :shape_type_id "
 			sql << "and s.id=:shape_id "
-			sql << "AND dt.locale = :locale "
+			sql << "AND cit.locale = :locale "
       sql << "order by s.id asc "
 			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id,
 			                  :shape_id => shape_id,
@@ -129,27 +130,26 @@ class Datum < ActiveRecord::Base
 
 			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, itt.name as 'indicator_type_name', "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
-#			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
-
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name_abbrv', "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as 'color' "
 			sql << "FROM data as d "
-			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
-			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id and dt.locale = cit.locale "
+			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id "
-			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and dt.locale = cit_parent.locale "
-			sql << "inner join indicator_type_translations as itt on ci.indicator_type_id = itt.indicator_type_id and dt.locale = itt.locale "
+			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id and cit.locale = cit_parent.locale "
+			sql << "inner join indicator_type_translations as itt on ci.indicator_type_id = itt.indicator_type_id and cit.locale = itt.locale "
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
-
-#      sql << "inner join shape_types as sts on i.shape_type_id = sts.id "
-#      sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale "
+      case I18n.locale.to_s
+        when 'en'
+          sql << "and d.common_id_en = s.common_id_en and d.common_name_en = s.common_name_en "
+        else
+          sql << "and d.common_id_ka = s.common_id_ka and d.common_name_ka = s.common_name_ka "
+      end
 			sql << "WHERE i.event_id = :event_id and i.shape_type_id = :shape_type_id and ci.indicator_type_id = :indicator_type_id "
 			sql << "and s.id=:shape_id "
-			sql << "AND dt.locale = :locale "
+			sql << "AND cit.locale = :locale "
       sql << "order by s.id asc, d.value desc "
       sql << "limit :limit" if !limit.nil?
 			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id,
@@ -316,12 +316,10 @@ class Datum < ActiveRecord::Base
 					logger.debug "++++indicator found, checking if data exists"
                     startPhase = Time.now
 										# check if data already exists
-										alreadyExists = Datum.select("data.id").joins(:datum_translations)
-											.where(:data => {:indicator_id => indicator.first.id},
-												:datum_translations => {
-													:locale => 'en',
-													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
-													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip})
+										alreadyExists = Datum.select("data.id")
+											.where(:data => {:indicator_id => indicator.first.id,
+													:common_id_en => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
+													:common_name_en => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip})
 
                   	puts "******** time to look for exisitng data item: #{Time.now-startPhase} seconds"
 
@@ -329,7 +327,7 @@ class Datum < ActiveRecord::Base
 				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
 					logger.debug "+++++++ deleting existing #{alreadyExists.length} datum records "
 					              alreadyExists.each do |exists|
-				                  Datum.destroy (exists.id)
+				                  Datum.delete (exists.id)
                         end
 				                alreadyExists = nil
 				            end
@@ -341,14 +339,10 @@ class Datum < ActiveRecord::Base
 											datum = Datum.new
 											datum.indicator_id = indicator.first.id
 											datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
-
-											# add translations
-											I18n.available_locales.each do |locale|
-			logger.debug "++++ - adding translations for #{locale}"
-												datum.datum_translations.build(:locale => locale,
-													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
-													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip)
-											end
+                      datum.common_id_en = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
+                      datum.common_name_en = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
+                      datum.common_id_ka = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
+                      datum.common_name_ka = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
                     	puts "******** time to build data object: #{Time.now-startPhase} seconds"
 
 
@@ -386,9 +380,9 @@ class Datum < ActiveRecord::Base
 			# ka translation is hardcoded as en in the code above
 			# update all ka records with the apropriate ka translation
 			# update common ids
-			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_id = sn.ka where dt.locale = 'ka' and dt.common_id = sn.en")
+			ActiveRecord::Base.connection.execute("update data as d, shape_names as sn set d.common_id_ka = sn.ka where d.common_id_en = sn.en")
 			# update common names
-			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_name = sn.ka where dt.locale = 'ka' and dt.common_name = sn.en")
+			ActiveRecord::Base.connection.execute("update data as d, shape_names as sn set d.common_name_ka = sn.ka where d.common_name_en = sn.en")
       puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 		end
@@ -602,7 +596,7 @@ logger.debug "no indicators or data found"
 					if !shape_type_id.nil? && !indicator_id.nil?
 logger.debug "------ delete data for shape type #{shape_type_id} and indicator #{indicator_id}"
 						# delete all data assigned to shape_type and indicator
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
+						if !Datum.delete_all(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").where(:id => indicator_id, :shape_type_id => shape_type_id).collect(&:id)])
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
@@ -612,7 +606,7 @@ logger.debug "------ delete data for shape type #{shape_type_id} and indicator #
 					elsif !shape_type_id.nil?
 logger.debug "------ delete data for shape type #{shape_type_id}"
 						# delete all data assigned to shape_type
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
+						if !Datum.delete_all(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").where(:shape_type_id => shape_type_id).collect(&:id)])
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
@@ -622,7 +616,7 @@ logger.debug "------ delete data for shape type #{shape_type_id}"
 					else
 logger.debug "------ delete all data for event #{event_id}"
 						# delete all data for event
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
+						if !Datum.delete_all(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").collect(&:id)])
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback

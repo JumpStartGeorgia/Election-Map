@@ -31,24 +31,23 @@ class Shape < ActiveRecord::Base
 
 
 	# get the name of the shape (common_id)
-	def self.get_shape_name(shape_id)
-		return shape_id.nil? ? "" : select("common_id")
-				.joins(:shape_translations)
-				.where(:shapes => {:id => shape_id}, :shape_translations => {:locale => I18n.locale}).first
-	end
-
-	# get the name of the shape (common_id)
 	def self.get_shape_no_geometry(shape_id)
-		return shape_id.nil? ? "" : select("shapes.id, shapes.shape_type_id, shape_translations.common_id, shape_translations.common_name, ancestry")
-					.joins(:shape_translations)
-					.where(:shapes => {:id => shape_id}, :shape_translations => {:locale => I18n.locale}).first
+    sql = 'shapes.id, shapes.shape_type_id, ancestry'
+    case I18n.locale.to_s
+      when 'en'
+        sql << ', shapes.common_id_en, shapes.common_name_en'
+      else
+        sql << ', shapes.common_id_ka, shapes.common_name_ka'
+    end
+		return shape_id.nil? ? "" : select(sql)
+					.where(:shapes => {:id => shape_id}).first
 	end
 
 	# get the list of shapes for data download
 	def self.get_shapes_by_type(shape_id, shape_type_id, includeGeoData = false)
 		if !shape_id.nil? && !shape_type_id.nil?
 		  if includeGeoData
-			  Shape.find(shape_id).subtree.where(:shape_type_id => shape_type_id).with_translations(I18n.locale)
+			  Shape.find(shape_id).subtree.where(:shape_type_id => shape_type_id)
 			else
 			  Shape.find(shape_id).subtree.select("id").where(:shape_type_id => shape_type_id)
 		  end
@@ -247,8 +246,7 @@ class Shape < ActiveRecord::Base
 		  logger.debug "++++found event and shape type, get root shape"
               startPhase = Time.now
 		          # get the root shape
-		          root = Shape.joins(:shape_translations)
-		                  .where(:shapes => {:id => event.shape_id}, :shape_translations => {:locale => 'en'}).first
+		          root = Shape.where(:shapes => {:id => event.shape_id}).first
             	puts "**** time to get root shape: #{Time.now-startPhase} seconds"
 
 		          # if the root shape already exists and deleteExistingRecord is true, delete the shape
@@ -258,7 +256,7 @@ class Shape < ActiveRecord::Base
 									# save the existing root id so at the end all events with this root can be updated
 									old_root_id = root.id
 									# destroy the shapes
-		              Shape.destroy_all(["id in (?)", root.subtree_ids])
+		              Shape.delete_all(["id in (?)", root.subtree_ids])
 		              root = nil
 		          end
 
@@ -268,11 +266,9 @@ class Shape < ActiveRecord::Base
 		              # no root exists in db, but this is the root, so add it
                   startPhase = Time.now
 		  logger.debug "++++adding root shape"
-                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip
-									# add translations
-									I18n.available_locales.each do |locale|
-										shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
-									end
+                  shape = Shape.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip, 
+                    :common_id_en => row[idx_common_id].strip, :common_name_en => row[idx_common_name].strip,
+                    :common_id_ka => row[idx_common_id].strip, :common_name_ka => row[idx_common_name].strip
                   puts "******** time to create root shape: #{Time.now-startPhase} seconds"
 
 		              if shape.valid?
@@ -329,9 +325,9 @@ class Shape < ActiveRecord::Base
 		              else
                     startPhase = Time.now
 		    logger.debug "++++chekcing if row already in db"
-		                alreadyExists = root.descendants.select("shapes.id").joins(:shape_translations)
-		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[idx_geo].strip},
-		                    :shape_translations => {:locale => 'en', :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip})
+		                alreadyExists = root.descendants.select("shapes.id")
+		                  .where(:shapes => {:shape_type_id => shape_type.id, :geometry => row[idx_geo].strip, 
+		                    :common_id_en => row[idx_common_id].strip, :common_name_en => row[idx_common_name].strip})
                   	puts "**** time to get existing shape: #{Time.now-startPhase} seconds"
 
 		                # if the shape already exists and deleteExistingRecord is true, delete the sha[e]
@@ -362,9 +358,9 @@ class Shape < ActiveRecord::Base
 		                    parentRoot = root.shape_type_id == parent_shape_type.id &&
 		                      root.common_id == row[idx_parent_id].strip && root.common_name == row[idx_parent_name].strip ? root : nil
 		                    if root.has_children?
-		                      parentChild = root.descendants.select("shapes.id, shapes.ancestry").joins(:shape_translations)
-		                        .where(:shapes => {:shape_type_id => parent_shape_type.id},
-		                        :shape_translations => {:locale => 'en', :common_id => row[idx_parent_id].strip, :common_name => row[idx_parent_name].strip})
+		                      parentChild = root.descendants.select("shapes.id, shapes.ancestry")
+		                        .where(:shapes => {:shape_type_id => parent_shape_type.id, 
+      		                    :common_id_en => row[idx_parent_id].strip, :common_name_en => row[idx_parent_name].strip})
 		                    end
 
 		                    # see if a parent node was found
@@ -397,16 +393,16 @@ class Shape < ActiveRecord::Base
 													# - the khobi district geo that has something bad in it and the string gets cut off
 													#################################
 													startPhase = Time.now
+                          geo = nil
 													if row[idx_common_name].strip.downcase == "khobi"
           logger.debug "++++++++++++++ found khobi, using geo data hardcoded into app"
-			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => khobi_district_geometry
+			                      geo = khobi_district_geometry
 													else
-			                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => row[idx_geo].strip
+			                      geo = row[idx_geo].strip
 													end
-													# add translations
-													I18n.available_locales.each do |locale|
-														shape.shape_translations.create(:locale => locale, :common_id => row[idx_common_id].strip, :common_name => row[idx_common_name].strip)
-													end
+		                      shape = parent.children.create :shape_type_id => shape_type.id, :geometry => geo, 
+                            :common_id_en => row[idx_common_id].strip, :common_name_en => row[idx_common_name].strip,
+                            :common_id_ka => row[idx_common_id].strip, :common_name_ka => row[idx_common_name].strip
                         	puts "************ time to create shape record: #{Time.now-startPhase} seconds"
 
 		                      if !shape.valid?
@@ -438,9 +434,9 @@ class Shape < ActiveRecord::Base
 				# ka translation is hardcoded as en in the code above
 				# update all ka records with the apropriate ka translation
 				# update common ids
-				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_id = sn.ka where st.locale = 'ka' and st.common_id = sn.en")
+				ActiveRecord::Base.connection.execute("update shapes as s, shape_names as sn set s.common_id_ka = sn.ka where s.common_id_en = sn.en")
 				# update common names
-				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_name = sn.ka where st.locale = 'ka' and st.common_name = sn.en")
+				ActiveRecord::Base.connection.execute("update shapes as s, shape_names as sn set s.common_name_ka = sn.ka where s.common_name_en = sn.en")
 #      	puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 			end
@@ -480,7 +476,7 @@ class Shape < ActiveRecord::Base
 							end
 
 							# delete the shapes
-		          if !Shape.destroy_all(["id in (:shape_ids) and shape_type_id in (:shape_type_ids)",
+		          if !Shape.delete_all(["id in (:shape_ids) and shape_type_id in (:shape_type_ids)",
 								:shape_ids => event.shape.subtree_ids, :shape_type_ids => shape_type.subtree_ids])
 
 								msg = "error occurred while deleting records"
