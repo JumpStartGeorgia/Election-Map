@@ -1,15 +1,33 @@
 class Datum < ActiveRecord::Base
-  translates :common_id, :common_name
+#  translates :common_id, :common_name
 	include ActionView::Helpers::NumberHelper
 
   belongs_to :indicator
-  has_many :datum_translations, :dependent => :destroy
-  accepts_nested_attributes_for :datum_translations
+#  has_many :datum_translations, :dependent => :destroy
+#  accepts_nested_attributes_for :datum_translations
 
-  attr_accessible :indicator_id, :value, :datum_translations_attributes
+  attr_accessible :indicator_id, :value, :common_id_en, :common_name_en, :common_id_ka, :common_name_ka#, :datum_translations_attributes
   attr_accessor :locale
 
   validates :indicator_id, :presence => true
+
+  def common_id
+    case I18n.locale.to_s
+      when 'en'
+        return self.common_id_en
+      else
+        return self.common_id_ka
+    end
+  end
+
+  def common_name
+    case I18n.locale.to_s
+      when 'en'
+        return self.common_name_en
+      else
+        return self.common_name_ka
+    end
+  end
 
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
@@ -61,21 +79,6 @@ class Datum < ActiveRecord::Base
 			:shape_common_name => self.shape_common_name
 =end
 		}
-	end
-
-	# get the data value for a specific shape
-	def self.get_data_for_shape(shape_id, indicator_id)
-		if !indicator_id.nil? && !shape_id.nil?
-			sql = "SELECT d.id, d.value, ci.number_format FROM data as d "
-			sql << "inner join datum_translations as dt on d.id = dt.datum_id "
-			sql << "inner join indicators as i on d.indicator_id = i.id "
-			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
-			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale "
-			sql << "WHERE i.id = :indicator_id AND s.id = :shape_id AND dt.locale = :locale "
-
-			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id, :locale => I18n.locale])
-		end
 	end
 
 	# get the data value for a shape and core indicator

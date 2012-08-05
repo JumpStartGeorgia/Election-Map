@@ -1,15 +1,34 @@
 class Shape < ActiveRecord::Base
-  translates :common_id, :common_name
+#  translates :common_id, :common_name
   has_ancestry
   require 'csv'
 
-  has_many :shape_translations, :dependent => :destroy
+#  has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type
-  accepts_nested_attributes_for :shape_translations
-  attr_accessible :shape_type_id, :geometry, :shape_translations_attributes
+#  accepts_nested_attributes_for :shape_translations
+  attr_accessible :shape_type_id, :geometry, :common_id_en, :common_name_en, :common_id_ka, :common_name_ka#, :shape_translations_attributes
   attr_accessor :locale
 
   validates :shape_type_id, :geometry, :presence => true
+
+  def common_id
+    case I18n.locale.to_s
+      when 'en'
+        return self.common_id_en
+      else
+        return self.common_id_ka
+    end
+  end
+
+  def common_name
+    case I18n.locale.to_s
+      when 'en'
+        return self.common_name_en
+      else
+        return self.common_name_ka
+    end
+  end
+
 
 	# get the name of the shape (common_id)
 	def self.get_shape_name(shape_id)

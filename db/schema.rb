@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120804055033) do
+ActiveRecord::Schema.define(:version => 20120805152256) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -48,9 +48,15 @@ ActiveRecord::Schema.define(:version => 20120804055033) do
     t.integer  "indicator_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.decimal  "value",        :precision => 16, :scale => 4
+    t.decimal  "value",          :precision => 16, :scale => 4
+    t.string   "common_id_en"
+    t.string   "common_name_en"
+    t.string   "common_id_ka"
+    t.string   "common_name_ka"
   end
 
+  add_index "data", ["common_id_en", "common_name_en"], :name => "index_data_on_common_id_en_and_common_name_en"
+  add_index "data", ["common_id_ka", "common_name_ka"], :name => "index_data_on_common_id_ka_and_common_name_ka"
   add_index "data", ["id"], :name => "index_data_on_id"
   add_index "data", ["indicator_id"], :name => "index_data_on_indicator_id"
   add_index "data", ["value"], :name => "index_data_on_value"
@@ -363,13 +369,19 @@ ActiveRecord::Schema.define(:version => 20120804055033) do
 
   create_table "shapes", :force => true do |t|
     t.integer  "shape_type_id"
-    t.text     "geometry",      :limit => 2147483647
+    t.text     "geometry",       :limit => 2147483647
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "ancestry"
+    t.string   "common_id_en"
+    t.string   "common_name_en"
+    t.string   "common_id_ka"
+    t.string   "common_name_ka"
   end
 
   add_index "shapes", ["ancestry"], :name => "index_shapes_on_ancestry"
+  add_index "shapes", ["common_id_en", "common_name_en"], :name => "index_shapes_on_common_id_en_and_common_name_en"
+  add_index "shapes", ["common_id_ka", "common_name_ka"], :name => "index_shapes_on_common_id_ka_and_common_name_ka"
   add_index "shapes", ["id"], :name => "index_shapes_on_id"
   add_index "shapes", ["shape_type_id"], :name => "index_shapes_on_shape_type_id"
 
