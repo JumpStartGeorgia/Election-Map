@@ -1,20 +1,17 @@
-<h2><%= "#{t('app.common.event')}: #{@event_indicator_relationships.first.event.name}" %></h2>
+<h2><%= "#{t('app.common.event')}: #{@event.name}" %></h2>
 <h3>
-	<%= "#{t('app.common.indicator_type')}: #{@event_indicator_relationships.first.indicator_type.name}" if @event_indicator_relationships.first.indicator_type_id %>
-	<%= "#{t('app.common.indicator')}: #{@event_indicator_relationships.first.core_indicator.name}" if @event_indicator_relationships.first.core_indicator_id %>
+	<%= "#{t('app.common.indicator_type')}: #{@event_indicator_relationships.first.indicator_type.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.indicator_type_id %>
+	<%= "#{t('app.common.indicator')}: #{@event_indicator_relationships.first.core_indicator.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.core_indicator_id %>
 </h3>
 
 <%= form_tag event_indicator_relationship_path(params[:id]), :method => :put do %>
+    <% @counter = @event_indicator_relationships.length %>
 	  <%= hidden_field_tag 'indicator_type_id', params[:indicator_type_id] %>
 	  <%= hidden_field_tag 'core_indicator_id', params[:core_indicator_id] %>
+	  <%= hidden_field_tag 'type', params[:type] %>
+	  <%= hidden_field_tag 'counter', @counter %>
 
-	<p>
-	  <%= button_tag 'add indicator type', :type => 'button', :id => 'add_indicator_type_block' %>
-	  <%= button_tag 'add indicator', :type => 'button', :id => 'add_indicator_block' %>
-	</p>
-	<hr />
 	<div id="relationships">
-		<% @counter = @event_indicator_relationships.length %>
 		<% @event_indicator_relationships.each_with_index do |relationship,i| %>
 			<div id="<%= "event_indicator_relationship_#{relationship.id}"%>">
 				<%= hidden_field_tag 'event_indicator_relationship_id', relationship.id,
@@ -60,9 +57,14 @@
 		<% end %>
 	</div>
 
-	<div>
+	<p>
+	  <%= button_tag 'add indicator type', :type => 'button', :id => 'add_indicator_type_block' %>
+	  <%= button_tag 'add indicator', :type => 'button', :id => 'add_indicator_block' %>
+	</p>
+	<hr />
+	<p>
 	  <%= submit_tag t("app.buttons.update"), :id => "submit" %>
 		<%= link_to t("app.buttons.reset"), request.fullpath %>
-	</div>
+	</p>
 
 <% end %>

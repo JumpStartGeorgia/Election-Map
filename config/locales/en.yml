@@ -70,6 +70,8 @@ en:
       new_event_types: New Event Type
       new_events: New Event
       new_custom_views: New Event Custom View
+      new_indicator_relationships_core: Add Indicator
+      new_indicator_relationships_type: Add Indicator Type
       new_indicator_scales: New Indicator Scale
       new_indicator_types: New Indicator Type
       new_indicators: New Indicator

@@ -9,4 +9,15 @@ class EventIndicatorRelationship < ActiveRecord::Base
 
 	validates :event_id, :sort_order, :presence => true
 	default_scope order("sort_order asc")
+
+  # get all indicator types that are not currently part of an indicator relationship
+  def self.unused_indicator_types(event_id)
+    
+  end
+
+  # get all core indicators that are not currently part of an indicator relationship
+  def self.unused_core_indicators(event_id)
+    
+  end
+
 end

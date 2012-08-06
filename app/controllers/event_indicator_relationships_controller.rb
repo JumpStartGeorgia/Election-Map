@@ -3,8 +3,8 @@ class EventIndicatorRelationshipsController < ApplicationController
 	cache_sweeper :event_indicator_relationship_sweeper, :only => [:create, :update, :destroy]
 
   def render_js_blocks
-		@counter = 235
-		@indicator_types = IndicatorType.with_translations(I18n.locale)
+		@counter = params[:counter].to_i+1
+		@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
 		@core_indicators = CoreIndicator.order_by_type_name
 		if params[:type]
 			render :json => {
@@ -22,10 +22,18 @@ class EventIndicatorRelationshipsController < ApplicationController
 	end
 
   def new
-#    @event_indicator_relationship = EventCustomView.new
-		@indicator_types = IndicatorType.with_translations(I18n.locale)
+    @event_indicator_relationships = []
+    @event = Event.find(params[:id])
+		@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
 		@core_indicators = CoreIndicator.order_by_type_name
 		gon.load_js_event_indicator_relationship_form = true
+
+    case params[:type]
+      when "indicator"
+        @unused_indicators = []
+      when "indicator_type"
+        @unused_indicator_types = []
+    end
   end
 
   def edit
@@ -38,7 +46,8 @@ class EventIndicatorRelationshipsController < ApplicationController
 		else
 			redirect_to event_indicator_relationships_path, notice: 'Please provide all parameters to edit a record.'
 		end
-		@indicator_types = IndicatorType.with_translations(I18n.locale)
+    @event = Event.find(params[:id])
+		@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
 		@core_indicators = CoreIndicator.order_by_type_name
 		gon.load_js_event_indicator_relationship_form = true
   end
@@ -53,7 +62,8 @@ class EventIndicatorRelationshipsController < ApplicationController
         format.html { redirect_to event_indicator_relationships_path, notice: 'Event Custom View was successfully created.' }
         format.json { render json: @event_indicator_relationship, status: :created, location: @event_indicator_relationship }
       else
-				@indicator_types = IndicatorType.with_translations(I18n.locale)
+        @event = Event.find(params[:id])
+				@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
 				@core_indicators = CoreIndicator.order_by_type_name
 				gon.load_js_event_indicator_relationship_form = true
         format.html { render action: "new" }
@@ -78,6 +88,7 @@ class EventIndicatorRelationshipsController < ApplicationController
     respond_to do |format|
 			error_msgs = []
 			EventIndicatorRelationship.transaction do
+        # update existing records
 				@event_indicator_relationships.each do |relationship|
 					values = nil
 					# look for the form data for this relationship
@@ -99,12 +110,32 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
 						break
 					end
 				end
+        
+        # add new records
+				params[:event_indicator_relationship].each_value do |v|
+					if v["id"].nil? || v["id"].empty? && 
+					    ((!v["related_core_indicator_id"].nil? && !v["related_core_indicator_id"].empty?) || 
+					    (!v["related_indicator_type_id"].nil? && !v["related_indicator_type_id"].empty?))
+					  relationship = EventIndicatorRelationship.new(v)
+					  relationship.event_id = params[:id]
+					  relationship.core_indicator_id = params[:core_indicator_id] if !params[:core_indicator_id].empty?
+					  relationship.indicator_type_id = params[:indicator_type_id] if !params[:indicator_type_id].empty?
+            if !relationship.save
+  						# error saving the relationship
+  						raise ActiveRecord::Rollback
+logger.debug "++++++++++ error = relationship.errors.inspect"
+  						error_msgs << relationship.errors.message
+            end
+					end
+				end
+        
 			end
       if error_msgs.empty?
         format.html { redirect_to event_indicator_relationship_path(params[:id]), notice: 'Event Custom View was successfully updated.' }
         format.json { head :ok }
       else
-				@indicator_types = IndicatorType.with_translations(I18n.locale)
+        @event = Event.find(params[:id])
+				@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
 				@core_indicators = CoreIndicator.order_by_type_name
 				gon.load_js_event_indicator_relationship_form = true
         format.html { render action: "edit" }

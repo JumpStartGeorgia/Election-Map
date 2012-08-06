@@ -15,7 +15,6 @@ class CoreIndicator < ActiveRecord::Base
   scope :l10n , joins(:core_indicator_translations).where('locale = ?',I18n.locale)
   scope :by_name , order('name').l10n
 
-
   def self.order_by_type_name
     with_translations(I18n.locale)
       .order("core_indicators.indicator_type_id ASC, core_indicator_translations.name ASC")
