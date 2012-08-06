@@ -5,7 +5,6 @@
     <th><%= t('app.common.event') %></th>
     <th><%= t('app.common.num_indicator_types') %></th>
     <th><%= t('app.common.num_indicators') %></th>
-    <th></th>
   </tr>
 
 <% @events.each do |event| %>
@@ -13,7 +12,6 @@
     <td><%= link_to event.name, event_indicator_relationship_path(event.id) %></td>
     <td><%= event.event_indicator_relationships.select{|x| x.indicator_type_id != nil}.uniq{|x| x.indicator_type_id}.count %></td>
     <td><%= event.event_indicator_relationships.select{|x| x.core_indicator_id != nil}.uniq{|x| x.core_indicator_id}.count %></td>
-    <td><%= link_to t('app.buttons.edit'), edit_event_indicator_relationship_path(event.id) %></td>
 </td>
   </tr>
 <% end %>

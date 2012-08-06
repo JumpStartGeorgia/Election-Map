@@ -1,26 +1,53 @@
-<%= semantic_form_for(@event_custom_view) do |f| %>
-	<%= f.error_messages %>
+<h2><%= "#{t('app.common.event')}: #{@event_indicator_relationships.first.event.name}" %></h2>
+<h3>
+	<%= "#{t('app.common.indicator_type')}: #{@event_indicator_relationships.first.indicator_type.name}" if @event_indicator_relationships.first.indicator_type_id %>
+	<%= "#{t('app.common.indicator')}: #{@event_indicator_relationships.first.core_indicator.name}" if @event_indicator_relationships.first.core_indicator_id %>
+</h3>
 
-	<%= f.inputs do %>
-		<%= f.input :event %>
+<%= form_tag event_indicator_relationship_path(params[:id]), :method => :put do %>
+	  <%= hidden_field_tag 'indicator_type_id', params[:indicator_type_id] %>
+	  <%= hidden_field_tag 'core_indicator_id', params[:core_indicator_id] %>
 
-			<li class="select input optional" id="event_custom_view_shape_type_input">
-			<%= label_tag "event_custom_view_shape_type_id", t('app.common.at_shape_type'), :class => "label" %>
-			<%= select_tag "event_custom_view_shape_type_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe, :name => "event_custom_view[shape_type_id]" %>
-			</li>
+	<p>
+	  <%= button_tag 'add indicator type', :type => 'button' %>
+	  <%= button_tag 'add indicator', :type => 'button' %>
+	</p>
+	<% @event_indicator_relationships.each_with_index do |relationship,i| %>
+	  <%= hidden_field_tag 'event_indicator_relationship_id', relationship.id,
+				:name => "event_indicator_relationship[#{i}][id]" %>
+		<% if relationship.related_indicator_type_id %>
+			<p>
+				<%= label_tag "event_indicator_relationship_related_indicator_type_id", t('app.common.indicator_type'), :class => "label" %>
+				<%= select_tag "event_indicator_relationship_related_indicator_type_id",
+					options_from_collection_for_select(@indicator_types, "id", "name", relationship.related_indicator_type_id),
+					:name => "event_indicator_relationship[#{i}][related_indicator_type_id]",
+					 %>
 
-			<li class="select input optional" id="event_custom_view_descendant_shape_type_input">
-			<%= label_tag "event_custom_view_descendant_shape_type_id", t('app.common.custom_shape_type'), :class => "label"%>
-			<%= select_tag "event_custom_view_descendant_shape_type_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe, :name => "event_custom_view[descendant_shape_type_id]" %>
-			</li>
-<%
-=begin
-		<%= f.input :shape_type, :as => :select, :collection => ShapeType.all.collect {|x| [x.name_singular, x.id]} %>
-		<%= f.input :descendant_shape_type, :as => :select, :collection => ShapeType.all.collect {|x| [x.name_singular, x.id]} %>
-<%
-=end %>
-		<%= f.input :is_default_view, :as => :radio %>
+				<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "label" %>
+				<%= text_field_tag 'event_indicator_relationship_sort_order', relationship.sort_order,
+						:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
+
+			  <%= button_tag 'remove', :type => 'button' %>
+			</p>
+		<% elsif relationship.related_core_indicator_id %>
+			<p>
+				<%= label_tag "event_indicator_relationship_related_core_indicator_id", t('app.common.indicator'), :class => "label" %>
+				<%= select_tag "event_indicator_relationship_related_core_indicator_id",
+					options_from_collection_for_select(@core_indicators, "id", "name", relationship.related_core_indicator_id),
+					:name => "event_indicator_relationship[#{i}][related_core_indicator_id]",
+					 %>
+
+				<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "label" %>
+				<%= text_field_tag 'event_indicator_relationship_sort_order', relationship.sort_order,
+						:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
+
+			  <%= button_tag 'remove', :type => 'button' %>
+			</p>
+		<% end %>
 	<% end %>
 
-	<%= f.actions :submit, :reset, :cancel %>
+	<div>
+	  <%= submit_tag t("app.buttons.update"), :id => "submit" %>
+	</div>
+
 <% end %>

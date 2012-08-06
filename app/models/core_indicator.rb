@@ -11,13 +11,13 @@ class CoreIndicator < ActiveRecord::Base
   attr_accessor :locale
 
   validates :indicator_type_id, :presence => true
-  
+
   scope :l10n , joins(:core_indicator_translations).where('locale = ?',I18n.locale)
   scope :by_name , order('name').l10n
 
 
   def self.order_by_type_name
-    joins(:core_indicator_translations).where(:core_indicator_translations => {:locale => I18n.locale})
+    with_translations(I18n.locale)
       .order("core_indicators.indicator_type_id ASC, core_indicator_translations.name ASC")
   end
 
