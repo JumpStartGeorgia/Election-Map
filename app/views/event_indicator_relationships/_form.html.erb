@@ -9,45 +9,60 @@
 	  <%= hidden_field_tag 'core_indicator_id', params[:core_indicator_id] %>
 
 	<p>
-	  <%= button_tag 'add indicator type', :type => 'button' %>
-	  <%= button_tag 'add indicator', :type => 'button' %>
+	  <%= button_tag 'add indicator type', :type => 'button', :id => 'add_indicator_type_block' %>
+	  <%= button_tag 'add indicator', :type => 'button', :id => 'add_indicator_block' %>
 	</p>
-	<% @event_indicator_relationships.each_with_index do |relationship,i| %>
-	  <%= hidden_field_tag 'event_indicator_relationship_id', relationship.id,
-				:name => "event_indicator_relationship[#{i}][id]" %>
-		<% if relationship.related_indicator_type_id %>
-			<p>
-				<%= label_tag "event_indicator_relationship_related_indicator_type_id", t('app.common.indicator_type'), :class => "label" %>
-				<%= select_tag "event_indicator_relationship_related_indicator_type_id",
-					options_from_collection_for_select(@indicator_types, "id", "name", relationship.related_indicator_type_id),
-					:name => "event_indicator_relationship[#{i}][related_indicator_type_id]",
-					 %>
+	<hr />
+	<div id="relationships">
+		<% @counter = @event_indicator_relationships.length %>
+		<% @event_indicator_relationships.each_with_index do |relationship,i| %>
+			<div id="<%= "event_indicator_relationship_#{relationship.id}"%>">
+				<%= hidden_field_tag 'event_indicator_relationship_id', relationship.id,
+						:name => "event_indicator_relationship[#{i}][id]" %>
+				<% if relationship.related_indicator_type_id %>
+					<p>
+						<%= label_tag "event_indicator_relationship_related_indicator_type_id", t('app.common.indicator_type'), :class => "label" %>
+						<%= select_tag "event_indicator_relationship_related_indicator_type_id",
+							options_from_collection_for_select(@indicator_types, "id", "name",
+								relationship.related_indicator_type_id),
+							:name => "event_indicator_relationship[#{i}][related_indicator_type_id]" %>
+					</p>
+					<p>
+						<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "label" %>
+						<%= text_field_tag 'event_indicator_relationship_sort_order', relationship.sort_order,
+								:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
 
-				<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "label" %>
-				<%= text_field_tag 'event_indicator_relationship_sort_order', relationship.sort_order,
-						:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
+					</p>
+					<p>
+						<%= button_tag 'remove', :type => 'button', :class => "remove", :id => "event_indicator_relationship_#{relationship.id}" %>
+					</p>
+					<hr />
+				<% elsif relationship.related_core_indicator_id %>
+					<p>
+						<%= label_tag "event_indicator_relationship_related_core_indicator_id", t('app.common.indicator'), :class => "label" %>
+						<%= select_tag "event_indicator_relationship_related_core_indicator_id",
+							options_from_collection_for_select(@core_indicators, "id", "name",
+							 relationship.related_core_indicator_id),
+							:name => "event_indicator_relationship[#{i}][related_core_indicator_id]" %>
+					</p>
+					<p>
+						<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "label" %>
+						<%= text_field_tag 'event_indicator_relationship_sort_order', relationship.sort_order,
+								:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
 
-			  <%= button_tag 'remove', :type => 'button' %>
-			</p>
-		<% elsif relationship.related_core_indicator_id %>
-			<p>
-				<%= label_tag "event_indicator_relationship_related_core_indicator_id", t('app.common.indicator'), :class => "label" %>
-				<%= select_tag "event_indicator_relationship_related_core_indicator_id",
-					options_from_collection_for_select(@core_indicators, "id", "name", relationship.related_core_indicator_id),
-					:name => "event_indicator_relationship[#{i}][related_core_indicator_id]",
-					 %>
-
-				<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "label" %>
-				<%= text_field_tag 'event_indicator_relationship_sort_order', relationship.sort_order,
-						:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
-
-			  <%= button_tag 'remove', :type => 'button' %>
-			</p>
+					</p>
+					<p>
+						<%= button_tag 'remove', :type => 'button', :class => "remove", :id => "event_indicator_relationship_#{relationship.id}" %>
+					</p>
+					<hr />
+				<% end %>
+			</div>
 		<% end %>
-	<% end %>
+	</div>
 
 	<div>
 	  <%= submit_tag t("app.buttons.update"), :id => "submit" %>
+		<%= link_to t("app.buttons.reset"), request.fullpath %>
 	</div>
 
 <% end %>

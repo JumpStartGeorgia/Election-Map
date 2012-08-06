@@ -2,6 +2,17 @@ class EventIndicatorRelationshipsController < ApplicationController
   before_filter :authenticate_user!
 	cache_sweeper :event_indicator_relationship_sweeper, :only => [:create, :update, :destroy]
 
+  def render_js_blocks
+		@counter = 235
+		@indicator_types = IndicatorType.with_translations(I18n.locale)
+		@core_indicators = CoreIndicator.order_by_type_name
+		if params[:type]
+			render :json => {
+		    :html => (render_to_string :partial => "event_indicator_relationships/#{params[:type]}.html")
+		  }
+		end
+  end
+
   def index
 		@events = Event.get_all_events.includes(:event_indicator_relationships)
   end
@@ -12,6 +23,9 @@ class EventIndicatorRelationshipsController < ApplicationController
 
   def new
 #    @event_indicator_relationship = EventCustomView.new
+		@indicator_types = IndicatorType.with_translations(I18n.locale)
+		@core_indicators = CoreIndicator.order_by_type_name
+		gon.load_js_event_indicator_relationship_form = true
   end
 
   def edit
@@ -26,6 +40,7 @@ class EventIndicatorRelationshipsController < ApplicationController
 		end
 		@indicator_types = IndicatorType.with_translations(I18n.locale)
 		@core_indicators = CoreIndicator.order_by_type_name
+		gon.load_js_event_indicator_relationship_form = true
   end
 
   # POST /event_indicator_relationships
@@ -38,6 +53,9 @@ class EventIndicatorRelationshipsController < ApplicationController
         format.html { redirect_to event_indicator_relationships_path, notice: 'Event Custom View was successfully created.' }
         format.json { render json: @event_indicator_relationship, status: :created, location: @event_indicator_relationship }
       else
+				@indicator_types = IndicatorType.with_translations(I18n.locale)
+				@core_indicators = CoreIndicator.order_by_type_name
+				gon.load_js_event_indicator_relationship_form = true
         format.html { render action: "new" }
         format.json { render json: @event_indicator_relationship.errors, status: :unprocessable_entity }
       end
@@ -69,15 +87,16 @@ class EventIndicatorRelationshipsController < ApplicationController
 							break
 						end
 					end
-					if values && !relationship.update_attributes(values)
+					if values.nil?
+logger.debug "++++++++++ no form data for this relationship, deleting id #{relationship.id}"
+						# could not find relationship so it was deleted
+						EventIndicatorRelationship.delete(relationship.id)
+					elsif !relationship.update_attributes(values)
 						# error saving the relationship
 						raise ActiveRecord::Rollback
 logger.debug "++++++++++ error = relationship.errors.inspect"
 						error_msgs << relationship.errors.message
 						break
-					elsif values.nil?
-						# could not find relationship so it was deleted
-						EventIndicatorRelationship.delete(relationship.id)
 					end
 				end
 			end
@@ -87,6 +106,7 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
       else
 				@indicator_types = IndicatorType.with_translations(I18n.locale)
 				@core_indicators = CoreIndicator.order_by_type_name
+				gon.load_js_event_indicator_relationship_form = true
         format.html { render action: "edit" }
         format.json { render json: error_msgs, status: :unprocessable_entity }
       end

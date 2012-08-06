@@ -69,6 +69,7 @@ ElectionMap::Application.routes.draw do
 		match '/pages/view/:name(/:layout)', :to => 'pages#view', :as => :view_pages, :via => :get
 		match '/shape_types/event/:event_id', :to => 'shape_types#by_event', :as => :shape_types_by_event, :via => :get, :defaults => {:format => 'json'}
 		match '/indicators/event/:event_id/shape_type/:shape_type_id', :to => 'indicators#by_event_shape_type', :as => :indicators_by_event_shape_type, :via => :get, :defaults => {:format => 'json'}
+		match '/event_indicator_relationships/render_js_blocks/:type', :to => 'event_indicator_relationships#render_js_blocks', :via => :get, :defaults => {:format => 'json'}
 
     # routes to root#index
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get

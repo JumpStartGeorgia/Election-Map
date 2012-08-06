@@ -18,10 +18,9 @@
 //= require pages
 //= require shape_types
 //= require shapes
+//= require event_indicator_relationships
 
 // set focus to first text box on page
 $(document).ready(function(){
   $("input:visible:first").focus();
 });
-
-

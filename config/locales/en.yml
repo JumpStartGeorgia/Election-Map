@@ -65,6 +65,7 @@ en:
       show: Show
       update: Update
       save: Save
+      reset: Reset
       new_data: New Datum
       new_event_types: New Event Type
       new_events: New Event
