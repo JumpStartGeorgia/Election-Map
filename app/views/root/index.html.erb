@@ -9,22 +9,22 @@
 	            if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?
 	               i += 1
 	            end
-	         end 
+	         end
 	      %>
 		   <% @shape_types.each_with_index do |type, index| %>
 			   <% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
-						   
+
 		         <li class="lev-ind">
 					   <% if type.has_children? %>
 					     <% if @summary_view_type_name == params[:view_type] %>
-							         <%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>							          
+							         <%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
                      <% else %>
 							         <%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
                      <% end %>
 					   <% else %>
 						   <%= type.name_singular %>
 					   <% end %>
-					   
+
 				   </li>
 
                <% if index < i-1 %>
@@ -32,7 +32,7 @@
 				         >
 				      </li>
 				   <% end %>
-				   
+
 			   <% end %>
 		   <% end %>
 	   <% end %>
@@ -63,19 +63,19 @@
 	<div id="map-title"><%= @map_title%></div>
 
 	<div id="export">
-	   <p>Download</p>
-	   
+	   <p>Download:</p>
+
 		<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
-		
-		
+
+
 		<%= link_to("XLS",
 			download_data_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
 			:id => "export-data", :title => t('app.buttons.download_data')) %>
 		<%= link_to("?",
 				view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
-				
-				
-		
+
+
+
 	</div>
 
 	<% if @custom_view_note %>

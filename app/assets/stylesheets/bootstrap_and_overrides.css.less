@@ -241,7 +241,7 @@ body {
    float: right;
    margin: 0 !important;
    margin-right: 28px !important;
-   
+
 }
 
 .js-logo p {
@@ -269,7 +269,7 @@ body {
 
 .level-ind li {
    float: left !important;
-   position: static !important;   
+   position: static !important;
    border: 0 !important;
    font-size: 10px;
    padding: 10px 15px 0 15px !important;
@@ -284,7 +284,7 @@ body {
 .level-ind .level-arrow {
    padding: 0 !important;
    padding-top: 10px !important;
-   
+
 }
 
 
@@ -294,7 +294,7 @@ body {
 
 li.refresh {
    padding: 0 !important;
-   padding-top: 5px !important;   
+   padding-top: 5px !important;
 }
 
 
@@ -312,25 +312,26 @@ div#indicator_menu_scale h3 {
 // Export
 #export {
    // Export position
-   position: relative;
+   position: absolute;
    left: 15px;
-   top: 80% !important;
-   
+   top: 565px;
+	 z-index: 900;
+
 
    background: #e26561 !important;
-   width: 88px;
+   width: 95px;
    height: 22px;
-   
+
    display: block !important;
    cursor: pointer;
-   
-   
+
+
    // Border radius
    -webkit-border-radius: 2px;
    -moz-border-radius: 2px;
    border-radius: 2px;
-   
-      
+
+
    // Export font and text
    font-size: 12px;
    font-family: Arial;
@@ -339,35 +340,32 @@ div#indicator_menu_scale h3 {
    color: #FFF;
 }
 
-#export p {  
-   margin: 0; 
-   position: absolute;
-   width: 78px;
-   height: 12px;
-   top: 5px;
-   left: 5px;  
+#export p {
+   margin: 0;
    letter-spacing: 1px;
+		padding: 4px;
+	text-transform:uppercase;
 }
 
-#export-map, #export-data, #export .fancybox {   
+#export-map, #export-data, #export .fancybox {
    width: 27px;
-   height: 12px;   
+   height: 12px;
    display: none;
    letter-spacing: 1px;
    color: #FFF;
-   
+
    // Transitions
    -webkit-transition: opacity .4s;
    -moz-transition: opacity .4s;
    -o-transition: opacity .4s;
    transition: opacity .4s;
-   
+
 }
 
 #export-map {
    position: absolute;
    left: 97px;
-   top: 5px;       
+   top: 5px;
 }
 
 #export-data {
@@ -381,7 +379,7 @@ div#indicator_menu_scale h3 {
    position: absolute;
    left: 175px;
    top: 5px;
-} 
+}
 
 
 
@@ -390,4 +388,3 @@ div#indicator_menu_scale h3 {
    background: none;
    opacity: .5;
 }
-

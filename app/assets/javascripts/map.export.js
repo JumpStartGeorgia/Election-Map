@@ -1,4 +1,4 @@
-$(function(){  
+$(function(){
    var map_export = $("#export"),
        export_map_svg = $("#export-map, #export-data, #export .fancybox"),
        display_export = function()
@@ -7,12 +7,12 @@ $(function(){
        },
        export_click = function()
        {
-         var min_width = 88, max_width = 188;
-         if (parseInt(map_export.css('width')) !== max_width)
+         var min_width = 94, max_width = 188;
+         if (parseInt(map_export.css('width')) < max_width-1)
          {
             map_export.animate({
                width: max_width
-            }, 250, display_export);            
+            }, 250, display_export);
          }
          else
          {
@@ -22,9 +22,9 @@ $(function(){
             }, 250);
          }
        };
-       
+
    $("#export p:first").bind({
       click: export_click
    });
-   
+
 });
