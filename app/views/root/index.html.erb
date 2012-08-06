@@ -1,5 +1,6 @@
 
 <% title @map_title %>
+
 <div class="level-ind">
    <ul id="shape_layer_navigation" class="group clear">
 	   <% if @shape_types.length > 0 %>
@@ -56,42 +57,42 @@
    </ul>
 </div>
 <div class="clear row">
-<section id="map-container" class="group span9">
 
-  <div id="map"></div>
+	<section id="map-container" class="group span9">
 
-	<div id="map-title"><%= @map_title%></div>
+		<div id="map"></div>
 
-	<div id="export">
-	   <p>Download:</p>
+		<div id="map-title"><%= @map_title%></div>
 
-		<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
+		<div id="export">
+			 <p>Download:</p>
 
-
-		<%= link_to("XLS",
-			download_data_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
-			:id => "export-data", :title => t('app.buttons.download_data')) %>
-		<%= link_to("?",
-				view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
+			<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
 
 
-
-	</div>
-
-	<% if @custom_view_note %>
-		<div id="footnote">
-			<%= t('.footnote', :note => @custom_view_note) %>
+			<%= link_to("XLS",
+				download_data_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
+				:id => "export-data", :title => t('app.buttons.download_data')) %>
+			<%= link_to("?",
+					view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
 		</div>
-	<% end %>
 
-	<div id='event_description'>
-		<h3><%= "#{@event_name}:" %></h3>
-		<%= simple_format(@event_description, {}, :sanitize => false) %>
-	</div>
+		<% if @custom_view_note %>
+			<div id="footnote">
+				<%= t('.footnote', :note => @custom_view_note) %>
+			</div>
+		<% end %>
 
-</section>
+		<% if @event_description %>
+			<div id='event_description'>
+				<h3><%= "#{@event_name}:" %></h3>
+				<%= simple_format(@event_description, {}, :sanitize => false) %>
+			</div>
+		<% end %>
 
-<%= render :partial => "root/indicator_menu_scales"%>
+	</section>
+
+	<%= render :partial => "root/indicator_menu_scales"%>
 </div>
 
 <% if !@dt.nil? %>

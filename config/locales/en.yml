@@ -142,7 +142,7 @@ en:
     subject: "[Georgia Election Data] Contact Form"
   layouts:
     application-bootstrap:
-      title: Election Map
+      title: Georgia Election Data
       logo_alt: Map of Georgia in different colors
       logo_title: Home
       ndi_alt: National Democratic Institute

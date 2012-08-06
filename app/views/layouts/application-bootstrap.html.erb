@@ -46,7 +46,8 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale), :class=>"brand")%>
+          <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),
+								:title=> t('.title'), :class=>"brand")%>
 
           <div class="nav-collapse">
             <ul class="nav pull-right">
@@ -108,8 +109,9 @@
 								<% end %>
 
 								<% if params[:controller] != "root" && params[:action] != "index" %>
-                           <h2><%= yield(:title) %></h2>
-                        <% end %>
+                   <h2><%= yield(:title) %></h2>
+                <% end %>
+
 								<%= yield %>
 		          </div>
 		      </div><!--/row-->
@@ -126,14 +128,13 @@
 								<img src="/assets/ndi-logo.png"/>
 						 </a>
 					</div>
-
-               <div class="js-logo">
+         <div class="js-logo">
 						 <p><%= t(".js_link_text") %>:</p>
 						 <a href="http://www.jumpstart.ge" target="_blank">
 								 <img src="/assets/jumpstart-logo.png"/>
 						 </a>
-					</div>               
-               
+					</div>
+
 					<div class="footer-nav">
 						<p>
 							<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
@@ -144,18 +145,43 @@
 						</p>
 					</div>
 
-					
+
 		    </div><!--/content-->
 	    </div> <!-- /container -->
     </footer>
 
 
 
-    <%= javascript_include_tag "map" %>
-    <%= javascript_tag do %>
+  <%= javascript_include_tag "map" %>
+  <%= javascript_tag do %>
 		I18n.defaultLocale = "<%= I18n.default_locale %>";
 		I18n.locale = "<%= I18n.locale %>";
 	<% end %>
 
+	<% if Rails.env.production? %>
+		<!-- google analytics -->
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-12801815-7']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+	<% elsif Rails.env.staging? %>
+		<!-- google analytics -->
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-12801815-8']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+	<% end %>
   </body>
 </html>

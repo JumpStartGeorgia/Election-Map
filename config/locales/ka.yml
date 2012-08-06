@@ -142,7 +142,7 @@ ka:
     subject: "[Georgia Election Data] Contact Form"
   layouts:
     application-bootstrap:
-      title: Election Map
+      title: საქართველოს საარჩევნო მონაცემები
       logo_alt: Map of Georgia in different colors
       logo_title: მთავარი გვერდი
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი

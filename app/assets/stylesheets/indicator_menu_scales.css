@@ -1,6 +1,4 @@
 div#indicator_menu_scale {
-	float: left;
-	width: 225px;
 	padding: 0;
 	margin: 0;
 }
@@ -10,12 +8,12 @@ div#indicator_menu_scale h3 {
 	font-size: 14pt;
 	font-weight: bold;
 	color: #fff;
-	background: #2F5079;
+	background: #2985c4;
+	text-transform:uppercase;
 }
 
 div#indicator_menu_scale h3#indicator_menu_header {
 	cursor: pointer;
-	text-transform:uppercase;
 }
 
 div#indicator_menu_scale h3#indicator_description {
@@ -23,7 +21,6 @@ div#indicator_menu_scale h3#indicator_description {
 }
 
 div#indicator_menu_scale div#indicator_menu_tabs{
-	width: 225px;
 	font-size: 9pt;
 	height: 250px;
 	overflow: hidden;
@@ -67,7 +64,7 @@ div#indicator_menu_scale div#legend_container{
 }
 div#indicator_menu_scale ul#legend li{
     line-height: normal;
-    font-weight: bold;
+		font-size: 11pt;
     margin: 2px 4px;
     float: left;
     cursor: default;
