@@ -1,0 +1,79 @@
+<% title t('.title') %>
+
+<h2>
+  <%= "#{t('app.common.event')}: #{@event.name}" %>
+</h2>
+
+<p>
+  <%= link_to_if !@unused_indicators.empty?, t('app.buttons.new_indicator_relationships_core'), new_event_indicator_relationship_path(:id => @event.id,
+		:type => "indicator"), :class => 'btn btn-primary' %>
+  <%= link_to_if !@unused_indicator_types.empty?, t('app.buttons.new_indicator_relationships_type'), new_event_indicator_relationship_path(  :id => @event.id,
+			:type => "indicator_type"), :class => 'btn btn-primary' %>
+</p>
+
+<% id = nil %>
+<% count = 0 %>
+<% i=0 %>
+<% relationships = @event.event_indicator_relationships.select{|x| x.indicator_type_id != nil} %>
+<% relationships.each do |relationship| %>
+	<% if id.nil? || id != relationship.indicator_type_id %>
+		<% id = relationship.indicator_type_id %>
+		<% count = relationships.count{|x| x.indicator_type_id == id} %>
+		<% i=0 %>
+		<h3>
+			<%= "#{t('app.common.indicator_type')}: #{relationship.indicator_type.name}" %>
+			<%= link_to t('app.buttons.edit'),
+				edit_event_indicator_relationship_path(:id => relationship.event_id,
+					:indicator_type_id => relationship.indicator_type_id), :class => 'btn' %>
+		</h3>
+	<% end %>
+	<% if i == 0 %>
+		<ul class="standard">
+	<% end %>
+	<% if relationship.related_indicator_type_id %>
+		<li><%= relationship.related_indicator_type.name %></li>
+	<% elsif relationship.related_core_indicator_id %>
+		<li><%= relationship.related_core_indicator.name %></li>
+	<% end %>
+	<% if i == count-1 %>
+		</ul>
+	<% end %>
+	<% i=i+1 %>
+<% end %>
+
+<% id = nil %>
+<% count = 0 %>
+<% i=0 %>
+<% relationships = @event.event_indicator_relationships.select{|x| x.core_indicator_id != nil} %>
+<% relationships.each do |relationship| %>
+	<% if id.nil? || id != relationship.core_indicator_id %>
+		<% id = relationship.core_indicator_id %>
+		<% count = relationships.count{|x| x.core_indicator_id == id} %>
+		<% i=0 %>
+		<h3>
+			<%= "#{t('app.common.indicator')}: #{relationship.core_indicator.name}" %>
+			<%= link_to t('app.buttons.edit'),
+				edit_event_indicator_relationship_path(:id => relationship.event_id,
+					:core_indicator_id => relationship.core_indicator_id), :class => 'btn' %>
+		</h3>
+	<% end %>
+	<% if i == 0 %>
+		<ul class="standard">
+	<% end %>
+	<% if relationship.related_indicator_type_id %>
+		<li><%= relationship.related_indicator_type.name %></li>
+	<% elsif relationship.related_core_indicator_id %>
+		<li><%= relationship.related_core_indicator.name %></li>
+	<% end %>
+	<% if i == count-1 %>
+		</ul>
+	<% end %>
+	<% i=i+1 %>
+<% end %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.list'), event_indicator_relationships_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

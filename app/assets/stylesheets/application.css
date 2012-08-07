@@ -33,6 +33,15 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 	z-index: 1200 !important;
 }
 
+/* make bootstrap button link color stay white */
+a.btn, a.btn:visited {
+	color: #666;
+}
+a.btn-primary, a.btn-primary:visited, a.btn-info, a.btn-info:visited, a.btn-success, a.btn-success:visited,
+a.btn-warning, a.btn-warning:visited, a.btn-danger, a.btn-danger:visited, a.btn-inverse, a.btn-inverse:visited {
+	color: #fff;
+}
+
 /* general */
 a, a:link, a:hover, a:visited, a:active
 {
@@ -48,10 +57,22 @@ a.brand:hover{
   background-color: transparent;
 }
 
-h3 {
-  font-size: 16pt;
+h1, h2, h3 {
+   margin: 0.5em 0;
+   font-family: Arial;
+   color: #000;
   font-weight: bold;
-  padding: 0.5em 0;
+}
+h1 {
+   font-size: 18pt;
+}
+
+h2 {
+   font-size: 16pt;
+}
+
+h3 {
+  font-size: 14pt;
 }
 
 strong {
@@ -60,6 +81,12 @@ strong {
 
 p {
 margin: 0.5em 0;
+}
+
+hr {
+	color: #ccc !important;
+	background-color: #ccc !important;
+	height: 2px;
 }
 
 ul.standard, ol.standard, ul.standard ul, ol.standard ol,

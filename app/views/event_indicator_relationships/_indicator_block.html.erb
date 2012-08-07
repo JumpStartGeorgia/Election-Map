@@ -1,0 +1,22 @@
+<% unique_id = "new_#{@counter}" %>
+<div id="<%= "event_indicator_relationship_#{unique_id}"%>">
+	<%= hidden_field_tag 'event_indicator_relationship_id', nil,
+			:name => "event_indicator_relationship[#{@counter}][id]" %>
+		<p>
+			<%= label_tag "event_indicator_relationship_related_core_indicator_id", t('app.common.indicator'), :class => "label" %>
+			<%= select_tag "event_indicator_relationship_related_core_indicator_id",
+				options_from_collection_for_select(@core_indicators, "id", "name"),
+				:include_blank => true,
+				:name => "event_indicator_relationship[#{@counter}][related_core_indicator_id]" %>
+		</p>
+		<p>
+			<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "label" %>
+			<%= text_field_tag 'event_indicator_relationship_sort_order', nil,
+					:name => "event_indicator_relationship[#{@counter}][sort_order]", :maxlength => 5, :size => 3 %>
+
+		</p>
+		<p>
+			<%= button_tag t('app.buttons.remove'), :type => 'button', :id => "event_indicator_relationship_#{unique_id}", :confirm => t('app.msgs.delete_confirm'), :class => 'btn remove btn-danger btn-mini' %>
+		</p>
+		<hr />
+</div>

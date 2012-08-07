@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= content_for?(:title) ? yield(:title) : "ElectionMap" %></title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} - #{t('app.common.app_name')}" :
+				t('app.common.app_name') %></title>
     <%= include_gon %>
     <%= csrf_meta_tags %>
 
@@ -108,8 +109,8 @@
 									</div>
 								<% end %>
 
-								<% if params[:controller] != "root" && params[:action] != "index" %>
-                   <h2><%= yield(:title) %></h2>
+								<% if !(params[:controller] == "root" && params[:action] == "index") %>
+                   <h1><%= yield(:title) %></h1>
                 <% end %>
 
 								<%= yield %>
