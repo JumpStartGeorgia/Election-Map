@@ -4,8 +4,7 @@ class EventIndicatorRelationshipsController < ApplicationController
 
   def render_js_blocks
 		@counter = params[:counter].to_i+1
-		@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
-		@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
+		load_form_variables
 		if params[:type]
 			render :json => {
 		    :html => (render_to_string :partial => "event_indicator_relationships/#{params[:type]}.html")
@@ -18,22 +17,15 @@ class EventIndicatorRelationshipsController < ApplicationController
   end
 
 	def show
+		load_form_variables
+
 		@event = Event.where(:id => params[:id]).with_translations(I18n.locale).includes(:event_indicator_relationships).order("event_indicator_relationships.indicator_type_id, event_indicator_relationships.core_indicator_id, event_indicator_relationships.sort_order").first
+
 	end
 
   def new
     @event_indicator_relationships = []
-    @event = Event.find(params[:id])
-		@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
-		@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
-		gon.load_js_event_indicator_relationship_form = true
-
-    case params[:type]
-      when "indicator"
-        @unused_indicators = []
-      when "indicator_type"
-        @unused_indicator_types = []
-    end
+		load_form_variables
   end
 
   def edit
@@ -46,10 +38,7 @@ class EventIndicatorRelationshipsController < ApplicationController
 		else
 			redirect_to event_indicator_relationships_path, notice: 'Please provide all parameters to edit a record.'
 		end
-    @event = Event.find(params[:id])
-		@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
-		@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
-		gon.load_js_event_indicator_relationship_form = true
+		load_form_variables
   end
 
   # POST /event_indicator_relationships
@@ -62,10 +51,7 @@ class EventIndicatorRelationshipsController < ApplicationController
         format.html { redirect_to event_indicator_relationships_path, notice: 'Event Custom View was successfully created.' }
         format.json { render json: @event_indicator_relationship, status: :created, location: @event_indicator_relationship }
       else
-        @event = Event.find(params[:id])
-				@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
-				@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
-				gon.load_js_event_indicator_relationship_form = true
+        load_form_variables
         format.html { render action: "new" }
         format.json { render json: @event_indicator_relationship.errors, status: :unprocessable_entity }
       end
@@ -134,10 +120,7 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
         format.html { redirect_to event_indicator_relationship_path(params[:id]), notice: 'Event Custom View was successfully updated.' }
         format.json { head :ok }
       else
-        @event = Event.find(params[:id])
-				@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
-				@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
-				gon.load_js_event_indicator_relationship_form = true
+        load_form_variables
         format.html { render action: "edit" }
         format.json { render json: error_msgs, status: :unprocessable_entity }
       end
@@ -155,4 +138,24 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
       format.json { head :ok }
     end
   end
+
+
+	protected
+
+	def load_form_variables
+    @event = Event.find(params[:id])
+		@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
+		@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
+
+		existing_indicator_relationships = EventIndicatorRelationship.core_indicator_ids_in_event(params[:id])
+    @unused_indicators = Array.new(@core_indicators)
+			.delete_if{|x| !existing_indicator_relationships.collect(&:core_indicator_id).index(x.id).nil?}
+		existing_indicator_type_relationships = EventIndicatorRelationship.indicator_type_ids_in_event(params[:id])
+    @unused_indicator_types = Array.new(@indicator_types)
+			.delete_if{|x| !existing_indicator_type_relationships.collect(&:indicator_type_id).index(x.id).nil?}
+
+		gon.load_js_event_indicator_relationship_form = true
+logger.debug "unused inds = #{@unused_indicators}"
+logger.debug "unused ind types = #{@unused_indicator_types}"
+	end
 end

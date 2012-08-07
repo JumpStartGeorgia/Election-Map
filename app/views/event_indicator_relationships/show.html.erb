@@ -5,9 +5,9 @@
 </h2>
 
 <p>
-  <%= link_to t('app.buttons.new_indicator_relationships_core'), new_event_indicator_relationship_path(:id => @event.id,
+  <%= link_to_if !@unused_indicators.empty?, t('app.buttons.new_indicator_relationships_core'), new_event_indicator_relationship_path(:id => @event.id,
 		:type => "indicator") %>
-  <%= link_to t('app.buttons.new_indicator_relationships_type'), new_event_indicator_relationship_path(  :id => @event.id,
+  <%= link_to_if !@unused_indicator_types.empty?, t('app.buttons.new_indicator_relationships_type'), new_event_indicator_relationship_path(  :id => @event.id,
 			:type => "indicator_type") %>
 </p>
 

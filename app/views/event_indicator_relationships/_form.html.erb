@@ -59,8 +59,10 @@
 	</div>
 
 	<p>
-	  <%= button_tag 'add indicator type', :type => 'button', :id => 'add_indicator_type_block' %>
-	  <%= button_tag 'add indicator', :type => 'button', :id => 'add_indicator_block' %>
+	  <%= button_tag 'add indicator type', :type => 'button', :id => 'add_indicator_type_block',
+			:disabled => @indicator_types.empty? %>
+	  <%= button_tag 'add indicator', :type => 'button', :id => 'add_indicator_block',
+			:disabled => @core_indicators.empty? %>
 	</p>
 	<hr />
 	<p>
