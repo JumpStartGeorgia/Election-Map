@@ -11,13 +11,13 @@ class EventIndicatorRelationship < ActiveRecord::Base
 	default_scope order("sort_order asc")
 
   # get all indicator types that are not currently part of an indicator relationship
-  def self.unused_indicator_types(event_id)
-    
+  def self.unused_indicator_types_in_event(event_id)
+
   end
 
   # get all core indicators that are not currently part of an indicator relationship
-  def self.unused_core_indicators(event_id)
-    
+  def self.unused_core_indicators_in_event(event_id)
+
   end
 
 end

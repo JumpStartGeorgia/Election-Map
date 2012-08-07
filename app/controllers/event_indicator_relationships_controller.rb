@@ -4,8 +4,8 @@ class EventIndicatorRelationshipsController < ApplicationController
 
   def render_js_blocks
 		@counter = params[:counter].to_i+1
-		@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
-		@core_indicators = CoreIndicator.order_by_type_name
+		@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
+		@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
 		if params[:type]
 			render :json => {
 		    :html => (render_to_string :partial => "event_indicator_relationships/#{params[:type]}.html")
@@ -24,8 +24,8 @@ class EventIndicatorRelationshipsController < ApplicationController
   def new
     @event_indicator_relationships = []
     @event = Event.find(params[:id])
-		@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
-		@core_indicators = CoreIndicator.order_by_type_name
+		@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
+		@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
 		gon.load_js_event_indicator_relationship_form = true
 
     case params[:type]
@@ -47,8 +47,8 @@ class EventIndicatorRelationshipsController < ApplicationController
 			redirect_to event_indicator_relationships_path, notice: 'Please provide all parameters to edit a record.'
 		end
     @event = Event.find(params[:id])
-		@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
-		@core_indicators = CoreIndicator.order_by_type_name
+		@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
+		@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
 		gon.load_js_event_indicator_relationship_form = true
   end
 
@@ -63,8 +63,8 @@ class EventIndicatorRelationshipsController < ApplicationController
         format.json { render json: @event_indicator_relationship, status: :created, location: @event_indicator_relationship }
       else
         @event = Event.find(params[:id])
-				@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
-				@core_indicators = CoreIndicator.order_by_type_name
+				@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
+				@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
 				gon.load_js_event_indicator_relationship_form = true
         format.html { render action: "new" }
         format.json { render json: @event_indicator_relationship.errors, status: :unprocessable_entity }
@@ -110,11 +110,11 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
 						break
 					end
 				end
-        
+
         # add new records
 				params[:event_indicator_relationship].each_value do |v|
-					if v["id"].nil? || v["id"].empty? && 
-					    ((!v["related_core_indicator_id"].nil? && !v["related_core_indicator_id"].empty?) || 
+					if v["id"].nil? || v["id"].empty? &&
+					    ((!v["related_core_indicator_id"].nil? && !v["related_core_indicator_id"].empty?) ||
 					    (!v["related_indicator_type_id"].nil? && !v["related_indicator_type_id"].empty?))
 					  relationship = EventIndicatorRelationship.new(v)
 					  relationship.event_id = params[:id]
@@ -128,15 +128,15 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
             end
 					end
 				end
-        
+
 			end
       if error_msgs.empty?
         format.html { redirect_to event_indicator_relationship_path(params[:id]), notice: 'Event Custom View was successfully updated.' }
         format.json { head :ok }
       else
         @event = Event.find(params[:id])
-				@indicator_types = IndicatorType.with_translations(I18n.locale).has_summary
-				@core_indicators = CoreIndicator.order_by_type_name
+				@indicator_types = IndicatorType.get_summary_indicator_types_in_event(params[:id])
+				@core_indicators = CoreIndicator.get_unique_indicators_in_event(params[:id])
 				gon.load_js_event_indicator_relationship_form = true
         format.html { render action: "edit" }
         format.json { render json: error_msgs, status: :unprocessable_entity }

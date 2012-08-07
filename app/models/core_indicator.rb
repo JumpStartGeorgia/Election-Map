@@ -41,4 +41,17 @@ class CoreIndicator < ActiveRecord::Base
 		end
 	end
 
+	# get list of unique core indicators in event
+	def self.get_unique_indicators_in_event(event_id)
+		if event_id
+			# get ids of core indicators in event
+			ids = self.select("distinct core_indicators.id")
+							.joins(:indicators)
+							.where(:indicators => {:event_id => event_id})
+
+			self.order_by_type_name
+				.where("core_indicators.id in (?)", ids.collect(&:id))
+		end
+	end
+
 end

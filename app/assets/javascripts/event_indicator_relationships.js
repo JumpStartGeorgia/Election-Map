@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 		// add a new indicator type block
 		$('button#add_indicator_type_block').click(function(){
-			$.get("/" + I18n.locale + "/event_indicator_relationships/render_js_blocks/indicator_type_block?counter=" + $('input#counter').val(),
+			$.get("/" + I18n.locale + "/event_indicator_relationships/render_js_blocks/" + $('input#event_id').val() + "/indicator_type_block/" + $('input#counter').val(),
 				function(data) {
 				  $('input#counter').val(parseInt($('input#counter').val())+1);
 				  $('div#relationships').append(data.html);
@@ -18,7 +18,7 @@ $(document).ready(function() {
 		});
 		// add a new indicator block
 		$('button#add_indicator_block').click(function(){
-			$.get("/" + I18n.locale + "/event_indicator_relationships/render_js_blocks/indicator_block?counter=" + $('input#counter').val(),
+			$.get("/" + I18n.locale + "/event_indicator_relationships/render_js_blocks/" + $('input#event_id').val() + "/indicator_block/" + $('input#counter').val(),
 				function(data) {
 				  $('input#counter').val(parseInt($('input#counter').val())+1);
 				  $('div#relationships').append(data.html);

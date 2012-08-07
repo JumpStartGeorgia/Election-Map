@@ -6,6 +6,7 @@
 
 <%= form_tag event_indicator_relationship_path(params[:id]), :method => :put do %>
     <% @counter = @event_indicator_relationships.length %>
+	  <%= hidden_field_tag 'event_id', params[:id] %>
 	  <%= hidden_field_tag 'indicator_type_id', params[:indicator_type_id] %>
 	  <%= hidden_field_tag 'core_indicator_id', params[:core_indicator_id] %>
 	  <%= hidden_field_tag 'type', params[:type] %>
