@@ -65,6 +65,7 @@ en:
       show: Show
       update: Update
       save: Save
+      create: Create
       reset: Reset
       new_data: New Datum
       new_event_types: New Event Type
@@ -143,6 +144,8 @@ en:
       is_default_view: Use as Default
       num_indicator_types: "# Indicator Type Relationships"
       num_indicators: "# Indicator Relationships"
+      indicator_relationship: Indicator with Relationship
+      indicator_type_relationship: Indicator Type with Relationship
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:

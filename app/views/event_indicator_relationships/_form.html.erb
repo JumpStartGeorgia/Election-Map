@@ -1,16 +1,38 @@
 <h2><%= "#{t('app.common.event')}: #{@event.name}" %></h2>
 <h3>
-	<%= "#{t('app.common.indicator_type')}: #{@event_indicator_relationships.first.indicator_type.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.indicator_type_id %>
-	<%= "#{t('app.common.indicator')}: #{@event_indicator_relationships.first.core_indicator.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.core_indicator_id %>
+	<%= "#{t('app.common.indicator_type_relationship')}: #{@event_indicator_relationships.first.indicator_type.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.indicator_type_id %>
+	<%= "#{t('app.common.indicator_relationship')}: #{@event_indicator_relationships.first.core_indicator.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.core_indicator_id %>
 </h3>
-
-<%= form_tag event_indicator_relationship_path(params[:id]), :method => :put do %>
+<% path = params[:action] == "new" ?
+		event_indicator_relationships_path(:id => params[:id]) :
+		event_indicator_relationship_path(params[:id]) %>
+<%= form_tag path,	:method => params[:action] == "new" ? :post : :put do %>
     <% @counter = @event_indicator_relationships.length %>
 	  <%= hidden_field_tag 'event_id', params[:id] %>
+<% if params[:action] != "new" %>
 	  <%= hidden_field_tag 'indicator_type_id', params[:indicator_type_id] %>
 	  <%= hidden_field_tag 'core_indicator_id', params[:core_indicator_id] %>
+<% end %>
 	  <%= hidden_field_tag 'type', params[:type] %>
 	  <%= hidden_field_tag 'counter', @counter %>
+
+	<% if params[:action] == "new" %>
+		<% if params[:type] == "indicator_type" %>
+			<p>
+				<%= label_tag "indicator_type_id", t('app.common.indicator_type_relationship'), :class => "label" %>
+				<%= select_tag "indicator_type_id",
+					options_from_collection_for_select(@unused_indicator_types, "id", "name") %>
+			</p>
+		<% elsif params[:type] == "indicator" %>
+			<p>
+				<%= label_tag "core_indicator_id", t('app.common.indicator_relationship'), :class => "label" %>
+				<%= select_tag "core_indicator_id",
+					options_from_collection_for_select(@unused_indicators, "id", "name")%>
+			</p>
+		<% end %>
+	<% end %>
+
+	<hr />
 
 	<div id="relationships">
 		<% @event_indicator_relationships.each_with_index do |relationship,i| %>
@@ -66,7 +88,7 @@
 	</p>
 	<hr />
 	<p>
-	  <%= submit_tag t("app.buttons.update"), :id => "submit" %>
+	  <%= submit_tag params[:action] == "new" ? t("app.buttons.create") : t("app.buttons.update"), :id => "submit" %>
 		<%= link_to t("app.buttons.reset"), request.fullpath %>
 	</p>
 
