@@ -22,7 +22,7 @@ ka:
         no_indicators: No Indicators where found for the selected event.
         no_event_trans: No translation records for the Event name were found.
         no_shape_type_trans: No translations records for the Shape Types were found.
-        no_shape_type_trans: No translations records for the Indicator Types were found.
+        no_shape_type_trans: No translations records for the Indicator Groups were found.
     indicator_scale:
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event or shape type or indicator type was not found in the spreadsheet.
@@ -37,7 +37,7 @@ ka:
         no_indicators: No Indicators where found for the selected event.
         no_event_trans: No translation records for the Event name were found.
         no_shape_type_trans: No translations records for the Shape Types were found.
-        no_shape_type_trans: No translations records for the Indicator Types were found.
+        no_shape_type_trans: No translations records for the Indicator Groups were found.
     shape:
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
@@ -67,14 +67,17 @@ ka:
       save: Save
       create: Create
       reset: გადატვირთვა
+      remove: Remove
+      add_indicator: Add Indicator
+      add_indicator_type: Add Indicator Group
       new_data: New Datum
-      new_event_types: New Event Type
+      new_event_types: New Event Group
       new_events: New Event
       new_custom_views: New Event Custom View
       new_indicator_relationships_core: Add Indicator
-      new_indicator_relationships_type: Add Indicator Type
+      new_indicator_relationships_type: Add Indicator Group
       new_indicator_scales: New Indicator Scale
-      new_indicator_types: New Indicator Type
+      new_indicator_types: New Indicator Group
       new_indicators: New Indicator
       new_core_indicators: New Indicator
       new_locales: New Language
@@ -127,13 +130,13 @@ ka:
       title: Title
       description: Description
       event: Event
-      event_type: Event Type
+      event_type: Event Group
       event_date: Event Date
       parent_shape: Parent Shape
       locale: Language
       file_upload: CSV File to Upload
       has_summary: Can Summarize All Indicators in Type
-      indicator_type: Indicator Type
+      indicator_type: Indicator Group
       number_format: Number Format
       color: Color
       indicator_ancestry: Belongs To
@@ -142,10 +145,10 @@ ka:
       at_shape_type: At This Shape View
       custom_shape_type: Show These Shapes
       is_default_view: Use as Default
-      num_indicator_types: "# Indicator Type Relationships"
-      num_indicators: "# Indicator Relationships"
+      num_indicator_types: "# Indicator Groups with Relationships"
+      num_indicators: "# Indicators with Relationships"
       indicator_relationship: Indicator with Relationship
-      indicator_type_relationship: Indicator Type with Relationship
+      indicator_type_relationship: Indicator Group with Relationship
   contact_mailer:
     subject: "[Election Map] Contact Form"
   layouts:
@@ -191,11 +194,11 @@ ka:
       basic_header: Basic
       events: Event Names
       shape_types: Shape Types
-      event_types: Event Types
+      event_types: Event Groups
       custom_views: Create Custom Event Views
       indicator_relationships: Customize Popup Data
       core_indicators: Unique Indicators
-      indicator_types: Indicator Types
+      indicator_types: Indicator Groups
       pages: Basic Pages
       csv_header: Upload CSV Files
       indicators: Indicators
@@ -246,13 +249,13 @@ ka:
       title: Indicator Details
   event_types:
     edit:
-      title: Editing Event Type
+      title: Editing Event Group
     index:
-      title: Event Types
+      title: Event Groups
     new:
-      title: New Event Type
+      title: New Event Group
     show:
-      title: Event Type Details
+      title: Event Group Details
   events:
     edit:
       title: Editing Event
@@ -298,13 +301,13 @@ ka:
       delete_records: Delete existing scales on file for the provided Indicator(s)
   indicator_types:
     edit:
-      title: Editing Indicator Type
+      title: Editing Indicator Group
     index:
-      title: Indicator Types
+      title: Indicator Groups
     new:
-      title: New Indicator Type
+      title: New Indicator Group
     show:
-      title: Indicator Type Details
+      title: Indicator Group Details
   indicators:
     change_name:
       title: Upload a CSV File to Change Indicator Names

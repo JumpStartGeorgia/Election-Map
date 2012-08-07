@@ -3,9 +3,11 @@
 	<%= "#{t('app.common.indicator_type_relationship')}: #{@event_indicator_relationships.first.indicator_type.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.indicator_type_id %>
 	<%= "#{t('app.common.indicator_relationship')}: #{@event_indicator_relationships.first.core_indicator.name}" if !@event_indicator_relationships.empty? && @event_indicator_relationships.first.core_indicator_id %>
 </h3>
+
 <% path = params[:action] == "new" ?
 		event_indicator_relationships_path(:id => params[:id]) :
 		event_indicator_relationship_path(params[:id]) %>
+
 <%= form_tag path,	:method => params[:action] == "new" ? :post : :put do %>
     <% @counter = @event_indicator_relationships.length %>
 	  <%= hidden_field_tag 'event_id', params[:id] %>
@@ -54,7 +56,7 @@
 
 					</p>
 					<p>
-						<%= button_tag 'remove', :type => 'button', :class => "remove", :id => "event_indicator_relationship_#{relationship.id}" %>
+						<%= button_tag t('app.buttons.remove'), :type => 'button', :class => "remove", :id => "event_indicator_relationship_#{relationship.id}" %>
 					</p>
 					<hr />
 				<% elsif relationship.related_core_indicator_id %>
@@ -72,7 +74,7 @@
 
 					</p>
 					<p>
-						<%= button_tag 'remove', :type => 'button', :class => "remove", :id => "event_indicator_relationship_#{relationship.id}" %>
+						<%= button_tag t('app.buttons.remove'), :type => 'button', :class => "remove", :id => "event_indicator_relationship_#{relationship.id}" %>
 					</p>
 					<hr />
 				<% end %>
@@ -81,9 +83,9 @@
 	</div>
 
 	<p>
-	  <%= button_tag 'add indicator type', :type => 'button', :id => 'add_indicator_type_block',
+	  <%= button_tag t('app.buttons.add_indicator_type'), :type => 'button', :id => 'add_indicator_type_block',
 			:disabled => @indicator_types.empty? %>
-	  <%= button_tag 'add indicator', :type => 'button', :id => 'add_indicator_block',
+	  <%= button_tag t('app.buttons.add_indicator'), :type => 'button', :id => 'add_indicator_block',
 			:disabled => @core_indicators.empty? %>
 	</p>
 	<hr />
