@@ -70,7 +70,7 @@ module JsonCache
 	end
 
 	###########################################
-	### create cache
+	### create custom view event json cache
 	###########################################
   def self.build_default_and_custom_cache
     start = Time.now

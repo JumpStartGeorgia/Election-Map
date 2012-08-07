@@ -1,6 +1,7 @@
 class Datum < ActiveRecord::Base
   translates :common_id, :common_name
 	include ActionView::Helpers::NumberHelper
+	require 'json_cache'
 
   belongs_to :indicator
   has_many :datum_translations, :dependent => :destroy
@@ -232,6 +233,24 @@ class Datum < ActiveRecord::Base
     end
 	  return results
   end
+
+  # get the summary data for an indicator type in an event for a shape
+	def self.get_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id)
+		start = Time.now
+		results = Hash.new
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+  		key = "summary_json/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
+  		results = JsonCache.fetch(event_id, key) {
+  			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id)
+  			if data && !data.empty?
+  				results["summary_data"] = data.collect{|x| x.to_hash_wout_translations}
+  			end
+  		}
+    end
+#		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+    return results
+  end
+
 
   def self.csv_header
     "Event, Shape Type, Common ID, Common Name, Indicator, Value, Indicator, Value".split(",")
