@@ -1,6 +1,7 @@
 class JsonController < ApplicationController
 	require 'json_cache'
 	require 'json'
+
 	################################################3
 	##### shape jsons
 	################################################3
@@ -21,32 +22,40 @@ class JsonController < ApplicationController
 		geometries = nil
 		# get parent of parent shape and see if custom_children cache already exists
 		shape = Shape.find(params[:parent_id])
+		# see if this event at this shape type is a custom view
+		custom = EventCustomView.get_by_descendant(params[:event_id], params[:shape_type_id])
+		
 		parent_shape = nil
 		if !shape.nil?
-			parent_shape = shape.parent
+		  if custom && !custom.empty?
+				logger.debug "++++++++++event has custom shape, checking for file cache"
+  			parent_shape = shape.ancestors.where(:shape_type_id => custom.first.shape_type_id)
+  			custom_children_cache = nil
+  			if !parent_shape.nil?
+  				key = key_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.first.id.to_s)
+  				  .gsub("[indicator_id]", params[:indicator_id])
+  				  .gsub("[shape_type_id]", params[:shape_type_id])
+  				logger.debug "++++++++++custom children key = #{key}"
+  				custom_children_cache = JsonCache.read(params[:event_id], key)
+  			end
 
-			custom_children_cache = nil
-			if !parent_shape.nil?
-				key = key_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s)
-				  .gsub("[indicator_id]", params[:indicator_id])
-				  .gsub("[shape_type_id]", shape.shape_type_id.to_s)
-				logger.debug "++++++++++custom children key = #{key}"
-				custom_children_cache = JsonCache.read(params[:event_id], key)
-			end
+  			if !custom_children_cache.nil?
+  				# cache exists, pull out need shapes
+  				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
 
-			if !custom_children_cache.nil?
-				# cache exists, pull out need shapes
-				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
-
-        geometries = JSON.parse(custom_children_cache)
-        needed = []
-        geometries['features'].each do |value|
-          if value['properties']['parent_id'].to_s == params[:parent_id]
-            needed << value
+          geometries = JSON.parse(custom_children_cache)
+          needed = []
+          geometries['features'].each do |value|
+            if value['properties']['parent_id'].to_s == params[:parent_id]
+              needed << value
+            end
           end
-        end
-        geometries['features'] = needed
-			else
+          geometries['features'] = needed
+  			end
+      end
+      
+      # if geometries is still nil, get data from database  
+      if geometries.nil?
 				logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
 				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}_shape_type_#{params[:shape_type_id]}") {
@@ -95,32 +104,41 @@ class JsonController < ApplicationController
 		geometries = nil
 		# get parent of parent shape and see if custom_children cache already exists
 		shape = Shape.find(params[:parent_id])
+		# see if this event at this shape type is a custom view
+		custom = EventCustomView.get_by_descendant(params[:event_id], params[:shape_type_id])
+		
 		parent_shape = nil
 		if !shape.nil?
-			parent_shape = shape.parent
-			custom_children_cache = nil
-			if !parent_shape.nil?
-			key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s)
-			  .gsub("[event_id]", params[:event_id])
-			  .gsub("[indicator_type_id]", params[:indicator_type_id])
-			  .gsub("[shape_type_id]", shape.shape_type_id.to_s)
-				logger.debug "++++++++++custom children key = #{key}"
-				custom_children_cache = JsonCache.read(params[:event_id], key)
-			end
+		  if custom && !custom.empty?
+				logger.debug "++++++++++event has custom shape, checking for file cache"
+  			parent_shape = shape.ancestors.where(:shape_type_id => custom.first.shape_type_id)
+  			custom_children_cache = nil
+  			if !parent_shape.nil?
+  			key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.first.id.to_s)
+  			  .gsub("[event_id]", params[:event_id])
+  			  .gsub("[indicator_type_id]", params[:indicator_type_id])
+  			  .gsub("[shape_type_id]", params[:shape_type_id])
+  				logger.debug "++++++++++custom children key = #{key}"
+  				custom_children_cache = JsonCache.read(params[:event_id], key)
+  			end
 
-			if !custom_children_cache.nil?
-				# cache exists, pull out need shapes
-				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
+  			if !custom_children_cache.nil?
+  				# cache exists, pull out need shapes
+  				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
 
-        geometries = JSON.parse(custom_children_cache)
-        needed = []
-        geometries['features'].each do |value|
-          if value['properties']['parent_id'].to_s == params[:parent_id]
-            needed << value
+          geometries = JSON.parse(custom_children_cache)
+          needed = []
+          geometries['features'].each do |value|
+            if value['properties']['parent_id'].to_s == params[:parent_id]
+              needed << value
+            end
           end
-        end
-        geometries['features'] = needed
-			else
+          geometries['features'] = needed
+  			end
+      end
+      
+      # if geometries is still nil, get data from database  
+      if geometries.nil?
 				logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
 				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}_shape_type_#{params[:shape_type_id]}") {
