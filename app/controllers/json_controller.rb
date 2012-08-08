@@ -1,6 +1,6 @@
 class JsonController < ApplicationController
 	require 'json_cache'
-
+	require 'json'
 	################################################3
 	##### shape jsons
 	################################################3
@@ -29,7 +29,7 @@ class JsonController < ApplicationController
 			if !parent_shape.nil?
 				key = key_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s)
 				  .gsub("[indicator_id]", params[:indicator_id])
-				  .gsub("[shape_type_id]", params[:shape_type_id])
+				  .gsub("[shape_type_id]", shape.shape_type_id.to_s)
 				logger.debug "++++++++++custom children key = #{key}"
 				custom_children_cache = JsonCache.read(params[:event_id], key)
 			end
@@ -38,7 +38,7 @@ class JsonController < ApplicationController
 				# cache exists, pull out need shapes
 				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
 
-        geometries = ActiveSupport::JSON.decode(custom_children_cache)
+        geometries = JSON.parse(custom_children_cache)
         needed = []
         geometries['features'].each do |value|
           if value['properties']['parent_id'].to_s == params[:parent_id]
@@ -103,7 +103,7 @@ class JsonController < ApplicationController
 			key = key_summary_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.id.to_s)
 			  .gsub("[event_id]", params[:event_id])
 			  .gsub("[indicator_type_id]", params[:indicator_type_id])
-			  .gsub("[shape_type_id]", params[:shape_type_id])
+			  .gsub("[shape_type_id]", shape.shape_type_id.to_s)
 				logger.debug "++++++++++custom children key = #{key}"
 				custom_children_cache = JsonCache.read(params[:event_id], key)
 			end
@@ -112,7 +112,7 @@ class JsonController < ApplicationController
 				# cache exists, pull out need shapes
 				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
 
-        geometries = ActiveSupport::JSON.decode(custom_children_cache)
+        geometries = JSON.parse(custom_children_cache)
         needed = []
         geometries['features'].each do |value|
           if value['properties']['parent_id'].to_s == params[:parent_id]
@@ -166,10 +166,10 @@ class JsonController < ApplicationController
 protected
 
 	def key_custom_children_shapes
-		"custom_children_shapes_json_#{I18n.locale}_shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]"
+		"custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]"
 	end
 
 	def key_summary_custom_children_shapes
-		"summary_custom_children_shapes_json_#{I18n.locale}_shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]"
+		"summary_custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]"
 	end
 end

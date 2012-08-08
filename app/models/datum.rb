@@ -2,6 +2,7 @@ class Datum < ActiveRecord::Base
   translates :common_id, :common_name
 	include ActionView::Helpers::NumberHelper
 	require 'json_cache'
+	require 'json'
 
   belongs_to :indicator
   has_many :datum_translations, :dependent => :destroy
@@ -214,11 +215,17 @@ class Datum < ActiveRecord::Base
 	    relationships.each do |rel|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
+=begin
 					data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, rel.related_indicator_type_id)
 					if data && !data.empty?
 						data_hash = Hash.new
 						data_hash["summary_data"] = data
 	        	results << data_hash
+					end
+=end
+					data = get_indicator_type_data(shape_id, shape_type_id, event_id, rel.related_indicator_type_id)
+					if data && !data["summary_data"].empty?
+	        	results << data
 					end
         elsif !rel.related_core_indicator_id.nil?
           # get the data item for this indciator
@@ -238,14 +245,19 @@ class Datum < ActiveRecord::Base
 	def self.get_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
 		results = Hash.new
+		results["summary_data"] = []
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
-  		key = "summary_json/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
-  		results = JsonCache.fetch(event_id, key) {
+			json = []
+  		key = "summary_data/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
+  		json = JsonCache.fetch(event_id, key) {
   			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id)
+				x = []
   			if data && !data.empty?
-  				results["summary_data"] = data.collect{|x| x.to_hash_wout_translations}
+  				x = data.collect{|x| x.to_hash_wout_translations}
   			end
+				x.to_json
   		}
+			results["summary_data"] = JSON.parse(json)
     end
 #		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
