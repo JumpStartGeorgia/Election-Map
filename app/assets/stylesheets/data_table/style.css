@@ -1,0 +1,163 @@
+#data-table-container {
+  width: 1000px;
+}
+
+#data-table {
+  font-size: 11px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#data-table thead {
+}
+
+#data-table thead tr {
+}
+
+#data-table td, #data-table th {
+}
+
+#data-table tbody {
+}
+
+#data-table th, #data-table td {
+  border: 1px solid #000;
+  transition: background-color .5s;
+  -moz-transition: background-color .5s;
+  -webkit-transition: background-color .5s;
+  -o-transition: background-color .5s;
+}
+
+#data-table tbody tr:first-child td{
+  border-top: none;
+}
+
+#data-table th > span, #data-table td > span, #data-table td > a {
+  padding: 3px 7px;
+  display: block;
+  text-decoration: none;
+}
+
+#data-table td > a:hover {
+  background: rgba(92, 129, 163, .75);
+}
+
+#data-table th, #data-table td {
+  text-align: center;
+}
+
+#data-table th.cg0, #data-table td.cg0 {
+  text-align: left;
+}
+
+#data-table th {
+  font-weight: normal;
+}
+
+#data-table th.highlighted, td.highlighted {
+  background: #fff;
+  color: #333;
+  border-color: #000 !important;
+}
+
+td.highlighted > a {
+  color: #333;
+  text-shadow: none;
+}
+
+#data-table td img {
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+#data-table th.hidden, #data-table td.hidden {
+  display: none;
+}
+
+#data-table th.header {
+  cursor: pointer;
+  background-image: url(/assets/asc+desc.gif);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+#data-table th.headerSortUp {
+  background-image: url(/assets/asc.gif);
+  background-color: rgba(51, 153, 255, .8);
+}
+
+#data-table th.headerSortDown {
+  background-image: url(/assets/desc.gif);
+  background-color: rgba(51, 153, 255, .8);
+} 
+
+
+#data-table-container .switchers {
+  margin: 5px 0;
+}
+
+#data-table-container .switchers > * {
+  float: left;
+  margin-right: 5px;
+}
+
+#data-table-container .arrows {
+
+}
+
+#data-table-container .arrows .arrow-container {
+  float: left;
+  position: relative;
+  margin-right: 1px;
+}
+
+#data-table-container .arrows .arrow-container .overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: rgba(255, 255, 255, .8);
+  cursor: default;
+  display: none;
+}
+
+#data-table-container .arrows .arrow-container,
+#data-table-container .arrows .arrow,
+#data-table-container .arrow-container .overlay {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+}
+
+#data-table-container .arrows .arrow {
+  width: 45px;
+  height: 29px;
+  border: 1px solid #fff;
+  background: #fff url('/assets/data_table_arrow_left.png') no-repeat center;
+  float: left;
+  cursor: pointer;
+}
+
+#data-table-container .arrows .arrow:hover {
+  border-color: #DFDFDF;
+  background-color: #EFEFEF;
+}
+
+#data-table-container .arrows .arrow:active {
+  border-color: #AFAFAF;
+  box-shadow: inset 0 0 2px #bFbFbF;
+}
+
+#data-table-container .arrows .arrow.left {
+}
+
+#data-table-container .arrows .arrow-container-right {
+  -ms-transform:rotate(180deg);
+  -moz-transform:rotate(180deg);
+  -webkit-transform:rotate(180deg);
+  -o-transform:rotate(180deg);
+}
+
+

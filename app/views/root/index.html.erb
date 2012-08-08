@@ -119,79 +119,8 @@
 </section>
 
 
-<% td = @dt.data %>
-<% if !td.nil? && !td.empty? %>
-<% cqo = @dt.cols_p - @dt.static_cols %>
-<div id="data-table-container">
-  <div class="switchers clearfix">
-    <div class="arrows">
-      <div class="arrow-container arrow-container-left">
-        <div class="overlay"></div>
-        <div class="left arrow" data-direction="left"></div>
-      </div>
-      <div class="arrow-container arrow-container-right">
-        <div class="overlay"></div>
-        <div class="right arrow" data-direction="right"></div>
-      </div>
-    </div>
-
-    <select id="dt_dd_switcher"><!--data table dropdown switcher-->
-      <option disabled selected="selected"></option>
-      <% @dt.dd_titles.each_with_index do |title, i| %>
-        <% val = ((i + 1).to_f / cqo).ceil.to_s %>
-        <% selected = (@dt.indicator_ids[i + @dt.static_cols].to_s == @dt.sid) ? 'selected="selected"'.html_safe : '' %>
-        <option <%= selected %> data-i="<%= (i + 1) %>" value="<%= val %>"><%= title %></option>
-      <% end %>
-    </select>
-  </div>
-
-  <div id="tips-placeholder">
-    <div class="sorting-tip">
-      TIP! Sort multiple columns simultaneouslyby holding down the
-      shift key and clicking a second, third or even fourth column header!
-    </div>
-
-    <div class="links-tip">
-      click on links
-    </div>
-  </div>
-
-  <table id="data-table">
-   <thead>
-    <tr>
-      <% td[0].each_with_index do |value, i| %>
-        <% cgnumber = (i > 0) ? ((i - @dt.static_cols + (cqo - (i - @dt.static_cols) % cqo)) / cqo).to_s : 0 %>
-        <% classname = 'cg' + cgnumber.to_s %>
-        <th data-i="<%= i %>" <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
-          <%= value %>
-        </th>
-      <% end %>
-    </tr>
-   </thead>
-
-   <tbody>
-    <% td[1..(td.length - 1)].each do |row| %>
-      <tr>
-        <% row.each_with_index do |value, i| %>
-          <% cgnumber = (i > 0) ? ((i - @dt.static_cols + (cqo - (i - @dt.static_cols) % cqo)) / cqo).to_s : 0 %>
-          <% classname = 'cg' + cgnumber.to_s %>
-          <td data-i="<%= i %>" <%= (i > cqo) ? ('class="' + classname + ' hidden"').html_safe : ('class="' + classname + '"').html_safe %>>
-            <% if i == 0 %>
-              <%= value %>
-            <% elsif i == 1 %>
-              <%= link_to value, summary_map_path(params.merge(:indicator_type_id => @dt.indicator_type_ids[value], :view_type => @summary_view_type_name, :indicator_id => nil, :common_name => row[0])) %>
-            <% else %>
-              <%= link_to(value, indicator_map_path(params.merge(:indicator_id => @dt.indicator_ids[i], :common_name => row[0], :view_type => nil))) %>
-            <% end %>
-          </td>
-        <% end %>
-      </tr>
-    <% end %>
-   </tbody>
-  </table>
-
+<div id="data-table-container" style="display: none;">
 </div>
-<% end %>
 
 
 

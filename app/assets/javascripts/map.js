@@ -5,7 +5,7 @@
 //= require fancybox
 //= require vendor_map
 //= require jquery.tablesorter.min
-//= require data_table
+//= require data_table_loader
 //= require d3.v2.min
 //= require jquery.ui
 //= require jquery.slimscroll
@@ -201,6 +201,7 @@ function load_vector_child(resp){
 		// now load the values for the hidden form
 		load_hidden_form();
 
+    load_data_table();
     if (typeof highlight_shape == 'function')
     {
 	    var f = highlight_shape();

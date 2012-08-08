@@ -4,7 +4,7 @@
 require 'json_cache'
 class RootController < ApplicationController
   before_filter :authenticate_user!,
-    :except => [:index, :export, :download]
+    :except => [:index, :export, :download, :data_table]
 	require 'ostruct'
 
   # GET /
@@ -199,48 +199,6 @@ logger.debug "////////////// is custom view, getting indicator to switch between
   		# reset the parameter that indicates if the shape type changed
   		params[:change_shape_type] = nil
 
-      get_data = Datum.get_table_data(params[:event_id], @child_shape_type_id, params[:shape_id], nil, true, true)
-      dt = OpenStruct.new(
-        'cols_p'             => 7, #data columns count per turn
-        'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
-        'static_cols'        => 1, #data static columns count, e.g. "District name"
-
-        'data'               => get_data[:data],
-        'indicator_ids'      => get_data[:indicator_ids],
-        'indicator_type_ids' => get_data[:indicator_type_ids],
-        'dd_titles'          => []
-      )
-      s = dt.skip_cols + dt.static_cols
-      dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
-      dt.data.each_with_index do |val, i|
-        dt.data[i] = dt.data[i][dt.skip_cols..- 1]
-      end
-
-      # selected indicator id
-      if params[:indicator_id].nil?
-        if params[:view_type] == @summary_view_type_name
-          dt.sid = 'winner_ind'
-        else
-          dt.sid = ''
-        end
-      else
-        dt.sid = params[:indicator_id]
-      end
-      dt.sid = dt.sid.to_s
-
-      dt_count = dt.data[0].count
-      # column groups count
-      #dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-      #c = dt.cols_p - dt.static_cols
-      # dropdown titles
-      #dt.groups.times do |i|
-      #  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
-      #end
-      dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-      dt.dd_titles = dt.data[0][dt.static_cols..-1]
-
-      @dt = dt
-
   		# set js variables
 logger.debug "////////////// setting gon variables"
       set_gon_variables
@@ -256,6 +214,59 @@ logger.debug "//////////////////////////////////////////////////////// done with
 			render :layout => 'map'
 		end
 	end
+
+  def data_table
+    child_shape_type_id = params[:child_shape_type_id]
+    summary_view_type_name = params[:summary_view_type_name]
+    params[:custom_view] = params[:custom_view].nil? ? false : params[:custom_view]
+
+    get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id], nil, true, true)
+    dt = OpenStruct.new(
+      'cols_p'             => 7, #data columns count per turn
+      'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
+      'static_cols'        => 1, #data static columns count, e.g. "District name"
+
+      'data'               => get_data[:data],
+      'indicator_ids'      => get_data[:indicator_ids],
+      'indicator_type_ids' => get_data[:indicator_type_ids],
+      'dd_titles'          => []
+    )
+    s = dt.skip_cols + dt.static_cols
+    dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
+    dt.data.each_with_index do |val, i|
+      dt.data[i] = dt.data[i][dt.skip_cols..- 1]
+    end
+
+    # selected indicator id
+    if params[:indicator_id].nil? || params[:indicator_id] == 'null'
+      if params[:view_type] == summary_view_type_name
+        dt.sid = 'winner_ind'
+      else
+        dt.sid = ''
+      end
+    else
+      dt.sid = params[:indicator_id]
+    end
+    dt.sid = dt.sid.to_s
+
+    dt_count = dt.data[0].count
+    # column groups count
+    #dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+    #c = dt.cols_p - dt.static_cols
+    # dropdown titles
+    #dt.groups.times do |i|
+    #  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
+    #end
+    dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+    dt.dd_titles = dt.data[0][dt.static_cols..-1]
+
+    dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
+    dt.gon[:dt][:common_name] = params[:common_name].nil? ? false : params[:common_name]
+
+    @dt = dt
+
+    render :layout => 'ajax_data_table'
+  end
 
   # POST /export
 	# generate the svg file
@@ -434,6 +445,7 @@ logger.debug " - no matching event found!"
 
 		# view type
 		gon.view_type = params[:view_type]
+
 		gon.summary_view_type_name = @summary_view_type_name
 
 		# indicator name
@@ -463,8 +475,11 @@ logger.debug " - no matching event found!"
 		  gon.map_title = @map_title
 	  end
 
-    gon.dt = {:g => @dt.groups, :p => @dt.cols_p, :all => @dt.data[0].count}
-    gon.dt[:common_name] = params[:common_name].nil? ? false : params[:common_name]
+    iid = (params[:indicator_id].nil? ? 'null' : params[:indicator_id])
+    vt = (params[:view_type].nil? ? 'null' : params[:view_type])
+		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id], :event_id => params[:event_id], :shape_id => params[:shape_id], :shape_type_id => params[:shape_type_id], :indicator_id => iid, :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id, :view_type => vt, :summary_view_type_name => @summary_view_type_name)
+		gon.dt_common_name = (params[:common_name].nil? ? false : params[:common_name])
+
   end
 
   # build an array of indicator scales that will be used in js
