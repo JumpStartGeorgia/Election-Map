@@ -1,49 +1,45 @@
 module JsonCache
+require 'fileutils'
 
 	###########################################
 	### manage files
 	###########################################
-	def self.create_directory(event_id)
-		# make sure json folder exists
-		if !File.exists?(json_file_path.gsub("/[event_id]", ""))
-			FileUtils.mkdir(json_file_path.gsub("/[event_id]", ""))
-		end
-		# check if event folder exists
-		if event_id
-			if !File.exists?(json_file_path.gsub("[event_id]", event_id.to_s))
-				FileUtils.mkdir(json_file_path.gsub("[event_id]", event_id.to_s))
-			end
+	def self.create_directory(event_id, subpath=nil)
+		if !subpath.nil? && subpath != "."
+			FileUtils.mkpath(json_file_path.gsub("[event_id]", event_id.to_s) + "/" + subpath)
+		else
+			FileUtils.mkpath(json_file_path.gsub("[event_id]", event_id.to_s))
 		end
 	end
 
 	def self.read(event_id, filename)
-		geometries = nil
+		json = nil
 		if event_id && filename
 			file_path = json_file_path.gsub("[event_id]", event_id.to_s) << "/#{filename}.json"
 			if File.exists?(file_path)
-				geometries = File.open(file_path, "r") {|f| f.read()}
+				json = File.open(file_path, "r") {|f| f.read()}
 			end
 		end
-		return geometries
+		return json
 	end
 
 	def self.fetch(event_id, filename, &block)
-		geometries = nil
+		json = nil
 		if event_id && filename
 			file_path = json_file_path.gsub("[event_id]", event_id.to_s) << "/#{filename}.json"
 			if File.exists?(file_path)
-				geometries = File.open(file_path, "r") {|f| f.read()}
+				json = File.open(file_path, "r") {|f| f.read()}
 			else
 				# get the json data
-				geometries = yield if block_given?
+				json = yield if block_given?
 
-				# create the event directory if it does not exist
-				create_directory(event_id)
+				# create the directory tree if it does not exist
+				create_directory(event_id, File.dirname(filename))
 
-				File.open(file_path, 'w') {|f| f.write(geometries)}
+				File.open(file_path, 'w') {|f| f.write(json)}
 			end
 		end
-		return geometries
+		return json
 	end
 
 	###########################################
@@ -70,7 +66,7 @@ module JsonCache
 	end
 
 	###########################################
-	### create cache
+	### create custom view event json cache
 	###########################################
   def self.build_default_and_custom_cache
     start = Time.now
@@ -229,9 +225,62 @@ module JsonCache
 		puts "============ total time took #{(end_time - start)} seconds"
 	end
 
+	###########################################
+	### create summary data json file
+	###########################################
+	# create the cache of summary data for all events and all of their shapes
+  def self.summary_data_cache
+    # turn off the active record logging
+    old_logger = ActiveRecord::Base.logger
+    ActiveRecord::Base.logger = nil
+
+    # create new instance of app
+    app = ActionDispatch::Integration::Session.new(Rails.application)
+
+		start = Time.now
+		puts "============ starting build cache at #{start}"
+		# get the events that have indicators with a type that has a summary
+		events = Event.get_events_with_summary_indicators
+		if !events.nil? && !events.empty?
+#			events = events.select{|x| x.id == 15}
+			events.each_with_index do |event, i|
+				event_start = Time.now
+				puts "=================== "
+				puts "=================== event #{event.id} start"
+				puts "=================== "
+
+				# get all of the shapes for this event
+				# - have to call root for the default event shape may not be the root shape
+				shapes = event.shape.root.subtree
+				#shapes = event.shape.root.subtree.where("shape_type_id in (1,2,3)")
+				# get the summary data for each shape
+				shapes.each do |shape|
+					I18n.available_locales.each do |locale|
+						I18n.locale = locale
+						Datum.get_indicator_type_data(shape.id, shape.shape_type_id, event.id, event.indicator_type_id)
+					end
+				end
+
+				puts "=================== "
+				puts "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"
+				puts "=================== "
+			end
+		end
+
+		end_time = Time.now
+
+    # turn active record logging back on
+    ActiveRecord::Base.logger = old_logger
+
+		puts "============ total time took #{(end_time - start)} seconds"
+  end
+
+
+
+
 protected
 
 	def self.json_file_path
-		"#{Rails.root}/public/json/[event_id]"
+		"#{Rails.root}/public/json/event_[event_id]"
 	end
 end

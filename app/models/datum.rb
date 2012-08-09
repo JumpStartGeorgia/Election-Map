@@ -1,6 +1,8 @@
 class Datum < ActiveRecord::Base
   translates :common_id, :common_name
 	include ActionView::Helpers::NumberHelper
+	require 'json_cache'
+	require 'json'
 
   belongs_to :indicator
   has_many :datum_translations, :dependent => :destroy
@@ -50,6 +52,7 @@ class Datum < ActiveRecord::Base
 			:color => self.color,
 			:indicator_type_id => self.indicator_type_id,
 			:indicator_type_name => self.indicator_type_name,
+			:core_indicator_id => self.core_indicator_id,
 			:indicator_id => self.indicator_id,
 			:indicator_name => self.indicator_name,
 			:indicator_name_abbrv => self.indicator_name_abbrv
@@ -83,7 +86,7 @@ class Datum < ActiveRecord::Base
     start = Time.now
     x = nil
 		if !shape_id.nil? && !core_indicator_id.nil? && !event_id.nil? && !shape_type_id.nil?
-			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, "
+			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', i.core_indicator_id, ci.indicator_type_id, "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
 #			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as 'indicator_name', "
@@ -124,7 +127,7 @@ class Datum < ActiveRecord::Base
 	    limit = limit.to_i if !limit.nil? && limit.class == String
 
 
-			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', ci.indicator_type_id, itt.name as 'indicator_type_name', "
+			sql = "SELECT s.id as 'shape_id', i.id as 'indicator_id', i.core_indicator_id, ci.indicator_type_id, itt.name as 'indicator_type_name', "
 			sql << "d.id, d.value, ci.number_format as 'number_format', "
 #			sql << "stt.name_singular as 'shape_type_name', st.common_id as 'shape_common_id', st.common_name as 'shape_common_name', "
 
@@ -213,25 +216,95 @@ class Datum < ActiveRecord::Base
 	    relationships.each do |rel|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
-					data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, rel.related_indicator_type_id)
-					if data && !data.empty?
-						data_hash = Hash.new
-						data_hash["summary_data"] = data
-	        	results << data_hash
+					data = get_indicator_type_data(shape_id, shape_type_id, event_id, rel.related_indicator_type_id)
+					if data && !data["summary_data"].empty?
+	        	results << data
 					end
         elsif !rel.related_core_indicator_id.nil?
-          # get the data item for this indciator
-					data = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id)
-					if data && !data.empty?
-						data_hash = Hash.new
-						data_hash["data_item"] = data
-	        	results << data_hash
-					end
+          # see if indicator is part of indicator type that has summary
+          # if so, get the summary info so can assign the overall placement and overall winner
+          core = CoreIndicator.get_indicator_type_with_summary(rel.related_core_indicator_id)
+          if core
+            # get summary data
+  					data = get_indicator_type_data(shape_id, shape_type_id, event_id, core.indicator_type_id)
+  					if data && !data["summary_data"].empty?
+              # add the data item for the provided indicator
+              index = data["summary_data"].index{|x| x[:core_indicator_id] == rel.related_core_indicator_id}
+              if index
+    						data_hash = Hash.new
+    						data_hash["data_item"] = data["summary_data"][index]
+    	        	results << data_hash
+
+                # add the placement of this indicator
+                rank = Datum.new
+                rank.value = index+1
+                rank["number_format"] = " / #{data["summary_data"].length+1}"
+                rank["indicator_type_name"] = data["summary_data"][index][:indicator_type_name]
+                rank["indicator_name"] = I18n.t('app.common.overall_placement')
+                rank["indicator_name_abbrv"] = I18n.t('app.common.overall_placement')
+    						data_hash = Hash.new
+    						data_hash["data_item"] = rank.to_hash_wout_translations
+    	        	results << data_hash
+=begin
+                # add total # of indicators in the summary
+                rank = Datum.new
+                rank.value = data["summary_data"].length+1
+                rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
+                rank["indicator_name"] = I18n.t('app.common.total_placements')
+                rank["indicator_name_abbrv"] = I18n.t('app.common.total_placements')
+    						data_hash = Hash.new
+    						data_hash["data_item"] = rank.to_hash_wout_translations
+    	        	results << data_hash
+=end
+              end
+
+              # add the winner if this is not it
+              if index > 0
+                data["summary_data"][0][:indicator_name].insert(0, "#{I18n.t('app.common.winner')}: ")
+                data["summary_data"][0][:indicator_name_abbrv].insert(0, "#{I18n.t('app.common.winner')}: ")
+    						data_hash = Hash.new
+    						data_hash["data_item"] = data["summary_data"][0]
+    	        	results << data_hash
+              end
+  					end
+          else
+            # indicator type does not have summary
+            # get the data item for this indciator
+  					data = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id)
+  					if data && !data.empty?
+  						data_hash = Hash.new
+  						data_hash["data_item"] = data.first.to_hash_wout_translations
+  	        	results << data_hash
+  					end
+          end
         end
       end
     end
 	  return results
   end
+
+  # get the summary data for an indicator type in an event for a shape
+	def self.get_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id)
+		start = Time.now
+		results = Hash.new
+		results["summary_data"] = []
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+			json = []
+  		key = "summary_data/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
+  		json = JsonCache.fetch(event_id, key) {
+  			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id)
+				x = []
+  			if data && !data.empty?
+  				x = data.collect{|x| x.to_hash_wout_translations}
+  			end
+				x.to_json
+  		}
+			results["summary_data"] = JSON.parse(json,:symbolize_names => true)
+    end
+#		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+    return results
+  end
+
 
   def self.csv_header
     "Event, Shape Type, Common ID, Common Name, Indicator, Value, Indicator, Value".split(",")
@@ -710,6 +783,12 @@ protected
 	end
 	def indicator_type_name
 		self[:indicator_type_name]
+	end
+	def core_indicator_id=(val)
+		self[:core_indicator_id] = val
+	end
+	def core_indicator_id
+		self[:core_indicator_id]
 	end
 
 end

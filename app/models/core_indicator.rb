@@ -54,4 +54,14 @@ class CoreIndicator < ActiveRecord::Base
 		end
 	end
 
+  # determine if the core indicator belongs to an indicator type that has a summary
+  def self.get_indicator_type_with_summary(core_indicator_id)
+    if core_indicator_id
+      core = find(core_indicator_id)
+      
+      if core && core.indicator_type.has_summary
+        return core 
+      end
+    end
+  end
 end

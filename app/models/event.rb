@@ -44,4 +44,11 @@ logger.debug "---********----- events by event type id cache"
 		with_translations(locale).includes(:event_type)
 		.order("event_types.sort_order asc, event_date DESC, event_translations.name ASC")
   end
+
+	def self.get_events_with_summary_indicators
+		select("distinct events.id, events.shape_id, core_indicators.indicator_type_id")
+		.joins(:indicators => {:core_indicator => :indicator_type})
+		.where(:indicator_types => {:has_summary => true})
+		.order("events.id")
+	end
 end

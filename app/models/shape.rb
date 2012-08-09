@@ -134,31 +134,35 @@ class Shape < ActiveRecord::Base
     			data.each_with_index do |d,i|
     			  if d.has_key?("summary_data") && !d["summary_data"].nil? && !d["summary_data"].empty?
 							# use to_hash_wout_translations to avoid datum_translations getting called for each record
-  			      results[i]["summary_data"] = d["summary_data"].collect{|x| x.to_hash_wout_translations}
+  			      results[i]["summary_data"] = d["summary_data"]
   			      # if getting summary data, use the first record for the shape value
   			      # if ind_id = indicator_type_id
-  			      if isSummary && d["summary_data"].first.indicator_type_id.to_s == ind_id.to_s
-      				  properties["data_value"] = d["summary_data"].first.formatted_value if !d["summary_data"].first.formatted_value.nil?
-      					properties["value"] = d["summary_data"].first.indicator_name_abbrv
-      					properties["formatted_value"] = d["summary_data"].first.indicator_name
-      				  properties["number_format"] = d["summary_data"].first.number_format
-      				  properties["color"] = d["summary_data"].first.color
+  			      if isSummary && d["summary_data"][0][:indicator_type_id].to_s == ind_id.to_s
+      				  properties["data_value"] = d["summary_data"][0][:formatted_value] if !d["summary_data"][0][:formatted_value].nil?
+      					properties["value"] = d["summary_data"][0][:indicator_name_abbrv]
+      					properties["formatted_value"] = d["summary_data"][0][:indicator_name]
+      				  properties["number_format"] = d["summary_data"][0][:number_format]
+      				  properties["color"] = d["summary_data"][0][:color]
 								# set the title hash
-								title["title"] = d["summary_data"].first.indicator_type_name
+								title["title"] = d["summary_data"][0][:indicator_type_name]
   		        end
     		    elsif d.has_key?("data_item") && !d["data_item"].nil? && !d["data_item"].empty?
 							# use to_hash_wout_translations to avoid datum_translations getting called for each record
-  		        results[i]["data_item"] = d["data_item"].first.to_hash_wout_translations
+  		        results[i]["data_item"] = d["data_item"]
   			      # if not getting summary data, use this record
   			      # if ind_id = indicator_id
-  			      if !isSummary && d["data_item"].first.indicator_id.to_s == ind_id.to_s
+
+logger.debug "################### data item #{d["data_item"]}"
+logger.debug "################### data item indicator id[''] = #{d["data_item"]["indicator_id"]} ,against #{ind_id}"
+logger.debug "################### data item indicator id[:] = #{d["data_item"][:indicator_id]} ,against #{ind_id}"
+  			      if !isSummary && d["data_item"][:indicator_id].to_s == ind_id.to_s
       				  properties["data_value"] = nil
-      					properties["value"] = d["data_item"].first.value if !d["data_item"].first.value.nil?
-      					properties["formatted_value"] = d["data_item"].first.formatted_value if !d["data_item"].first.formatted_value.nil?
-      				  properties["number_format"] = d["data_item"].first.number_format
+      					properties["value"] = d["data_item"][:value] if !d["data_item"][:value].nil?
+      					properties["formatted_value"] = d["data_item"][:formatted_value] if !d["data_item"][:formatted_value].nil?
+      				  properties["number_format"] = d["data_item"][:number_format]
 								# set the title hash
-								title["title"] = d["data_item"].first.indicator_name
-								title["title_abbrv"] = d["data_item"].first.indicator_name_abbrv
+								title["title"] = d["data_item"][:indicator_name]
+								title["title_abbrv"] = d["data_item"][:indicator_name_abbrv]
   		        end
     	      end
     		  end

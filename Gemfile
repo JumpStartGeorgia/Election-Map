@@ -23,6 +23,7 @@ gem "active_attr", "~> 0.5.1" # to create tabless models; using for contact form
 gem "dalli", "~> 2.0.5" # memory cache
 gem "kgio", "~> 2.7.4" # makes dalli faster
 #gem "girl_friday", "~> 0.9.7" # asynchronous calls
+gem "json", "~> 1.7.4" # json parser faster than default
 
 group :development do
 	gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
@@ -49,5 +50,3 @@ end
 group :production do
 	gem 'unicorn', '4.2.1' # http server
 end
-
-
