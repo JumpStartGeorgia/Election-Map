@@ -242,7 +242,7 @@ require 'fileutils'
 		# get the events that have indicators with a type that has a summary
 		events = Event.get_events_with_summary_indicators
 		if !events.nil? && !events.empty?
-			events = events.select{|x| x.id == 2}
+#			events = events.select{|x| x.id == 15}
 			events.each_with_index do |event, i|
 				event_start = Time.now
 				puts "=================== "
