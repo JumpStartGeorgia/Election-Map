@@ -1,6 +1,5 @@
 class ShapeSweeper < ActionController::Caching::Sweeper
   observe Shape # This sweeper is going to keep an eye on the Shape model
-	require 'json_cache'
 
   # If our sweeper detects that a Shape was created call this
   def after_create(shape)

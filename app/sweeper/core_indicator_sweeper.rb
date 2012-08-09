@@ -1,6 +1,5 @@
 class CoreIndicatorSweeper < ActionController::Caching::Sweeper
   observe CoreIndicator # This sweeper is going to keep an eye on the CoreIndicator model
-	require 'json_cache'
 
   # If our sweeper detects that a CoreIndicator was created call this
   def after_create(core_indicator)

@@ -1,6 +1,5 @@
 class IndicatorScale < ActiveRecord::Base
   translates :name
-  require 'csv'
   require 'scale_colors'
   include ScaleColors
 	require 'ostruct'

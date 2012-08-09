@@ -1,6 +1,5 @@
 class EventSweeper < ActionController::Caching::Sweeper
   observe Event # This sweeper is going to keep an eye on the Event model
-	require 'json_cache'
 
   # If our sweeper detects that a Event was created call this
   def after_create(event)

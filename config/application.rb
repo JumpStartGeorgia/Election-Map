@@ -1,5 +1,6 @@
 require File.expand_path('../boot', __FILE__)
 
+require 'csv'
 require 'rails/all'
 
 if defined?(Bundler)
@@ -35,10 +36,10 @@ module ElectionMap
 
     # rails will fallback to config.i18n.default_locale translation
     config.i18n.fallbacks = true
-    
+
     # rails will fallback to en, no matter what is set as config.i18n.default_locale
     config.i18n.fallbacks = [:ka]
-    
+
     # fallbacks value can also be a hash - a map of fallbacks if you will
     # missing translations of es and fr languages will fallback to english
     # missing translations in german will fallback to french ('de' => 'fr')
@@ -63,7 +64,7 @@ module ElectionMap
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
-    
+
 #    config.threadsafe! # enable threadsafe for girl_friday
 
   end

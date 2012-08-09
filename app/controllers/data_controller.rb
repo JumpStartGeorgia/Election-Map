@@ -1,5 +1,4 @@
 class DataController < ApplicationController
-	require 'csv'
   before_filter :authenticate_user!
 	cache_sweeper :datum_sweeper, :only => [:upload]
 
@@ -19,7 +18,7 @@ class DataController < ApplicationController
 		        # errors
 						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to upload_data_path #GET
-		      end 
+		      end
 				else
 					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to upload_data_path #GET
@@ -36,11 +35,11 @@ class DataController < ApplicationController
     filename ="data_template"
     csv_data = CSV.generate(:col_sep=>',') do |csv|
       csv << Datum.csv_header
-    end 
+    end
     send_data csv_data,
       :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
-  end 
+  end
 
   # GET /data/delete
   # GET /data/delete.json
@@ -57,16 +56,16 @@ class DataController < ApplicationController
 				params[:indicator_id] = nil if params[:indicator_id] == "" || params[:indicator_id] == "0"
 				msg = Datum.delete_data(params[:event_id], params[:shape_type_id], params[:indicator_id])
 
-				if msg.nil?				
+				if msg.nil?
 					if !params[:shape_type_id].nil? && !params[:indicator_id].nil?
-						flash[:success] = I18n.t('app.msgs.delete_data_success_1', 
-						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip, 
+						flash[:success] = I18n.t('app.msgs.delete_data_success_1',
+						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip,
 							:indicator => params[:indicator_name])
 					elsif !params[:shape_type_id].nil?
-						flash[:success] = I18n.t('app.msgs.delete_data_success_2', 
+						flash[:success] = I18n.t('app.msgs.delete_data_success_2',
 						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
 					else
-						flash[:success] = I18n.t('app.msgs.delete_data_success_3', 
+						flash[:success] = I18n.t('app.msgs.delete_data_success_3',
 						  :event => params[:event_name])
 					end
 
@@ -74,7 +73,7 @@ class DataController < ApplicationController
           params[:event_id] = nil
           params[:shape_type_id] = nil
           params[:indicator_id] = nil
-        
+
 				else
       		gon.event_id = params[:event_id]
       		gon.shape_type_id = params[:shape_type_id]

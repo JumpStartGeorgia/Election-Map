@@ -1,13 +1,13 @@
 $(function(){
    var map_export = $("#export"),
-       export_map_svg = $("#export-map, #export-data, #export .fancybox"),
+       export_map_svg = $("#export-map, #export-data-xls, #export-data-csv, #export .fancybox"),
        display_export = function()
        {
          export_map_svg.css('display', 'block');
        },
        export_click = function()
        {
-         var min_width = 94, max_width = 188;
+         var min_width = 94, max_width = 227;
          if (parseInt(map_export.css('width')) < max_width-1)
          {
             map_export.animate({

@@ -1,7 +1,6 @@
 class Shape < ActiveRecord::Base
   translates :common_id, :common_name
   has_ancestry
-  require 'csv'
 
   has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type

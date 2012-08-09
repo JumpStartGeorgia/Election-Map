@@ -1,6 +1,5 @@
 class EventIndicatorRelationshipSweeper < ActionController::Caching::Sweeper
   observe EventIndicatorRelationship # This sweeper is going to keep an eye on the EventIndicatorRelationship model
-	require 'json_cache'
 
   # If our sweeper detects that a EventIndicatorRelationship was created call this
   def after_create(event)

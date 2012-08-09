@@ -1,6 +1,4 @@
 class Indicator < ActiveRecord::Base
-  require 'csv'
-
   belongs_to :core_indicator
   has_one :indicator_type, :through => :core_indicator
   has_many :indicator_scales, :dependent => :destroy

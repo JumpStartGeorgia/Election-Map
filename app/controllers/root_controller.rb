@@ -1,7 +1,4 @@
 # encoding: utf-8
-#require 'csv_tsv_renderer'
-#require 'girl_friday'
-require 'json_cache'
 class RootController < ApplicationController
   before_filter :authenticate_user!,
     :except => [:index, :export, :download, :data_table]
@@ -279,58 +276,60 @@ logger.debug "//////////////////////////////////////////////////////// done with
   # POST /export
 	# generate the svg file
   def export
-		# cannot use georgian characters in file name
-		if I18n.locale.to_s == "ka"
-	    filename = "election_map_svg"
-		else
-			# create the file name: map title - indicator - event
-			filename = params[:hidden_form_map_title].clone()
-			filename << "-"
-			filename << params[:hidden_form_indicator_name_abbrv]
-			filename << "-"
-			filename << params[:hidden_form_event_name]
-		end
-			filename << "-#{l Time.now, :format => :file}"
+		# create the file name: map title - indicator - event
+		filename = params[:hidden_form_map_title].clone()
+		filename << "-"
+		filename << params[:hidden_form_indicator_name_abbrv]
+		filename << "-"
+		filename << params[:hidden_form_event_name]
+		filename << "-#{l Time.now, :format => :file}"
 
 		headers['Content-Type'] = "image/svg+xml; charset=utf-8"
     headers['Content-Disposition'] = "attachment; filename=#{clean_filename(filename)}.svg"
   end
 
-  # GET /indicators/download
-  # GET /indicators/download.json
+  # GET /download
+  # GET /download.json
   def download
     send_data = false
 		if !params[:event_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
       #get the data
-      data = Datum.create_csv(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
+      dt = Datum.get_table_data(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
+			@data = dt[:data]
 
-			if !data.nil? && !data.csv_data.nil?
+			if !@data.nil?
 				# create file name using event name and map title that were passed in
-				# cannot use georgian characters in file name
-				if I18n.locale.to_s == "ka" || params[:event_name].nil? || params[:map_title].nil?
-			    filename = "election_map_data"
-				else
-			    filename = params[:map_title]
-					filename << "-"
-					filename << params[:event_name]
-				end
+		    filename = params[:map_title]
+				filename << "-"
+				filename << params[:event_name]
 				filename << "-#{l Time.now, :format => :file}"
 
 		    # send the file
-		    send_data data.csv_data,
-		      :type => 'text/csv; header=present',
-		      :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
-		    send_data = true
-			end
+				respond_to do |format|
+				  format.csv {
+logger.debug ">>>>>>>>>>>>>>>> format = csv"
+						spreadsheet = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
+							# add the rows
+							@data.each do |r|
+							  csv << r
+							end
+						end
 
-=begin
-# code for testing csv download that works in excel
-      data = Datum.test_csv(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
-		  respond_to do |format|
-				format.csv  { send_data data.to_csv(), :filename => "nice_filename.csv" }
-				format.tsv  { send_data data.to_tsv(), :filename => "nice_filename.tsv" }
-		  end
-=end
+						send_data spreadsheet,
+				    :type => 'text/csv; header=present',
+				    :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
+					  send_data = true
+					}
+
+				  format.xls{
+logger.debug ">>>>>>>>>>>>>>>> format = xls"
+						spreadsheet = render_to_string(:action => "download.xls.erb", :layout => false)
+						send_data spreadsheet,
+				    :disposition => "attachment; filename=#{clean_filename(filename)}.xls"
+					  send_data = true
+					}
+				end
+			end
 		end
 
 		# if get here, then an error occurred
@@ -338,8 +337,9 @@ logger.debug "//////////////////////////////////////////////////////// done with
 
   end
 
-  # GET /events/admin
-  # GET /events/admin.json
+
+  # GET /admin
+  # GET /admin.json
   def admin
 logger.debug "env to email: #{ENV['APPLICATION_ERROR_FROM_EMAIL']}"
 logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
@@ -349,12 +349,12 @@ logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
     end
   end
 
-  # GET /events/clear_cache
+  # GET /clear_cache
   def clear_cache
 		JsonCache.clear_cache
   end
 
-  # GET /events/clear_cache_files
+  # GET /clear_cache_files
   def clear_cache_files
 		JsonCache.clear_all
   end

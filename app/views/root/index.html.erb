@@ -69,10 +69,14 @@
 
 			<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
 
-
 			<%= link_to("XLS",
-				download_data_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
-				:id => "export-data", :title => t('app.buttons.download_data')) %>
+				download_data_xls_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
+				:id => "export-data-xls", :title => t('app.buttons.download_data')) %>
+
+			<%= link_to("CSV",
+				download_data_csv_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
+				:id => "export-data-csv", :title => t('app.buttons.download_data')) %>
+
 			<%= link_to("?",
 					view_pages_path(:name => "export_help", :layout => "fancybox"), :class => "fancybox") %>
 		</div>
