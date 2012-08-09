@@ -139,6 +139,3 @@ function empty(variable)
   return (variable == null || variable == undefined || typeof variable == 'undefined' || variable == '');
 }
 
-
-
-

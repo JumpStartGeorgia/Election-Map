@@ -1,0 +1,376 @@
+@import "twitter/bootstrap/bootstrap";
+body {
+	padding-top: 60px;
+}
+
+@import "twitter/bootstrap/responsive";
+
+// Set the correct sprite paths
+@iconSpritePath: asset-path('twitter/bootstrap/glyphicons-halflings.png');
+@iconWhiteSpritePath: asset-path('twitter/bootstrap/glyphicons-halflings-white.png');
+
+// Set the Font Awesome (Font Awesome is default. You can disable by commenting below lines)
+// Note: If you use asset_path() here, your compiled boostrap_and_overrides.css will not
+//       have the proper paths. So for now we use the absolute path.
+@fontAwesomeEotPath: '/assets/fontawesome-webfont.eot';
+@fontAwesomeWoffPath: '/assets/fontawesome-webfont.woff';
+@fontAwesomeTtfPath: '/assets/fontawesome-webfont.ttf';
+@fontAwesomeSvgPath: '/assets/fontawesome-webfont.svg';
+
+// Font Awesome
+@import "fontawesome";
+
+// Your custom LESS stylesheets goes here
+//
+// Since bootstrap was imported above you have access to its mixins which
+// you may use and inherit here
+//
+// If you'd like to override bootstrap's own variables, you can do so here as well
+// See http://twitter.github.com/bootstrap/less.html for their names and documentation
+//
+// Example:
+// @linkColor: #ff0000;
+
+body {
+  background: url("/assets/body-bg.jpg") !important;
+  padding-top: 150px !important;
+}
+
+// Navbar
+.navbar.navbar-fixed-top {
+  height: 140px;
+}
+
+// Navbar inner head
+.navbar-inner.head {
+   height: 87px;
+   background: url("/assets/header-bg.jpg") !important;
+   color: #fff;
+}
+
+.navbar-inner.head a {
+   color: #fff !important;
+   padding: 0 1em !important;
+}
+
+.navbar-inner.head a:hover {
+   text-shadow: #000 1px 1px 3px;
+
+  transition: text-shadow .5s;
+  -webkit-transition: text-shadow .5s;
+  -moz-transition: text-shadow .5s;
+  -o-transition: text-shadow .5s;
+}
+
+.navbar-inner.head .container {
+   width: 100%;
+   height: 100%;
+   padding-top: 28px;
+}
+
+.navbar-inner.head .brand {
+   padding: 0 !important;
+   margin: 0 !important;
+   padding-left: 28px !important;
+}
+
+.navbar-inner.head .container .nav-collapse a {
+   padding-right: 28px !important;
+}
+
+
+
+// Navbar inner bottom
+.navbar-inner.bottom {
+   height: 53px;
+   background: #EFEFEF !important;
+}
+
+.navbar-inner.bottom .container {
+   height: 100%;
+   width: 100%;
+}
+
+.navbar-inner.bottom .navmenu {
+   width: 160px;
+   height: 100%;
+   float: left;
+   background: url("/assets/arrow.png") !important;
+   cursor: pointer;
+   margin: 0;
+   padding: 0;
+}
+
+.navbar-inner.bottom .navmenu p {
+   float: left;
+   text-transform: uppercase;
+   color: #2583c1;
+   font-family: Arial;
+}
+
+.navbar-inner.bottom .navmenu p.link-text {
+   float: left;
+   font-size: 16px;
+   font-weight: bold;
+   padding: 10px 0 0 28px;
+   width: 90px;
+}
+
+.navbar-inner.bottom .navmenu p.spec-char {
+   width: 10px;
+   margin-left: 10px;
+   margin-top: 20px;
+   font-family: Arial;
+   font-size: 10px;
+}
+
+.navbar-inner.bottom .navmenu-select {
+   float: left;
+   width: 400px;
+   height: 100%;
+   margin-left: 10px;
+}
+
+.navbar-inner.bottom .navmenu-select p {
+   margin-left: 10px;
+   margin-top: 22px;
+   font-size: 13px;
+   font-family: Arial;
+   color: #4d4d4d;
+}
+
+// Menu tabs
+#events_menu_tabs {
+   width: 575px;
+	font-size: 9pt;
+	padding: 0;
+	margin: 0;
+	display: none;
+}
+
+#events_menu_tabs ul li a {
+   color: #000;
+	text-shadow: none;
+}
+
+#events_menu_tabs ul.menu_list li {
+   list-style: none;
+	padding: 0.2em 0.5em;
+	line-height: 12px;
+}
+
+#events_menu_tabs ul.menu_list li a {
+   padding: 0.3em;
+	display: block;
+}
+
+#events_menu_tabs ul.menu_list li a.active {
+   padding: 0.3em;
+	display: block;
+	background: #5F646A;
+	color: #fff;
+}
+
+
+#events_menu_tabs ul.menu_list li a:hover {
+   background: #5F646A;
+	color: #fff;
+}
+
+
+
+// Container
+
+.content  {
+   width: 100%;
+/*   height: 100px;*/
+   margin: 0 auto;
+}
+
+
+// Footer
+.footer {
+   min-height: 54px !important;
+   min-width: 100%;
+   background: #D4D4D4 !important;
+   padding: 0;
+   margin: 2em 0 0 0;
+}
+
+.footer .container {
+   width: 100%;
+   min-height: 54px !important;
+   background: #D4D4D4 !important;
+   margin: 0 auto;
+}
+
+// Footer navigation
+.footer-nav {
+   text-align: center;
+   margin: 0 auto !important;
+	font-size: 12pt;
+}
+
+.footer-nav p {
+   margin-top: 20px;
+}
+
+.footer-nav p a {
+   padding: 0 10px 0 10px;
+}
+
+.footer-nav p, .footer-nav p a {
+   font-family: Arial;
+   color: #454545;
+}
+
+// Footer ndi logo
+.ndi-logo {
+   float: left;
+   margin-top: -10px;
+   margin-left: 20px;
+}
+
+// Footer JS logo
+.js-logo {
+   float: right;
+   margin: 0 !important;
+   margin-right: 20px !important;
+
+}
+
+.js-logo p {
+   margin: 0;
+	 padding-right: 0.3em;
+   text-align: right;
+   float: left;
+   color: #454545;
+	font-size: 10pt;
+	text-align: right;
+}
+
+.js-logo a img {
+   margin-top: -7px;
+   float: right;
+}
+
+
+.level-ind {
+   width: 100%;
+   height: 33px;
+   background: #FFF;
+   margin-top: -20px;
+}
+
+.level-ind li {
+   float: left !important;
+   position: static !important;
+   border: 0 !important;
+   font-size: 10px;
+   padding: 10px 15px 0 15px !important;
+   font-family: Arial;
+}
+
+
+.level-ind li a, .level-ind .level-arrow {
+   color: #4c525e !important;
+}
+
+.level-ind .level-arrow {
+   padding: 0 !important;
+   padding-top: 10px !important;
+
+}
+
+
+li.refresh {
+   padding: 0 !important;
+   padding-top: 5px !important;
+}
+
+
+.menu_list li a {
+   font-family: Arial, Sanserif;
+   font-size: 12px;
+   color: #626262;
+}
+
+// Export
+#export {
+   // Export position
+   position: absolute;
+   left: 15px;
+   top: 565px;
+	 z-index: 900;
+
+
+   background: #e26561 !important;
+   width: 95px;
+   height: 22px;
+
+   display: block !important;
+   cursor: pointer;
+
+
+   // Border radius
+   -webkit-border-radius: 2px;
+   -moz-border-radius: 2px;
+   border-radius: 2px;
+
+
+   // Export font and text
+   font-size: 12px;
+   font-family: Arial;
+   font-weight: bold;
+   text-transform: uppercase;
+   color: #FFF;
+}
+
+#export p {
+   margin: 0;
+   letter-spacing: 1px;
+		padding: 4px;
+	text-transform:uppercase;
+}
+
+#export-map, #export-data, #export .fancybox {
+   width: 27px;
+   height: 12px;
+   display: none;
+   letter-spacing: 1px;
+   color: #FFF;
+
+   // Transitions
+   -webkit-transition: opacity .4s;
+   -moz-transition: opacity .4s;
+   -o-transition: opacity .4s;
+   transition: opacity .4s;
+
+}
+
+#export-map {
+   position: absolute;
+   left: 97px;
+   top: 5px;
+}
+
+#export-data {
+   position: absolute;
+   left: 136px;
+   top: 5px;
+}
+
+
+#export .fancybox {
+   position: absolute;
+   left: 175px;
+   top: 5px;
+}
+
+
+
+#export-map:hover, #export-data:hover, #export .fancybox:hover {
+   text-decoration: none;
+   background: none;
+   opacity: .5;
+}

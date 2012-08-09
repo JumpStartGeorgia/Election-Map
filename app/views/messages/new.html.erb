@@ -17,11 +17,11 @@
 			<%= f.input :message, :label => t(".message"), :as => :text, :input_html => {:rows => 5} %>
 		<% end %>
 
-		<%= f.actions do %>
-			<%= f.action :submit, :label => t(".send") %>
-			<%= f.action :reset, :label => t(".reset")  %>
-			<%= f.action :cancel, :url => root_path, :label => t(".cancel")  %>
-		<% end %>
+  	<div>
+  	  <%= f.submit t(".send"), :class => 'btn btn-success' %>
+  	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('.reset'), :name => :reset %>
+  	  <%= link_to t('.cancel'), root_path, :class => 'btn btn-mini' %>
+  	</div>
 
 	<% end %>
 <% end %>

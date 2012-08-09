@@ -64,9 +64,9 @@ class Shape < ActiveRecord::Base
 			end
 		end
 		if indicator_id.nil?
-			puts "+++ time to build json: #{Time.now-start} seconds with no indicator"
+#			puts "+++ time to build json: #{Time.now-start} seconds with no indicator"
 		else
-			puts "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
+#			puts "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
 		end
 		return json
 	end
@@ -93,7 +93,7 @@ class Shape < ActiveRecord::Base
 
 			end
 		end
-		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
+#		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
@@ -422,11 +422,11 @@ class Shape < ActiveRecord::Base
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_id = sn.ka where st.locale = 'ka' and st.common_id = sn.en")
 				# update common names
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_name = sn.ka where st.locale = 'ka' and st.common_name = sn.en")
-      	puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
+#      	puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 			end
   logger.debug "++++procssed #{n} rows in CSV file"
-	    puts "****************** time to build_from_csv: #{Time.now-start} seconds"
+#	    puts "****************** time to build_from_csv: #{Time.now-start} seconds"
       return msg
     end
 

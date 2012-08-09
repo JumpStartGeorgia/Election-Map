@@ -1,75 +1,78 @@
 <% title t('.title') %>
 
-<div class="clear">
-	<div class="admin_panel">
-		<h3><%= t('.basic_header')%></h3>
-		<ul>
+<div class="admin_panel row">
+   <div class="span4">
+ 		<h3><%= t('.basic_header')%></h3>
+ 		<ul>
+ 			<li>
+ 				<%= link_to t('.events'), events_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.event_types'), event_types_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.custom_views'), event_custom_views_path %>
+ 			</li>
 			<li>
-				<%= link_to t('.events'), events_path %>
+				<%= link_to t('.indicator_relationships'), event_indicator_relationships_path %>
 			</li>
-			<li>
-				<%= link_to t('.event_types'), event_types_path %>
-			</li>
-			<li>
-				<%= link_to t('.custom_views'), event_custom_views_path %>
-			</li>
-			<li>
-				<%= link_to t('.indicator_types'), indicator_types_path %>
-			</li>
-			<li>
-				<%= link_to t('.core_indicators'), core_indicators_path %>
-			</li>
-			<li>
-				<%= link_to t('.shape_types'), shape_types_path %>
-			</li>
-			<li>
-				<%= link_to t('.pages'), pages_path %>
-			</li>
-		</ul>
-	</div>
-	<div class="admin_panel">
-		<h3><%= t('.csv_header')%></h3>
-		<ul>
-			<li>
-      <%= link_to t('.indicators'), upload_indicators_path %>
-      </li>
-			<li>
-			<%= link_to t('.change_indicator_scales'), upload_indicator_scales_path %>
-			</li>
-			<li>
-			<%= link_to t('.data'), upload_data_path %>
-			</li>
-			<li>
-			<%= link_to t('.shapes'), upload_shapes_path %>
-			</li>
-		</ul>
+ 			<li>
+ 				<%= link_to t('.indicator_types'), indicator_types_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.core_indicators'), core_indicators_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.shape_types'), shape_types_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.pages'), pages_path %>
+ 			</li>
+ 		</ul>
+  </div>
+   <div class="span4">
+ 		<h3><%= t('.csv_header')%></h3>
+ 		<ul>
+ 			<li>
+       <%= link_to t('.indicators'), upload_indicators_path %>
+       </li>
+ 			<li>
+ 			<%= link_to t('.change_indicator_scales'), upload_indicator_scales_path %>
+ 			</li>
+ 			<li>
+ 			<%= link_to t('.data'), upload_data_path %>
+ 			</li>
+ 			<li>
+ 			<%= link_to t('.shapes'), upload_shapes_path %>
+ 			</li>
+ 		</ul>
 
-		<h3><%= t('.download_header')%></h3>
-		<ul>
-			<li>
-			<%= link_to t('.download_indicators'), download_indicators_path %>
-			</li>
-		</ul>
-	</div>
-	<div class="admin_panel">
-		<h3><%= t('.delete_header')%></h3>
-		<ul>
-			<li>
-			<%= link_to t('.delete_data'), delete_data_path %>
-			</li>
-			<li>
-			<%= link_to t('.delete_shapes'), delete_shapes_path %>
-			</li>
-		</ul>
+ 		<h3><%= t('.download_header')%></h3>
+ 		<ul>
+ 			<li>
+ 			<%= link_to t('.download_indicators'), download_indicators_path %>
+ 			</li>
+ 		</ul>
+  </div>
+   <div class="span4">
+ 		<h3><%= t('.delete_header')%></h3>
+ 		<ul>
+ 			<li>
+ 			<%= link_to t('.delete_data'), delete_data_path %>
+ 			</li>
+ 			<li>
+ 			<%= link_to t('.delete_shapes'), delete_shapes_path %>
+ 			</li>
+ 		</ul>
 
-		<h3><%= t('.cache_header')%></h3>
-		<ul>
-			<li>
-				<%= link_to t('.cache'), clear_cache_path %>
-			</li>
-			<li>
-				<%= link_to t('.cache_files'), clear_cache_files_path %>
-			</li>
-		</ul>
-	</div>
+ 		<h3><%= t('.cache_header')%></h3>
+ 		<ul>
+ 			<li>
+ 				<%= link_to t('.cache'), clear_cache_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.cache_files'), clear_cache_files_path %>
+ 			</li>
+ 		</ul>
+  </div>
 </div>

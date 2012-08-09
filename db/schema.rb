@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120719070949) do
+ActiveRecord::Schema.define(:version => 20120804055033) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -150,6 +150,7 @@ ActiveRecord::Schema.define(:version => 20120719070949) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name_abbrv"
+    t.text     "description"
   end
 
   add_index "event_translations", ["event_id"], :name => "index_event_translations_on_event_id"
@@ -215,21 +216,6 @@ ActiveRecord::Schema.define(:version => 20120719070949) do
   add_index "indicator_scales", ["id"], :name => "index_indicator_scales_on_id"
   add_index "indicator_scales", ["indicator_id"], :name => "index_indicator_scales_on_indicator_id"
 
-  create_table "indicator_translation_olds", :force => true do |t|
-    t.integer  "indicator_id"
-    t.string   "locale"
-    t.string   "name"
-    t.string   "name_abbrv"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "description"
-  end
-
-  add_index "indicator_translation_olds", ["id"], :name => "index_indicator_translation_olds_on_id"
-  add_index "indicator_translation_olds", ["indicator_id"], :name => "index_indicator_translations_on_indicator_id"
-  add_index "indicator_translation_olds", ["locale"], :name => "index_indicator_translations_on_locale"
-  add_index "indicator_translation_olds", ["name"], :name => "index_indicator_translations_on_name"
-
   create_table "indicator_translations", :force => true do |t|
     t.integer  "indicator_id"
     t.string   "locale"
@@ -251,6 +237,7 @@ ActiveRecord::Schema.define(:version => 20120719070949) do
     t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "summary_name"
   end
 
   add_index "indicator_type_translations", ["id"], :name => "index_indicator_type_translations_on_id"

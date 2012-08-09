@@ -1,0 +1,25 @@
+<div id="events_menu_tabs">
+		<ul>
+			<% @event_types.each do |event_type| %>
+				<% is_active = event_type.id.to_s == params[:event_type_id].to_s ? "ui-tabs-selected ui-state-active" : "" %>
+				<li class="<%=is_active%>"><%= link_to event_type.name, "#event_type_#{event_type.id}" %></li>
+			<% end %>
+		</ul>
+		<% @event_types.each do |event_type| %>
+			<div id="<%= "event_type_#{event_type.id}"%>">
+				<ul class="menu_list">
+					<% event_type.events.get_events_by_type(event_type.id).each do |event| %>
+						<% if !event.shape_id.nil?
+							 is_active = event.id.to_s == params[:event_id].to_s ? "active" : "not_active" %>
+							<li>
+								<%= link_to event.name, indicator_map_path(
+									:event_id => event.id, :event_type_id => event.event_type_id,
+									:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id
+								), :title => strip_tags(event.description), :class => is_active %>
+							</li>
+						<% end %>
+					<% end %>
+				</ul>
+			</div>
+		<% end %>
+	</div>

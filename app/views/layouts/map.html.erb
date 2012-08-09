@@ -12,30 +12,24 @@
     <header class="group">
 
      	<section id="top" class="group">
-
      		<div class="wrap group">
-					<div class="map"><%= link_to(image_tag("georgia.png", :size => '96x51', :alt => t('.logo_alt'), :title => t('.logo_title')), root_path(:locale => I18n.locale))%></div>
-				<div id="language_form">
-					<ul>
-						<% I18n.available_locales.each do |locale| %>
-							<% if locale != I18n.locale %>
-								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+					<div id="app_title"><%= link_to t('.title'), root_path(:locale => I18n.locale)%></div>
+					<div id="language_form">
+						<ul>
+							<% I18n.available_locales.each do |locale| %>
+								<% if locale != I18n.locale %>
+									<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+								<% end %>
 							<% end %>
-						<% end %>
-					</ul>
-				</div>
-				<div class="logo"><a href="http://www.ndi.org/" target="_blank"><%= image_tag "logo.png", :size => '150x48', :alt => t('.ndi_alt'), :title => t('.ndi_title') %></a></div>
-    		</div>
-
-   	</section>
+						</ul>
+					</div>
+					<div class="logo"><a href="http://www.ndi.org/" target="_blank"><%= image_tag "logo.png", :size => '150x48', :alt => t('.ndi_alt'), :title => t('.ndi_title') %></a>
+					</div>
+	  		</div>
+	   	</section>
 
    	<section id="splash">
-				<% @event_types.each do |type| %>
-					<div class="mode">
-  					<% is_active = type.id.to_s == params[:event_type_id] ? "active" : "not_active" %>
-						<%= link_to type.name, event_type_map_path(:event_type_id => type.id), :class => is_active %>
-					</div>
-				<% end %>
+			<%= render :partial => "layouts/event_menu"%>
 		</section>
 
   </header>
@@ -56,13 +50,11 @@
 				<%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
 				<a>|</a>
 		  <% end %>
-		<%= link_to t('.about'), view_pages_path(:name => "about") %>
+		<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
 		<a>|</a>
-		<%= link_to t('.data_source'), view_pages_path(:name => "data_source") %>
+		<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
 		<a>|</a>
 		<%= link_to t('.contact'), contact_path %>
-		<a>|</a>
-		<%= link_to t('.terms'), view_pages_path(:name => "terms") %>
 		<a>|</a>
 		<a href="http://jumpstart.ge" target="_blank" title="<%= t('.js_link_title')%>"><%= t('.js_link_text')%></a>
 	</footer>

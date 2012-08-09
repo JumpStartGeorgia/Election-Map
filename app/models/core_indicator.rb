@@ -11,13 +11,12 @@ class CoreIndicator < ActiveRecord::Base
   attr_accessor :locale
 
   validates :indicator_type_id, :presence => true
-  
+
   scope :l10n , joins(:core_indicator_translations).where('locale = ?',I18n.locale)
   scope :by_name , order('name').l10n
 
-
   def self.order_by_type_name
-    joins(:core_indicator_translations).where(:core_indicator_translations => {:locale => I18n.locale})
+    with_translations(I18n.locale)
       .order("core_indicators.indicator_type_id ASC, core_indicator_translations.name ASC")
   end
 
@@ -39,6 +38,19 @@ class CoreIndicator < ActiveRecord::Base
 	  	self.parent.color
 		else
 			nil
+		end
+	end
+
+	# get list of unique core indicators in event
+	def self.get_unique_indicators_in_event(event_id)
+		if event_id
+			# get ids of core indicators in event
+			ids = self.select("distinct core_indicators.id")
+							.joins(:indicators)
+							.where(:indicators => {:event_id => event_id})
+
+			self.order_by_type_name
+				.where("core_indicators.id in (?)", ids.collect(&:id))
 		end
 	end
 

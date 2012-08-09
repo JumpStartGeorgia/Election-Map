@@ -1,5 +1,5 @@
 class IndicatorType < ActiveRecord::Base
-  translates :name, :description
+  translates :name, :description, :summary_name
 
   has_many :indicator_type_translations, :dependent => :destroy
   has_many :core_indicators
@@ -9,6 +9,8 @@ class IndicatorType < ActiveRecord::Base
   attr_accessible :id, :has_summary, :sort_order, :indicator_type_translations_attributes
 
   attr_accessor :locale, :local_event_id, :local_shape_type_id
+
+  scope :has_summary, where(:has_summary => true)
 
 	# get all indicators by type for an event and shape type
 	def self.find_by_event_shape_type(event_id, shape_type_id)
@@ -45,4 +47,17 @@ class IndicatorType < ActiveRecord::Base
 			.order("core_indicator_translations.name asc")
 	end
 
+	# get indicator types in an event that have summaries
+	def self.get_summary_indicator_types_in_event(event_id)
+		if event_id
+			# get ids of summary types in event
+			ids = self.select("distinct indicator_types.id")
+							.joins(:core_indicators => :indicators)
+							.where(:indicators => {:event_id => event_id})
+			# only get names of ones that have summaries
+			self.with_translations(I18n.locale).has_summary
+				.where("indicator_types.id in (?)", ids.collect(&:id))
+				.order("indicator_type_translations.name ASC")
+		end
+	end
 end

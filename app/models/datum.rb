@@ -15,9 +15,9 @@ class Datum < ActiveRecord::Base
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
     if read_attribute(:value).nil? || read_attribute(:value).to_s.downcase.strip == "null"
-      I18n.t('app.msgs.no_data')
+      return I18n.t('app.msgs.no_data')
     else
-      sprintf("%g", read_attribute(:value))
+			return number_with_precision(read_attribute(:value))
     end
   end
 
@@ -26,11 +26,15 @@ class Datum < ActiveRecord::Base
 		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
 			return I18n.t('app.msgs.no_data')
 		else
-      if self.value.index(".").nil?
-				return number_with_delimiter(self.value.to_i)
-			else
-				return number_with_precision(self.value.to_f)
-			end
+			return number_with_delimiter(number_with_precision(self.value))
+		end
+	end
+
+	def number_format
+		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
+			return nil
+		else
+			return read_attribute(:number_format)
 		end
 	end
 
@@ -103,7 +107,7 @@ class Datum < ActiveRecord::Base
 			                  :shape_id => shape_id,
 			                  :shape_type_id => shape_type_id, :locale => I18n.locale])
 		end
-		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
+#		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
     return x
 	end
 
@@ -150,7 +154,7 @@ class Datum < ActiveRecord::Base
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 
 		end
-		puts "********************* time to query summary data for indicator type: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id} - # of results = #{x.length}"
+#		puts "********************* time to query summary data for indicator type: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id} - # of results = #{x.length}"
     return x
 	end
 
@@ -166,7 +170,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, shape_type_id, event_id,
   	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
     end
-		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+#		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
 
@@ -182,7 +186,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id,
   	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
     end
-		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
+#		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return results
   end
 
@@ -197,7 +201,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, shape_type_id, event_id,
   	    event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
     end
-		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
+#		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
     return results
   end
 
@@ -656,9 +660,9 @@ protected
 	def number_format=(val)
 		self[:number_format] = val
 	end
-	def number_format
-		self[:number_format]
-	end
+#	def number_format
+#		self[:number_format]
+#	end
 	def shape_type_name=(val)
 		self[:shape_type_name] = val
 	end

@@ -1,29 +1,32 @@
 <% title t('.title') %>
 
-<table>
+<table class="table table-striped">
+  <thead>
   <tr>
     <th><%= t('app.common.name_singular')%></th>
     <th><%= t('app.common.name_plural')%></th>
     <th><%= t('app.common.parent_shape')%></th>
     <th></th>
     <th></th>
-    <th></th>
   </tr>
-
+  </thead>
+  <tbody>
 <% @shape_types.each do |shape_type| %>
-  <tr class="<%= cycle("odd_row", "even_row")%>">
-    <td><%= shape_type.name_singular %></td>
+  <tr>
+    <td><%= link_to shape_type.name_singular, shape_type %></td>
     <td><%= shape_type.name_plural %></td>
     <td><%= shape_type.parent.name_singular if !shape_type.parent.nil? %></td>
-    <td><%= link_to t('app.buttons.show'), shape_type %></td>
-    <td><%= link_to t('app.buttons.edit'), edit_shape_type_path(shape_type) %></td>
-    <td><%= link_to t('app.buttons.delete'), shape_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_shape_type_path(shape_type), :class => 'btn btn-mini' %></td>
+    <td><%= link_to t('app.buttons.delete'), shape_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete,
+    :class => 'btn btn-mini btn-danger' %></td>
   </tr>
 <% end %>
+</tbody>
 </table>
 
-<div class="admin_nav">
-	<%= link_to t('app.buttons.new_shape_types'), new_shape_type_path %>
-	<%= link_to t('app.buttons.admin'), admin_path %>
+<div class="form-actions">
+	<%= link_to t('app.buttons.new_shape_types'), new_shape_type_path,
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
 </div>
-

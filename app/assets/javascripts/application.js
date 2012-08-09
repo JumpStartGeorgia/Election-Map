@@ -8,20 +8,23 @@
 //= require i18n/translations
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
+//= require event_menu
+//= require twitter/bootstrap
 //= require fancybox
 //= require data
 //= require event_types
 //= require events
 //= require event_custom_views
+//= require event_indicator_relationships
 //= require indicator_scales
 //= require indicators
 //= require pages
 //= require shape_types
 //= require shapes
+//= require map.export
 
 // set focus to first text box on page
 $(document).ready(function(){
   $("input:visible:first").focus();
 });
-
-

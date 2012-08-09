@@ -1,5 +1,5 @@
 class Event < ActiveRecord::Base
-  translates :name, :name_abbrv
+  translates :name, :name_abbrv, :description
 
   has_many :event_translations, :dependent => :destroy
   has_many :indicators
@@ -23,6 +23,7 @@ class Event < ActiveRecord::Base
     if event_type_id.nil?
       return nil
     else
+logger.debug "---********----- events by event type id cache"
 			Rails.cache.fetch("events_by_type_#{event_type_id}_#{I18n.locale}") {
 				x = Event.with_translations(I18n.locale)
 				.where(:event_type_id => event_type_id)
@@ -40,8 +41,7 @@ class Event < ActiveRecord::Base
   end
 
   def self.get_all_events(locale = I18n.locale)
-    includes(:event_translations)
-			.where(["event_translations.locale = ?", locale])
-  		.order("event_type_id ASC, event_date DESC, event_translations.name ASC")
+		with_translations(locale).includes(:event_type)
+		.order("event_types.sort_order asc, event_date DESC, event_translations.name ASC")
   end
 end

@@ -3,12 +3,12 @@
 <%= form_tag delete_shapes_path do %>
 	<div>
 		<p>
-			<%= t('.instructions')%>    
+			<%= t('.instructions')%>
 		</p>
 		<p>
 			<%= t('.important')%>:
 		</p>
-		<ul>
+		<ul class="standard">
 			<li>
 				<%= t('.help_1')%>
 			</li>
@@ -35,6 +35,7 @@
 	</div>
 <% end %>
 
-<div class="admin_nav">
-	<%= link_to t('app.buttons.admin'), admin_path %>
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
 </div>
