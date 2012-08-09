@@ -28,8 +28,8 @@ function highlight_shape ()
   {
     if (gon.dt_common_name == features[i].data.common_name)
     {
-      f = features[i];      
-      
+      f = features[i];
+
       // backup feature styles
       f_style_backup = f.style;
 
