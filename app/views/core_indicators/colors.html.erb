@@ -1,0 +1,27 @@
+<% title t('.title') %>
+
+<div id="indicator_colors">
+  <% row_count = 1%>
+  <% @core_indicators.each_with_index do |core, i| %>
+    <% if i%6 == 0%>
+    <div class="row">
+    <% end %>  
+      <div class="span2">
+			  <%= link_to ("&nbsp;&nbsp;&nbsp;&nbsp;").html_safe, edit_core_indicator_path(core),
+			    :title => "#{core.name} - #{core.color}", :style => "background-color: #{core.color};"%>
+      </div>
+    <% if (i==(6*row_count-1)) || i==@core_indicators.length-1%>
+    </div>
+    <% row_count=row_count+1%>
+    <% end %>  
+  <% end %>  
+</div>  
+
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.new_core_indicators'), new_core_indicator_path,
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+

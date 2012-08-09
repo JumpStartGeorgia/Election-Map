@@ -218,6 +218,7 @@ ka:
       custom_views: Create Custom Event Views
       indicator_relationships: Customize Popup Data
       core_indicators: Unique Indicators
+      core_indicator_colors: Indicator Colors
       indicator_types: Indicator Groups
       pages: Basic Pages
       csv_header: Upload CSV Files
@@ -265,6 +266,8 @@ ka:
       title: Editing Indicator
     index:
       title: Indicators
+    colors:
+      title: Indicator Colors
     new:
       title: New Indicator
     show:

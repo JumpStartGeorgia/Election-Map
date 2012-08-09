@@ -1,0 +1,29 @@
+div#indicator_colors div.row{
+  margin: 1em 0; 
+}
+
+div#indicator_colors div.row div.span2{
+  margin: 0; 
+  padding: 0 0.5em;
+}
+
+div#indicator_colors div.row div.span2{
+  margin: 0; 
+  padding: 0 0.5em;
+}
+
+
+div#indicator_colors div.row div.span2 a{
+  display: block;
+  height: 2em; 
+  text-decoration: none;
+  opacity: 0.6; 
+  filter:alpha(opacity=60);
+}
+
+div#indicator_colors div.row div.span2 a:hover{
+  text-decoration: none;
+  opacity: 0.9; 
+  filter:alpha(opacity=90);
+}
+

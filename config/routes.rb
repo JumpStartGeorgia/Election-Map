@@ -10,7 +10,11 @@ ElectionMap::Application.routes.draw do
 		devise_for :users
 
 
-	  resources :core_indicators
+	  resources :core_indicators do
+	    collection do
+	      get :colors
+      end
+    end
 	  resources :data do
 			collection do
 	      get :upload

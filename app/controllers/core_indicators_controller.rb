@@ -13,6 +13,16 @@ class CoreIndicatorsController < ApplicationController
     end
   end
 
+  # GET /core_indicators/colors
+  def colors
+    @core_indicators = CoreIndicator.with_colors
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @core_indicators }
+    end
+  end
+
   # GET /core_indicators/1
   # GET /core_indicators/1.json
   def show

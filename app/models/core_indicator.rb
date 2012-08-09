@@ -12,8 +12,7 @@ class CoreIndicator < ActiveRecord::Base
 
   validates :indicator_type_id, :presence => true
 
-  scope :l10n , joins(:core_indicator_translations).where('locale = ?',I18n.locale)
-  scope :by_name , order('name').l10n
+  scope :with_colors , with_translations(I18n.locale).where("color is not null").order("color asc")
 
   def self.order_by_type_name
     with_translations(I18n.locale)
@@ -64,4 +63,5 @@ class CoreIndicator < ActiveRecord::Base
       end
     end
   end
+  
 end
