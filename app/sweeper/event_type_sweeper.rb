@@ -1,6 +1,5 @@
 class EventTypeSweeper < ActionController::Caching::Sweeper
   observe EventType # This sweeper is going to keep an eye on the EventType model
-	require 'json_cache'
 
   # If our sweeper detects that a EventType was created call this
   def after_create(event_type)

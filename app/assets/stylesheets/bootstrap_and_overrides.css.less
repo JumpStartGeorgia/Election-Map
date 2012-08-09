@@ -333,7 +333,7 @@ li.refresh {
 	text-transform:uppercase;
 }
 
-#export-map, #export-data, #export .fancybox {
+#export-map, #export-data-xls, #export-data-csv, #export .fancybox {
    width: 27px;
    height: 12px;
    display: none;
@@ -354,22 +354,28 @@ li.refresh {
    top: 5px;
 }
 
-#export-data {
+#export-data-xls {
    position: absolute;
    left: 136px;
    top: 5px;
 }
 
-
-#export .fancybox {
+#export-data-csv {
    position: absolute;
    left: 175px;
    top: 5px;
 }
 
 
+#export .fancybox {
+   position: absolute;
+   left: 214px;
+   top: 5px;
+}
 
-#export-map:hover, #export-data:hover, #export .fancybox:hover {
+
+
+#export a:hover {
    text-decoration: none;
    background: none;
    opacity: .5;

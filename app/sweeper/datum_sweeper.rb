@@ -1,6 +1,5 @@
 class DatumSweeper < ActionController::Caching::Sweeper
   observe Datum # This sweeper is going to keep an eye on the Datum model
-	require 'json_cache'
 
   # If our sweeper detects that a Datum was created call this
   def after_create(datum)

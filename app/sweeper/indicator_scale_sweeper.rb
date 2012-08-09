@@ -1,6 +1,5 @@
 class IndicatorScaleSweeper < ActionController::Caching::Sweeper
   observe IndicatorScale # This sweeper is going to keep an eye on the IndicatorScale model
-	require 'json_cache'
 
   # If our sweeper detects that a IndicatorScale was created call this
   def after_create(indicator_scale)

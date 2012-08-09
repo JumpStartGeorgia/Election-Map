@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
    protect_from_forgery
 	require 'ostruct'
+	require 'utf8_converter'
 
    layout "application-bootstrap"
 
@@ -88,7 +89,7 @@ logger.debug "---********----- shape type cache"
 
 	# remove bad characters from file name
 	def clean_filename(filename)
-		filename.gsub!(' ', '_').gsub!(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,'')
+		Utf8Converter.convert_ka_to_en(filename.gsub(' ', '_').gsub(/[\\ \/ \: \* \? \" \< \> \| \, \. ]/,''))
 	end
 
 	# create an array of items, ordered by ancestry value

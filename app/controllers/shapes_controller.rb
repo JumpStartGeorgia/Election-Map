@@ -1,5 +1,4 @@
 class ShapesController < ApplicationController
-  require 'csv'
   before_filter :authenticate_user!
 	cache_sweeper :shape_sweeper, :only => [:upload, :delete]
 

@@ -1,7 +1,5 @@
 # encoding: utf-8
-
 class IndicatorsController < ApplicationController
-	require 'csv'
   before_filter :authenticate_user!
 	cache_sweeper :indicator_sweeper, :only => [:upload, :change_name]
 
@@ -21,7 +19,7 @@ class IndicatorsController < ApplicationController
 		        # errors
 						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to upload_indicators_path #GET
-		      end 
+		      end
 				else
 					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to upload_indicators_path #GET
@@ -39,11 +37,11 @@ class IndicatorsController < ApplicationController
     filename ="indicators_template"
     csv_data = CSV.generate(:col_sep=>',') do |csv|
       csv << Indicator.csv_all_header
-    end 
+    end
     send_data csv_data,
       :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
-  end 
+  end
 
   # GET /indicators/change_name
   # GET /indicators/change_name.json
@@ -60,7 +58,7 @@ class IndicatorsController < ApplicationController
 		        # errors
 						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
 				    redirect_to change_name_indicators_path #GET
-		      end 
+		      end
 				else
 					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
 		      redirect_to change_name_indicators_path #GET
@@ -78,18 +76,17 @@ class IndicatorsController < ApplicationController
     filename ="indicators_name_template"
     csv_data = CSV.generate(:col_sep=>',') do |csv|
       csv << Indicator.csv_change_name_header
-    end 
+    end
     send_data csv_data,
       :type => 'text/csv; charset=utf-8; header=present',
       :disposition => "attachment; filename=#{filename}.csv"
-  end 
+  end
 
   # GET /indicators/download
   # GET /indicators/download.json
   def download
-		# must get event names in english for cannot have georgian letters in file name
-    @events = Event.get_all_events("en")
-    
+    @events = Event.get_all_events
+
 		if request.post?
       event = nil
       @events.each do |e|
@@ -128,10 +125,9 @@ filename ="Indicator_Names_Scales_for_"
   	      redirect_to download_indicators_path #GET
         else
           # send the file
-					# make sure we get the english file name
-          filename << event.event_translations[0].name
-          # add date to file name
+          filename << event.name
           filename << "_#{l Time.now, :format => :file}"
+
           send_data obj.csv_data,
             :type => 'text/csv; charset=utf-8; header=present',
             :disposition => "attachment; filename=#{clean_filename(filename)}.csv"
@@ -149,7 +145,7 @@ filename ="Indicator_Names_Scales_for_"
 		indicators.each do |ind|
 			custom_ary << {:id => ind.id, :name => ind.name, :name_abbrv => ind.name_abbrv}
 		end
-			
+
     respond_to do |format|
       format.json { render json: custom_ary.sort_by {|e| e[:name]} }
     end

@@ -1,6 +1,4 @@
 class JsonController < ApplicationController
-	require 'json_cache'
-
 	################################################3
 	##### shape jsons
 	################################################3

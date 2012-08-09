@@ -1,6 +1,5 @@
 class EventCustomViewSweeper < ActionController::Caching::Sweeper
   observe EventCustomView # This sweeper is going to keep an eye on the EventCustomView model
-	require 'json_cache'
 
   # If our sweeper detects that a EventCustomView was created call this
   def after_create(event)
