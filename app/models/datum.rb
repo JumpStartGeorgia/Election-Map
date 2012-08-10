@@ -509,6 +509,7 @@ logger.debug "=========== getting data for 1 indicator"
           row_starter = []
           maxvalue = {}
           winner = {}
+					winner_col_header = ""
           indicators.each_with_index do |ind, index|
             if index == 0
               #event
@@ -534,8 +535,11 @@ logger.debug "=========== getting data for 1 indicator"
               ind.data.each_with_index do |d, dindex|
                 if ind.core_indicator.indicator_type.has_summary &&
                    (maxvalue[d.common_name].nil? || d.value.to_f > maxvalue[d.common_name])
+
                   maxvalue[d.common_name] = d.value.to_f
-                  winner[d.common_name] = {:name => ind.name, :indicator_type_id => ind.core_indicator.indicator_type_id}
+                  winner[d.common_name] = {:name => ind.name,
+										 :indicator_type_id => ind.core_indicator.indicator_type_id}
+									winner_col_header = ind.core_indicator.indicator_type.summary_name if winner_col_header.empty?
                 end
 
                 if index > 0
@@ -587,7 +591,7 @@ logger.debug "=========== getting data for 1 indicator"
           ind_ids << i.id
         end
         flattened = header[0].length
-        header = header[0..0] + [I18n.t('root.index.winner')] + header[1..-1]
+        header = header[0..0] + [winner_col_header] + header[1..-1]
         ind_ids = ind_ids[0..0] + ['winner_ind'] + ind_ids[1..-1]
         ind_ids = ind_ids.flatten
         data << header.flatten

@@ -242,7 +242,7 @@ require 'fileutils'
 		# get the events that have indicators with a type that has a summary
 		events = Event.get_events_with_summary_indicators
 		if !events.nil? && !events.empty?
-#			events = events.select{|x| x.id == 15}
+#			events = events.select{|x| x.id == 15 || x.id == 2}
 			events.each_with_index do |event, i|
 				event_start = Time.now
 				puts "=================== "
@@ -252,7 +252,7 @@ require 'fileutils'
 				# get all of the shapes for this event
 				# - have to call root for the default event shape may not be the root shape
 				shapes = event.shape.root.subtree
-				#shapes = event.shape.root.subtree.where("shape_type_id in (1,2,3)")
+#				shapes = event.shape.root.subtree.where("shape_type_id in (1,2,3)")
 				# get the summary data for each shape
 				shapes.each do |shape|
 					I18n.available_locales.each do |locale|
