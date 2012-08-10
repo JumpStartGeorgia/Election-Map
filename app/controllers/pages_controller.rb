@@ -5,7 +5,7 @@ class PagesController < ApplicationController
   # GET /pages/view/:name
   # GET /pages/view/:name.json
   def view
-    @page = Page.find_by_name(params[:name])
+    @page = Page.with_translations(I18n.locale).find_by_name(params[:name])
     
 		if @page.nil?
 			# no page was found, send back to home

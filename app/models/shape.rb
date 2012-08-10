@@ -242,7 +242,8 @@ logger.debug "################### data item indicator id[:] = #{d["data_item"][:
 									# save the existing root id so at the end all events with this root can be updated
 									old_root_id = root.id
 									# destroy the shapes
-		              Shape.destroy_all(["id in (?)", root.subtree_ids])
+									ShapeTranslation.delete_all(["shape_id in (?)", root.subtree_ids])
+		              Shape.delete_all(["id in (?)", root.subtree_ids])
 		              root = nil
 		          end
 
@@ -464,9 +465,12 @@ logger.debug "################### data item indicator id[:] = #{d["data_item"][:
 							end
 
 							# delete the shapes
-		          if !Shape.destroy_all(["id in (:shape_ids) and shape_type_id in (:shape_type_ids)",
+							shapes = Shape.select("id").where(["id in (:shape_ids) and shape_type_id in (:shape_type_ids)",
 								:shape_ids => event.shape.subtree_ids, :shape_type_ids => shape_type.subtree_ids])
-
+							error1 = ShapeTranslation.delete_all(["shape_id in (?)", shapes.collect(&:id)])
+							error2 = Shape.delete_all(["id in (?)", shapes.collect(&:id)])
+              logger.debug "############## - error1 = #{error1} | error2 = #{error2}"
+		          if error1 == 0 || error2 == 0
 								msg = "error occurred while deleting records"
                 raise ActiveRecord::Rollback
 								return msg

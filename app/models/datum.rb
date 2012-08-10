@@ -102,7 +102,7 @@ class Datum < ActiveRecord::Base
 			sql << "inner join shape_translations as st on s.id = st.shape_id and dt.common_id = st.common_id and dt.common_name = st.common_name and dt.locale = st.locale  "
 #			sql << "inner join shape_types as sts on i.shape_type_id = sts.id  "
 #			sql << "inner join shape_type_translations as stt on sts.id = stt.shape_type_id and dt.locale = stt.locale  "
-			sql << "WHERE ci.id = :core_indicator_id AND i.event_id = :event_id AND i.shape_type_id = :shape_type_id "
+			sql << "WHERE i.event_id = :event_id AND i.shape_type_id = :shape_type_id AND i.core_indicator_id = :core_indicator_id "
 			sql << "and s.id=:shape_id "
 			sql << "AND dt.locale = :locale "
       sql << "order by s.id asc "
@@ -680,8 +680,11 @@ logger.debug "no indicators or data found"
 					if !shape_type_id.nil? && !indicator_id.nil?
 logger.debug "------ delete data for shape type #{shape_type_id} and indicator #{indicator_id}"
 						# delete all data assigned to shape_type and indicator
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
+            data = Datum.select("id").where(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").where(:id => indicator_id, :shape_type_id => shape_type_id).collect(&:id)])
+						error1 = DatumTranslation.delete_all(["datum_id in (?)", data.collect(&:id)])
+						error2 = Datum.delete_all(["id in (?)", data.collect(&:id)])
+	          if error1 == 0 || error2 == 0
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
 							return msg
@@ -690,8 +693,11 @@ logger.debug "------ delete data for shape type #{shape_type_id} and indicator #
 					elsif !shape_type_id.nil?
 logger.debug "------ delete data for shape type #{shape_type_id}"
 						# delete all data assigned to shape_type
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
+            data = Datum.select("id").where(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").where(:shape_type_id => shape_type_id).collect(&:id)])
+						error1 = DatumTranslation.delete_all(["datum_id in (?)", data.collect(&:id)])
+						error2 = Datum.delete_all(["id in (?)", data.collect(&:id)])
+	          if error1 == 0 || error2 == 0
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
 							return msg
@@ -700,8 +706,11 @@ logger.debug "------ delete data for shape type #{shape_type_id}"
 					else
 logger.debug "------ delete all data for event #{event_id}"
 						# delete all data for event
-						if !Datum.destroy_all(["indicator_id in (:indicator_ids)",
+            data = Datum.select("id").where(["indicator_id in (:indicator_ids)",
 								:indicator_ids => event.indicators.select("id").collect(&:id)])
+						error1 = DatumTranslation.delete_all(["datum_id in (?)", data.collect(&:id)])
+						error2 = Datum.delete_all(["id in (?)", data.collect(&:id)])
+	          if error1 == 0 || error2 == 0
 							msg = "error occurred while deleting records"
 				      raise ActiveRecord::Rollback
 							return msg
