@@ -1,0 +1,18 @@
+<% title t('.title') %>
+
+<%= form_tag cache_default_custom_event_path do %>
+	<p>
+		<%= t('.explanation') %>
+	</p>
+	<p>
+		<%= t('.time') %>
+	</p>
+	<p>
+		<%= submit_tag t("app.buttons.create"), :id => "submit" %>
+	</p>
+<% end %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
