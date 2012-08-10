@@ -84,6 +84,9 @@ body {
 .navbar-inner.bottom {
    height: 53px;
    background: #EFEFEF !important;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
 }
 
 .navbar-inner.bottom .container {
@@ -133,49 +136,69 @@ body {
 
 .navbar-inner.bottom .navmenu-select p {
    margin-left: 10px;
-   margin-top: 22px;
+   margin-top: 19px;
    font-size: 13px;
    font-family: Arial;
    color: #4d4d4d;
 }
 
+.navbar
+
 // Menu tabs
 #events_menu_tabs {
-   width: 575px;
+  float: left;
 	font-size: 9pt;
 	padding: 0;
 	margin: 0;
 	display: none;
+	border: 2px solid #e1e1df;
 }
 
-#events_menu_tabs ul li a {
-   color: #000;
-	text-shadow: none;
+#events_menu_tabs ul.ui-tabs-nav {
+  background: #e1e1df;
+  border: 0px;
+	padding-left: 20px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
 }
 
-#events_menu_tabs ul.menu_list li {
-   list-style: none;
-	padding: 0.2em 0.5em;
-	line-height: 12px;
+#events_menu_tabs ul.ui-tabs-nav li {
+  background: #e1e1df;
+  border: 0px;
 }
 
-#events_menu_tabs ul.menu_list li a {
-   padding: 0.3em;
-	display: block;
+#events_menu_tabs ul.ui-tabs-nav li a {
+  padding-bottom: 10px;
+  color: #0e74b6;
+  text-shadow: 1px 1px #fff;
 }
 
-#events_menu_tabs ul.menu_list li a.active {
-   padding: 0.3em;
-	display: block;
-	background: #5F646A;
-	color: #fff;
+#events_menu_tabs ul.ui-tabs-nav li.ui-state-active, #events_menu_tabs ul.ui-tabs-nav li:hover, #events_menu_tabs ul.ui-tabs-nav li:hover a {
+  background: #fff;
+  border: 0px;
 }
 
 
-#events_menu_tabs ul.menu_list li a:hover {
-   background: #5F646A;
-	color: #fff;
+#events_menu_tabs .ui-tabs-panel {
+  
 }
+
+#events_menu_tabs .ui-tabs-panel a {
+  padding: 3px 5px 4px;
+  display: block;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+#events_menu_tabs .ui-tabs-panel a:hover {
+  background: #0E74B6;
+  color: #fff;
+  text-decoration: none;
+}
+
+
 
 
 
@@ -208,7 +231,7 @@ body {
 .footer-nav {
    text-align: center;
    margin: 0 auto !important;
-	font-size: 12pt;
+	font-size: 12px;
 }
 
 .footer-nav p {

@@ -29,6 +29,23 @@ $(document).ready(function(){
 
 	// to load pop-up window for export help
   $("a.fancybox").fancybox();
+
+
+  var fade_after = 10,
+  navbar = $('.navbar.navbar-fixed-top');
+  $(window).scroll(function ()
+  {
+    var y = window.scrollY;
+    if (y > fade_after)
+    {
+      navbar.animate({opacity: .9}, 'fast');
+    }
+    else
+    {
+      navbar.animate({opacity: 1}, 'fast');
+    }
+  });
+
 });
 
 if (gon.openlayers){

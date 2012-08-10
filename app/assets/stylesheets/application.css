@@ -113,15 +113,15 @@ ol.standard li {
 /*	float: left;*/
     margin-bottom: 25px;
 	}
-#map{ width: 900px;
+#map {
+  width: 900px;
 	height: 600px;
-    background: #edecd1;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    box-shadow: 0 0 10px #444;
-    -webkit-box-shadow: 0 0 10px #444;
-    -moz-box-shadow: 0 0 10px #444;
+  background: #edecd1;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-top: 1px dotted #c1c2bc;
+  border-bottom: 1px dotted #c1c2bc;
 }
 
 /* fixes issue with bootstrap css and openlayers tile images */
@@ -232,6 +232,7 @@ filter:alpha(opacity=100); /* For IE8 and earlier */
 #shape_layer_navigation > li > a:hover
 {
     color: #DDD;
+    background: none;
 }
 
 #shape_layer_navigation > li.active
@@ -256,7 +257,7 @@ filter:alpha(opacity=100); /* For IE8 and earlier */
 	color: #000;
 	padding: 0.3em;
 	font-size: smaller;
-  font-family: verdana, tahoma, arial;
+  font-family: Arial;
 }
 
 /* event description */
@@ -326,3 +327,16 @@ div#form-ka {
 
 .hidden { display: none; }
 
+
+
+#data-table-container {
+  display: none;
+}
+
+#data-table-container.loading {
+  display: block;
+/*
+  background: url(/assets/loading.gif) center center no-repeat;
+*/
+  height: 10px;
+}
