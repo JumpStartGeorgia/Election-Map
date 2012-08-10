@@ -2,6 +2,11 @@
 ka:
   models:
     datum:
+      header:
+        event: არჩევნები
+        map_level: რუქის დონე
+        map_level_id: "[Level] საიდენტიფიკაციო ნომერი"
+        map_level_name: "[Level] სახელი"
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
         no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.

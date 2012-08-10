@@ -2,6 +2,11 @@
 en:
   models:
     datum:
+      header:
+        event: Election
+        map_level: Map Level
+        map_level_id: "[Level] ID"
+        map_level_name: "[Level] Name"
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
         no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.

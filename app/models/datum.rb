@@ -311,7 +311,7 @@ class Datum < ActiveRecord::Base
   end
 
   def self.download_header
-    "Event, Map Level, [Level] ID, [Level] Name".split(",")
+		"#{I18n.t('models.datum.header.event')}, #{I18n.t('models.datum.header.map_level')}, #{I18n.t('models.datum.header.map_level_id')}, #{I18n.t('models.datum.header.map_level_name')}".split(",")
   end
 
   def self.build_from_csv(file, deleteExistingRecord)
