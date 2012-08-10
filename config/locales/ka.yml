@@ -86,9 +86,11 @@ ka:
       new_shape_types: New Shape Type
       new_shapes: New Shape
       upload_csv: Process CSV File
-      download_csv: ჩამოტვირთეთ CSV ფაილი
+      download_xls: ჩამოტვირთეთ XLS რუქა ფაილი
+      download_csv: ჩამოტვირთეთ CSV რუქა ფაილი
       download_data: ჩამოტვირთეთ რუქა
       download_map: ჩამოტვირთეთ მონაცემები
+      download_help: დახმარება
       custom_view: იხილეთ ყველა %{children_shapes} %{parent_shape}აში
     msgs:
       no_data: არ არის მონაცემი
@@ -237,7 +239,6 @@ ka:
       cache_files: Clear File Cache
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
-      export_help_text: დახმარება
       footnote: "აღვნიშნო: %{note}"
     indicator_menu_scales:
       indicator_header: ინდიკატორები
