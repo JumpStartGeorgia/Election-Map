@@ -64,8 +64,6 @@ ElectionMap::Application.routes.draw do
 		match '/export', :to => 'root#export', :as => :export, :via => :post, :defaults => {:format => 'svg'}
 		match '/routing_error', :to => 'root#routing_error'
 		match '/admin', :to => 'root#admin', :as => :admin, :via => :get
-		match '/clear_cache', :to => 'root#clear_cache', :as => :clear_cache, :via => :get
-		match '/clear_cache_files', :to => 'root#clear_cache_files', :as => :clear_cache_files, :via => :get
 		match '/download/csv/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data_csv, :via => :get, :defaults => {:format => 'csv'}
 		match '/download/xls/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data_xls, :via => :get, :defaults => {:format => 'xls'}
 		match '/contact' => 'messages#new', :as => 'contact', :via => :get
@@ -75,6 +73,22 @@ ElectionMap::Application.routes.draw do
 		match '/shape_types/event/:event_id', :to => 'shape_types#by_event', :as => :shape_types_by_event, :via => :get, :defaults => {:format => 'json'}
 		match '/indicators/event/:event_id/shape_type/:shape_type_id', :to => 'indicators#by_event_shape_type', :as => :indicators_by_event_shape_type, :via => :get, :defaults => {:format => 'json'}
 		match '/event_indicator_relationships/render_js_blocks/:id/:type/:counter', :to => 'event_indicator_relationships#render_js_blocks', :via => :get, :defaults => {:format => 'json'}
+
+		# cache
+		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => :get
+		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => :post
+		match '/cache/clear_memory', :to => 'cache#clear_memory', :as => :cache_clear_memory, :via => :get
+		match '/cache/clear_memory', :to => 'cache#clear_memory', :as => :cache_clear_memory, :via => :post
+		match '/cache/clear_files', :to => 'cache#clear_files', :as => :cache_clear_files, :via => :get
+		match '/cache/clear_files', :to => 'cache#clear_files', :as => :cache_clear_files, :via => :post
+		match '/cache/custom_event_indicators', :to => 'cache#custom_event_indicators',
+			:as => :cache_custom_event_indicators, :via => :get
+		match '/cache/custom_event_indicators', :to => 'cache#custom_event_indicators',
+			:as => :cache_custom_event_indicators, :via => :post
+		match '/cache/default_custom_event', :to => 'cache#default_custom_event',
+			:as => :cache_default_custom_event, :via => :get
+		match '/cache/default_custom_event', :to => 'cache#default_custom_event',
+			:as => :cache_default_custom_event, :via => :post
 
     # routes to root#index
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get

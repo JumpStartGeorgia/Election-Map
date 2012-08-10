@@ -50,6 +50,16 @@
  			</li>
  		</ul>
 
+ 		<h3><%= t('.cache_create_header')%></h3>
+ 		<ul>
+ 			<li>
+ 				<%= link_to t('.cache_default_event'), cache_default_custom_event_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.cache_indicators'), cache_custom_event_indicators_path %>
+ 			</li>
+ 		</ul>
+
  		<h3><%= t('.download_header')%></h3>
  		<ul>
  			<li>
@@ -68,13 +78,16 @@
  			</li>
  		</ul>
 
- 		<h3><%= t('.cache_header')%></h3>
+ 		<h3><%= t('.cache_clear_header')%></h3>
  		<ul>
  			<li>
- 				<%= link_to t('.cache'), clear_cache_path %>
+ 				<%= link_to t('.cache_clear_memory'), cache_clear_memory_path %>
  			</li>
  			<li>
- 				<%= link_to t('.cache_files'), clear_cache_files_path %>
+ 				<%= link_to t('.cache_clear_files'), cache_clear_files_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.cache_clear_all'), cache_clear_all_path %>
  			</li>
  		</ul>
   </div>

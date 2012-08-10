@@ -151,10 +151,6 @@ class Shape < ActiveRecord::Base
   		        results[i]["data_item"] = d["data_item"]
   			      # if not getting summary data, use this record
   			      # if ind_id = indicator_id
-
-logger.debug "################### data item #{d["data_item"]}"
-logger.debug "################### data item indicator id[''] = #{d["data_item"]["indicator_id"]} ,against #{ind_id}"
-logger.debug "################### data item indicator id[:] = #{d["data_item"][:indicator_id]} ,against #{ind_id}"
   			      if !isSummary && d["data_item"][:indicator_id].to_s == ind_id.to_s
       				  properties["data_value"] = nil
       					properties["value"] = d["data_item"][:value] if !d["data_item"][:value].nil?

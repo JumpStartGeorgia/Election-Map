@@ -239,20 +239,18 @@ ka:
       delete_header: Delete Records
       delete_shapes: Shapes
       delete_data: Data
-      cache_header: Cache
-      cache: Clear Cache
-      cache_files: Clear File Cache
+      cache_clear_header: Clear Cache
+      cache_clear_all: Clear All Cache
+      cache_clear_memory: Clear Memory Cache
+      cache_clear_files: Clear File Cache
+      cache_create_header: Create File Cache
+      cache_default_event: Default Custom Event View Cache
+      cache_indicators: Custom Event Indicator Cache
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
       footnote: "აღვნიშნო: %{note}"
     indicator_menu_scales:
       indicator_header: ინდიკატორები
-    clear_cache:
-      title: Cache
-      cleared: The cache has been cleared.
-    clear_cache_files:
-      title: Cache Files
-      cleared: The cache files have been deleted.
   data:
     export:
       title: Export Data CSV Template File
@@ -415,3 +413,26 @@ ka:
       message: შეტყობინება
     success:
       title: დაგვიკავშირდით
+  cache:
+    clear_all:
+      title: Clear All Cache
+      explanation: Clear both the Memory and File cache.
+      cleared: All cache has been cleared.
+    clear_memory:
+      title: Clear Memory Cache
+      explanation: Memory Cache holds items like the event menu and non-custom event json shape files.
+      cleared: The memory cache has been cleared.
+    clear_files:
+      title: Clear File Cache
+      explanation: File Cache holds custom event json shape files for all indicators.
+      cleared: The cache files have been deleted.
+    custom_event_indicators:
+      title: Create Cache for All Custom Event Indicators
+      explanation: Create cache files for each indicator in an event that has a custom view (e.g., all indicators at the District level of the 2008 Presidential Election).
+      time: This will take about 30 minutes.
+      created: The cache files have been created.
+    default_custom_event:
+      title: Create Cache for Default Custom Event Views
+      explanation: Create cache files for the default view of events that have custom views (e.g., viewing distrcits at country level).
+      time: This will take about 5 minutes.
+      created: The cache files have been created.

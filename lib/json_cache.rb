@@ -1,5 +1,6 @@
 module JsonCache
 require 'fileutils'
+require 'net/http'
 
 	###########################################
 	### manage files
@@ -48,20 +49,23 @@ require 'fileutils'
 	# remove the files for the provided event_id
 	# if no id provided, remove all files
 	def self.clear_all(event_id=nil)
+		Rails.logger.debug "################## - clearing cache files"
 		clear_cache
 		clear_files(event_id)
 	end
 
 	def self.clear_cache
+		Rails.logger.debug "################## - clearing cache files"
 		# clear the cache too
 		Rails.cache.clear
 	end
 
 	def self.clear_files(event_id=nil)
+		Rails.logger.debug "################## - clearing cache files"
 		if event_id
 			FileUtils.rm_rf(json_file_path.gsub("[event_id]", event_id.to_s))
 		else
-			FileUtils.rm_rf(json_file_path.gsub("/[event_id]", ""))
+			FileUtils.rm_rf(json_file_path.gsub("/event_[event_id]", ""))
 		end
 	end
 
@@ -91,8 +95,13 @@ require 'fileutils'
     old_logger = ActiveRecord::Base.logger
     ActiveRecord::Base.logger = nil
 
-    # create new instance of app
-    app = ActionDispatch::Integration::Session.new(Rails.application)
+		# domain
+		domain = "http://emap.local"
+		if Rails.env.staging?
+			domain = "http://dev-electiondata.jumpstart.ge"
+		elsif Rails.env.production?
+			domain = "http://electiondata.jumpstart.ge"
+		end
 
 		start = Time.now
 		puts "============ starting build cache at #{start}"
@@ -122,20 +131,22 @@ require 'fileutils'
 						I18n.available_locales.each do |locale|
 							# load the children shapes
               if is_custom_view
-							  app.get "/#{locale}/json/summary_custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}"
+							  uri = URI("#{domain}/#{locale}/json/summary_custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}")
 							else
-							  app.get "/#{locale}/json/summary_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}"
+							  uri = URI("#{domain}/#{locale}/json/summary_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}")
 						  end
+							Net::HTTP.get(uri)
 						end
 					elsif !indicator_types[0].core_indicators.nil? && !indicator_types[0].core_indicators.empty? &&
 								!indicator_types[0].core_indicators[0].indicators.nil? && !indicator_types[0].core_indicators[0].indicators.empty?
 						I18n.available_locales.each do |locale|
 							# load the children shapes
 							if is_custom_view
-							  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}"
+							  uri = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}")
 							else
-							  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}"
+							  uri = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}")
 						  end
+							Net::HTTP.get(uri)
 						end
 					end
 					puts "=================== "
@@ -155,9 +166,6 @@ require 'fileutils'
 
 	# create cache for all indicators for all events that have a custom view
   def self.custom_event_indicator_cache
-
-    # create new instance of app
-    app = ActionDispatch::Integration::Session.new(Rails.application)
 
 		# get the events that have custom views
     custom_views = EventCustomView.all
@@ -181,8 +189,14 @@ require 'fileutils'
 		puts "============ starting build cache at #{start}"
 
 		if !event_id.nil? && !shape_type_id.nil?
-		  # create new instance of app
-		  app = ActionDispatch::Integration::Session.new(Rails.application)
+			# domain
+			domain = "http://emap.local"
+			if Rails.env.staging?
+				domain = "http://dev-electiondata.jumpstart.ge"
+			elsif Rails.env.production?
+				domain = "http://electiondata.jumpstart.ge"
+			end
+
 
 			# get the event
 			event = Event.find(event_id)
@@ -206,10 +220,11 @@ require 'fileutils'
       				ind_start = Time.now
     					# load the children shapes
     					if is_custom_view
-							  app.get "/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}/custom_view/#{is_custom_view}"
+							  uri = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}/custom_view/#{is_custom_view}")
 							else
-							  app.get "/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator.id}/custom_view/#{is_custom_view}"
+							  uri = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator.id}/custom_view/#{is_custom_view}")
     				  end
+							Net::HTTP.get(uri)
       				puts "=================== "
     					puts "=================== time to load indicator #{indicator.id} for event #{event.id} was #{(Time.now-ind_start)} seconds"
     					puts "=================== "
@@ -233,9 +248,6 @@ require 'fileutils'
     # turn off the active record logging
     old_logger = ActiveRecord::Base.logger
     ActiveRecord::Base.logger = nil
-
-    # create new instance of app
-    app = ActionDispatch::Integration::Session.new(Rails.application)
 
 		start = Time.now
 		puts "============ starting build cache at #{start}"

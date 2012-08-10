@@ -349,16 +349,6 @@ logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
     end
   end
 
-  # GET /clear_cache
-  def clear_cache
-		JsonCache.clear_cache
-  end
-
-  # GET /clear_cache_files
-  def clear_cache_files
-		JsonCache.clear_all
-  end
-
 	# any mis-match routing errors are directed here
 	def routing_error
 		render_not_found(nil)
