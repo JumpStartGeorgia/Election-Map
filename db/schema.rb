@@ -207,7 +207,7 @@ ActiveRecord::Schema.define(:version => 20120810022117) do
     t.integer  "core_indicator_id"
   end
 
-  add_index "indicators", ["event_id", "shape_type_id", "core_indicator_id"], :name => "inds_event_shape_type_core_ind"
+  add_index "indicators", ["event_id", "shape_type_id"], :name => "index_indicators_on_event_id_and_shape_type_id"
 
   create_table "page_translations", :force => true do |t|
     t.integer  "page_id"

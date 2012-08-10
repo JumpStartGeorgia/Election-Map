@@ -1,7 +1,6 @@
 class RemoveDupIndex < ActiveRecord::Migration
   def up
     # duplicate id indexes
-=begin    
     remove_index :core_indicators, :id
     remove_index :core_indicator_translations, :id
     remove_index :data, :id
@@ -37,22 +36,21 @@ class RemoveDupIndex < ActiveRecord::Migration
 		add_index :event_custom_views, [:event_id,:shape_type_id]
 
 		remove_index :core_indicators, [:id, :indicator_type_id] # no longer need
-    
+
 		# group already exists
     remove_index :core_indicator_translations, :locale
     remove_index :core_indicator_translations, :name
-
     add_index :indicators, [:event_id, :shape_type_id, :core_indicator_id], :name => "inds_event_shape_type_core_ind"
+
     remove_index :indicators, [:event_id, :shape_type_id]
-=end    
     remove_index :indicators, :event_id
     remove_index :indicators, :shape_type_id
     remove_index :indicators, :core_indicator_id
-		
+
 		remove_index :shape_type_translations, :locale
 		remove_index :shape_type_translations, :name_singular
 		add_index :shape_type_translations, [:locale,:name_singular]
-		
+
 		# group already exists
 		remove_index :datum_translations, :locale
 		remove_index :datum_translations, :common_id
@@ -62,7 +60,7 @@ class RemoveDupIndex < ActiveRecord::Migration
 		remove_index :shape_translations, :locale
 		remove_index :shape_translations, :common_id
 		remove_index :shape_translations, :common_name
-		
+
     remove_index :event_custom_view_translations, :locale
     remove_index :event_custom_view_translations, :note
     add_index :event_custom_view_translations, [:locale, :note]
@@ -71,7 +69,7 @@ class RemoveDupIndex < ActiveRecord::Migration
     remove_index :event_translations, :locale
     remove_index :event_translations, :name
     add_index :event_translations, [:locale, :name]
-    
+
     remove_index :event_type_translations, :locale
     remove_index :event_type_translations, :name
     add_index :event_type_translations, [:locale, :name]
@@ -87,7 +85,7 @@ class RemoveDupIndex < ActiveRecord::Migration
     remove_index :indicator_type_translations, :locale
     add_index :indicator_type_translations, [:locale,:name]
 
-		
+
 		# drop unused tables
     remove_index :event_indicators, :event_id
     remove_index :event_indicators, :shape_type_id
