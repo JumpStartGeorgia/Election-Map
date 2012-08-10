@@ -1,19 +1,14 @@
 <% title t('.title') %>
 
-<% if request.post? %>
+<%= form_tag cache_clear_memory_path do %>
 	<p>
-		<%= t('.cleared') %>
+		<%= t('.explanation') %>
 	</p>
-<% else %>
-	<%= form_tag cache_clear_memory_path do %>
-		<p>
-			<%= t('.explanation') %>
-		</p>
-		<p>
-			<%= submit_tag t("app.buttons.delete"), :confirm => t('app.msgs.delete_confirm'), :id => "submit" %>
-		</p>
-	<% end %>
+	<p>
+		<%= submit_tag t("app.buttons.delete"), :confirm => t('app.msgs.delete_confirm'), :id => "submit" %>
+	</p>
 <% end %>
+
 
 <div class="form-actions">
 	<%= link_to t('app.buttons.admin'), admin_path,

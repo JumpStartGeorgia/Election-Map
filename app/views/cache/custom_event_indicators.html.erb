@@ -1,21 +1,15 @@
 <% title t('.title') %>
 
-<% if request.post? %>
+<%= form_tag cache_custom_event_indicators_path do %>
 	<p>
-		<%= t('.cleared') %>
+		<%= t('.explanation') %>
 	</p>
-<% else %>
-	<%= form_tag cache_custom_event_indicators_path do %>
-		<p>
-			<%= t('.explanation') %>
-		</p>
-		<p>
-			<%= t('.time') %>
-		</p>
-		<p>
-			<%= submit_tag t("app.buttons.create"), :id => "submit" %>
-		</p>
-	<% end %>
+	<p>
+		<%= t('.time') %>
+	</p>
+	<p>
+		<%= submit_tag t("app.buttons.create"), :id => "submit" %>
+	</p>
 <% end %>
 
 <div class="form-actions">
