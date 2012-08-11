@@ -9,19 +9,19 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
-//= require event_menu
 //= require twitter/bootstrap
 //= require fancybox
+
+//= require d3.v2.min
+//= require jquery.slimscroll
+
 //= require data
-//= require event_types
-//= require events
 //= require event_custom_views
 //= require event_indicator_relationships
-//= require indicator_scales
-//= require indicators
-//= require pages
-//= require shape_types
+//= require event_menu
+//= require indicator_menu_scale
 //= require shapes
+
 //= require map.export
 
 // set focus to first text box on page
