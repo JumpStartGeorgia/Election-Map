@@ -4,12 +4,18 @@ div#indicator_menu_scale {
 }
 
 div#indicator_menu_scale h3 {
-	padding: 0.5em;
-	font-size: 14pt;
 	font-weight: bold;
 	color: #fff;
 	background: #2985c4;
 	text-transform:uppercase;
+}
+
+.arrow_shape {
+  font-size: 10px;
+  margin-left: 8px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 1px;
 }
 
 div#indicator_menu_scale h3#indicator_menu_header {
@@ -18,41 +24,57 @@ div#indicator_menu_scale h3#indicator_menu_header {
 
 div#indicator_menu_scale h3#indicator_description {
 	display: none;
+	margin-top: 3px;
 }
 
-div#indicator_menu_scale div#indicator_menu_tabs{
+div#indicator_menu_scale h3, h3#indicator_description {
+	font-size: 14px;
+	padding: 12px 10px 10px;
+  -webkit-border-top-left-radius: 3px;
+  -webkit-border-top-right-radius: 3px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-topright: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+#indicator_menu_tabs{
 	font-size: 9pt;
-	height: 250px;
 	overflow: hidden;
 	padding: 0;
 }
-div#indicator_menu_scale div#indicator_menu_tabs ul li a {
-	color: #000;
-	text-shadow: none;
-}
-div#indicator_menu_scale div#indicator_menu_tabs div.indicator_links {
-	height: 205px;
+#indicator_menu_tabs div.indicator_links {
 	overflow: auto;
 	padding: 0;
 	margin: 0;
 }
-div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li{
+#indicator_menu_tabs ul.menu_list li{
 	list-style: none;
-	padding: 0.2em 0.5em;
+	padding: 3px 5px 0px;
 }
-div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li a {
-	padding: 0.3em;
-	display: block;
+
+#indicator_menu_tabs ul.ui-tabs-nav {
+  background: #e1e1df;
+  border: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
 }
-div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li a.active {
-	padding: 0.3em;
-	display: block;
-	background: #5F646A;
-	color: #fff;
+
+#indicator_menu_tabs ul.ui-tabs-nav li {
+  background: #e1e1df;
+  border: 0px;
 }
-div#indicator_menu_scale div#indicator_menu_tabs ul.menu_list li a:hover {
-	background: #5F646A;
-	color: #fff;
+
+#indicator_menu_tabs ul.ui-tabs-nav li a {
+  padding-bottom: 10px;
+  color: #0e74b6;
+  text-shadow: none;
+}
+
+#indicator_menu_tabs ul.ui-tabs-nav li.ui-state-active, #indicator_menu_tabs ul.ui-tabs-nav li:hover, #indicator_menu_tabs ul.ui-tabs-nav li:hover a {
+  background: #fff;
+  border: 0px;
 }
 
 /* indicator scales */
@@ -64,7 +86,8 @@ div#indicator_menu_scale div#legend_container{
 }
 div#indicator_menu_scale ul#legend li{
     line-height: normal;
-		font-size: 11pt;
+		font-size: 12px;
+		font-family: Arial;
     margin: 2px 4px;
     float: left;
     cursor: default;
@@ -77,5 +100,21 @@ div#indicator_menu_scale ul#legend li span
     width: 14px;
     height: 14px;
     margin-right: 4px;
-		border: solid 1px #999;
+		border: none;
+}
+
+
+
+#indicator_menu_tabs ul.menu_list li a {
+  padding: 3px 5px 4px;
+  display: block;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+#indicator_menu_tabs ul.menu_list li a.active, #indicator_menu_tabs ul.menu_list li a:hover {
+  background: #0E74B6;
+  color: #fff;
+  text-decoration: none;
 }

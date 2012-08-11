@@ -9,6 +9,7 @@ function load_data_table ()
   $.get(gon.data_table_path, function (data)
   {
     container.html(data);
+    container.removeClass('loading');
     container.slideDown();
   });
 
