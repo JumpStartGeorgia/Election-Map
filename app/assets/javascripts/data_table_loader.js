@@ -20,14 +20,14 @@ function load_data_table ()
 
 function highlight_shape ()
 {
-  if (typeof gon.dt_common_name == 'undefined')
+  if (typeof gon.dt_highlight_shape == 'undefined')
   {
     return;
   }
   var features = map.layers[2].features;
   for (i = 0, num = features.length; i < num; i ++)
   {
-    if (gon.dt_common_name == features[i].data.common_name)
+    if (gon.dt_highlight_shape == features[i].data.common_name)
     {
       f = features[i];
 

@@ -264,9 +264,8 @@ logger.debug "//////////////////////////////////////////////////////// done with
     #end
     dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
     dt.dd_titles = dt.data[0][dt.static_cols..-1]
-
     dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
-    dt.gon[:dt][:common_name] = params[:common_name].nil? ? false : params[:common_name]
+    dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
 
     @dt = dt
 
@@ -471,10 +470,11 @@ logger.debug " - no matching event found!"
 		  gon.map_title = @map_title
 	  end
 
+		# data table
     iid = (params[:indicator_id].nil? ? 'null' : params[:indicator_id])
     vt = (params[:view_type].nil? ? 'null' : params[:view_type])
 		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id], :event_id => params[:event_id], :shape_id => params[:shape_id], :shape_type_id => params[:shape_type_id], :indicator_id => iid, :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id, :view_type => vt, :summary_view_type_name => @summary_view_type_name)
-		gon.dt_common_name = (params[:common_name].nil? ? false : params[:common_name])
+		gon.dt_highlight_shape = (params[:highlight_shape].nil? ? false : params[:highlight_shape])
 
 		# indicate indicator menu/scale block should be loaded
 		gon.indicator_menu_scale = true

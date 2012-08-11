@@ -591,20 +591,31 @@ logger.debug "=========== getting data for 1 indicator"
           ind_ids << i.id
         end
         flattened = header[0].length
-        header = header[0..0] + [winner_col_header] + header[1..-1]
-        ind_ids = ind_ids[0..0] + ['winner_ind'] + ind_ids[1..-1]
-        ind_ids = ind_ids.flatten
-        data << header.flatten
-
         indicator_type_ids = {}
-        # add the rows
-        rows.each do |r|
-          # r[3] has to be the common_name
-          r = r[0..flattened-1] + [winner[r[3]][:name]] + r[flattened..-1]
-          indicator_type_ids[winner[r[3]][:name]] = winner[r[3]][:indicator_type_id]
-          data << r
-        end
 
+        # add the rows
+				# if an indicator type with a summary was found, add the winner column
+				if winner.empty?
+					# no winner column
+		      ind_ids = ind_ids.flatten
+		      data << header.flatten
+		      rows.each do |r|
+			      r = r[0..flattened-1] + r[flattened..-1]
+		        data << r
+		      end
+				else
+					# include winner column
+		      ind_ids = ind_ids[0..0] + ['winner_ind'] + ind_ids[1..-1]
+		      ind_ids = ind_ids.flatten
+		      header = header[0..0] + [winner_col_header] + header[1..-1]
+		      data << header.flatten
+		      rows.each do |r|
+			      # r[3] has to be the common_name
+			      r = r[0..flattened-1] + [winner[r[3]][:name]] + r[flattened..-1]
+			      indicator_type_ids[winner[r[3]][:name]] = winner[r[3]][:indicator_type_id]
+		        data << r
+		      end
+				end
         return {:data => data, :indicator_ids => ind_ids, :indicator_type_ids => indicator_type_ids}
       end
     end

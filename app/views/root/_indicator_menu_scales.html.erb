@@ -18,7 +18,7 @@
 											@summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
 
 								<%= link_to indicator_type.summary_name,
-									summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil, :common_name => nil)),
+									summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil, :highlight_shape => nil)),
 
 									:class => is_active %>
 							</li>
@@ -28,7 +28,7 @@
 								<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
 								<li>
 									<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
-										:view_type => nil, :indicator_type_id => nil, :common_name => nil)),
+										:view_type => nil, :indicator_type_id => nil, :highlight_shape => nil)),
 										:title => core.description_w_parent, :class => is_active %>
 								</li>
 							<% end %>
