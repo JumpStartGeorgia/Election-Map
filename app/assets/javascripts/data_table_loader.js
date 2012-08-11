@@ -37,7 +37,7 @@ function highlight_shape ()
       f.style = new OpenLayers.Style();
       f.style.fillColor = "#4A6884";//"#5c81a3";
       f.style.strokeColor = "#000000";
-      f.style.strokeWidth = .5;
+      f.style.strokeWidth = 2;
       f.style.fillOpacity = 1;
       f.layer.redraw();
 

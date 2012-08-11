@@ -53,7 +53,9 @@ if (gon.openlayers){
 	window.onload = map_init;
 
 	// Define global variables which can be used in all functions
-	var map, vector_base, vector_child;
+	var map, vector_parent, vector_child;
+	var vector_parent_loaded = false;
+	var vector_child_loaded = false;
 	var scale_nodata = [];
 	var color_nodata = gon.no_data_color;
 	scale_nodata['name'] = gon.no_data_text;
@@ -126,11 +128,11 @@ if (gon.openlayers){
 		// include tileOptions to avoid getting cross-origin image load errors
 		map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity, tileOptions: {crossOriginKeyword: null} });
 
-		vector_base = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
+		vector_parent = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
 		vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
-		map.addLayers([map_layer, vector_base, vector_child]);
+		map.addLayers([map_layer, vector_parent, vector_child]);
 
 
 		// load the base layer
@@ -143,13 +145,13 @@ if (gon.openlayers){
 		});
 
 		var strat = [new OpenLayers.Strategy.Fixed()];
-		vector_base.protocol = prot;
-		vector_base.strategies = strat;
+		vector_parent.protocol = prot;
+		vector_parent.strategies = strat;
 
 		// create event to load the features and set the bound
 		// after protocol has read in json
 		prot.read({
-				callback: load_vector_base
+				callback: load_vector_parent
 		});
 
 		// load the child layer
@@ -187,7 +189,7 @@ if (gon.openlayers){
 
 	// load the features and set the bound
 	// after protocol has read in json
-	function load_vector_base(resp){
+	function load_vector_parent(resp){
 		if (resp.success()){
 			var features = resp.features;
 		  var bounds;
@@ -202,7 +204,8 @@ if (gon.openlayers){
 		          bounds.extend(features[i].geometry.getBounds());
 		      }
 		    }
-		    vector_base.addFeatures(features);
+		    vector_parent.addFeatures(features);
+
 		 /*
 		    var shapeWidth = bounds.right - bounds.left;
 		    var worldWidth = map.maxExtent.right - map.maxExtent.left;
@@ -220,8 +223,11 @@ if (gon.openlayers){
 		    bounds.right = bounds.right * increaseK;
 		 */
 		    map.zoomToExtent(bounds);
+
+				// indicate that the parent layer has loaded
+				$("div#map").trigger("parent_layer_loaded");
 		  } else {
-	console.log('vector_base - no features found');
+	console.log('vector_parent - no features found');
 		  }
 		}
 	}
@@ -237,22 +243,51 @@ if (gon.openlayers){
 			// now load the values for the hidden form
 			load_hidden_form();
 
+			// indicate that the child layer has loaded
+			// - do not wait for the datatable to be loaded
+			$("div#map").trigger("child_layer_loaded");
+
+			// load the table of data below the map
       load_data_table();
-      if (typeof highlight_shape == 'function')
-      {
-	      var f = highlight_shape();
-		    if (f !== undefined && f !== false && f != null)
-		    {
-      		mapFreeze(f);
-      	}
-      }
-      else
-      {
-        console.log('highlight_shape function not found, check the script that loads it');
-      }
 
 		} else {
 		  console.log('vector_child - no features found');
+		}
+	}
+
+	// record that the parent vector layer was loaded
+	$("div#map").bind("parent_layer_loaded", function(event){
+		vector_parent_loaded = true;
+		after_vector_layers_loaded();
+	});
+
+	// record that the child vector layer was loaded
+	$("div#map").bind("child_layer_loaded", function(event){
+		vector_child_loaded = true;
+		after_vector_layers_loaded();
+	});
+
+	// run code after the parent and child vector layers are loaded
+	function after_vector_layers_loaded(){
+		if (vector_parent_loaded && vector_child_loaded) {
+			// if gon.dt_common_name exists, highlight the shape and turn on the popup
+			if (gon.dt_common_name){
+		    if (typeof highlight_shape == 'function')
+		    {
+			    var f = highlight_shape();
+				  if (f !== undefined && f !== false && f != null)
+				  {
+		    		mapFreeze(f);
+		    	}
+		    }
+		    else
+		    {
+		      console.log('highlight_shape function not found, check the script that loads it');
+		    }
+			}
+
+			// hide the loading image for the map
+			// TODO
 		}
 	}
 
@@ -517,7 +552,6 @@ if (gon.openlayers){
 	// Create the popup for the feature
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
-
 		if (typeof(stright) === "undefined")
 		  stright = false;
 
@@ -527,10 +561,10 @@ if (gon.openlayers){
 		removeFeaturePopups();
 
 		var popup = new OpenLayers.Popup("Feature Popup",
-		feature_data.geometry.bounds.getCenterLonLat(),
-		new OpenLayers.Size(400, 300),
-		"",
-		true);
+			feature_data.geometry.bounds.getCenterLonLat(),
+			new OpenLayers.Size(400, 300),
+			"",
+			true);
 		//popup.panMapIfOutOfView = true;
 		map.addPopup(popup);
 
@@ -639,38 +673,6 @@ if (gon.openlayers){
 	function mouseout_handler (feature)
 	{
 		removeFeaturePopups();
-	}
-
-	function populate_map_box(title, indicator, value, number_format)
-	{
-			var box = $('#map-box');
-		  if (title)
-		  {
-		      box.children('h1').text(title);
-		  }
-			// under summary, the indicator name is the value so if the indicator = no data, do not show it
-		  if (indicator && indicator != gon.no_data_text)
-		  {
-		    box.children('#map-box-content').children('#map-box-indicator').text(indicator + ":");
-		  } else {
-		    box.children('#map-box-content').children('#map-box-indicator').text("");
-		  }
-		  if (value)
-		  {
-				// make the number pretty
-				// if the value is a number, apply the number_format
-				if (!isNaN(value) && number_format){
-					value += number_format;
-				}
-		    box.children('#map-box-content').children('#map-box-value').text(value);
-		  } else {
-		    box.children('#map-box-content').children('#map-box-value').text("");
-		  }
-		  if (title || (indicator && value))
-		  {
-		      box.show(0);
-		  }
-
 	}
 
 
