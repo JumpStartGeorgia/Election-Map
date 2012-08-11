@@ -11,6 +11,7 @@
  *= require indicator_menu_scales
  *= require formtastic-bootstrap
  *= require core_indicators
+ *= require data_table
   *= require_self
 */
 /* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */

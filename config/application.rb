@@ -54,7 +54,7 @@ module ElectionMap
     # Enable the asset pipeline
     config.assets.enabled = true
     # tell the assest pipeline to include the map.js file
-    config.assets.precompile += ['map.js', 'vendor_html5.js']
+    config.assets.precompile += ['map.js', 'vendor_html5.js', 'data_table.js']
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'

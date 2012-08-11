@@ -4,7 +4,7 @@ container = $('#data-table-container');
 
 function load_data_table ()
 {
-  $('head').append('<link href="/assets/data_table/style.css" media="screen" rel="stylesheet" type="text/css" />');
+	//$('head').append('<link href="/assets/data_table/style.css" media="screen" rel="stylesheet" type="text/css" />');
 
   $.get(gon.data_table_path, function (data)
   {
