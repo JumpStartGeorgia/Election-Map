@@ -7,7 +7,7 @@ var className = "elmapsvgpopup";
 this[className] = function(){
   var svg;
   this.title = null;
-  this.y_s = 20;
+  this.y_s = 20; // padding on the y axis
   this.max_value = 0;
   this.max_ind_len = 0;
   this.max = 100;
@@ -68,6 +68,7 @@ this[className].prototype.processTheType = function(id_el, json, options)
       this.svg = d3elmapsvg;
     }
 
+
     var ths = this;
 
     if (ths.title instanceof Array)
@@ -93,15 +94,15 @@ this[className].prototype.processTheType = function(id_el, json, options)
       if (typeof window.maxSVGWidth !== "undefined")
       {
         this.SVGElement("text", {
-          "x": (window.maxSVGWidth/2-ths.title.location.length*4),
+          "x": (window.maxSVGWidth/2),
           "y": 20,
-          "style": "font-size:15px;"
+          "style": "font-size:15px;text-anchor:middle;"
         }).text(ths.title.location);
 
         this.SVGElement("text", {
-          "x": (window.maxSVGWidth/2-th_title.length*4),
+          "x": (window.maxSVGWidth/2),
           "y": 40,
-          "style": "font-size:15px;"
+          "style": "font-size:15px;text-anchor:middle;"
         }).text( th_title );
 
         if (options['type'] === "title")
@@ -190,7 +191,6 @@ this[className].prototype.processTheType = function(id_el, json, options)
         window.maxSVGHeight = ths.y_s+10+ths.i*ths.dist+10;
     });
 
-
     // write out the svg elements
     foreach(svgElements, function(index, value){
       foreach(value, function(ind, val){
@@ -263,6 +263,35 @@ alert("data item width = " + item_width);
   });  
   window.maxSVGWidth = max_width;
   alert("computed max width = " + max_width);
+};
+
+this[className].prototype.processTitle = function(id_el, json, options)
+{
+  // determine which title to use
+  var title = typeof json.title_abbrv !== "undefined" && 
+    json.title_abbrv instanceof String && 
+    json.title_abbrv.length > 0 ? json.title_abbrv : json.title;
+
+  // add the titles to the svg
+  if (typeof window.maxSVGWidth !== "undefined")
+  {
+    this.SVGElement("text", {
+      "x": (window.maxSVGWidth/2-json.location.length*4),
+      "y": 20,
+      "style": "font-size:15px;"
+    }).text(json.location);
+
+    this.SVGElement("text", {
+      "x": (window.maxSVGWidth/2-title.length*4),
+      "y": 40,
+      "style": "font-size:15px;"
+    }).text( title );
+  }
+  
+  // make height at least 50 so title will show
+  window.maxSVGHeight = 50;
+  // make y padding equal to min height
+  this.y_s = 50;
 };
 
 this[className].prototype.processJSON2 = function(id_el, json, options)
