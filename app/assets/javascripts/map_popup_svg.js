@@ -29,9 +29,8 @@ function MapPopup() {
   this.computeWindowWidth = function(id_el, json, options)
   {
     var max_width = 0;
-//    var ths = this;
-
   /*
+    old computations for widths
     title 
     window.maxSVGWidth = 30+(ths.title.location.length>th_title.length ? ths.title.location.length : th_title.length)*5+50;
     summary data
@@ -64,7 +63,7 @@ console.log("title width = " + title_width);
           if(value.value>max_value)
             max_value = value.value;
         });
-        var summary_width = 30+max_text_length*7+(max_value.toString().length*7+30)+self.max/100*json[i].summary_data[0].value+10;
+        var summary_width = 30+max_text_length*5.5+(max_value.toString().length*7+30)+self.max/100*json[i].summary_data[0].value+10;
         console.log("summary width = " + summary_width);
         if (summary_width > max_width)
           max_width = summary_width;
@@ -134,7 +133,7 @@ console.log("title width = " + title_width);
         "style": "fill:"+json[i].color
       });
       this.SVGElement("rect", {
-        "x": 30+self.max_ind_len*7+(self.max_value.toString().length*7+30),
+        "x": 30+self.max_ind_len*5.5+(self.max_value.toString().length*7+30),
         "y": self.y_s+i*self.dist,
         "width": self.max/100*json[i].value,
         "height": 10,
@@ -159,7 +158,7 @@ console.log("title width = " + title_width);
       }).text(json[i].indicator_name);
       
       this.SVGElement("text", {
-        "x": 30+self.max_ind_len*7+10,
+        "x": 30+self.max_ind_len*5.5+10,
         "y": self.y_s+10+self.i*self.dist,
         "style": "font-size:12px;"
       }).text(json[i].formatted_value+(json[i].number_format === null ? "" : json[i].number_format));
