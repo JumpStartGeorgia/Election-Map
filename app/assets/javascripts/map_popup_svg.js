@@ -232,7 +232,6 @@ this[className].prototype.computeWindowWidth = function(id_el, json, options)
         hash.title.title_abbrv.length > 0 ? hash.title.title_abbrv : hash.title.title;
       var title_length = hash.title.location.length>title.length ? hash.title.location.length : title.length;
       var title_width = 30+title_length*5+50;
-alert("title width = " + title_width);
       if (title_width > max_width)
         max_width = title_width;
     }    
@@ -246,23 +245,20 @@ alert("title width = " + title_width);
         if(value.value>max_value)
           max_value = value.value;
       });
-      var summary_width = 30+max_text_length*7+80+ths.max/100*hash.summary_data[0].value+10;
-alert("summary width = " + summary_width);
+      var summary_width = 30+max_text_length*7+(max_value.toString().length*7+30)+100/100*hash.summary_data[0].value+10;
       if (summary_width > max_width)
-        max_width = title_width;
+        max_width = summary_width;
     }    
     else if (hash.hasOwnProperty("data_item"))
     {
       var max_text_length = hash.data_item.indicator_name.length;
       var max_value = hash.data_item.value;
       var item_width = (30+max_text_length*7+10)+(max_value.toString().length*7+50);
-alert("data item width = " + item_width);
       if (item_width > max_width)
         max_width = item_width;
     }    
   });  
   window.maxSVGWidth = max_width;
-  alert("computed max width = " + max_width);
 };
 
 this[className].prototype.processTitle = function(id_el, json, options)
@@ -368,8 +364,6 @@ this.computeWindowWidth(id_el, json, options);
     ths.processTheType(id_el, json, options);
   }
 
-
-  alert("final max width = " + window.maxSVGWidth);
 
     //var title_texts = document.getElementsByClassName("title");
     //foreach(title_texts, function(index, value){
