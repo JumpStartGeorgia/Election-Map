@@ -600,10 +600,8 @@ if (gon.openlayers){
 		  width: 0,
 		  height: 0
 		});*/
-
 		if (feature_data.attributes.results.length > 0)
 		{
-
 		  new elmapsvgpopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
 		    limit: 5
 		  });

@@ -57,7 +57,7 @@ this[className].prototype.SVGElement = function(elname, attributes)
 
 this[className].prototype.processTheType = function(id_el, json, options)
 {
-
+    // create the svg object if not defined yet
     if (typeof this.svg === "undefined")
     {
       var d3elmapsvg = d3.select(id_el)
@@ -66,52 +66,43 @@ this[className].prototype.processTheType = function(id_el, json, options)
                        .attr("class", "elmapsvg");
 
       this.svg = d3elmapsvg;
-
     }
 
-
-
-
     var ths = this;
-
 
     if (ths.title instanceof Array)
       ths.title = ths.title[0].title;
 
+    // process the title
     if (typeof ths.title === "object" && this.title_written !== true)
     {
-
+      // determine which title to use
       if (typeof th_title === "undefined")
       {
         th_title = typeof ths.title.title_abbrv !== "undefined" && ths.title.title_abbrv instanceof String && ths.title.title_abbrv.length > 0 ? ths.title.title_abbrv : ths.title.title;
-
       }
 
-
+      // set width of window based on title length
       if (options['type'] === "title")
       {
-        window.maxSVGWidth = 30+(ths.title.location.length>th_title.length ? ths.title.location.length : th_title.length)*5+50;
+//        window.maxSVGWidth = 30+(ths.title.location.length>th_title.length ? ths.title.location.length : th_title.length)*5+50;
         window.maxSVGHeight = 50;
       }
 
-
+      // add the titles to the svg
       if (typeof window.maxSVGWidth !== "undefined")
       {
-
         this.SVGElement("text", {
           "x": (window.maxSVGWidth/2-ths.title.location.length*4),
           "y": 20,
           "style": "font-size:15px;"
         }).text(ths.title.location);
 
-
         this.SVGElement("text", {
           "x": (window.maxSVGWidth/2-th_title.length*4),
           "y": 40,
           "style": "font-size:15px;"
         }).text( th_title );
-
-
 
         if (options['type'] === "title")
         {
@@ -120,21 +111,13 @@ this[className].prototype.processTheType = function(id_el, json, options)
         }
 
         delete th_title;
-
-
-
         this.title_written = true;
-
-
       }
-
       ths.y_s = 50;
-
     }
 
 
-
-
+    // get max length of indicator name so can set width of window accordingly
     foreach(json.data, function(index, value){
       if(value.indicator_name_abbrv.length>ths.max_ind_len)
         ths.max_ind_len = value.indicator_name_abbrv.length;
@@ -142,11 +125,11 @@ this[className].prototype.processTheType = function(id_el, json, options)
         ths.max_value = value.value;
     });
 
-
     var svgElements = new Array;
     foreach(json.data.slice(0, options.limit !== undefined ? options.limit : json.data.length), function(i, value){
       svgElements.__({});
       if (options.type === "summary_data"){
+        // create horizontal bars
         svgElements[svgElements.length-1]['Rect'] = [{
           "x": 10,
           "y": ths.y_s+i*ths.dist,
@@ -163,13 +146,13 @@ this[className].prototype.processTheType = function(id_el, json, options)
 
 
 
-        window.maxSVGWidth = 30+ths.max_ind_len*7+80+ths.max/100*json.data[0].value+10;
+//        window.maxSVGWidth = 30+ths.max_ind_len*7+80+ths.max/100*json.data[0].value+10;
         window.summaryWidthDone = true;
       }
-      else if (value.indicator_name_abbrv !== gon.no_data_text && typeof window.summaryWidthDone === "undefined")
-        window.maxSVGWidth = (30+ths.max_ind_len*7+10)+(ths.max_value.toString().length*7+50);
-      else
-        window.maxSVGWidth = 30+ths.max_ind_len*7+10+gon.no_data_text.length*7+50;
+//      else if (value.indicator_name_abbrv !== gon.no_data_text && typeof window.summaryWidthDone === "undefined")
+//        window.maxSVGWidth = (30+ths.max_ind_len*7+10)+(ths.max_value.toString().length*7+50);
+//      else
+//        window.maxSVGWidth = 30+ths.max_ind_len*7+10+gon.no_data_text.length*7+50;
 
 
       window.makeline = true;
@@ -187,6 +170,7 @@ this[className].prototype.processTheType = function(id_el, json, options)
       }
 
 
+      // write out name and value
       svgElements[svgElements.length-1]['Text'] = [[{
           "x": 30,
           "y": ths.y_s+10+ths.i*ths.dist,
@@ -207,7 +191,7 @@ this[className].prototype.processTheType = function(id_el, json, options)
     });
 
 
-
+    // write out the svg elements
     foreach(svgElements, function(index, value){
       foreach(value, function(ind, val){
          if (val instanceof Array)
@@ -226,8 +210,95 @@ this[className].prototype.processTheType = function(id_el, json, options)
 
 };
 
+this[className].prototype.computeWindowWidth = function(id_el, json, options)
+{
+  var max_width = 0;
+/*
+  title 
+  window.maxSVGWidth = 30+(ths.title.location.length>th_title.length ? ths.title.location.length : th_title.length)*5+50;
+  summary data
+  window.maxSVGWidth = 30+ths.max_ind_len*7+80+ths.max/100*json.data[0].value+10;
+  data item
+  window.maxSVGWidth = (30+ths.max_ind_len*7+10)+(ths.max_value.toString().length*7+50);
+  no data
+  window.maxSVGWidth = 30+ths.max_ind_len*7+10+gon.no_data_text.length*7+50;
+
+*/  
+  foreach(json, function(index, hash){
+    if (hash.hasOwnProperty("title"))
+    {
+      var title = typeof hash.title.title_abbrv !== "undefined" && 
+        hash.title.title_abbrv instanceof String && 
+        hash.title.title_abbrv.length > 0 ? hash.title.title_abbrv : hash.title.title;
+      var title_length = hash.title.location.length>title.length ? hash.title.location.length : title.length;
+      var title_width = 30+title_length*5+50;
+alert("title width = " + title_width);
+      if (title_width > max_width)
+        max_width = title_width;
+    }    
+    else if (hash.hasOwnProperty("summary_data"))
+    {
+      var max_text_length = 0;
+      var max_value = 0;
+      foreach(hash.summary_data, function(index, value){
+        if(value.indicator_name_abbrv.length>max_text_length)
+          max_text_length = value.indicator_name.length;
+        if(value.value>max_value)
+          max_value = value.value;
+      });
+      var summary_width = 30+max_text_length*7+80+ths.max/100*hash.summary_data[0].value+10;
+alert("summary width = " + summary_width);
+      if (summary_width > max_width)
+        max_width = title_width;
+    }    
+    else if (hash.hasOwnProperty("data_item"))
+    {
+      var max_text_length = hash.data_item.indicator_name.length;
+      var max_value = hash.data_item.value;
+      var item_width = (30+max_text_length*7+10)+(max_value.toString().length*7+50);
+alert("data item width = " + item_width);
+      if (item_width > max_width)
+        max_width = item_width;
+    }    
+  });  
+  window.maxSVGWidth = max_width;
+  alert("computed max width = " + max_width);
+};
+
+this[className].prototype.processJSON2 = function(id_el, json, options)
+{
+  if (json instanceof Array && json.length>0)
+  {
+
+    // determine overall window width
+  
+    // create svg element
+  
+    // process each data type in json
+    foreach(json, function(index, hash){
+      if (hash.hasOwnProperty("title"))
+      {
+        
+      }    
+      else if (hash.hasOwnProperty("summary_data"))
+      {
+        
+      }    
+      else if (hash.hasOwnProperty("data_item"))
+      {
+        
+      }    
+    });
+    
+    // add all elements to svg element
+    
+  }
+};
+
 this[className].prototype.processJSON = function(id_el, json, options)
 {
+
+this.computeWindowWidth(id_el, json, options);
 
   var ths = this;
   ths.title = json.slice(0, 1);
@@ -269,6 +340,7 @@ this[className].prototype.processJSON = function(id_el, json, options)
   }
 
 
+  alert("final max width = " + window.maxSVGWidth);
 
     //var title_texts = document.getElementsByClassName("title");
     //foreach(title_texts, function(index, value){
