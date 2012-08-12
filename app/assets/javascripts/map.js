@@ -602,7 +602,7 @@ if (gon.openlayers){
 		});*/
 		if (feature_data.attributes.results.length > 0)
 		{
-		  new elmapsvgpopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
+		  new MapPopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
 		    limit: 5
 		  });
 
