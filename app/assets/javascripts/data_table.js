@@ -112,20 +112,21 @@ var dt =
       dt.left_arrow_overlay.show(0);
       dt.left_arrow_overlay_visible = true;
     }
-    else if (nexti == gon.dt.g)
-    {
-      dt.right_arrow_overlay.show(0);
-      dt.right_arrow_overlay_visible = true;
-    }
-    if (nexti < gon.dt.g && dt.right_arrow_overlay_visible)
-    {
-      dt.right_arrow_overlay.hide(0);
-      dt.right_arrow_overlay_visible = false;
-    }
     else if (nexti > 1 && dt.left_arrow_overlay_visible)
     {
       dt.left_arrow_overlay.hide(0);
       dt.left_arrow_overlay_visible = false;
+    }
+
+    if (nexti == gon.dt.g)
+    {
+      dt.right_arrow_overlay.show(0);
+      dt.right_arrow_overlay_visible = true;
+    }
+    else if (nexti < gon.dt.g && dt.right_arrow_overlay_visible)
+    {
+      dt.right_arrow_overlay.hide(0);
+      dt.right_arrow_overlay_visible = false;
     }
   }
 

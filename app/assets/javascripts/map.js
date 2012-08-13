@@ -38,7 +38,7 @@ $(document).ready(function(){
     var y = window.scrollY;
     if (y > fade_after)
     {
-      navbar.animate({opacity: .9}, 'fast');
+      navbar.animate({opacity: .93}, 'fast');
     }
     else
     {
@@ -271,7 +271,9 @@ if (gon.openlayers){
 	function after_vector_layers_loaded(){
 		if (vector_parent_loaded && vector_child_loaded) {
 			// if gon.dt_highlight_shape exists, highlight the shape and turn on the popup
-			if (gon.dt_highlight_shape){
+			$('#map-loading').fadeOut(1000, function (){ $(this).remove(); });
+			if (gon.dt_highlight_shape)
+			{
 		    if (typeof highlight_shape == 'function')
 		    {
 			    var f = highlight_shape();

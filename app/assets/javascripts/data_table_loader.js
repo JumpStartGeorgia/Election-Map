@@ -10,7 +10,7 @@ function load_data_table ()
   {
     container.html(data);
     container.removeClass('loading');
-    container.slideDown();
+    container.slideDown(5000, 'linear');
   });
 
   //$('body').append('<script src="/assets/data_table.js" type="text/javascript"></script>');
