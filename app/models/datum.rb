@@ -467,7 +467,10 @@ class Datum < ActiveRecord::Base
     return msg
   end
 
-
+# get all of the data for a given event, shape and shape level
+# NOTE - to reduce n+1 queries for getting translated text, all translations
+#        are retrieved in the main query and obj.xxx_translations[0].name is used to 
+#        get the translations instead of the lazy method of obj.name which causes the n+1 queries
 def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false, pretty_data = false)
   if event_id.nil? || shape_type_id.nil? || shape_id.nil?
   logger.debug "=========== not all params provided"
@@ -487,7 +490,7 @@ logger.debug "=========== getting data for all indicators"
           indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
             .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
               :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale,
-              :common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
+              :common_ids => shapes.collect(&:shape_common_id), :common_names => shapes.collect(&:shape_common_name))
             .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
         else
 logger.debug "=========== getting data for 1 indicator"
@@ -495,7 +498,7 @@ logger.debug "=========== getting data for 1 indicator"
           indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, {:core_indicator => [:core_indicator_translations, :indicator_type]}, {:data => :datum_translations})
             .where("indicators.id = :indicator_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and core_indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
               :indicator_id => indicator_id, :locale => I18n.locale,
-              :common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
+              :common_ids => shapes.collect(&:shape_common_id), :common_names => shapes.collect(&:shape_common_name))
             .order("indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc")
         end
       end
@@ -534,10 +537,11 @@ logger.debug "=========== getting data for 1 indicator"
             else
               ind.data.each_with_index do |d, dindex|
                 if ind.core_indicator.indicator_type.has_summary &&
-                   (maxvalue[d.common_name].nil? || d.value.to_f > maxvalue[d.common_name])
+                   (maxvalue[d.datum_translations[0].common_name].nil? || 
+                   d.value.to_f > maxvalue[d.datum_translations[0].common_name])
 
-                  maxvalue[d.common_name] = d.value.to_f
-                  winner[d.common_name] = {:name => ind.name,
+                  maxvalue[d.datum_translations[0].common_name] = d.value.to_f
+                  winner[d.datum_translations[0].common_name] = {:name => ind.core_indicator.core_indicator_translations[0].name,
 										 :indicator_type_id => ind.core_indicator.indicator_type_id}
 									winner_col_header = ind.core_indicator.indicator_type.summary_name if winner_col_header.empty?
                 end
@@ -551,9 +555,9 @@ logger.debug "=========== getting data for 1 indicator"
                   # add first couple columns of row (event and shape type)
                   row << row_starter
                   # common id
-                  row << d.common_id
+                  row << d.datum_translations[0].common_id
                   # common name
-                  row << d.common_name
+                  row << d.datum_translations[0].common_name
                 end
                 # data
                 if pretty_data
@@ -586,8 +590,8 @@ logger.debug "=========== getting data for 1 indicator"
         # that is located in the row_starter array
         header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
         ind_ids = header.clone
-        indicators.each_with_index do |i, idx|
-          header << i.description
+        indicators.each do |i|
+          header << i.core_indicator.core_indicator_translations[0].description
           ind_ids << i.id
         end
         flattened = header[0].length
@@ -620,68 +624,6 @@ logger.debug "=========== getting data for 1 indicator"
       end
     end
   end
-
-	def self.create_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
-		obj = OpenStruct.new
-		obj.csv_data = nil
-		obj.msg = nil
-
-    if event_id.nil? || shape_type_id.nil? || shape_id.nil?
-logger.debug "not all params provided"
-			return nil
-    else
-      dt = get_table_data(event_id, shape_type_id, shape_id, indicator_id)
-			data = dt[:data]
-
-	    if data.nil? || data.empty?
-logger.debug "no indicators or data found"
-	      return nil
-	    else
-				# use tab as separator for excel does not like ','
-#					obj.csv_data = CSV.generate(:col_sep => "\t", :force_quotes => true) do |csv|
-				obj.csv_data = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
-			    # add the rows
-			    data.each do |r|
-			      csv << r
-			    end
-				end
-
-				# convert to utf-8
-				# the bom is used to indicate utf-16le which excel requires
-#				  bom = "\xEF\xBB\xBF".force_encoding("UTF-8") #Byte Order Mark UTF-8
-#					obj.csv_data = (bom + obj.csv_data).force_encoding("UTF-8")
-
-
-	      return obj
-			end
-		end
-	end
-=begin
-# code for testing csv download that works in excel
-	def as_csv(options = {})
-		csv = {
-		  common_id: self.common_id,
-		  common_name: self.common_name,
-		  value: self.value
-		}
-	end
-
-	def self.test_csv(event_id, shape_type_id, shape_id, indicator_id=nil)
-
-			shapes = Shape.get_shapes_by_type(shape_id, shape_type_id)
-      indicators = Indicator.includes({:event => :event_translations}, {:shape_type => :shape_type_translations}, :indicator_translations, {:data => :datum_translations})
-        .where("indicators.event_id = :event_id and indicators.shape_type_id = :shape_type_id and event_translations.locale = :locale and shape_type_translations.locale = :locale and indicator_translations.locale = :locale and datum_translations.locale = :locale and datum_translations.common_id in (:common_ids) and datum_translations.common_name in (:common_names)",
-          :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale,
-					:common_ids => shapes.collect(&:common_id), :common_names => shapes.collect(&:common_name))
-        .order("indicators.id ASC, data.id asc")
-
-			if !indicators.empty?
-				return indicators.first.data
-			end
-
-	end
-=end
-
 
 	# delete all data that are assigned to the
 	# provided event_id, shape_type_id, and indicator_id
