@@ -13,6 +13,7 @@ function MapPopup() {
   this.max = 100;
   this.dist = 25;
   this.i = 0;
+	this.item_spacing = 10;
 
   this.svgElementsIndex = function(){
     index = 0;
@@ -47,7 +48,11 @@ function MapPopup() {
         var title = typeof json[i].title.title_abbrv !== "undefined" &&
           json[i].title.title_abbrv instanceof String &&
           json[i].title.title_abbrv.length > 0 ? json[i].title.title_abbrv : json[i].title.title;
-				var title_width = 30*2+get_text_width(json[i].title.location.length>title.length ? json[i].title.location : title);
+				var title_title_width = get_text_width(title, "15px");
+				var title_loc_width = get_text_width(json[i].title.location, "15px");
+console.log("title title width = " + title_title_width);
+console.log("title location width = " + title_loc_width);
+				var title_width = self.item_spacing*6+(title_title_width>title_loc_width ? title_title_width : title_loc_width);
 console.log("title width = " + title_width);
         if (title_width > max_width)
           max_width = title_width;
@@ -63,7 +68,7 @@ console.log("title width = " + title_width);
             max_value_width = get_text_width(value.number_format === null ?
 							value.formatted_value : value.formatted_value + value.number_format);
         });
-				var summary_width = 30+max_text_width+10+max_value_width+10+self.max/100*json[i].summary_data[0].value+10;
+				var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing+self.max/100*json[i].summary_data[0].value+self.item_spacing*2;
         console.log("summary width = " + summary_width);
         if (summary_width > max_width)
           max_width = summary_width;
@@ -76,8 +81,8 @@ console.log("title width = " + title_width);
       {
         var max_text_width = get_text_width(json[i].data_item.indicator_name);
         var max_value_width = get_text_width(json[i].data_item.number_format === null ?
-					json[i].data_item.formatted_value : json[i].data_item.formatted_value + json[i].data_item.number_format);
-        var item_width = 30+max_text_width+10+max_value_width+10;
+					json[i].data_item.formatted_value : json[i].data_item.formatted_value + " " + json[i].data_item.number_format);
+        var item_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing*3;
         console.log("item width = " + item_width);
         if (item_width > max_width)
           max_width = item_width;
@@ -118,7 +123,6 @@ console.log("title width = " + title_width);
     window.maxSVGHeight = 50;
     // make y padding equal to min height
     self.y_s = 50;
-    console.log("self.y_s = " + self.y_s);
   }
 
   this.processSummaryData = function(id_el, json, options)
@@ -130,7 +134,7 @@ console.log("title width = " + title_width);
       // create horizontal bars
       // - first is for item color
       this.SVGElement("rect", {
-        "x": 10,
+        "x": self.item_spacing,
         "y": self.y_s+i*self.dist,
         "width": 10,
         "height": 10,
@@ -138,7 +142,7 @@ console.log("title width = " + title_width);
       });
       // - second is for bar chart
       this.SVGElement("rect", {
-        "x": 30+self.max_ind_width+10+self.max_value_width+10,
+        "x": self.item_spacing*3+self.max_ind_width+self.item_spacing+self.max_value_width+self.item_spacing,
         "y": self.y_s+i*self.dist,
         "width": self.max/100*json[i].value,
         "height": 10,
@@ -147,7 +151,7 @@ console.log("title width = " + title_width);
 
       // make separator line
       this.SVGElement("line", {
-        "x1": 10,
+        "x1": self.item_spacing,
         "y1": self.y_s+self.i*self.dist+15,
         "x2": window.maxSVGWidth-10,
         "y2": self.y_s+self.i*self.dist+15,
@@ -156,14 +160,14 @@ console.log("title width = " + title_width);
 
       // write out name
       this.SVGElement("text", {
-        "x": 30,
+        "x": self.item_spacing*3,
         "y": self.y_s+10+self.i*self.dist,
         "style": "font-size:12px;",
         "class": "title"
       }).text(json[i].indicator_name);
       // write out value
       this.SVGElement("text", {
-        "x": 30+self.max_ind_width+10,
+        "x": self.item_spacing*3+self.max_ind_width+self.item_spacing,
         "y": self.y_s+10+self.i*self.dist,
         "style": "font-size:12px;"
       }).text(json[i].formatted_value+(json[i].number_format === null ? "" : json[i].number_format));
@@ -178,7 +182,7 @@ console.log("title width = " + title_width);
   {
     // make separator line
     this.SVGElement("line", {
-      "x1": 10,
+      "x1": self.item_spacing,
       "y1": self.y_s+self.i*self.dist+15,
       "x2": window.maxSVGWidth-10,
       "y2": self.y_s+self.i*self.dist+15,
@@ -187,14 +191,14 @@ console.log("title width = " + title_width);
 
     // write out name
     this.SVGElement("text", {
-      "x": 30,
+      "x": self.item_spacing*3,
       "y": self.y_s+10+self.i*self.dist,
       "style": "font-size:12px;",
       "class": "title"
     }).text(json.indicator_name);
     // write out value
     this.SVGElement("text", {
-      "x": 30+self.max_ind_width+10,
+      "x": self.item_spacing*3+self.max_ind_width+self.item_spacing,
       "y": self.y_s+10+self.i*self.dist,
       "style": "font-size:12px;"
     }).text(json.formatted_value+(json.number_format === null ? "" : json.number_format));
@@ -217,7 +221,6 @@ console.log("compute width");
 console.log("computed window width = " + window.maxSVGWidth);
 
     // create svg element
-console.log("creating svg element");
     var d3elmapsvg = d3.select(id_el)
                      .append("svg")
                      .attr("xmlns", "http://www.w3.org/2000/svg")
@@ -226,27 +229,26 @@ console.log("creating svg element");
 
     // process each data type in json
     //foreach(json, function(index, hash){
-    for(i=0;i<json.length;i++){
-      if (json[i].hasOwnProperty("title"))
+    for(index=0;index<json.length;index++){
+      if (json[index].hasOwnProperty("title"))
       {
 console.log("loading title");
-console.log("before this.y_s = " + this.y_s + "; svgElements length = " + this.svgElements.length);
-        this.processTitle(id_el, json[i].title, options);
-console.log("after this.y_s = " + this.y_s + "; svgElements length = " + this.svgElements.length);
+        this.processTitle(id_el, json[index].title, options);
       }
-      else if (json[i].hasOwnProperty("summary_data"))
+      else if (json[index].hasOwnProperty("summary_data"))
       {
 console.log("loading summary data");
-        this.processSummaryData(id_el, json[i].summary_data, options);
+        this.processSummaryData(id_el, json[index].summary_data, options);
       }
-      else if (json[i].hasOwnProperty("data_item"))
+      else if (json[index].hasOwnProperty("data_item"))
       {
 console.log("loading data item");
-        this.processDataItem(id_el, json[i].data_item, options);
+        this.processDataItem(id_el, json[index].data_item, options);
       }
-    };
+    }
   }
 };
+
 MapPopup.prototype.Rect = function(x, y, width, height)
 {
   return this.svg.append("rect")
@@ -490,8 +492,11 @@ MapPopup.prototype.processJSON = function(id_el, json, options)
 // get the pixel width of text
 // by placing the text in a span tag
 // and getting the span tag's width
-function get_text_width(string){
+function get_text_width(string, font_size){
+	// if no font_size provided, use defautl of 12px
+	if (typeof font_size == 'undefined' ) font_size = '12px';
 	$("span#hidden_span_width").text(string);
+	$("span#hidden_span_width").css("font-size", font_size);
 	return $("span#hidden_span_width").width();
 }
 
