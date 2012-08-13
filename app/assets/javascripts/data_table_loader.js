@@ -8,9 +8,9 @@ function load_data_table ()
 
   $.get(gon.data_table_path, function (data)
   {
+    container.css({height: 'auto'});
     container.html(data);
-    container.removeClass('loading');
-    container.slideDown(5000, 'linear');
+    //container.slideDown(5000, 'linear');
   });
 
   //$('body').append('<script src="/assets/data_table.js" type="text/javascript"></script>');

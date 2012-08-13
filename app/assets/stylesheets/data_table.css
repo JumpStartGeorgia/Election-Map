@@ -1,12 +1,23 @@
 #data-table-container {
-  display: none;
   font-family: arial;
+  display: block;
+  height: 165px;
+  position: relative;
 }
 
-#data-table-container.loading {
+#data-table-container .loading {
+  position: absolute;
   display: block;
-  background: url(/assets/loading.gif) center center no-repeat;
-  height: 10px;
+  z-index: 200;
+  background: url(/assets/loading.gif) center 37% no-repeat;
+  width: 100%;
+  height: 165px;
+}
+
+#data-table-container img {
+  position: relative;
+  opacity: .8;
+  z-index: 100;
 }
 
 #data-table {
