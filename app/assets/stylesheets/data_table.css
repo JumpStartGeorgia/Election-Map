@@ -88,20 +88,22 @@ td.highlighted > a {
 #data-table th.headerSortDown {
   background-image: url(/assets/desc.gif);
   background-color: rgba(51, 153, 255, .8);
-} 
-
-
-#data-table-container .switchers {
-  margin: 5px 0;
-  float: left;
 }
 
-#tips-placeholder {
-  float: right;
+
+#data-table-container #data-table-top {
+  margin-left: 0;
+}
+#data-table-container .switchers {
+  margin: 5px 0;
+}
+
+#data-table-container #tips-placeholder-links, #data-table-container #tips-placeholder-sorting {
   margin-top: 5px;
   padding: 4px 5px;
   background: #fff;
   font-size: 12px;
+	height: 24px;
 }
 
 #data-table-container .switchers > * {
@@ -178,4 +180,3 @@ td.highlighted > a {
   padding-top: 7px;
   padding-bottom: 7px;
 }
-
