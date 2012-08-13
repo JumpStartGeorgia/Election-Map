@@ -40,10 +40,12 @@ div#indicator_menu_scale h3, h3#indicator_description {
 
 #indicator_menu_tabs{
 	font-size: 9pt;
+	height: 250px;
 	overflow: hidden;
 	padding: 0;
 }
 #indicator_menu_tabs div.indicator_links {
+	height: 205px;
 	overflow: auto;
 	padding: 0;
 	margin: 0;
