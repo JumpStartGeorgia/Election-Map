@@ -183,6 +183,9 @@ ka:
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
       js_link_text: აგებულია
       header: არჩევნების
+    ajax_data_table:
+      links: Click on a data point to view it on the map.
+      sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.
     application:
       title: საქართველოს საარჩევნო მონაცემები
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი

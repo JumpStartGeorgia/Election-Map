@@ -3,39 +3,37 @@
 <% if !td.nil? && !td.empty? %>
   <% cqo = @dt.cols_p - @dt.static_cols %>
 
-  <div class="switchers clearfix">
-    <div class="arrows">
-      <div class="arrow-container arrow-container-left">
-        <div class="overlay"></div>
-        <div class="left arrow" data-direction="left"></div>
-      </div>
-      <div class="arrow-container arrow-container-right">
-        <div class="overlay"></div>
-        <div class="right arrow" data-direction="right"></div>
-      </div>
-    </div>
+	<div id="data-table-top" class="row">
+		<div class="switchers clearfix span4">
+		  <div class="arrows">
+		    <div class="arrow-container arrow-container-left">
+		      <div class="overlay"></div>
+		      <div class="left arrow" data-direction="left"></div>
+		    </div>
+		    <div class="arrow-container arrow-container-right">
+		      <div class="overlay"></div>
+		      <div class="right arrow" data-direction="right"></div>
+		    </div>
+		  </div>
 
-    <select id="dt_dd_switcher"><!--data table dropdown switcher-->
-      <option disabled selected="selected"></option>
-      <% @dt.dd_titles.each_with_index do |title, i| %>
-        <% val = ((i + 1).to_f / cqo).ceil.to_s %>
-        <% selected = (@dt.indicator_ids[i + @dt.static_cols].to_s == @dt.sid) ? 'selected="selected"'.html_safe : '' %>
-        <option <%= selected %> data-i="<%= (i + 1) %>" value="<%= val %>"><%= title %></option>
-      <% end %>
-    </select>
-  </div>
+		  <select id="dt_dd_switcher"><!--data table dropdown switcher-->
+		    <option disabled selected="selected"></option>
+		    <% @dt.dd_titles.each_with_index do |title, i| %>
+		      <% val = ((i + 1).to_f / cqo).ceil.to_s %>
+		      <% selected = (@dt.indicator_ids[i + @dt.static_cols].to_s == @dt.sid) ? 'selected="selected"'.html_safe : '' %>
+		      <option <%= selected %> data-i="<%= (i + 1) %>" value="<%= val %>"><%= title %></option>
+		    <% end %>
+		  </select>
+		</div>
 
-  <div id="tips-placeholder">
-    <div class="sorting-tip">
-      TIP! Sort multiple columns simultaneouslyby holding down the
-      shift key and clicking a second, third or even fourth column header!
-    </div>
+		<div id="tips-placeholder-links" class="span3">
+	    <%= t('.links') %>
+		</div>
 
-    <div class="links-tip">
-      click on links
-    </div>
-  </div>
-
+		<div id="tips-placeholder-sorting" class="span4">
+	    <%= t('.sorting') %>
+		</div>
+	</div>
 
   <table id="data-table">
    <thead>
