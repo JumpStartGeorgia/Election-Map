@@ -3,6 +3,12 @@
   font-family: arial;
 }
 
+#data-table-container.loading {
+  display: block;
+  background: url(/assets/loading.gif) center center no-repeat;
+  height: 10px;
+}
+
 #data-table {
   font-size: 11px;
   border-collapse: collapse;
@@ -28,7 +34,7 @@
 }
 
 #data-table tbody tr:nth-child(even) td {
-  background: #edefee;
+  background: #F4F6F5;
 }
 
 #data-table th > span, #data-table td > span, #data-table td > a {

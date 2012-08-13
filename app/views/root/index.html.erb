@@ -62,6 +62,8 @@
 
 		<div id="map"></div>
 
+		<div id="map-loading"></div>
+
 		<div id="map-title"><%= @map_title%></div>
 
 		<div id="export">
@@ -99,7 +101,9 @@
 
   <%= render :partial => "root/indicator_menu_scales"%>
 
-  <div id="data-table-container" class="span12 loading"></div>
+  <div id="data-table-container" class="span12 loading">
+    <!--<img src="/assets/" />-->
+  </div>
 
 
 </div>
