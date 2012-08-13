@@ -341,3 +341,10 @@ div#form-ka {
 */
   height: 10px;
 }
+
+/* hidden span used to calculate the width of the text
+   - used when computing width for map popup */
+span#hidden_span_width{
+	display: none;
+	font-size:12px;
+}

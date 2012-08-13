@@ -8,12 +8,12 @@ function MapPopup() {
   this.svgElements = new Array();
   this.title = null;
   this.y_s = 20; // padding on the y axis
-  this.max_value = 0;
-  this.max_ind_len = 0;
+  this.max_value_width = 0;
+  this.max_ind_width = 0;
   this.max = 100;
   this.dist = 25;
   this.i = 0;
-  
+
   this.svgElementsIndex = function(){
     index = 0;
     if (self.svgElements.length > 0) {
@@ -25,74 +25,77 @@ function MapPopup() {
     console.log("svgElements[index] = " + self.svgElements[index]);
     return index;
   }
-  
+
   this.computeWindowWidth = function(id_el, json, options)
   {
     var max_width = 0;
   /*
     old computations for widths
-    title 
+    title
     window.maxSVGWidth = 30+(ths.title.location.length>th_title.length ? ths.title.location.length : th_title.length)*5+50;
     summary data
-    window.maxSVGWidth = 30+ths.max_ind_len*7+80+ths.max/100*json.data[0].value+10;
+    window.maxSVGWidth = 30+ths.max_ind_width*7+80+ths.max/100*json.data[0].value+10;
     data item
-    window.maxSVGWidth = (30+ths.max_ind_len*7+10)+(ths.max_value.toString().length*7+50);
+    window.maxSVGWidth = (30+ths.max_ind_width*7+10)+(ths.max_value_width.toString().length*7+50);
     no data
-    window.maxSVGWidth = 30+ths.max_ind_len*7+10+gon.no_data_text.length*7+50;
+    window.maxSVGWidth = 30+ths.max_ind_width*7+10+gon.no_data_text.length*7+50;
 
-  */  
+  */
     for(i=0;i<json.length;i++){
       if (json[i].hasOwnProperty("title"))
       {
-        var title = typeof json[i].title.title_abbrv !== "undefined" && 
-          json[i].title.title_abbrv instanceof String && 
+        var title = typeof json[i].title.title_abbrv !== "undefined" &&
+          json[i].title.title_abbrv instanceof String &&
           json[i].title.title_abbrv.length > 0 ? json[i].title.title_abbrv : json[i].title.title;
-        var title_length = json[i].title.location.length>title.length ? json[i].title.location.length : title.length;
-        var title_width = 30+title_length*5+50;
+				var title_width = 30*2+get_text_width(json[i].title.location.length>title.length ? json[i].title.location : title);
 console.log("title width = " + title_width);
         if (title_width > max_width)
           max_width = title_width;
-      }    
+      }
       else if (json[i].hasOwnProperty("summary_data"))
       {
-        var max_text_length = 0;
-        var max_value = 0;
+        var max_text_width = 0;
+        var max_value_width = 0;
         foreach(json[i].summary_data, function(index, value){
-          if(value.indicator_name.length>max_text_length)
-            max_text_length = value.indicator_name.length;
-          if(value.value>max_value)
-            max_value = value.value;
+          if(get_text_width(value.indicator_name) > max_text_width)
+            max_text_width = get_text_width(value.indicator_name);
+          if(get_text_width(value.formatted_value) > max_value_width)
+            max_value_width = get_text_width(value.number_format === null ?
+							value.formatted_value : value.formatted_value + value.number_format);
         });
-        var summary_width = 30+max_text_length*5.5+(max_value.toString().length*7+30)+self.max/100*json[i].summary_data[0].value+10;
+				var summary_width = 30+max_text_width+10+max_value_width+10+self.max/100*json[i].summary_data[0].value+10;
         console.log("summary width = " + summary_width);
         if (summary_width > max_width)
           max_width = summary_width;
-        if (max_text_length > self.max_ind_len)
-          self.max_ind_len = max_text_length;
-        if (max_value > self.max_value)
-          self.max_value = max_value;
-      }    
+        if (max_text_width > self.max_ind_width)
+          self.max_ind_width = max_text_width;
+        if (max_value_width > self.max_value_width)
+          self.max_value_width = max_value_width;
+      }
       else if (json[i].hasOwnProperty("data_item"))
       {
-        var max_text_length = json[i].data_item.indicator_name.length;
-        var max_value = json[i].data_item.value;
-        var item_width = (30+max_text_length*7+10)+(max_value.toString().length*7+50);
+        var max_text_width = get_text_width(json[i].data_item.indicator_name);
+        var max_value_width = get_text_width(json[i].data_item.number_format === null ?
+					json[i].data_item.formatted_value : json[i].data_item.formatted_value + json[i].data_item.number_format);
+        var item_width = 30+max_text_width+10+max_value_width+10;
         console.log("item width = " + item_width);
         if (item_width > max_width)
           max_width = item_width;
-        if (max_text_length > self.max_ind_len)
-          self.max_ind_len = max_text_length;
-      }    
-    };  
+        if (max_text_width > self.max_ind_width)
+          self.max_ind_width = max_text_width;
+        if (max_value_width > self.max_value_width)
+          self.max_value_width = max_value_width;
+      }
+    };
     window.maxSVGWidth = max_width;
-    console.log("self.max_ind_len = " + self.max_ind_len);
+    console.log("self.max_ind_width = " + self.max_ind_width + "; self.max_value_width = " + self.max_value_width);
   }
 
   this.processTitle = function(id_el, json, options)
   {
     // determine which title to use
-    var title = typeof json.title_abbrv !== "undefined" && 
-      json.title_abbrv instanceof String && 
+    var title = typeof json.title_abbrv !== "undefined" &&
+      json.title_abbrv instanceof String &&
       json.title_abbrv.length > 0 ? json.title_abbrv : json.title;
 
     // add the titles to the svg
@@ -103,7 +106,7 @@ console.log("title width = " + title_width);
         "y": 20,
         "style": "font-size:15px;text-anchor:middle;"
       }).text(json.location);
-      
+
       this.SVGElement("text", {
         "x": (window.maxSVGWidth/2),
         "y": 40,
@@ -115,16 +118,17 @@ console.log("title width = " + title_width);
     window.maxSVGHeight = 50;
     // make y padding equal to min height
     self.y_s = 50;
-    console.log("self.y_s = " + self.y_s);    
+    console.log("self.y_s = " + self.y_s);
   }
 
   this.processSummaryData = function(id_el, json, options)
   {
+		// if a limit was passed in, use it
     json = json.slice(0, options.limit !== undefined ? options.limit : json.length);
+		// create the svg for each summary data item
     for(i=0;i<json.length;i++){
       // create horizontal bars
       // - first is for item color
-      // - second is for bar chart
       this.SVGElement("rect", {
         "x": 10,
         "y": self.y_s+i*self.dist,
@@ -132,8 +136,9 @@ console.log("title width = " + title_width);
         "height": 10,
         "style": "fill:"+json[i].color
       });
+      // - second is for bar chart
       this.SVGElement("rect", {
-        "x": 30+self.max_ind_len*5.5+(self.max_value.toString().length*7+30),
+        "x": 30+self.max_ind_width+10+self.max_value_width+10,
         "y": self.y_s+i*self.dist,
         "width": self.max/100*json[i].value,
         "height": 10,
@@ -149,16 +154,16 @@ console.log("title width = " + title_width);
         "style": "stroke-width:1px;stroke:#CCC"
       });
 
-      // write out name and value
+      // write out name
       this.SVGElement("text", {
         "x": 30,
         "y": self.y_s+10+self.i*self.dist,
         "style": "font-size:12px;",
         "class": "title"
       }).text(json[i].indicator_name);
-      
+      // write out value
       this.SVGElement("text", {
-        "x": 30+self.max_ind_len*5.5+10,
+        "x": 30+self.max_ind_width+10,
         "y": self.y_s+10+self.i*self.dist,
         "style": "font-size:12px;"
       }).text(json[i].formatted_value+(json[i].number_format === null ? "" : json[i].number_format));
@@ -166,7 +171,7 @@ console.log("title width = " + title_width);
       self.i++;
 
       window.maxSVGHeight = self.y_s+10+self.i*self.dist+10;
-    };  
+    };
   }
 
   this.processDataItem = function(id_el, json, options)
@@ -180,15 +185,16 @@ console.log("title width = " + title_width);
       "style": "stroke-width:1px;stroke:#CCC"
     });
 
-    // write out name and value
+    // write out name
     this.SVGElement("text", {
       "x": 30,
       "y": self.y_s+10+self.i*self.dist,
       "style": "font-size:12px;",
       "class": "title"
     }).text(json.indicator_name);
+    // write out value
     this.SVGElement("text", {
-      "x": 30+self.max_ind_len*7+10,
+      "x": 30+self.max_ind_width+10,
       "y": self.y_s+10+self.i*self.dist,
       "style": "font-size:12px;"
     }).text(json.formatted_value+(json.number_format === null ? "" : json.number_format));
@@ -209,7 +215,7 @@ MapPopup.prototype.processJSON = function(id_el, json, options)
 console.log("compute width");
     this.computeWindowWidth(id_el, json, options);
 console.log("computed window width = " + window.maxSVGWidth);
-    
+
     // create svg element
 console.log("creating svg element");
     var d3elmapsvg = d3.select(id_el)
@@ -217,7 +223,7 @@ console.log("creating svg element");
                      .attr("xmlns", "http://www.w3.org/2000/svg")
                      .attr("class", "elmapsvg");
     this.svg = d3elmapsvg;
-  
+
     // process each data type in json
     //foreach(json, function(index, hash){
     for(i=0;i<json.length;i++){
@@ -227,17 +233,17 @@ console.log("loading title");
 console.log("before this.y_s = " + this.y_s + "; svgElements length = " + this.svgElements.length);
         this.processTitle(id_el, json[i].title, options);
 console.log("after this.y_s = " + this.y_s + "; svgElements length = " + this.svgElements.length);
-      }    
+      }
       else if (json[i].hasOwnProperty("summary_data"))
       {
 console.log("loading summary data");
         this.processSummaryData(id_el, json[i].summary_data, options);
-      }    
+      }
       else if (json[i].hasOwnProperty("data_item"))
       {
 console.log("loading data item");
         this.processDataItem(id_el, json[i].data_item, options);
-      }    
+      }
     };
   }
 };
@@ -342,10 +348,10 @@ MapPopup.prototype.processTheType = function(id_el, json, options)
 
     // get max length of indicator name so can set width of window accordingly
     foreach(json.data, function(index, value){
-      if(value.indicator_name_abbrv.length>ths.max_ind_len)
-        ths.max_ind_len = value.indicator_name_abbrv.length;
-      if(value.value>ths.max_value)
-        ths.max_value = value.value;
+      if(value.indicator_name_abbrv.length>ths.max_ind_width)
+        ths.max_ind_width = value.indicator_name_abbrv.length;
+      if(value.value>ths.max_value_width)
+        ths.max_value_width = value.value;
     });
 
     var svgElements = new Array;
@@ -360,7 +366,7 @@ MapPopup.prototype.processTheType = function(id_el, json, options)
           "height": 10,
           "style": "fill:"+value.color
         },{
-          "x": 30+ths.max_ind_len*7+60,
+          "x": 30+ths.max_ind_width*7+60,
           "y": ths.y_s+i*ths.dist,
           "width": ths.max/100*value.value,
           "height": 10,
@@ -369,13 +375,13 @@ MapPopup.prototype.processTheType = function(id_el, json, options)
 
 
 
-//        window.maxSVGWidth = 30+ths.max_ind_len*7+80+ths.max/100*json.data[0].value+10;
+//        window.maxSVGWidth = 30+ths.max_ind_width*7+80+ths.max/100*json.data[0].value+10;
         window.summaryWidthDone = true;
       }
 //      else if (value.indicator_name_abbrv !== gon.no_data_text && typeof window.summaryWidthDone === "undefined")
-//        window.maxSVGWidth = (30+ths.max_ind_len*7+10)+(ths.max_value.toString().length*7+50);
+//        window.maxSVGWidth = (30+ths.max_ind_width*7+10)+(ths.max_value_width.toString().length*7+50);
 //      else
-//        window.maxSVGWidth = 30+ths.max_ind_len*7+10+gon.no_data_text.length*7+50;
+//        window.maxSVGWidth = 30+ths.max_ind_width*7+10+gon.no_data_text.length*7+50;
 
 
       window.makeline = true;
@@ -402,7 +408,7 @@ MapPopup.prototype.processTheType = function(id_el, json, options)
           "fullText": value.indicator_name
         }, value.indicator_name_abbrv],
         [{
-          "x": 30+ths.max_ind_len*7+10,
+          "x": 30+ths.max_ind_width*7+10,
           "y": ths.y_s+10+ths.i*ths.dist,
           "style": "font-size:12px;"
         }, value.value+(value.number_format === null ? "" : value.number_format)]];
@@ -434,7 +440,7 @@ MapPopup.prototype.processTheType = function(id_el, json, options)
 
 MapPopup.prototype.processJSON = function(id_el, json, options)
 {
-  
+
   var ths = this;
   ths.title = json.slice(0, 1);
   json = json.slice(1);
@@ -480,6 +486,14 @@ MapPopup.prototype.processJSON = function(id_el, json, options)
     //});
 };
 */
+
+// get the pixel width of text
+// by placing the text in a span tag
+// and getting the span tag's width
+function get_text_width(string){
+	$("span#hidden_span_width").text(string);
+	return $("span#hidden_span_width").width();
+}
 
 function unhighlight_shape(feature)
 {
