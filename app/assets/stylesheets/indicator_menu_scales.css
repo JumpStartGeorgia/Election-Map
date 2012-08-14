@@ -10,7 +10,7 @@ div#indicator_menu_scale h3 {
 	text-transform:uppercase;
 }
 
-.arrow_shape {
+div#indicator_menu_scale h3 .arrow_shape {
   font-size: 10px;
   margin-left: 8px;
   display: inline-block;

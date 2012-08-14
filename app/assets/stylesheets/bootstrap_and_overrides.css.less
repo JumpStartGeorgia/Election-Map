@@ -103,10 +103,10 @@ body {
    cursor: pointer;
    margin: 0;
    padding: 0;
+   text-align: center;
 }
 
 .navbar-inner-bottom .navmenu p {
-   float: left;
    text-transform: uppercase;
    color: #2583c1;
    font-family: Arial;
@@ -115,16 +115,19 @@ body {
 .navbar-inner-bottom .navmenu p.link-text {
    font-size: 16px;
    font-weight: bold;
-   padding: 10px 0 0 28px;
-   width: 90px;
+   padding: 10px 0 0 0px;
+   display: inline-block;
 }
 
-.navbar-inner-bottom .navmenu p.spec-char {
-   width: 10px;
-   margin-left: 10px;
-   margin-top: 20px;
-   font-size: 10px;
+.navbar-inner-bottom .navmenu p.link-text .arrow_shape {
+  font-size: 10px;
+  margin-left: 8px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 3px;
 }
+
+
 
 .navbar-inner-bottom .navmenu-select {
    float: left;
@@ -305,23 +308,62 @@ body {
 }
 
 #shape_nav_social_links #shape_layer_navigation li.switch_view {
-	margin-left: 20px;
+   margin-left: 20px;
    padding: 0 !important;
    padding-top: 5px !important;
 }
 
 #shape_nav_social_links #social_links {
-	padding-right: 30px;
+	padding-right: 0px;
+	text-align: center;
+}
+
+#shape_nav_social_links #social_links > ul {
+	display: inline-block;
 }
 
 #shape_nav_social_links #social_links li {
-   float: right !important;
+   float: left;
    position: static !important;
    border: 0 !important;
-   font-size: 12px;
-   padding: 10px 15px 0 15px !important;
-   font-family: Arial;
-	color: #4c525e;
+   padding: 0px !important;
+   margin: 6px 5px 0px 0px;
+}
+
+#shape_nav_social_links #social_links li a {
+   display: block;
+   padding: 0px !important;
+	 width: 22px;
+	 height: 21px;
+	 background-image: url(/assets/social.png);
+}
+
+#shape_nav_social_links #social_links li:last-child {
+	 margin-right: 0px;
+}
+
+#shape_nav_social_links #social_links li.f a {
+  background-position: 0px 21px;
+}
+
+#shape_nav_social_links #social_links li.t a {
+  background-position: -24px 21px;
+}
+
+#shape_nav_social_links #social_links li.g a {
+  background-position: -48px 21px;
+}
+
+#shape_nav_social_links #social_links li.f a:hover {
+  background-position: 0px 0px;
+}
+
+#shape_nav_social_links #social_links li.t a:hover {
+  background-position: -24px 0px;
+}
+
+#shape_nav_social_links #social_links li.g a:hover {
+  background-position: -48px 0px;
 }
 
 .menu_list li a {
