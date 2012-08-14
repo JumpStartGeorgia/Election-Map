@@ -130,7 +130,7 @@ console.log("title width = " + title_width);
 		// if a limit was passed in, use it
     json = json.slice(0, options.limit !== undefined ? options.limit : json.length);
 		// create the svg for each summary data item
-    for(i=0;i<json.length;i++){
+    for(var i=0;i<json.length;i++){
       // create horizontal bars
       // - first is for item color
       this.SVGElement("rect", {
@@ -175,7 +175,7 @@ console.log("title width = " + title_width);
       self.i++;
 
       window.maxSVGHeight = self.y_s+10+self.i*self.dist+10;
-    };
+    }
   }
 
   this.processDataItem = function(id_el, json, options)
@@ -229,7 +229,9 @@ console.log("computed window width = " + window.maxSVGWidth);
 
     // process each data type in json
     //foreach(json, function(index, hash){
-    for(index=0;index<json.length;index++){
+console.log("json length = " + json.length);
+    for(var index=0;index<json.length;index++){
+console.log("starting json index " + index);
       if (json[index].hasOwnProperty("title"))
       {
 console.log("loading title");
@@ -245,6 +247,7 @@ console.log("loading summary data");
 console.log("loading data item");
         this.processDataItem(id_el, json[index].data_item, options);
       }
+console.log("finishing json index " + index);
     }
   }
 };
