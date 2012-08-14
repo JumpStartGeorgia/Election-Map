@@ -60,13 +60,13 @@
 	<div id="social_links" class="span3">
 		<ul class="clear">
 			<li>
-				g+
+				<a href="<%= "https://plusone.google.com/_/+1/confirm?hl=en&url=#{request.protocol}#{request.host_with_port}#{request.fullpath}"%>" target="_blank" title="share on google+">g+</a>
 			</li>
 			<li>
-				t
+				<a href="https://twitter.com/share" target="_blank" title="share on twitter">t</a>
 			</li>
 			<li>
-				f
+				<a href="<%= "http://www.facebook.com/share.php?u=#{request.protocol}#{request.host_with_port}#{request.fullpath}" %>" target="_blank" title="share on facebook">f</a>
 			</li>
 		</ul>
 	</div>
