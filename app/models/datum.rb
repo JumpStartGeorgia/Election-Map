@@ -250,6 +250,9 @@ class Datum < ActiveRecord::Base
 		  						data_hash["data_item"] = rank.to_hash_wout_translations
 		  	        	results << data_hash
 								else
+									# add overall placement of this item
+									# if there are duplicate values (e.g., a tie) fix the rank accordingly
+
 		              rank = Datum.new
 		              rank.value = index+1
 		              rank["number_format"] = " / #{data["summary_data"].length}"
@@ -690,6 +693,63 @@ logger.debug "------ delete all data for event #{event_id}"
 			return msg
 		end
 		return msg
+	end
+
+	# determine overall placement of value in array
+	# assume array is already sorted in desired order
+	# if tie, the rank will be adjusted:
+	# if array 4,3,3,2,1,1
+	#  - passing in value of 3 will return 2
+	#  - passing in value of 2 will return 4
+	#  - passing in value of 1 will return 5
+	# returns hash {rank, total, has_duplicates}
+	def self.compute_placement(data_ary, value)
+		rank = nil
+		total = nil
+		has_duplicates = false
+
+		if data_ary && !data_ary.empty? && value
+			# find value in array
+			index = data_ary.index{|x| x[:value] == value}
+
+			if !index.nil?
+				# get unique values and count of how many of each value in array
+				unique = Hash.new(0)
+				data_ary.each do |x|
+					puts "value = #{x[:value]}"
+					unique.store(x[:value], unique[x[:value]]+1)
+				end
+				# if unique length = data array length, no dups and can return placement
+				if unique.length == data_ary.length
+					rank = index+1
+					total = data_ary.length
+				else
+					# duplicates exist
+					has_duplicates = true
+					rank = 0
+					unique.each do |k,v|
+						if k == value
+							rank += 1
+							break
+						else
+							rank += v
+						end
+					end
+					# now determine the total records
+					# if the last item is a duplicate, the total will be length-1
+					if unique.to_a.last[1] > 1
+						total = data_ary.length-1
+					else
+						total = data_ary.length
+					end
+				end
+			end
+		end
+		h = Hash.new()
+		h[:rank] = rank
+		h[:total] = total
+		h[:has_duplicates] = has_duplicates
+		return h;
 	end
 
 
