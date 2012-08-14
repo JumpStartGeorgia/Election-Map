@@ -749,9 +749,9 @@ logger.debug "------ delete all data for event #{event_id}"
 						end
 					end
 					# now determine the total records
-					# if the last item is a duplicate, the total will be length-1
+					# if the last item is a duplicate, the total will be length - # of dups + 1 
 					if unique.to_a.last[1] > 1
-						total = data_ary.length-1
+						total = data_ary.length-unique.to_a.last[1] + 1
 					else
 						total = data_ary.length
 					end
