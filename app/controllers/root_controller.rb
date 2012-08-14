@@ -200,6 +200,11 @@ logger.debug "////////////// is custom view, getting indicator to switch between
 				end
 			end
 
+      # create the page title
+      if @map_title && @event_name && @indicator
+        @page_title = "#{@event_name} > #{@indicator.name_abbrv_w_parent} > #{@map_title}".html_safe
+      end
+
   		# reset the parameter that indicates if the shape type changed
   		params[:change_shape_type] = nil
 
