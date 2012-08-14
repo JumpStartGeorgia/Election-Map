@@ -161,6 +161,7 @@ ka:
       winner: გამარჯვებული
       overall_placement: Overall Placement
       total_participants: Total Participants
+      footnote_duplicates: Participants had duplicate values
   contact_mailer:
     subject: "[Georgia Election Data] Contact Form"
   layouts:

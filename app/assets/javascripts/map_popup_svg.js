@@ -100,6 +100,14 @@ console.log("summary max text width = " + max_text_width +
         if (max_value_width > self.max_value_width)
           self.max_value_width = max_value_width;
       }
+      else if (json[i].hasOwnProperty("footnote"))
+      {
+        var max_text_width = get_text_width(json[i].footnote.indicator_name, "10px");
+        var footnote_width = self.item_spacing*3+max_text_width+self.item_spacing*3;
+        console.log("footnote width = " + footnote_width);
+        if (footnote_width > max_width)
+          max_width = footnote_width;
+      }
     };
     window.maxSVGWidth = max_width;
     console.log("self.max_ind_width = " + self.max_ind_width + "; self.max_value_width = " + self.max_value_width);
@@ -219,6 +227,21 @@ console.log("summary max text width = " + max_text_width +
 
     window.maxSVGHeight = self.y_s+10+self.i*self.dist+10;
   }
+
+  this.processFootnote = function(id_el, json, options)
+  {
+    // write out name
+    this.SVGElement("text", {
+      "x": self.item_spacing*3,
+      "y": self.y_s+10*2+self.i*self.dist,
+      "style": "font-size:11px;",
+      "class": "title"
+    }).text(json.indicator_name);
+
+    self.i++;
+
+    window.maxSVGHeight = self.y_s+10+self.i*self.dist+10;
+  }
 }
 
 
@@ -241,9 +264,7 @@ console.log("computed window width = " + window.maxSVGWidth);
 
     // process each data type in json
     //foreach(json, function(index, hash){
-console.log("json length = " + json.length);
     for(var index=0;index<json.length;index++){
-console.log("starting json index " + index);
       if (json[index].hasOwnProperty("title"))
       {
 console.log("loading title");
@@ -259,7 +280,11 @@ console.log("loading summary data");
 console.log("loading data item");
         this.processDataItem(id_el, json[index].data_item, options);
       }
-console.log("finishing json index " + index);
+      else if (json[index].hasOwnProperty("footnote"))
+      {
+console.log("loading footnote");
+        this.processFootnote(id_el, json[index].footnote, options);
+      }
     }
   }
 };

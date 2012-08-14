@@ -212,7 +212,7 @@ class Datum < ActiveRecord::Base
 	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, relationships)
     results = []
 	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !relationships.nil? && !relationships.empty?
-#      results = Array.new(relationships.length) {Hash.new}
+      has_duplicates = false
 	    relationships.each do |rel|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
@@ -237,32 +237,36 @@ class Datum < ActiveRecord::Base
 
                 # add the placement of this indicator
 								# if value != 0 or no data
-								if data["summary_data"][index][:value] == "0" ||
-									data["summary_data"][index][:value] == I18n.t('app.msgs.no_data')
+								# if there are duplicate values (e.g., a tie) fix the rank accordingly
+								if data["summary_data"][index][:value] != "0" &&
+									data["summary_data"][index][:value] != I18n.t('app.msgs.no_data')
 
-		              # add total # of indicators in the summary
-		              rank = Datum.new
-		              rank.value = data["summary_data"].length
-		              rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
-		              rank["indicator_name"] = I18n.t('app.common.total_participants')
-		              rank["indicator_name_abbrv"] = I18n.t('app.common.total_participants')
-		  						data_hash = Hash.new
-		  						data_hash["data_item"] = rank.to_hash_wout_translations
-		  	        	results << data_hash
-								else
-									# add overall placement of this item
-									# if there are duplicate values (e.g., a tie) fix the rank accordingly
-
-		              rank = Datum.new
-		              rank.value = index+1
-		              rank["number_format"] = " / #{data["summary_data"].length}"
-		              rank["indicator_type_name"] = data["summary_data"][index][:indicator_type_name]
-		              rank["indicator_name"] = I18n.t('app.common.overall_placement')
-		              rank["indicator_name_abbrv"] = I18n.t('app.common.overall_placement')
-		  						data_hash = Hash.new
-		  						data_hash["data_item"] = rank.to_hash_wout_translations
-		  	        	results << data_hash
+                  # returns {:rank, :total, :has_duplicates}
+                  h = compute_placement(data["summary_data"], data["summary_data"][index][:value])
+                  has_duplicates = h[:has_duplicates] 
+                  if !h.nil? && !h.empty?
+  		              rank = Datum.new
+  		              rank.value = h[:rank].to_s
+  		              rank["number_format"] = " / #{h[:total]}"
+  		              rank["number_format"] += " *" if h[:has_duplicates] 
+  		              rank["indicator_type_name"] = data["summary_data"][index][:indicator_type_name]
+  		              rank["indicator_name"] = I18n.t('app.common.overall_placement')
+  		              rank["indicator_name_abbrv"] = I18n.t('app.common.overall_placement')
+  		  						data_hash = Hash.new
+  		  						data_hash["data_item"] = rank.to_hash_wout_translations
+  		  	        	results << data_hash
+                  end
 								end
+
+	              # add total # of indicators in the summary
+	              rank = Datum.new
+	              rank.value = data["summary_data"].length
+	              rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
+	              rank["indicator_name"] = I18n.t('app.common.total_participants')
+	              rank["indicator_name_abbrv"] = I18n.t('app.common.total_participants')
+	  						data_hash = Hash.new
+	  						data_hash["data_item"] = rank.to_hash_wout_translations
+	  	        	results << data_hash
               end
 
               # add the winner if this record is not it and if value != no data or 0
@@ -288,6 +292,16 @@ class Datum < ActiveRecord::Base
   					end
           end
         end
+      end
+      
+      # add duplicate footnote if needed
+      if has_duplicates
+        footnote = Datum.new
+        footnote["indicator_name"] = "* #{I18n.t('app.common.footnote_duplicates')}"
+        footnote["indicator_name_abbrv"] = "* #{I18n.t('app.common.footnote_duplicates')}"
+				data_hash = Hash.new
+				data_hash["footnote"] = footnote.to_hash_wout_translations
+      	results << data_hash
       end
     end
 	  return results
@@ -716,7 +730,6 @@ logger.debug "------ delete all data for event #{event_id}"
 				# get unique values and count of how many of each value in array
 				unique = Hash.new(0)
 				data_ary.each do |x|
-					puts "value = #{x[:value]}"
 					unique.store(x[:value], unique[x[:value]]+1)
 				end
 				# if unique length = data array length, no dups and can return placement

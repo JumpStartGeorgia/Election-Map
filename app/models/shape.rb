@@ -135,7 +135,6 @@ class Shape < ActiveRecord::Base
     			results = Array.new(data.length) {Hash.new}
     			data.each_with_index do |d,i|
     			  if d.has_key?("summary_data") && !d["summary_data"].nil? && !d["summary_data"].empty?
-							# use to_hash_wout_translations to avoid datum_translations getting called for each record
   			      results[i]["summary_data"] = d["summary_data"]
   			      # if getting summary data, use the first record for the shape value
 							# unless the first value is 'no data'
@@ -152,7 +151,6 @@ class Shape < ActiveRecord::Base
 								title["title"] = d["summary_data"][0][:indicator_type_name]
   		        end
     		    elsif d.has_key?("data_item") && !d["data_item"].nil? && !d["data_item"].empty?
-							# use to_hash_wout_translations to avoid datum_translations getting called for each record
   		        results[i]["data_item"] = d["data_item"]
   			      # if not getting summary data, use this record
   			      # if ind_id = indicator_id
@@ -165,6 +163,8 @@ class Shape < ActiveRecord::Base
 								title["title"] = d["data_item"][:indicator_name]
 								title["title_abbrv"] = d["data_item"][:indicator_name_abbrv]
   		        end
+    		    elsif d.has_key?("footnote") && !d["footnote"].nil? && !d["footnote"].empty?
+  		        results[i]["footnote"] = d["footnote"]
     	      end
     		  end
 					# add title to the results
