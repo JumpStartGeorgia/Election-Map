@@ -201,8 +201,12 @@ logger.debug "////////////// is custom view, getting indicator to switch between
 			end
 
       # create the page title
-      if @map_title && @event_name && @indicator
-        @page_title = "#{@event_name} > #{@indicator.name_abbrv_w_parent} > #{@map_title}".html_safe
+      if @map_title && @event_name
+        if params[:view_type] == @summary_view_type_name && @indicator_types && !@indicator_types.empty?
+          @page_title = "#{@event_name} > #{@indicator_types[0].summary_name} > #{@map_title}".html_safe
+        elsif @indicator
+          @page_title = "#{@event_name} > #{@indicator.name_abbrv_w_parent} > #{@map_title}".html_safe
+        end
       end
 
   		# reset the parameter that indicates if the shape type changed

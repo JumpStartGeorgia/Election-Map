@@ -236,10 +236,10 @@ class Datum < ActiveRecord::Base
     	        	results << data_hash
 
                 # add the placement of this indicator
-								# if value != 0 or no data
+								# if value != no data
 								# if there are duplicate values (e.g., a tie) fix the rank accordingly
-								if data["summary_data"][index][:value] != "0" &&
-									data["summary_data"][index][:value] != I18n.t('app.msgs.no_data')
+								if data["summary_data"][index][:value] != I18n.t('app.msgs.no_data')
+								  #&& data["summary_data"][index][:value] != "0"
 
                   # returns {:rank, :total, :has_duplicates}
                   h = compute_placement(data["summary_data"], data["summary_data"][index][:value])
