@@ -50,8 +50,6 @@ $(document).ready(function(){
 
 if (gon.openlayers){
 
-	window.onload = map_init;
-
 	// Define global variables which can be used in all functions
 	var map, vector_parent, vector_child;
 	var vector_parent_loaded = false;
