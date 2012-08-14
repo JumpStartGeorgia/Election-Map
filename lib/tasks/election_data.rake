@@ -1,9 +1,9 @@
+require 'json_cache'
 
 namespace :election_data do
 	##############################
   desc "calls default_event_cache and custom_event_indicator_cache"
   task :build_default_and_custom_cache => [:environment] do
-    require 'json_cache'
 
     JsonCache.build_default_and_custom_cache
     JsonCache.custom_event_indicator_cache
@@ -12,7 +12,6 @@ namespace :election_data do
 	##############################
   desc "create the cache for all events and their default view"
   task :default_event_cache => [:environment] do
-    require 'json_cache'
 
     #build the cache
     JsonCache.default_event_cache
@@ -21,10 +20,17 @@ namespace :election_data do
 	##############################
   desc "create cache for all indicators for all events that have a custom view"
   task :custom_event_indicator_cache => [:environment] do
-    require 'json_cache'
 
     #build the cache
     JsonCache.custom_event_indicator_cache
+  end
+
+	##############################
+  desc "create cache for the summary data used to generate the bar charts in the map popup"
+  task :summary_data_cache => [:environment] do
+
+    #build the cache
+    JsonCache.summary_data_cache
   end
 
 end

@@ -96,7 +96,7 @@ require 'net/http'
     ActiveRecord::Base.logger = nil
 
 		# domain
-		domain = "http://emap.local"
+		domain = "http://0.0.0.0:3000"
 		if Rails.env.staging?
 			domain = "http://dev-electiondata.jumpstart.ge"
 		elsif Rails.env.production?

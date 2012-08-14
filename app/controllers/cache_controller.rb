@@ -1,6 +1,13 @@
 class CacheController < ApplicationController
   before_filter :authenticate_user!
 
+  def summary_data
+		if request.post?
+			JsonCache.summary_data_cache
+			flash[:notice] = I18n.t('cache.summary_data_cache.created')
+		end
+  end
+
   def default_custom_event
 		if request.post?
 			JsonCache.default_event_cache

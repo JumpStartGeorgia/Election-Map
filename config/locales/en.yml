@@ -250,6 +250,7 @@ en:
       cache_create_header: Create File Cache
       cache_default_event: Default Custom Event View Cache
       cache_indicators: Custom Event Indicator Cache
+      cache_summary_data: Summary Data Cache
     index:
       export_link_text: Export Map
       footnote: "Note: %{note}"
@@ -439,4 +440,9 @@ en:
       title: Create Cache for Default Custom Event Views
       explanation: Create cache files for the default view of events that have custom views (e.g., viewing distrcits at country level).
       time: This will take about 5 minutes.
+      created: The cache files have been created.
+    summary_data:
+      title: Create Cache for Summary Data
+      explanation: Create cache files for the data that builds the Overall Results bar charts in the map popup.
+      time: This will take about 30 minutes.
       created: The cache files have been created.

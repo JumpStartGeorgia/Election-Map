@@ -89,6 +89,10 @@ ElectionMap::Application.routes.draw do
 			:as => :cache_default_custom_event, :via => :get
 		match '/cache/default_custom_event', :to => 'cache#default_custom_event',
 			:as => :cache_default_custom_event, :via => :post
+		match '/cache/summary_data', :to => 'cache#summary_data',
+			:as => :cache_summary_data, :via => :get
+		match '/cache/summary_data', :to => 'cache#summary_data',
+			:as => :cache_summary_data, :via => :post
 
     # routes to root#index
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get
