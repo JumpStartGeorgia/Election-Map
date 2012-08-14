@@ -160,7 +160,7 @@ en:
       indicator_type_relationship: Indicator Group with Relationship
       winner: Winner
       overall_placement: Overall Placement
-      total_placements: Number of Placements
+      total_participants: Total Participants
   contact_mailer:
     subject: "[Georgia Election Data] Contact Form"
   layouts:

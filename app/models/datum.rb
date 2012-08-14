@@ -236,30 +236,37 @@ class Datum < ActiveRecord::Base
     	        	results << data_hash
 
                 # add the placement of this indicator
-                rank = Datum.new
-                rank.value = index+1
-                rank["number_format"] = " / #{data["summary_data"].length+1}"
-                rank["indicator_type_name"] = data["summary_data"][index][:indicator_type_name]
-                rank["indicator_name"] = I18n.t('app.common.overall_placement')
-                rank["indicator_name_abbrv"] = I18n.t('app.common.overall_placement')
-    						data_hash = Hash.new
-    						data_hash["data_item"] = rank.to_hash_wout_translations
-    	        	results << data_hash
-=begin
-                # add total # of indicators in the summary
-                rank = Datum.new
-                rank.value = data["summary_data"].length+1
-                rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
-                rank["indicator_name"] = I18n.t('app.common.total_placements')
-                rank["indicator_name_abbrv"] = I18n.t('app.common.total_placements')
-    						data_hash = Hash.new
-    						data_hash["data_item"] = rank.to_hash_wout_translations
-    	        	results << data_hash
-=end
+								# if value != 0 or no data
+								if data["summary_data"][index][:value] == "0" ||
+									data["summary_data"][index][:value] == I18n.t('app.msgs.no_data')
+
+		              # add total # of indicators in the summary
+		              rank = Datum.new
+		              rank.value = data["summary_data"].length
+		              rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
+		              rank["indicator_name"] = I18n.t('app.common.total_participants')
+		              rank["indicator_name_abbrv"] = I18n.t('app.common.total_participants')
+		  						data_hash = Hash.new
+		  						data_hash["data_item"] = rank.to_hash_wout_translations
+		  	        	results << data_hash
+								else
+		              rank = Datum.new
+		              rank.value = index+1
+		              rank["number_format"] = " / #{data["summary_data"].length}"
+		              rank["indicator_type_name"] = data["summary_data"][index][:indicator_type_name]
+		              rank["indicator_name"] = I18n.t('app.common.overall_placement')
+		              rank["indicator_name_abbrv"] = I18n.t('app.common.overall_placement')
+		  						data_hash = Hash.new
+		  						data_hash["data_item"] = rank.to_hash_wout_translations
+		  	        	results << data_hash
+								end
               end
 
-              # add the winner if this is not it
-              if index > 0
+              # add the winner if this record is not it and if value != no data or 0
+							if index > 0 &&
+									data["summary_data"][0][:value] != "0" &&
+									data["summary_data"][0][:value] != I18n.t('app.msgs.no_data')
+
                 data["summary_data"][0][:indicator_name].insert(0, "#{I18n.t('app.common.winner')}: ")
                 data["summary_data"][0][:indicator_name_abbrv].insert(0, "#{I18n.t('app.common.winner')}: ")
     						data_hash = Hash.new
@@ -469,7 +476,7 @@ class Datum < ActiveRecord::Base
 
 # get all of the data for a given event, shape and shape level
 # NOTE - to reduce n+1 queries for getting translated text, all translations
-#        are retrieved in the main query and obj.xxx_translations[0].name is used to 
+#        are retrieved in the main query and obj.xxx_translations[0].name is used to
 #        get the translations instead of the lazy method of obj.name which causes the n+1 queries
 def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false, pretty_data = false)
   if event_id.nil? || shape_type_id.nil? || shape_id.nil?
@@ -537,7 +544,7 @@ logger.debug "=========== getting data for 1 indicator"
             else
               ind.data.each_with_index do |d, dindex|
                 if ind.core_indicator.indicator_type.has_summary &&
-                   (maxvalue[d.datum_translations[0].common_name].nil? || 
+                   (maxvalue[d.datum_translations[0].common_name].nil? ||
                    d.value.to_f > maxvalue[d.datum_translations[0].common_name])
 
                   maxvalue[d.datum_translations[0].common_name] = d.value.to_f
