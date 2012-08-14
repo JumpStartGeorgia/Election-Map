@@ -61,14 +61,23 @@ console.log("title width = " + title_width);
       {
         var max_text_width = 0;
         var max_value_width = 0;
-        foreach(json[i].summary_data, function(index, value){
-          if(get_text_width(value.indicator_name) > max_text_width)
-            max_text_width = get_text_width(value.indicator_name);
-          if(get_text_width(value.formatted_value) > max_value_width)
-            max_value_width = get_text_width(value.number_format === null ?
-							value.formatted_value : value.formatted_value + value.number_format);
-        });
-				var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing+self.max/100*json[i].summary_data[0].value+self.item_spacing*2;
+				for(var j=0;j<json[i].summary_data.length;j++) {
+					var value = json[i].summary_data[j];
+					var text_width = get_text_width(value.indicator_name);
+          if( text_width > max_text_width)
+            max_text_width = text_width;
+					var value_width = get_text_width(value.number_format === null ?
+							value.formatted_value : value.formatted_value + value.number_format)
+          if( value_width > max_value_width)
+            max_value_width = value_width;
+        }
+console.log("summary max text width = " + max_text_width +
+	"; max value width = " + max_value_width + "; first data value = " + json[i].summary_data[0].value);
+				if (isNaN(json[i].summary_data[0].value))
+					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing*3;
+				else
+					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing+self.max/100*json[i].summary_data[0].value+self.item_spacing*2;
+
         console.log("summary width = " + summary_width);
         if (summary_width > max_width)
           max_width = summary_width;
@@ -140,14 +149,17 @@ console.log("title width = " + title_width);
         "height": 10,
         "style": "fill:"+json[i].color
       });
-      // - second is for bar chart
-      this.SVGElement("rect", {
-        "x": self.item_spacing*3+self.max_ind_width+self.item_spacing+self.max_value_width+self.item_spacing,
-        "y": self.y_s+i*self.dist,
-        "width": self.max/100*json[i].value,
-        "height": 10,
-        "style": "fill:#5c81a3"
-      });
+
+			if (!isNaN(json[i].value)){
+		    // - second is for bar chart
+		    this.SVGElement("rect", {
+		      "x": self.item_spacing*3+self.max_ind_width+self.item_spacing+self.max_value_width+self.item_spacing,
+		      "y": self.y_s+i*self.dist,
+		      "width": self.max/100*json[i].value,
+		      "height": 10,
+		      "style": "fill:#5c81a3"
+		    });
+			}
 
       // make separator line
       this.SVGElement("line", {

@@ -138,8 +138,11 @@ class Shape < ActiveRecord::Base
 							# use to_hash_wout_translations to avoid datum_translations getting called for each record
   			      results[i]["summary_data"] = d["summary_data"]
   			      # if getting summary data, use the first record for the shape value
+							# unless the first value is 'no data'
   			      # if ind_id = indicator_type_id
-  			      if isSummary && d["summary_data"][0][:indicator_type_id].to_s == ind_id.to_s
+  			      if isSummary && d["summary_data"][0][:indicator_type_id].to_s == ind_id.to_s &&
+									d["summary_data"][0][:formatted_value] != I18n.t('app.msgs.no_data')
+
       				  properties["data_value"] = d["summary_data"][0][:formatted_value] if !d["summary_data"][0][:formatted_value].nil?
       					properties["value"] = d["summary_data"][0][:indicator_name_abbrv]
       					properties["formatted_value"] = d["summary_data"][0][:indicator_name]
