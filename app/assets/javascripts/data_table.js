@@ -16,12 +16,19 @@ var dt =
 
     dt.dd_switcher.ready(dt.highlight);
     dt.dd_switcher.change(dt.highlight);
+
+			// update the url for the download data link
+			$("#export-data-xls2").attr('href',update_query_parameter($("#export-data-xls").attr('href'), "event_name", "event_name", gon.event_name));
+			$("#export-data-xls2").attr('href',update_query_parameter($("#export-data-xls").attr('href'), "map_title", "map_title", gon.map_title));
+			$("#export-data-csv2").attr('href',update_query_parameter($("#export-data-csv").attr('href'), "event_name", "event_name", gon.event_name));
+			$("#export-data-csv2").attr('href',update_query_parameter($("#export-data-csv").attr('href'), "map_title", "map_title", gon.map_title));
+
   },
 
 
   arrow_click_handler: function ()
   {
-    if (gon.dt.p >= gon.dt.all)
+    if (gon.dt_p >= gon.dt_all)
     {
       return;
     }
@@ -40,19 +47,19 @@ var dt =
       visi = classes[i].substring(2);
       break;
     }
-    //nexti = (direction == 'left') ? ((+ visi == 1) ? gon.dt.g : + visi - 1) : ((+ visi == gon.dt.g) ? 1 : + visi + 1);
+    //nexti = (direction == 'left') ? ((+ visi == 1) ? gon.dt_g : + visi - 1) : ((+ visi == gon.dt_g) ? 1 : + visi + 1);
     if (direction == 'left')
     {
       if (+ visi == 1)
       {
-        //nexti = gon.dt.g;
+        //nexti = gon.dt_g;
         return false;
       }
       nexti = + visi - 1;
     }
     else if (direction == 'right')
     {
-      if (+ visi == gon.dt.g)
+      if (+ visi == gon.dt_g)
       {
         //nexti = 1;
         return false;
@@ -74,7 +81,7 @@ var dt =
   highlight: function ()
   {
   /*
-    if (gon.dt.p >= gon.dt.all)
+    if (gon.dt_p >= gon.dt_all)
     {
       return;
     }
@@ -118,12 +125,12 @@ var dt =
       dt.left_arrow_overlay_visible = false;
     }
 
-    if (nexti == gon.dt.g)
+    if (nexti == gon.dt_g)
     {
       dt.right_arrow_overlay.show(0);
       dt.right_arrow_overlay_visible = true;
     }
-    else if (nexti < gon.dt.g && dt.right_arrow_overlay_visible)
+    else if (nexti < gon.dt_g && dt.right_arrow_overlay_visible)
     {
       dt.right_arrow_overlay.hide(0);
       dt.right_arrow_overlay_visible = false;
@@ -139,4 +146,3 @@ function empty(variable)
 {
   return (variable == null || variable == undefined || typeof variable == 'undefined' || variable == '');
 }
-
