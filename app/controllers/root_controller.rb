@@ -235,48 +235,50 @@ logger.debug "//////////////////////////////////////////////////////// done with
     params[:custom_view] = params[:custom_view].nil? ? false : params[:custom_view]
 
     get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id], nil, true, true)
-    dt = OpenStruct.new(
-      'cols_p'             => 7, #data columns count per turn
-      'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
-      'static_cols'        => 1, #data static columns count, e.g. "District name"
+		if !get_data.nil? && !get_data.empty?
+		  dt = OpenStruct.new(
+		    'cols_p'             => 7, #data columns count per turn
+		    'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
+		    'static_cols'        => 1, #data static columns count, e.g. "District name"
 
-      'data'               => get_data[:data],
-      'indicator_ids'      => get_data[:indicator_ids],
-      'indicator_type_ids' => get_data[:indicator_type_ids],
-      'dd_titles'          => []
-    )
-    s = dt.skip_cols + dt.static_cols
-    dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
-    dt.data.each_with_index do |val, i|
-      dt.data[i] = dt.data[i][dt.skip_cols..- 1]
-    end
+		    'data'               => get_data[:data],
+		    'indicator_ids'      => get_data[:indicator_ids],
+		    'indicator_type_ids' => get_data[:indicator_type_ids],
+		    'dd_titles'          => []
+		  )
+		  s = dt.skip_cols + dt.static_cols
+		  dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
+		  dt.data.each_with_index do |val, i|
+		    dt.data[i] = dt.data[i][dt.skip_cols..- 1]
+		  end
 
-    # selected indicator id
-    if params[:indicator_id].nil? || params[:indicator_id] == 'null'
-      if params[:view_type] == summary_view_type_name
-        dt.sid = 'winner_ind'
-      else
-        dt.sid = ''
-      end
-    else
-      dt.sid = params[:indicator_id]
-    end
-    dt.sid = dt.sid.to_s
+		  # selected indicator id
+		  if params[:indicator_id].nil? || params[:indicator_id] == 'null'
+		    if params[:view_type] == summary_view_type_name
+		      dt.sid = 'winner_ind'
+		    else
+		      dt.sid = ''
+		    end
+		  else
+		    dt.sid = params[:indicator_id]
+		  end
+		  dt.sid = dt.sid.to_s
 
-    dt_count = dt.data[0].count
-    # column groups count
-    #dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-    #c = dt.cols_p - dt.static_cols
-    # dropdown titles
-    #dt.groups.times do |i|
-    #  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
-    #end
-    dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-    dt.dd_titles = dt.data[0][dt.static_cols..-1]
-    dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
-    dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
+		  dt_count = dt.data[0].count
+		  # column groups count
+		  #dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+		  #c = dt.cols_p - dt.static_cols
+		  # dropdown titles
+		  #dt.groups.times do |i|
+		  #  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
+		  #end
+		  dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+		  dt.dd_titles = dt.data[0][dt.static_cols..-1]
+		  dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
+		  dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
 
-    @dt = dt
+		  @dt = dt
+		end
 
     render :layout => 'ajax_data_table'
   end
