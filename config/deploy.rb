@@ -50,12 +50,12 @@ namespace :deploy do
     run "ln -nfs #{shared_path}/json #{release_path}/public/json"
   end
   after "deploy:finalize_update", "deploy:symlink_config"
-
+=begin
   task :symlink_json, roles: :app do
     run "ln -s #{shared_path}/json #{release_path}/public/json"
   end
   after "deploy:symlink", "deploy:symlink_json"
-
+=end
   desc "Make sure local git is in sync with remote."
   task :check_revision, roles: :web do
     unless `git rev-parse HEAD` == `git rev-parse origin/#{git_branch_name}`
