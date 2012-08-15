@@ -49,13 +49,13 @@ require 'net/http'
 	# remove the files for the provided event_id
 	# if no id provided, remove all files
 	def self.clear_all(event_id=nil)
-		Rails.logger.debug "################## - clearing cache files"
+		Rails.logger.debug "################## - clearing all cache"
 		clear_cache
 		clear_files(event_id)
 	end
 
 	def self.clear_cache
-		Rails.logger.debug "################## - clearing cache files"
+		Rails.logger.debug "################## - clearing memory cache"
 		# clear the cache too
 		Rails.cache.clear
 	end
@@ -65,7 +65,8 @@ require 'net/http'
 		if event_id
 			FileUtils.rm_rf(json_file_path.gsub("[event_id]", event_id.to_s))
 		else
-			FileUtils.rm_rf(json_file_path.gsub("/event_[event_id]", ""))
+			# don't delete the json folder - delete everything inside it
+			FileUtils.rm_rf(Dir.glob(json_file_path.gsub("event_[event_id]", "*")))
 		end
 	end
 
