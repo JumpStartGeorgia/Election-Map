@@ -97,8 +97,8 @@ if (gon.openlayers){
 		  displayProjection: WGS84,
 		  units: 'm',
 		  maxResolution: 156543.0339,
-		  maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-		  restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
+		  maxExtent: new OpenLayers.Bounds(/*left*/-20037508.34, -20037508.34, /*right*/20037508.34, 20037508.34),
+		  restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942 * 1.1, 5577916.0481658),
 		  theme: null,
 		  controls: []
 		};
@@ -204,14 +204,16 @@ if (gon.openlayers){
 		    }
 		    vector_parent.addFeatures(features);
 
-		 /*
+     /*
 		    var shapeWidth = bounds.right - bounds.left;
 		    var worldWidth = map.maxExtent.right - map.maxExtent.left;
+		    console.log(map.maxExtent.right, map.maxExtent.left);
+		    console.log(bounds.right, bounds.left);
 		    var increaseK = 1 + shapeWidth / worldWidth * 50;
 		    console.log(increaseK);
-		    if (increaseK > 1.5)
+		    if (increaseK > 1.1)
 		    {
-		      increaseK = 1.5;
+		      increaseK = 1.1;
 		    }
 		    else if (increaseK < 1.03)
 		    {
@@ -219,13 +221,16 @@ if (gon.openlayers){
 		    }
 		    console.log(increaseK);
 		    bounds.right = bounds.right * increaseK;
+		  //map.restrictedExtent.right = map.restrictedExtent.right * increaseK;
 		 */
 		    map.zoomToExtent(bounds);
+		    map.moveByPx(270, 0);
+
 
 				// indicate that the parent layer has loaded
 				$("div#map").trigger("parent_layer_loaded");
 		  } else {
-	console.log('vector_parent - no features found');
+        console.log('vector_parent - no features found');
 		  }
 		}
 	}
