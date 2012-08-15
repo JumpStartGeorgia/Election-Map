@@ -66,6 +66,40 @@ class Datum < ActiveRecord::Base
 		}
 	end
 
+	# get all data for event
+	def self.get_all_data_for_event(event_id)
+		if event_id
+      sql = "select "
+			sql << "event_translations.name as event_name, shape_type_translations.name_singular as shape_type_name, "
+			sql << "core_indicators.indicator_type_id, indicator_types.has_summary, indicator_type_translations.summary_name as indicator_type_name, "
+			sql << "indicators.id as indicator_id, "
+			sql << "core_indicator_translations.name as indicator_name,core_indicator_translations.description as indicator_description, "
+			sql << "data.value,datum_translations.common_id as data_common_id, datum_translations.common_name as data_common_name "
+			sql << "from events "
+      sql << "inner join event_translations ON event_translations.event_id = events.id "
+      sql << "inner join indicators on events.id = indicators.event_id "
+      sql << "inner join core_indicators ON core_indicators.id = indicators.core_indicator_id "
+      sql << "inner join core_indicator_translations ON core_indicator_translations.core_indicator_id = core_indicators.id "
+      sql << "inner join indicator_types ON indicator_types.id = core_indicators.indicator_type_id "
+      sql << "inner join indicator_type_translations ON indicator_type_translations.indicator_type_id = indicator_types.id "
+      sql << "inner join data ON data.indicator_id = indicators.id "
+      sql << "inner join datum_translations ON datum_translations.datum_id = data.id "
+      sql << "inner join shape_types on indicators.shape_type_id = shape_types.id "
+      sql << "inner join shape_type_translations on shape_types.id = shape_type_translations.shape_type_id "
+      sql << "where events.id = :event_id "
+      sql << "and event_translations.locale = :locale "
+      sql << "and core_indicator_translations.locale = :locale "
+      sql << "and datum_translations.locale = :locale "
+      sql << "and indicator_type_translations.locale = :locale "
+      sql << "and shape_type_translations.locale = :locale "
+      sql << "order by indicator_types.sort_order asc, core_indicator_translations.name_abbrv ASC, datum_translations.common_name asc "
+      sql << "limit 5000"
+
+			find_by_sql([sql, :event_id => event_id, :locale => I18n.locale])
+		end
+	end
+
+=begin
 	# get the data value for a specific shape
 	def self.get_data_for_shape(shape_id, indicator_id)
 		if !indicator_id.nil? && !shape_id.nil?
@@ -80,6 +114,7 @@ class Datum < ActiveRecord::Base
 			find_by_sql([sql, :indicator_id => indicator_id, :shape_id => shape_id, :locale => I18n.locale])
 		end
 	end
+=end
 
 	# get the data value for a shape and core indicator
 	def self.get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, core_indicator_id)
@@ -649,6 +684,121 @@ logger.debug "=========== getting data for 1 indicator"
     end
   end
 
+  def self.generate_csv_string(event_id, pretty_data=false)
+    data = nil
+    ind_ids = nil
+    indicator_type_ids = nil
+
+    if event_id
+      data = get_all_data_for_event(event_id)
+      if data && !data.empty?
+        # create the csv data
+        rows = []
+        row_starter = []
+        indicators = []
+        maxvalue = {}
+        winner = {}
+  			winner_col_header = ""
+
+        data.each_with_index do |datum, index|
+logger.debug "index = #{index}"
+
+          if index == 0
+            #event
+            row_starter << datum[:event_name].gsub(/\r?\n/, ' ').strip
+            # shape type
+            row_starter << datum[:shape_type_name].gsub(/\r?\n/, ' ').strip
+  logger.debug "row_starter = #{row_starter}"
+          end
+          # if ind type has summary, record winner
+          if datum[:has_summary] &&
+             (maxvalue[datum[:data_common_name]].nil? ||
+             datum.value.to_f > maxvalue[datum[:data_common_name]])
+
+            maxvalue[datum[:data_common_name]] = datum.value.to_f
+            winner[datum[:data_common_name]] = {:name => datum[:indicator_name].gsub(/\r?\n/, ' ').strip,
+  						 :indicator_type_id => datum[:indicator_type_id]}
+  					winner_col_header = datum[:indicator_type_name] if winner_col_header.empty?
+          end
+
+          if indicators.empty? || indicators.index{|x| x[:id] == datum[:indicator_id]} == 0
+  logger.debug "this is first indicator, so creating new row"
+            # this is first indicator
+            indicators << {:id => datum[:indicator_id], :name => datum[:indicator_description]} if indicators.empty?
+            #create row
+            row = []
+            # add first couple columns of row (event and shape type)
+            row << row_starter
+            # common id
+            row << datum[:data_common_id].gsub(/\r?\n/, ' ').strip
+            # common name
+            row << datum[:data_common_name].gsub(/\r?\n/, ' ').strip
+          else
+logger.debug "this is NOT first indicator, so looking for matching row"
+            # this is not the first indicator, so get existing row and add to it
+            indicators << {:id => datum[:indicator_id], :name => datum[:indicator_description]} if indicators.index{|x| x[:indicator_id] == datum[:indicator_id]}.nil?
+            row = rows.select{|x| x[1] == datum[:shape_type_name && x[2] == datum[:data_common_id] && x[3] == datum[:data_common_name]]}
+          end
+
+          # data
+logger.debug "adding data"
+          if pretty_data
+            row << datum.formatted_value
+          else
+            row << datum.value
+          end
+
+          # only add the row if it is new
+          if indicators.empty? || indicators.index(datum[:indicator_description]) == 0
+logger.debug "adding row to rows array"
+            # add the row to the rows array
+            rows << row.flatten
+          end
+
+          # generate the header
+          header = []
+          # replace the [Level] placeholder in download_header with the name of the map level
+          # that is located in the row_starter array
+          header << download_header.join("||").gsub("[Level]", row_starter[1]).split("||")
+          ind_ids = header.clone
+          indicators.each do |i|
+            header << i[:name]
+            ind_ids << i[:id]
+          end
+          flattened = header[0].length
+
+          # combine the header and data
+          indicator_type_ids = {}
+          data = []
+  				# if an indicator type with a summary was found, add the winner column
+  				if winner.empty?
+  					# no winner column
+  		      ind_ids = ind_ids.flatten
+  		      data << header.flatten
+  		      rows.each do |r|
+  		        data << r
+  		      end
+  				else
+    				# include winner column
+    	      ind_ids = ind_ids[0..0] + ['winner_ind'] + ind_ids[1..-1]
+    	      ind_ids = ind_ids.flatten
+    	      header = header[0..0] + [winner_col_header] + header[1..-1]
+    	      data << header.flatten
+    	      rows.each do |r|
+    		      # r[3] has to be the common_name
+    		      r = r[0..flattened-1] + [winner[r[3]][:name]] + r[flattened..-1]
+    		      indicator_type_ids[winner[r[3]][:name]] = winner[r[3]][:indicator_type_id]
+    	        data << r
+    	      end
+          end
+        end
+      end
+    end 
+
+    return {:data => data, :indicator_ids => ind_ids, :indicator_type_ids => indicator_type_ids}
+  end
+
+
 	# delete all data that are assigned to the
 	# provided event_id, shape_type_id, and indicator_id
 	def self.delete_data(event_id, shape_type_id = nil, indicator_id = nil)
@@ -812,6 +962,12 @@ protected
 	def indicator_name_abbrv
 		self[:indicator_name_abbrv]
 	end
+	def indicator_description=(val)
+		self[:indicator_description] = val
+	end
+	def indicator_description
+		self[:indicator_description]
+	end
 	def color=(val)
 		self[:color] = val
 	end
@@ -835,6 +991,30 @@ protected
 	end
 	def core_indicator_id
 		self[:core_indicator_id]
+	end
+	def event_name=(val)
+		self[:event_name] = val
+	end
+	def event_name
+		self[:event_name]
+	end
+	def has_summary=(val)
+		self[:has_summary] = val
+	end
+	def has_summary
+		self[:has_summary]
+	end
+	def data_common_id=(val)
+		self[:data_common_id] = val
+	end
+	def data_common_id
+		self[:data_common_id]
+	end
+	def data_common_name=(val)
+		self[:data_common_name] = val
+	end
+	def data_common_name
+		self[:data_common_name]
 	end
 
 end

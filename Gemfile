@@ -25,6 +25,7 @@ gem "kgio", "~> 2.7.4" # makes dalli faster
 #gem "girl_friday", "~> 0.9.7" # asynchronous calls
 gem "json", "~> 1.7.4" # json parser faster than default
 gem "useragent", :git => "https://github.com/jilion/useragent.git" # browser detection
+gem "rubyzip", "~> 0.9.9" # generate zip files
 
 group :development do
 	gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/

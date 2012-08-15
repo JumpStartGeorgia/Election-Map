@@ -3,6 +3,7 @@ class RootController < ApplicationController
   before_filter :authenticate_user!,
     :except => [:index, :export, :download, :data_table]
 	require 'ostruct'
+  require 'zip/zip'
 
   # GET /
   # GET /.json
@@ -334,10 +335,6 @@ logger.debug ">>>>>>>>>>>>>>>> format = csv"
 
 				  format.xls{
 logger.debug ">>>>>>>>>>>>>>>> format = xls"
-						spreadsheet = render_to_string(:action => "download.xls.erb", :layout => false)
-						send_data spreadsheet,
-				    :disposition => "attachment; filename=#{clean_filename(filename)}.xls"
-					  send_data = true
 					}
 				end
 			end
@@ -348,6 +345,51 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
 
   end
 
+  def archive
+    send_data = false
+    params[:event_id] = 2
+    params[:shape_type_id] = 3
+    params[:shape_id] = 26282
+  	if !params[:event_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
+      #get the data
+      dt = Datum.get_table_data(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
+  		@data = dt[:data]
+
+  		if !@data.nil?
+  	    filename = "zip_test"
+  			filename << "-#{l Time.now, :format => :file}"
+  			filename = clean_filename(filename) + ".zip"
+
+        path = "/Users/addie/Projects/Election-Map/public/json/event_2/summary_data/en/indicator_type_2/shape_type_3"
+        zip_path = "/Users/addie/Projects/Election-Map/public/json/" + filename
+        #t = Tempfile.new(filename)
+        #Zip::ZipOutputStream.open(t.path) do |z|
+        Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |z|
+          # csv
+          csv_filename = "csv_test.csv"
+          t2 = Tempfile.new(csv_filename)          
+					spreadsheet = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
+						# add the rows
+						@data.each do |r|
+						  csv << r
+						end
+					end
+					t2.write(spreadsheet)
+					z.add(csv_filename, t2.path)
+
+          # xls
+          xls_filename = "xls_test.xls"
+          t2 = Tempfile.new(xls_filename)          
+					spreadsheet = render_to_string(:action => "download.xls.erb", :layout => false)
+					t2.write(spreadsheet)
+					z.add(xls_filename, t2.path)
+        end
+  		end
+  	end
+
+  	# if get here, then an error occurred
+#  	redirect_to :back, :notice => t("app.msgs.no_data_download") if !send_data
+  end
 
   # GET /admin
   # GET /admin.json
