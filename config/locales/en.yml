@@ -167,8 +167,6 @@ en:
   layouts:
     application-bootstrap:
       title: Georgia Election Data
-      logo_alt: Map of Georgia in different colors
-      logo_title: Home
       ndi_alt: National Democratic Institute
       ndi_title: National Democratic Institute
       signed_in: Signed in as
@@ -219,6 +217,15 @@ en:
       js_link_text: Built by JumpStart Georgia
     event_menu:
       header: Elections
+    unsupported_browser:
+      title: Unsupported Browser
+      ndi_alt: National Democratic Institute
+      ndi_title: National Democratic Institute
+      signed_in: Signed in as
+      admin: Admin
+      sign_out: Sign Out
+      js_link_title: "Visit JumpStart Georgia's website"
+      js_link_text: Built by
   root:
     admin:
       title: Administration Section

@@ -7,6 +7,12 @@ GIT
       formtastic
       rails (>= 3.1.0)
 
+GIT
+  remote: https://github.com/jilion/useragent.git
+  revision: 3aac770c4a4243542c2f202abf7a9af035379c3a
+  specs:
+    useragent (0.2.3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -239,4 +245,5 @@ DEPENDENCIES
   twitter-bootstrap-rails (~> 2.1.0)
   uglifier
   unicorn (= 4.2.1)
+  useragent!
   will_paginate (= 3.0.3)

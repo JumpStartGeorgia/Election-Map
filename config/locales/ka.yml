@@ -167,16 +167,11 @@ ka:
   layouts:
     application-bootstrap:
       title: საქართველოს საარჩევნო მონაცემები
-      logo_alt: Map of Georgia in different colors
-      logo_title: მთავარი გვერდი
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი
       ndi_title: ეროვნული დემოკრატიული ინსტიტუტი
       signed_in: Signed in as
       admin: ადმინისტრატო
       sign_out: Sign Out
-      sign_in: შესვლა
-      or: or
-      sign_up: Sign Up
       about: პროექტის შესახებ
       data_source: მონაცემთა წყარო
       contact: დაგვიკავშირდით
@@ -219,6 +214,18 @@ ka:
       js_link_text: აგებულია ჯამპსტარტ ჯორჯიას მიერ
     event_menu:
       header: არჩევნების
+    unsupported_browser:
+      title: Unsupported Browser
+      ndi_alt: National Democratic Institute
+      ndi_title: National Democratic Institute
+      signed_in: Signed in as
+      admin: Admin
+      sign_out: Sign Out
+      about: About Project
+      data_source: Data Source
+      contact: Contact Us
+      js_link_title: "Visit JumpStart Georgia's website"
+      js_link_text: Built by
   root:
     admin:
       title: Administration Section

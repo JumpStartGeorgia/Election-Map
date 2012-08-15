@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
    layout "application-bootstrap"
 
    before_filter :set_locale
+   before_filter :is_browser_supported?
    before_filter :set_event_types
    before_filter :set_shape_types
    before_filter :set_default_values
@@ -26,6 +27,26 @@ class ApplicationController < ActionController::Base
 	end
 
 protected
+
+	Browser = Struct.new(:browser, :version)
+	SUPPORTED_BROWSERS = [
+		Browser.new("Chrome", "15.0"),
+		Browser.new("Safari", "5.1"),
+		Browser.new("Firefox", "13.0"),
+		Browser.new("Internet Explorer", "9.0"),
+		Browser.new("Opera", "11.0")
+	]
+
+	def is_browser_supported?
+		user_agent = UserAgent.parse(request.user_agent)
+logger.debug "////////////////////////// BROWSER = #{user_agent}"
+		if SUPPORTED_BROWSERS.any? { |browser| user_agent < browser }
+			# browser not supported
+logger.debug "////////////////////////// BROWSER NOT SUPPORTED"
+			render "layouts/unsupported_browser", :layout => false
+		end
+	end
+
 
   def set_locale
     if params[:locale] and I18n.available_locales.include?(params[:locale].to_sym)
