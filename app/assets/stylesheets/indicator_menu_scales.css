@@ -1,6 +1,7 @@
 div#indicator_menu_scale {
 	padding: 0;
-	margin: -620px 0 0 6%;
+	float: right;
+	margin: -620px 2% 0 0;
 	z-index: 1005;
 	position: relative;
 }
