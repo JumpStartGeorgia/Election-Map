@@ -256,7 +256,9 @@ console.log("computed window width = " + window.maxSVGWidth);
     var d3elmapsvg = d3.select(id_el)
                      .append("svg")
                      .attr("xmlns", "http://www.w3.org/2000/svg")
-                     .attr("class", "elmapsvg");
+                     .attr("class", "elmapsvg")
+										 .attr("width", "100%")
+										 .attr("height", "100%");
     this.svg = d3elmapsvg;
 
     // process each data type in json
