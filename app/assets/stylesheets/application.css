@@ -107,23 +107,15 @@ ol.standard li {
 	line-height: 1.1;
 }
 
-
-/* Main Container */
-#main {
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
-
 /* Map */
 #map-container {
 	position: relative;
-	width: 100%;
+	width: 900px;
 /*	float: left;*/
     margin-bottom: 25px;
 	}
 #map {
-  width: 100%;
+  width: 900px;
 	height: 600px;
   background: #edecd1;
   border-radius: 3px;
