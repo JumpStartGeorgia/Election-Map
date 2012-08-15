@@ -93,6 +93,20 @@
 
 	<% end %>
 
+	<script type="text/javascript">
+		if (typeof gon == 'undefined' || gon == null)
+		{
+		  var gon = {};
+		}
+		if (typeof gon.dt == 'undefined' || gon.dt == null)
+		{
+		  gon.dt = {};
+		}
+		gon.dt.g           = <%= @dt.gon[:dt][:g] %>;
+		gon.dt.p           = <%= @dt.gon[:dt][:p] %>;
+		gon.dt.all         = <%= @dt.gon[:dt][:all] %>;
+	//gon.dt.common_name = <%= @dt.gon[:dt][:common_name] %>;
+	</script>
 	<script type="text/javascript" src="/assets/data_table.js"></script>
 	<script type="text/javascript">
 		dt.init();

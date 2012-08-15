@@ -274,16 +274,11 @@ logger.debug "//////////////////////////////////////////////////////// done with
 		  #end
 		  dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
 		  dt.dd_titles = dt.data[0][dt.static_cols..-1]
-#		  dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
-#		  dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
+		  dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
+		  dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
 
 		  @dt = dt
 
-			# set gon variables
-			gon.dt_g           = dt.groups
-			gon.dt_p           = dt.cols_p
-			gon.dt_all         = dt.data[0].length
-			gon.dt_common_name = params[:highlight_shape].nil? ? false : params[:highlight_shape]
 		end
 
     render :layout => 'ajax_data_table'

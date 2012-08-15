@@ -28,7 +28,7 @@ var dt =
 
   arrow_click_handler: function ()
   {
-    if (gon.dt_p >= gon.dt_all)
+    if (gon.dt.p >= gon.dt.all)
     {
       return;
     }
@@ -36,7 +36,6 @@ var dt =
 
     hidden = dt.ph.find('th.hidden, td.hidden');
     visible = dt.ph.find('th:not(.hidden):not(.cg0), td:not(.hidden):not(.cg0)');
-
     classes = visible.get(0).getAttribute('class').split(' ');
     for (i in classes)
     {
@@ -47,19 +46,19 @@ var dt =
       visi = classes[i].substring(2);
       break;
     }
-    //nexti = (direction == 'left') ? ((+ visi == 1) ? gon.dt_g : + visi - 1) : ((+ visi == gon.dt_g) ? 1 : + visi + 1);
+    //nexti = (direction == 'left') ? ((+ visi == 1) ? gon.dt.g : + visi - 1) : ((+ visi == gon.dt.g) ? 1 : + visi + 1);
     if (direction == 'left')
     {
       if (+ visi == 1)
       {
-        //nexti = gon.dt_g;
+        //nexti = gon.dt.g;
         return false;
       }
       nexti = + visi - 1;
     }
     else if (direction == 'right')
     {
-      if (+ visi == gon.dt_g)
+      if (+ visi == gon.dt.g)
       {
         //nexti = 1;
         return false;
@@ -81,7 +80,7 @@ var dt =
   highlight: function ()
   {
   /*
-    if (gon.dt_p >= gon.dt_all)
+    if (gon.dt.p >= gon.dt.all)
     {
       return;
     }
@@ -125,12 +124,12 @@ var dt =
       dt.left_arrow_overlay_visible = false;
     }
 
-    if (nexti == gon.dt_g)
+    if (nexti == gon.dt.g)
     {
       dt.right_arrow_overlay.show(0);
       dt.right_arrow_overlay_visible = true;
     }
-    else if (nexti < gon.dt_g && dt.right_arrow_overlay_visible)
+    else if (nexti < gon.dt.g && dt.right_arrow_overlay_visible)
     {
       dt.right_arrow_overlay.hide(0);
       dt.right_arrow_overlay_visible = false;
