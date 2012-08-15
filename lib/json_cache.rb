@@ -81,11 +81,11 @@ require 'net/http'
     custom_event_indicator_cache
     custom_time = Time.now
 
-		puts "======================================================== "
-		puts "======== time to load default events was #{(default_time - start)} seconds"
-		puts "======== time to load custom view cache was #{(custom_time - default_time)} seconds"
-		puts "======== total time was #{(Time.now - start)} seconds"
-		puts "======================================================== "
+		Rails.logger.debug "======================================================== "
+		Rails.logger.debug "======== time to load default events was #{(default_time - start)} seconds"
+		Rails.logger.debug "======== time to load custom view cache was #{(custom_time - default_time)} seconds"
+		Rails.logger.debug "======== total time was #{(Time.now - start)} seconds"
+		Rails.logger.debug "======================================================== "
 
   end
 
@@ -96,15 +96,16 @@ require 'net/http'
     ActiveRecord::Base.logger = nil
 
 		# domain
-		domain = "http://0.0.0.0:3000"
+		domain = "http://emap.local"
 		if Rails.env.staging?
 			domain = "http://dev-electiondata.jumpstart.ge"
 		elsif Rails.env.production?
 			domain = "http://electiondata.jumpstart.ge"
 		end
+		Rails.logger.debug "============ using domain #{domain}"
 
 		start = Time.now
-		puts "============ starting build cache at #{start}"
+		Rails.logger.debug "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
 		events = Event.where("shape_id is not null")
@@ -149,9 +150,9 @@ require 'net/http'
 							Net::HTTP.get(uri)
 						end
 					end
-					puts "=================== "
-					puts "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"
-					puts "=================== "
+					Rails.logger.debug "=================== "
+					Rails.logger.debug "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"
+					Rails.logger.debug "=================== "
 				end
 			end
 		end
@@ -161,7 +162,7 @@ require 'net/http'
     # turn active record logging back on
     ActiveRecord::Base.logger = old_logger
 
-		puts "============ total time took #{(end_time - start)} seconds"
+		Rails.logger.debug "============ total time took #{(end_time - start)} seconds"
   end
 
 	# create cache for all indicators for all events that have a custom view
@@ -186,7 +187,7 @@ require 'net/http'
     ActiveRecord::Base.logger = nil
 
 		start = Time.now
-		puts "============ starting build cache at #{start}"
+		Rails.logger.debug "============ starting build cache at #{start}"
 
 		if !event_id.nil? && !shape_type_id.nil?
 			# domain
@@ -196,7 +197,7 @@ require 'net/http'
 			elsif Rails.env.production?
 				domain = "http://electiondata.jumpstart.ge"
 			end
-
+			Rails.logger.debug "============ using domain #{domain}"
 
 			# get the event
 			event = Event.find(event_id)
@@ -206,9 +207,9 @@ require 'net/http'
         is_custom_view = false
 				if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
 					# has custom view, use the custom shape type
-  				puts "=================== "
-					puts "=================== event #{event_id} at shape type #{shape_type_id} is a custom view"
-  				puts "=================== "
+  				Rails.logger.debug "=================== "
+					Rails.logger.debug "=================== event #{event_id} at shape type #{shape_type_id} is a custom view"
+  				Rails.logger.debug "=================== "
 					is_custom_view = true
 				end
 
@@ -225,9 +226,9 @@ require 'net/http'
 							  uri = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator.id}/custom_view/#{is_custom_view}")
     				  end
 							Net::HTTP.get(uri)
-      				puts "=================== "
-    					puts "=================== time to load indicator #{indicator.id} for event #{event.id} was #{(Time.now-ind_start)} seconds"
-    					puts "=================== "
+      				Rails.logger.debug "=================== "
+    					Rails.logger.debug "=================== time to load indicator #{indicator.id} for event #{event.id} was #{(Time.now-ind_start)} seconds"
+    					Rails.logger.debug "=================== "
             end
   				end
 				end
@@ -237,7 +238,7 @@ require 'net/http'
 
     # turn active record logging back on
     ActiveRecord::Base.logger = old_logger
-		puts "============ total time took #{(end_time - start)} seconds"
+		Rails.logger.debug "============ total time took #{(end_time - start)} seconds"
 	end
 
 	###########################################
@@ -250,16 +251,16 @@ require 'net/http'
     ActiveRecord::Base.logger = nil
 
 		start = Time.now
-		puts "============ starting build cache at #{start}"
+		Rails.logger.debug "============ starting build cache at #{start}"
 		# get the events that have indicators with a type that has a summary
 		events = Event.get_events_with_summary_indicators
 		if !events.nil? && !events.empty?
 #			events = events.select{|x| x.id == 15 || x.id == 2}
 			events.each_with_index do |event, i|
 				event_start = Time.now
-				puts "=================== "
-				puts "=================== event #{event.id} start"
-				puts "=================== "
+				Rails.logger.debug "=================== "
+				Rails.logger.debug "=================== event #{event.id} start"
+				Rails.logger.debug "=================== "
 
 				# get all of the shapes for this event
 				# - have to call root for the default event shape may not be the root shape
@@ -273,9 +274,9 @@ require 'net/http'
 					end
 				end
 
-				puts "=================== "
-				puts "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"
-				puts "=================== "
+				Rails.logger.debug "=================== "
+				Rails.logger.debug "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"
+				Rails.logger.debug "=================== "
 			end
 		end
 
@@ -284,7 +285,7 @@ require 'net/http'
     # turn active record logging back on
     ActiveRecord::Base.logger = old_logger
 
-		puts "============ total time took #{(end_time - start)} seconds"
+		Rails.logger.debug "============ total time took #{(end_time - start)} seconds"
   end
 
 
