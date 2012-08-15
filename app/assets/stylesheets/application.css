@@ -189,7 +189,7 @@ filter:alpha(opacity=100); /* For IE8 and earlier */
 
 #footnote {
 	background-color: #F7F3E6;
-	color: #000;
+	color: #333;
 	padding: 0.3em;
 	font-size: smaller;
   font-family: Arial;
@@ -199,6 +199,7 @@ filter:alpha(opacity=100); /* For IE8 and earlier */
 #event_description{
 	margin: 0;
 	padding: 1em 1em 1em 0;
+  font-family: Arial;
 }
 #event_description h3{
 	font-weight: bold;
