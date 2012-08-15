@@ -31,8 +31,8 @@ protected
 	Browser = Struct.new(:browser, :version)
 	SUPPORTED_BROWSERS = [
 		Browser.new("Chrome", "15.0"),
-		Browser.new("Safari", "5.1"),
-		Browser.new("Firefox", "13.0"),
+		Browser.new("Safari", "4.0.2"),
+		Browser.new("Firefox", "10.0.2"),
 		Browser.new("Internet Explorer", "9.0"),
 		Browser.new("Opera", "11.0")
 	]
@@ -43,7 +43,7 @@ logger.debug "////////////////////////// BROWSER = #{user_agent}"
 		if SUPPORTED_BROWSERS.any? { |browser| user_agent < browser }
 			# browser not supported
 logger.debug "////////////////////////// BROWSER NOT SUPPORTED"
-#			render "layouts/unsupported_browser", :layout => false
+			render "layouts/unsupported_browser", :layout => false
 		end
 	end
 
