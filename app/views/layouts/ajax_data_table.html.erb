@@ -5,8 +5,8 @@
 	<% if !td.nil? && !td.empty? %>
 		<% cqo = @dt.cols_p - @dt.static_cols %>
 
-		<div id="data-table-top" class="row">
-			<div class="switchers clearfix span4">
+		<div id="data-table-top" class="row-fluid">
+			<div class="switchers clearfix span10">
 				<div class="arrows">
 				  <div class="arrow-container arrow-container-left">
 				    <div class="overlay"></div>
@@ -28,11 +28,31 @@
 				</select>
 			</div>
 
-			<div id="tips-placeholder-links" class="span3">
+			<div id="tips-download" class="span2">
+				<%= link_to("XLS",
+					download_data_xls_path(:event_id => params[:event_id],
+						:shape_type_id => params[:child_shape_type_id], :shape_id => params[:shape_id],
+						:map_title => "placeholder", :event_name => "placeholder"),
+					:id => "export-data-xls2", :title => t('app.buttons.download_xls')) %>
+
+				<%= link_to("CSV",
+					download_data_csv_path(:event_id => params[:event_id],
+						:shape_type_id => params[:child_shape_type_id], :shape_id => params[:shape_id],
+						:map_title => "placeholder", :event_name => "placeholder"),
+					:id => "export-data-csv2", :title => t('app.buttons.download_csv')) %>
+			</div>
+		</div>
+
+		<div id="data-table-top2" class="row-fluid">
+
+			<div id="tips-links" class="span3">
 			  <%= t('.links') %>
 			</div>
 
-			<div id="tips-placeholder-sorting" class="span4">
+			<div class="span1">
+			</div>
+
+			<div id="tips-sorting" class="span8">
 			  <%= t('.sorting') %>
 			</div>
 		</div>

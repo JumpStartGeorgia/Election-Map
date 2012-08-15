@@ -111,16 +111,44 @@ td.highlighted > a {
 #data-table-container #data-table-top {
   margin-left: 0;
 }
+#data-table-container #data-table-top2 {
+  margin-left: 0;
+	margin-bottom: 10px;
+}
 #data-table-container .switchers {
   margin: 5px 0;
 }
 
-#data-table-container #tips-placeholder-links, #data-table-container #tips-placeholder-sorting {
+#data-table-container #tips-download {
+  margin-top: 10px;
+	text-align: right;
+}
+#data-table-container #tips-download a {
+	background: #e26561;
+	text-transform: uppercase;
+	color: #FFF;
+  font-size: 12px;
+	text-decoration: none;
+	font-weight: bold;
+	display: inline-block;
+	padding: 5px 3px;
+   -webkit-border-radius: 2px;
+   -moz-border-radius: 2px;
+   border-radius: 2px;
+}
+#data-table-container #tips-download a:hover {
+	text-decoration: none;
+	opacity: .5;
+}
+#data-table-container #tips-links, #data-table-container #tips-sorting {
   margin-top: 5px;
-  padding: 4px 5px;
+  padding: 7px;
   background: #fff;
   font-size: 12px;
-	height: 24px;
+	text-align: center;
+ -webkit-border-radius: 2px;
+ -moz-border-radius: 2px;
+ border-radius: 2px;
 }
 
 #data-table-container .switchers > * {
@@ -148,7 +176,7 @@ td.highlighted > a {
 }
 
 #dt_dd_switcher,
-#tips-placeholder,
+#tips,
 #data-table-container .arrows .arrow-container,
 #data-table-container .arrows .arrow,
 #data-table-container .arrow-container .overlay {

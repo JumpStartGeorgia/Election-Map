@@ -16,6 +16,13 @@ var dt =
 
     dt.dd_switcher.ready(dt.highlight);
     dt.dd_switcher.change(dt.highlight);
+
+			// update the url for the download data link
+			$("#export-data-xls2").attr('href',update_query_parameter($("#export-data-xls").attr('href'), "event_name", "event_name", gon.event_name));
+			$("#export-data-xls2").attr('href',update_query_parameter($("#export-data-xls").attr('href'), "map_title", "map_title", gon.map_title));
+			$("#export-data-csv2").attr('href',update_query_parameter($("#export-data-csv").attr('href'), "event_name", "event_name", gon.event_name));
+			$("#export-data-csv2").attr('href',update_query_parameter($("#export-data-csv").attr('href'), "map_title", "map_title", gon.map_title));
+
   },
 
 
@@ -29,7 +36,6 @@ var dt =
 
     hidden = dt.ph.find('th.hidden, td.hidden');
     visible = dt.ph.find('th:not(.hidden):not(.cg0), td:not(.hidden):not(.cg0)');
-
     classes = visible.get(0).getAttribute('class').split(' ');
     for (i in classes)
     {
@@ -139,4 +145,3 @@ function empty(variable)
 {
   return (variable == null || variable == undefined || typeof variable == 'undefined' || variable == '');
 }
-
