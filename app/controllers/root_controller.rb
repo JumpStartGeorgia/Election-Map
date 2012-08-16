@@ -335,6 +335,10 @@ logger.debug ">>>>>>>>>>>>>>>> format = csv"
 
 				  format.xls{
 logger.debug ">>>>>>>>>>>>>>>> format = xls"
+						spreadsheet = render_to_string(:action => "download.xls.erb", :layout => false)
+						send_data spreadsheet,
+				    :disposition => "attachment; filename=#{clean_filename(filename)}.xls"
+					  send_data = true
 					}
 				end
 			end
@@ -367,7 +371,7 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
         Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |z|
           # csv
           csv_filename = "csv_test.csv"
-          t2 = Tempfile.new(csv_filename)          
+          t2 = Tempfile.new(csv_filename)
 					spreadsheet = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
 						# add the rows
 						@data.each do |r|
@@ -379,7 +383,7 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
 
           # xls
           xls_filename = "xls_test.xls"
-          t2 = Tempfile.new(xls_filename)          
+          t2 = Tempfile.new(xls_filename)
 					spreadsheet = render_to_string(:action => "download.xls.erb", :layout => false)
 					t2.write(spreadsheet)
 					z.add(xls_filename, t2.path)

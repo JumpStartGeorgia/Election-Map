@@ -162,6 +162,7 @@ ka:
       overall_placement: Overall Placement
       total_participants: Total Participants
       footnote_duplicates: At least 2 Participants tied
+      data_archive: Data Archive
   contact_mailer:
     subject: "[Georgia Election Data] Contact Form"
   layouts:
@@ -248,7 +249,7 @@ ka:
       download_header: Download CSV Files
       download_indicators: Indicators
       delete_header: Delete Records
-      delete_shapes: Shapes
+      delete_shapes: Map Shapes
       delete_data: Data
       cache_clear_header: Clear Cache
       cache_clear_all: Clear All Cache
