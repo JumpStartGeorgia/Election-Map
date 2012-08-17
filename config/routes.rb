@@ -95,6 +95,11 @@ ElectionMap::Application.routes.draw do
 		match '/cache/summary_data', :to => 'cache#summary_data',
 			:as => :cache_summary_data, :via => :post
 
+		# data archives
+		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :get
+		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :post
+
+
     # routes to root#index
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get
 		match '/event_type/:event_type_id/event/:event_id(/shape/:shape_id(/shape_type/:shape_type_id(/indicator/:indicator_id(/custom_view/:custom_view(/highlight_shape/:highlight_shape)))))' => 'root#index', :as => 'indicator_map', :via => :get

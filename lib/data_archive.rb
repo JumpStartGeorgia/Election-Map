@@ -4,7 +4,7 @@ module DataArchive
 	require 'utf8_converter'
 
 	###########################################
-	### manage directores
+	### manage directories
 	###########################################
 	def self.create_directory(path)
 		if !path.nil? && path != "."
@@ -21,7 +21,8 @@ module DataArchive
 		logs = []
 		files = {}
     # get all events
-		events = Event.where("shape_id is not null").limit(1)
+#		events = Event.where("shape_id is not null").limit(1)
+		events = Event.where(:id => 1)
 
     if events && !events.empty?
 			# create folder for zip files
@@ -77,9 +78,12 @@ module DataArchive
 				logs << ">>>>>>>>>>> time to zip files was #{Time.now - zip_start} seconds"
       end
     end
+		# delete the csv/xls files that are no longer needed
+		delete_files(archive_file_path(timestamp), files)
+
 		logs << ">>>>>>>>>>> total time to create zip files was #{Time.now - start_time} seconds"
 
-		logs.each {|x| puts x}
+		logs.each {|x| Rails.logger.debug x}
 
   end
 
@@ -97,7 +101,7 @@ module DataArchive
 	end
 
 	def self.create_excel_formatted_string(data)
-		xls = ""
+		xls = []
 		if data && !data.empty?
 			xls << "<?xml version=\"1.0\"?>\n"
 			xls << "<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"\n"
@@ -125,10 +129,27 @@ module DataArchive
 			xls << "  </Worksheet>\n"
 			xls << "</Workbook>"
 		end
-		return xls
+		return xls.join
 	end
 
 protected
+
+	###########################################
+	### delete files not needed
+	### - assume collection is a hash of arrays
+  ###   as used in the create_files method
+	###########################################
+	def self.delete_files(path, collection)
+		if !collection.nil? && !collection.empty?
+			collection.each_key do |key|
+				collection[key].each_key do |key2|
+					collection[key][key2].each do |file|
+						File.delete(path + "/" + file)
+					end
+				end
+			end
+		end
+	end
 
   def self.archive_file_path(timestamp)
   	clean_filename("#{Rails.root}/public/data_archives/#{timestamp}")
