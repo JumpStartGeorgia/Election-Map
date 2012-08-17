@@ -37,68 +37,64 @@
     <%# favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon' %>
   </head>
   <body>
+		<div id="wrapper">
+      <div class="navbar navbar-fixed-top">
+        <!-- Navbar header -->
+        <div class="navbar-inner navbar-inner-head">
+          <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),
+  								:title=> t('.title'), :class=>"brand")%>
 
-    <div class="navbar navbar-fixed-top">
-      <!-- Navbar header -->
-      <div class="navbar-inner-head">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),
-								:title=> t('.title'), :class=>"brand")%>
-
-          <ul class="nav pull-right">
-						<% I18n.available_locales.each do |locale| %>
-							<% if locale != I18n.locale %>
-								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
-							<% end %>
-						<% end %>
-          </ul>
-          <div class="nav-collapse">
             <ul class="nav pull-right">
-              <% if user_signed_in? %>
-              <li>
-   		         <%= current_user.email %>
-							</li>
-              <li>
-   		         <%= link_to t('.admin'), admin_path %>
-							</li>
-              <li>
-   		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
-							</li>
-              <% end %>
+  						<% I18n.available_locales.each do |locale| %>
+  							<% if locale != I18n.locale %>
+  								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+  							<% end %>
+  						<% end %>
             </ul>
+            <div class="nav-collapse">
+              <ul class="nav pull-right">
+                <% if user_signed_in? %>
+                <li>
+     		         <%= current_user.email %>
+  							</li>
+                <li>
+     		         <%= link_to t('.admin'), admin_path %>
+  							</li>
+                <li>
+     		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
+  							</li>
+                <% end %>
+              </ul>
+            </div>
           </div>
         </div>
+
+        <!-- Navbar footer -->
+        <div class="navbar-inner navbar-inner-bottom">
+           <div class="container-fluid clear">
+              <div class="navmenu" id="navmenu">
+                 <p class="link-text">
+                    <%= t('.header') %>
+                    <span class="arrow_shape">&#x25BC;</span>
+                 </p>
+              </div>
+              <div class="navmenu-select">
+                 <p>
+                    <%= @event_name %>
+                 </p>
+              </div>
+           </div>
+        </div>
+        <%= render :partial => "layouts/event_menu_tabs" %>
       </div>
 
-      <!-- Navbar footer -->
-      <div class="navbar-inner-bottom">
-         <div class="container clear">
-            <div class="navmenu" id="navmenu">
-               <p class="link-text">
-                  <%= t('.header') %>
-                  <span class="arrow_shape">&#x25BC;</span>
-               </p>
-            </div>
-            <div class="navmenu-select">
-               <p>
-                  <%= @event_name %>
-               </p>
-            </div>
-         </div>
-      </div>
-      <%= render :partial => "layouts/event_menu_tabs" %>
-    </div>
-
-
-
-
-		<div id="wrap">
-			<div id="main" class="container">
+			<div id="main" class="container-fluid">
 		    <div class="content">
 		      <div class="row-fluid">
 		         <div class="span12">
@@ -118,10 +114,11 @@
 		      </div><!--/row-->
 		    </div><!--/content-->
 	    </div> <!-- /container -->
-    </div><!--/wrap-->
+      <div class="push"><!--//--></div>
+    </div><!--/wrapper-->
 
 
-    <footer class="footer">
+    <footer class="container-fluid">
 		  <div class="row-fluid">
 				<div class="ndi-logo span2">
 					<a href="http://www.ndi.org" target="_blank">

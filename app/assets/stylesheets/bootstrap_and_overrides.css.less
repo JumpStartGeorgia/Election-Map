@@ -31,20 +31,46 @@ body {
 // Example:
 // @linkColor: #ff0000;
 
+/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
+html {
+  height: 100%;
+}
 body {
   background: url("/assets/body-bg.jpg") !important;
-  padding-top: 150px !important;
+  //padding-top: 150px;
+  height: 100%;
+}
+
+#wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -80px;
+}
+
+#wrapper > .container-fluid {
+	padding-top: 150px;
+}
+			
+.push { height: 63px; } /* Just some arbitrary space to add between footer and rest of the content, when they are close */
+			
+@media (max-width: 979px) {
+  #wrapper > .container-fluid {
+  	padding-top: inherit;
+  }
 }
 
 // Navbar
 //.navbar.navbar-fixed-top {
 .navbar {
-  height: 140px;
+//  height: 140px;
 }
 
 // Navbar inner head
 .navbar-inner-head {
-   height: 87px;
+   min-height: 87px;
    background: url("/assets/header-bg.jpg") !important;
    color: #fff;
 }
@@ -63,10 +89,10 @@ body {
   -o-transition: text-shadow .5s;
 }
 
-.navbar-inner-head .container {
+.navbar-inner-head .container-fluid {
    width: 100%;
    height: 100%;
-   padding-top: 28px;
+   padding: 28px 0 0 0;
 }
 
 .navbar-inner-head .brand {
@@ -90,9 +116,10 @@ body {
   box-shadow: none;
 }
 
-.navbar-inner-bottom .container {
+.navbar-inner-bottom .container-fluid {
    height: 100%;
    width: 100%;
+   padding: 0;
 }
 
 .navbar-inner-bottom .navmenu {
@@ -211,53 +238,52 @@ body {
 
 
 // Footer
-.footer {
+footer {
    min-height: 54px !important;
-   min-width: 100%;
+//   min-width: 100%;
    background: #D4D4D4 !important;
    padding: 0;
    margin: 2em 0 0 0;
 }
 
-.footer .row-fluid {
+footer .row-fluid {
    min-height: 54px !important;
    background: #D4D4D4 !important;
 }
 
 // Footer navigation
-.footer-nav {
+footer .footer-nav {
    text-align: center;
    margin: 0 auto !important;
 	font-size: 12px;
 }
 
-.footer-nav p {
+footer .footer-nav p {
    margin-top: 20px;
 }
 
-.footer-nav p a {
+footer .footer-nav p a {
    padding: 0 10px 0 10px;
 }
 
-.footer-nav p, .footer-nav p a {
+footer .footer-nav p, .footer-nav p a {
    font-family: Arial;
    color: #454545;
 }
 
 // Footer ndi logo
-.ndi-logo {
+footer .ndi-logo {
    margin-top: 7px;
    margin-left: 20px !important;
 }
 
 // Footer JS logo
-.js-logo {
+footer .js-logo {
    margin: 0 !important;
    margin-right: 20px !important;
-
 }
 
-.js-logo p {
+footer .js-logo p {
    margin-top: 20px;
 	 padding-right: 0.3em;
    text-align: right;
@@ -267,7 +293,7 @@ body {
 	text-align: right;
 }
 
-.js-logo a img {
+footer .js-logo a img {
    margin-top: 13px;
    float: left;
 }

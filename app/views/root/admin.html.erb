@@ -1,9 +1,9 @@
 <% title t('.title') %>
 
-<div class="admin_panel row">
+<div class="admin_panel row-fluid">
    <div class="span4">
  		<h3><%= t('.basic_header')%></h3>
- 		<ul>
+ 		<ul class="standard">
  			<li>
  				<%= link_to t('.events'), events_path %>
  			</li>
@@ -35,7 +35,7 @@
   </div>
    <div class="span4">
  		<h3><%= t('.csv_header')%></h3>
- 		<ul>
+ 		<ul class="standard">
  			<li>
        <%= link_to t('.indicators'), upload_indicators_path %>
        </li>
@@ -51,7 +51,7 @@
  		</ul>
 
  		<h3><%= t('.cache_create_header')%></h3>
- 		<ul>
+ 		<ul class="standard">
  			<li>
  				<%= link_to t('.cache_summary_data'), cache_summary_data_path %>
  			</li>
@@ -64,7 +64,7 @@
  		</ul>
 
  		<h3><%= t('.download_header')%></h3>
- 		<ul>
+ 		<ul class="standard">
  			<li>
  			<%= link_to t('.download_indicators'), download_indicators_path %>
  			</li>
@@ -72,7 +72,7 @@
   </div>
    <div class="span4">
  		<h3><%= t('.delete_header')%></h3>
- 		<ul>
+ 		<ul class="standard">
  			<li>
  			<%= link_to t('.delete_data'), delete_data_path %>
  			</li>
@@ -82,7 +82,7 @@
  		</ul>
 
  		<h3><%= t('.cache_clear_header')%></h3>
- 		<ul>
+ 		<ul class="standard">
  			<li>
  				<%= link_to t('.cache_clear_memory'), cache_clear_memory_path %>
  			</li>
