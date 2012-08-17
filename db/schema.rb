@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120813070502) do
+ActiveRecord::Schema.define(:version => 20120817185857) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -164,21 +164,6 @@ ActiveRecord::Schema.define(:version => 20120813070502) do
 
   add_index "indicator_scales", ["indicator_id"], :name => "index_indicator_scales_on_indicator_id"
 
-  create_table "indicator_translation_olds", :force => true do |t|
-    t.integer  "indicator_id"
-    t.string   "locale"
-    t.string   "name"
-    t.string   "name_abbrv"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text     "description"
-  end
-
-  add_index "indicator_translation_olds", ["id"], :name => "index_indicator_translation_olds_on_id"
-  add_index "indicator_translation_olds", ["indicator_id"], :name => "index_indicator_translations_on_indicator_id"
-  add_index "indicator_translation_olds", ["locale"], :name => "index_indicator_translations_on_locale"
-  add_index "indicator_translation_olds", ["name"], :name => "index_indicator_translations_on_name"
-
   create_table "indicator_translations", :force => true do |t|
     t.integer  "indicator_id"
     t.string   "locale"
@@ -223,6 +208,29 @@ ActiveRecord::Schema.define(:version => 20120813070502) do
   end
 
   add_index "indicators", ["event_id", "shape_type_id", "core_indicator_id"], :name => "inds_event_shape_type_core_ind"
+
+  create_table "news", :force => true do |t|
+    t.string   "news_type"
+    t.datetime "date_posted"
+    t.string   "data_archive_folder"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "news", ["data_archive_folder"], :name => "index_news_on_data_archive_folder"
+  add_index "news", ["date_posted"], :name => "index_news_on_date_posted"
+  add_index "news", ["news_type"], :name => "index_news_on_news_type"
+
+  create_table "news_translations", :force => true do |t|
+    t.integer  "news_id"
+    t.string   "locale"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "news_translations", ["locale"], :name => "index_news_translations_on_locale"
+  add_index "news_translations", ["news_id"], :name => "index_news_translations_on_news_id"
 
   create_table "page_translations", :force => true do |t|
     t.integer  "page_id"

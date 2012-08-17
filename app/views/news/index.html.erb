@@ -1,0 +1,44 @@
+<% title t('.title') %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= t('app.common.news_type') %></th>
+      <th><%= t('app.common.date_posted') %></th>
+      <th><%= t('app.common.data_archive_folder') %></th>
+      <% if user_signed_in? %>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @news.each do |news| %>
+      <tr>
+        <td><%= news.news_type %></td>
+        <td><%= l news.date_posted %></td>
+        <td><%= news.data_archive_folder %></td>
+        <% if user_signed_in? %>
+        <td>
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_news_path(news), :class => 'btn btn-mini' %>
+          <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+                      news_path(news),
+                      :method => :delete,
+                      :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+                      :class => 'btn btn-mini btn-danger' %>
+        </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if user_signed_in? %>
+<div class="form-actions">
+  <%= link_to t('.new', :default => t("app.buttons.new_news")),
+            new_news_path,
+            :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+    :class => 'btn' %>
+</div>
+<% end %>

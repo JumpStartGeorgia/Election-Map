@@ -90,6 +90,7 @@ ka:
       new_pages: New Page
       new_shape_types: New Shape Type
       new_shapes: New Shape
+      new_news: New News
       upload_csv: Process CSV File
       download_xls: ჩამოტვირთეთ XLS რუქა ფაილი
       download_csv: ჩამოტვირთეთ CSV რუქა ფაილი
@@ -163,6 +164,9 @@ ka:
       total_participants: Total Participants
       footnote_duplicates: At least 2 Participants tied
       data_archive: Data Archive
+      news_type: News Type
+      date_posted: Date Posted
+      data_archive_folder: Data Archive Folder
   contact_mailer:
     subject: "[Georgia Election Data] Contact Form"
   layouts:
@@ -465,3 +469,12 @@ ka:
       size: This will take about 5mb of disk space.
       time: This will take about 30 minutes.
       created: The data archive files have been created.
+  news:
+    edit:
+      title: Editing News
+    index:
+      title: News
+    new:
+      title: New News
+    show:
+      title: News Details

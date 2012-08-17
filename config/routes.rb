@@ -1,7 +1,4 @@
 ElectionMap::Application.routes.draw do
-
-
-
 	#--------------------------------
 	# all resources should be within the scope block below
 	#--------------------------------
@@ -48,6 +45,7 @@ ElectionMap::Application.routes.draw do
 	  resources :event_custom_views
 	  resources :event_indicator_relationships
 	  resources :event_types
+    resources :news
 	  resources :pages
 	  resources :shapes do
 			collection do
