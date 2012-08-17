@@ -160,8 +160,8 @@ en:
       indicator_type_relationship: Indicator Group with Relationship
       winner: Winner
       overall_placement: Overall Placement
-      total_participants: Total Participants
-      footnote_duplicates: At least 2 Participants tied
+      total_participants: Total Subjects
+      footnote_duplicates: At least two Subjects tied
       data_archive: Data Archive
   contact_mailer:
     subject: "[Georgia Election Data] Contact Form"

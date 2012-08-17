@@ -159,9 +159,9 @@ ka:
       indicator_relationship: Indicator with Relationship
       indicator_type_relationship: Indicator Group with Relationship
       winner: გამარჯვებული
-      overall_placement: Overall Placement
-      total_participants: Total Participants
-      footnote_duplicates: At least 2 Participants tied
+      overall_placement: დაკავებული ადგილი
+      total_participants: სუბიექტთა რაოდენობა
+      footnote_duplicates: სულ მცირე ორი სუბიექტის შედეგები მიახლოებულია
       data_archive: Data Archive
   contact_mailer:
     subject: "[Georgia Election Data] Contact Form"
@@ -181,8 +181,8 @@ ka:
       js_link_text: აგებულია
       header: არჩევნების
     ajax_data_table:
-      links: Click on a data point to view it on the map.
-      sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.
+      links: რუკის სანახავად დააჭირეთ მონაცემების ღილაკს.
+      sorting: "ერთდროულად რამდენიმე სვეტის სორტირებისთვის გეჭიროთ ღილაკი \"SHIFT\" და აირჩიეთ შესაბამისი სვეტების სათაურები"
     application:
       title: საქართველოს საარჩევნო მონაცემები
       ndi_alt: ეროვნული დემოკრატიული ინსტიტუტი
