@@ -74,9 +74,9 @@
                     <%= @event_name %>
                  </p>
               </div>
+              <% if user_signed_in? %>
 		          <div class="pull-right">
 		            <ul>
-		              <% if user_signed_in? %>
 		              <li>
 		   		         <%= current_user.email %>
 									</li>
@@ -86,9 +86,9 @@
 		              <li>
 		   		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
 									</li>
-		              <% end %>
 		            </ul>
 		          </div>
+              <% end %>
            </div>
         </div>
         <%= render :partial => "layouts/event_menu_tabs" %>
