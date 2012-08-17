@@ -73,6 +73,24 @@ function full_height (element)
   return h;
 }
 
+function window_width ()
+{
+  var winW;
+  if (document.body && document.body.offsetWidth)
+  {
+    winW = document.body.offsetWidth;
+  }
+  else if (document.compatMode == 'CSS1Compat' && document.documentElement && document.documentElement.offsetWidth)
+  {
+    winW = document.documentElement.offsetWidth;
+  }
+  else if (window.innerWidth)
+  {
+    winW = window.innerWidth;
+  }
+  return winW;
+}
+
 
 if (gon.openlayers){
 
@@ -151,13 +169,12 @@ if (gon.openlayers){
       mapHeight = minHeight;
     }
     $('#map').css('height', mapHeight);
-    //$('#export').css('bottom', parseInt($('#export').css('bottom')) + footnoteHeight);
     
 
 		map = new OpenLayers.Map('map', options);
 
 		map.addControl(new OpenLayers.Control.Navigation());
-		map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5, 25));
+		map.addControl(new OpenLayers.Control.PanZoom(), new OpenLayers.Pixel(5, 25));
 
 		map.events.register('zoomend', this, function(){
 		  var zoomLevel = map.zoom;
@@ -266,7 +283,9 @@ if (gon.openlayers){
 		  //map.restrictedExtent.right = map.restrictedExtent.right * increaseK;
 		 */
 		    map.zoomToExtent(bounds);
-		    map.moveByPx(180, 0);
+		    winW = window_width();
+		    //180 for 1345 screen width
+		    map.moveByPx(winW / 7.472, 0);
 
 
 				// indicate that the parent layer has loaded
