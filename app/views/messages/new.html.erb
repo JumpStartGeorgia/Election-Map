@@ -18,8 +18,8 @@
 		<% end %>
 
   	<div>
-  	  <%= f.submit t(".send"), :class => 'btn btn-success' %>
-  	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('.reset'), :name => :reset %>
+  	  <%= link_to t('.send'), "#", :class => 'btn btn-mini btn-primary', :id => "submit" %>
+  	  <%= link_to t('.reset'), "#", :class => 'btn btn-mini', :id => "reset" %>
   	  <%= link_to t('.cancel'), root_path, :class => 'btn btn-mini' %>
   	</div>
 

@@ -18,6 +18,7 @@
 //= require event_menu
 //= require indicator_menu_scale
 //= require map_popup_svg
+//= require messages
 //= require shapes
 
 //= require map.export
