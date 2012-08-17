@@ -48,6 +48,32 @@ $(document).ready(function(){
 
 });
 
+
+function full_height (element)
+{
+  if (element.length == 0)
+  {
+    return 0;
+  }
+  var values =
+  [
+    element.height(),
+    element.css('margin-top'),
+    element.css('margin-bottom'),
+    element.css('padding-top'),
+    element.css('padding-bottom'),
+    element.css('border-top-width'),
+    element.css('border-bottom-width')
+  ],
+  h = 0;
+  for (i in values)
+  {
+    h += parseInt(values[i]);
+  }
+  return h;
+}
+
+
 if (gon.openlayers){
 
 	// Define global variables which can be used in all functions
@@ -112,10 +138,26 @@ if (gon.openlayers){
 		    })
 		});
 
+
+    /* ADJUSTING MAP HEIGHT */
+    var minHeight = 480,//full_height($('#indicator_menu_scale')),
+    offsetTop = $('#map-container').offset().top,
+    workHeight = $(window).innerHeight(),
+    footnoteHeight = full_height($('#footnote')),
+    marginBottom = 10,
+    mapHeight = workHeight - offsetTop - footnoteHeight - marginBottom;
+    if (mapHeight < minHeight)
+    {
+      mapHeight = minHeight;
+    }
+    $('#map').css('height', mapHeight);
+    //$('#export').css('bottom', parseInt($('#export').css('bottom')) + footnoteHeight);
+    
+
 		map = new OpenLayers.Map('map', options);
 
 		map.addControl(new OpenLayers.Control.Navigation());
-		map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
+		map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5, 25));
 
 		map.events.register('zoomend', this, function(){
 		  var zoomLevel = map.zoom;
@@ -224,7 +266,7 @@ if (gon.openlayers){
 		  //map.restrictedExtent.right = map.restrictedExtent.right * increaseK;
 		 */
 		    map.zoomToExtent(bounds);
-		    map.moveByPx(270, 0);
+		    map.moveByPx(180, 0);
 
 
 				// indicate that the parent layer has loaded

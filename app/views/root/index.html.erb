@@ -75,29 +75,30 @@
 
 	<section id="map-container" class="group span12">
 
-		<div id="map"></div>
+    <div style="position: relative;">
+		  <div id="map"></div>
+		  <div id="export">
+			   <p>Download:</p>
+
+			  <a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
+
+			  <%= link_to("XLS",
+				  download_data_xls_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
+				  :id => "export-data-xls", :title => t('app.buttons.download_xls')) %>
+
+			  <%= link_to("CSV",
+				  download_data_csv_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
+				  :id => "export-data-csv", :title => t('app.buttons.download_csv')) %>
+
+			  <%= link_to("?",
+					  view_pages_path(:name => "export_help", :layout => "fancybox"),
+						  :class => "fancybox", :title => t('app.buttons.download_help')) %>
+		  </div>
+		</div>
 
 		<div id="map-loading"></div>
 
 		<div id="map-title"><%= @map_title%></div>
-
-		<div id="export">
-			 <p>Download:</p>
-
-			<a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
-
-			<%= link_to("XLS",
-				download_data_xls_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
-				:id => "export-data-xls", :title => t('app.buttons.download_xls')) %>
-
-			<%= link_to("CSV",
-				download_data_csv_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
-				:id => "export-data-csv", :title => t('app.buttons.download_csv')) %>
-
-			<%= link_to("?",
-					view_pages_path(:name => "export_help", :layout => "fancybox"),
-						:class => "fancybox", :title => t('app.buttons.download_help')) %>
-		</div>
 
 		<% if @custom_view_note %>
 			<div id="footnote">
@@ -121,7 +122,7 @@
 <div class="row-fluid">
   <div id="data-table-container" class="span12">
     <div class="loading"></div>
-    <img src="/assets/table-blur.jpg" />
+    <img src="/assets/table-blur.jpg" width="100%" />
   </div>
 </div>
 
