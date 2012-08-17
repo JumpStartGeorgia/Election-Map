@@ -53,9 +53,9 @@ body {
 #wrapper > .container-fluid {
 	padding-top: 150px;
 }
-			
+
 .push { height: 63px; } /* Just some arbitrary space to add between footer and rest of the content, when they are close */
-			
+
 @media (max-width: 979px) {
   #wrapper > .container-fluid {
   	padding-top: inherit;
@@ -66,6 +66,11 @@ body {
 //.navbar.navbar-fixed-top {
 .navbar {
 //  height: 140px;
+}
+
+// turn off filter in IE so background image will show
+.navbar-inner {
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 
 // Navbar inner head
