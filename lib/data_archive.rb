@@ -21,7 +21,7 @@ module DataArchive
 		logs = []
 		files = {}
     # get all events
-		events = Event.where("shape_id is not null").limit(2)
+		events = Event.where("shape_id is not null").limit(1)
 
     if events && !events.empty?
 			# create folder for zip files
@@ -99,31 +99,31 @@ module DataArchive
 	def self.create_excel_formatted_string(data)
 		xls = ""
 		if data && !data.empty?
-			xls << "<?xml version=\"1.0\"?> \n"
-			xls << "<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\" \n"
-			xls << "xmlns:o=\"urn:schemas-microsoft-com:office:office\" \n"
-			xls << "xmlns:x=\"urn:schemas-microsoft-com:office:excel\" \n"
-			xls << "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\" \n"
-			xls << "xmlns:html=\"http://www.w3.org/TR/REC-html40\"> \n"
-			xls << "<Worksheet ss:Name=\"Sheet1\"> \n"
-			xls << "<Table> \n"
-			xls << "<Row> \n"
+			xls << "<?xml version=\"1.0\"?>\n"
+			xls << "<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"\n"
+			xls << "  xmlns:o=\"urn:schemas-microsoft-com:office:office\"\n"
+			xls << "  xmlns:x=\"urn:schemas-microsoft-com:office:excel\"\n"
+			xls << "  xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"\n"
+			xls << "  xmlns:html=\"http://www.w3.org/TR/REC-html40\">\n"
+			xls << "  <Worksheet ss:Name=\"Sheet1\">\n"
+			xls << "    <Table>\n"
+			xls << "      <Row>\n"
 			data.first.each do |header|
-				xls << "<Cell><Data ss:Type=\"String\">#{header}</Data></Cell> \n"
+				xls << "        <Cell><Data ss:Type=\"String\">#{header}</Data></Cell>\n"
 			end
-			xls << "</Row> \n"
+			xls << "      </Row>\n"
 			data.each_with_index do |row, i|
 				if i > 0
-					xls << "<Row> \n"
+					xls << "      <Row>\n"
 					row.each do |cell|
-						xls << "<Cell><Data ss:Type=\"String\">#{cell}</Data></Cell> \n"
+						xls << "        <Cell><Data ss:Type=\"String\">#{cell}</Data></Cell>\n"
 					end
-					xls << "</Row> \n"
+					xls << "      </Row>\n"
 				end
 			end
-			xls << "</Table> \n"
-			xls << "</Worksheet> \n"
-			xls << "</Workbook> "
+			xls << "    </Table>\n"
+			xls << "  </Worksheet>\n"
+			xls << "</Workbook>"
 		end
 		return xls
 	end

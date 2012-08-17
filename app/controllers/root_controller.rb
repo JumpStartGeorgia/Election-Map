@@ -3,7 +3,7 @@ class RootController < ApplicationController
   before_filter :authenticate_user!,
     :except => [:index, :export, :download, :data_table]
 	require 'ostruct'
-  require 'zip/zip'
+  require 'data_archive'
 
   # GET /
   # GET /.json
@@ -320,12 +320,7 @@ logger.debug "//////////////////////////////////////////////////////// done with
 				respond_to do |format|
 				  format.csv {
 logger.debug ">>>>>>>>>>>>>>>> format = csv"
-						spreadsheet = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
-							# add the rows
-							@data.each do |r|
-							  csv << r
-							end
-						end
+						spreadsheet = DataArchive.create_csv_formatted_string(@data)
 
 						send_data spreadsheet,
 				    :type => 'text/csv; header=present',
@@ -335,7 +330,7 @@ logger.debug ">>>>>>>>>>>>>>>> format = csv"
 
 				  format.xls{
 logger.debug ">>>>>>>>>>>>>>>> format = xls"
-						spreadsheet = render_to_string(:action => "download.xls.erb", :layout => false)
+						spreadsheet = DataArchive.create_excel_formatted_string(@data)
 						send_data spreadsheet,
 				    :disposition => "attachment; filename=#{clean_filename(filename)}.xls"
 					  send_data = true
