@@ -4,14 +4,47 @@ module DataArchive
 	require 'utf8_converter'
 
 	###########################################
-	### manage directories
+	### get archives on file
+	### - format = [ { "archive_folder_name" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
 	###########################################
-	def self.create_directory(path)
-		if !path.nil? && path != "."
-			FileUtils.mkpath(path)
-		end
-	end
+  def self.get_archives
+    files = []
 
+    # get all archive directories in desc order
+    dirs = Dir["#{archive_root}/*/"].map { |a| File.basename(a) }.sort{|a,b| b <=> a}
+puts "dirs = #{dirs}"    
+    if dirs && !dirs.empty?
+puts "dirs not empty"    
+      dirs.each do |dir|
+puts "dir = #{dir}"    
+        archive_folder = Hash.new
+        files << archive_folder
+        
+        archive_folder[dir] = Array.new
+        Dir.glob("#{archive_root}/#{dir}/*.zip") do |file|
+          archive_file = Hash.new
+          archive_folder[dir] << archive_file
+        
+          archive_file["url"] = "/#{url_path}/#{dir}/#{File.basename(file)}"
+          archive_file["file_size"] = File.size(file)
+          archive_file["locale"] = nil
+          I18n.available_locales.each do |locale|
+            if !File.basename(file).index("_#{locale.to_s.upcase}_").nil?
+              archive_file["locale"] = locale.to_s.upcase
+              break
+            end
+          end
+          archive_file["file_type"] = nil
+          archive_file["file_type"] = "CSV" if !File.basename(file).index("_CSV_").nil?
+          archive_file["file_type"] = "XLS" if !File.basename(file).index("_XLS_").nil?
+        end
+      end
+    end
+    
+    return files
+  end
+  
+  
 	###########################################
 	### create download files
 	###########################################
@@ -21,8 +54,8 @@ module DataArchive
 		logs = []
 		files = {}
     # get all events
-#		events = Event.where("shape_id is not null").limit(1)
-		events = Event.where(:id => 1)
+		events = Event.where("shape_id is not null").limit(5)
+#		events = Event.where(:id => 1)
 
     if events && !events.empty?
 			# create folder for zip files
@@ -87,6 +120,9 @@ module DataArchive
 
   end
 
+	###########################################
+	### create spreadsheet formated string
+	###########################################
 	def self.create_csv_formatted_string(data)
 		csv = ""
 		if data && !data.empty?
@@ -151,8 +187,25 @@ protected
 		end
 	end
 
+	###########################################
+	### manage directory/file names
+	###########################################
+	def self.create_directory(path)
+		if !path.nil? && path != "."
+			FileUtils.mkpath(path)
+		end
+	end
+
+  def self.url_path
+  	"system/data_archives"
+  end
+
+  def self.archive_root
+  	"#{Rails.root}/public/#{url_path}"
+  end
+
   def self.archive_file_path(timestamp)
-  	clean_filename("#{Rails.root}/public/data_archives/#{timestamp}")
+  	clean_filename("#{archive_root}/#{timestamp}")
   end
 
   def self.zip_file_name(timestamp, file_type)
