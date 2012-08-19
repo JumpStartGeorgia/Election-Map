@@ -5,26 +5,31 @@ module DataArchive
 
 	###########################################
 	### get archives on file
-	### - format = [ { "archive_folder_name" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
+	### - format = [ { "date" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
 	###########################################
   def self.get_archives
     files = []
 
     # get all archive directories in desc order
     dirs = Dir["#{archive_root}/*/"].map { |a| File.basename(a) }.sort{|a,b| b <=> a}
-puts "dirs = #{dirs}"    
+puts "dirs = #{dirs}"
     if dirs && !dirs.empty?
-puts "dirs not empty"    
+puts "dirs not empty"
       dirs.each do |dir|
-puts "dir = #{dir}"    
+puts "dir = #{dir}"
         archive_folder = Hash.new
         files << archive_folder
-        
-        archive_folder[dir] = Array.new
-        Dir.glob("#{archive_root}/#{dir}/*.zip") do |file|
+
+				# generate friendly date from the folder name
+				folder = dir.gsub("_", "-").insert(13, ":").insert(16, ":")
+				date = I18n.l(Time.parse(folder), :format => :long)
+puts "date = #{date}"
+
+        archive_folder[date] = Array.new
+        Dir.glob("#{archive_root}/#{dir}/*.zip").sort.each do |file|
           archive_file = Hash.new
-          archive_folder[dir] << archive_file
-        
+          archive_folder[date] << archive_file
+
           archive_file["url"] = "/#{url_path}/#{dir}/#{File.basename(file)}"
           archive_file["file_size"] = File.size(file)
           archive_file["locale"] = nil
@@ -40,11 +45,11 @@ puts "dir = #{dir}"
         end
       end
     end
-    
+
     return files
   end
-  
-  
+
+
 	###########################################
 	### create download files
 	###########################################
