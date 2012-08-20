@@ -113,7 +113,11 @@ logger.debug "////////////// setting @ variables"
 							@child_shape_type_name_plural = child_shape_type.name_plural
 							if @has_custom_view
 								@custom_child_shape_type_name_singular = custom_child_shape_type.name_singular
-								@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural
+								if I18n.locale == :ka
+									@custom_child_shape_type_name_plural = custom_child_shape_type.name_singular
+								else
+									@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural
+								end
 							end
 							@map_title = nil
 							# set the map title
