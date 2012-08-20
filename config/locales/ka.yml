@@ -476,6 +476,7 @@ ka:
       title: Editing News
     index:
       title: სიახლეები
+      no_news: I am sorry, but at this time we do not have any news.
     new:
       title: New News
     show:

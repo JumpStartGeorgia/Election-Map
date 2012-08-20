@@ -12,6 +12,7 @@
  *= require formtastic-bootstrap
  *= require core_indicators
  *= require data_table
+ *= require news
   *= require_self
 */
 
