@@ -179,7 +179,7 @@ ka:
       terms: გამოყენების წესები
       js_link_title: "ეწვიეთ ჯამპსტარტ ჯორჯიას ვებ-გვერდს"
       js_link_text: აგებულია
-      header: არჩევნების
+      header: არჩევნები
     ajax_data_table:
       links: რუკის სანახავად დააჭირეთ მონაცემების ღილაკს.
       sorting: "ერთდროულად რამდენიმე სვეტის სორტირებისთვის გეჭიროთ ღილაკი \"SHIFT\" და აირჩიეთ შესაბამისი სვეტების სათაურები"
@@ -261,7 +261,7 @@ ka:
       cache_summary_data: Summary Data Cache
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
-      footnote: "აღვნიშნო: %{note}"
+      footnote: "შენიშვნა: %{note}"
     indicator_menu_scales:
       indicator_header: ინდიკატორები
   data:
