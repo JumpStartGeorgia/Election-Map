@@ -5,48 +5,50 @@ module DataArchive
 
 	###########################################
 	### get archives on file
-	### - format = [ { "date" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
+	### - format = [ { "folder" => "folder_name" , "date" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
 	###########################################
   def self.get_archives
-    files = []
+		Rails.cache.fetch(cache_key) {
+	    files = []
 
-    # get all archive directories in desc order
-    dirs = Dir["#{archive_root}/*/"].map { |a| File.basename(a) }.sort{|a,b| b <=> a}
-puts "dirs = #{dirs}"
-    if dirs && !dirs.empty?
-puts "dirs not empty"
-      dirs.each do |dir|
-puts "dir = #{dir}"
-        archive_folder = Hash.new
-        files << archive_folder
+			# get all archive directories in desc order
+			dirs = Dir["#{archive_root}/*/"].map { |a| File.basename(a) }.sort{|a,b| b <=> a}
+	puts "dirs = #{dirs}"
+			if dirs && !dirs.empty?
+	puts "dirs not empty"
+			  dirs.each do |dir|
+	puts "dir = #{dir}"
+			    archive_folder = Hash.new
+			    files << archive_folder
+			    archive_folder["folder"] = dir
 
-				# generate friendly date from the folder name
-				folder = dir.gsub("_", "-").insert(13, ":").insert(16, ":")
-				date = I18n.l(Time.parse(folder), :format => :long)
-puts "date = #{date}"
+					# generate friendly date from the folder name
+					folder = dir.gsub("_", "-").insert(13, ":").insert(16, ":")
+					date = I18n.l(Time.parse(folder), :format => :long)
+	puts "date = #{date}"
 
-        archive_folder[date] = Array.new
-        Dir.glob("#{archive_root}/#{dir}/*.zip").sort.each do |file|
-          archive_file = Hash.new
-          archive_folder[date] << archive_file
+			    archive_folder[date] = Array.new
+			    Dir.glob("#{archive_root}/#{dir}/*.zip").sort.each do |file|
+			      archive_file = Hash.new
+			      archive_folder[date] << archive_file
 
-          archive_file["url"] = "/#{url_path}/#{dir}/#{File.basename(file)}"
-          archive_file["file_size"] = File.size(file)
-          archive_file["locale"] = nil
-          I18n.available_locales.each do |locale|
-            if !File.basename(file).index("_#{locale.to_s.upcase}_").nil?
-              archive_file["locale"] = locale.to_s.upcase
-              break
-            end
-          end
-          archive_file["file_type"] = nil
-          archive_file["file_type"] = "CSV" if !File.basename(file).index("_CSV_").nil?
-          archive_file["file_type"] = "XLS" if !File.basename(file).index("_XLS_").nil?
-        end
-      end
-    end
-
-    return files
+			      archive_file["url"] = "/#{url_path}/#{dir}/#{File.basename(file)}"
+			      archive_file["file_size"] = File.size(file)
+			      archive_file["locale"] = nil
+			      I18n.available_locales.each do |locale|
+			        if !File.basename(file).index("_#{locale.to_s.upcase}_").nil?
+			          archive_file["locale"] = locale.to_s.upcase
+			          break
+			        end
+			      end
+			      archive_file["file_type"] = nil
+			      archive_file["file_type"] = "CSV" if !File.basename(file).index("_CSV_").nil?
+			      archive_file["file_type"] = "XLS" if !File.basename(file).index("_XLS_").nil?
+			    end
+			  end
+			end
+    	files
+		}
   end
 
 
@@ -174,6 +176,10 @@ puts "date = #{date}"
 	end
 
 protected
+
+	def self.cache_key
+		return "data_archives_#{I18n.locale}"
+	end
 
 	###########################################
 	### delete files not needed
