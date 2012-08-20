@@ -32,101 +32,82 @@
 
     <!-- For all other devices -->
     <!-- Size should be 32 x 32 pixels -->
-    <%# favicon_link_tag 'images/favicon.ico', :rel => 'shortcut icon' %>
+    <%= favicon_link_tag 'dvcd.ico', :rel => 'shortcut icon' %>
   </head>
   <body>
+		<div id="wrapper">
+      <div class="navbar navbar-fixed-top">
+        <!-- Navbar header -->
+        <div class="navbar-inner-head navbar-inner">
+          <div class="container-fluid">
+            <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),
+  								:title=> t('.title'), :class=>"brand")%>
 
-    <div class="navbar navbar-fixed-top">
-      <!-- Navbar header -->
-      <div class="navbar-inner-head">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),	:class=>"brand")%>
-
-          <ul class="nav pull-right">
-						<% I18n.available_locales.each do |locale| %>
-							<% if locale != I18n.locale %>
-								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
-							<% end %>
-						<% end %>
-          </ul>
-          <div class="nav-collapse">
             <ul class="nav pull-right">
-              <% if user_signed_in? %>
-              <li>
-   		         <%= current_user.email %>
-							</li>
-              <li>
-   		         <%= link_to t('.admin'), admin_path %>
-							</li>
-              <li>
-   		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
-							</li>
-              <% end %>
+  						<% I18n.available_locales.each do |locale| %>
+  							<% if locale != I18n.locale %>
+  								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+  							<% end %>
+  						<% end %>
             </ul>
           </div>
         </div>
-      </div>
-    </div>
+			</div>
 
-		<div id="wrap">
-			<div id="main" class="container">
+			<div id="main" class="container-fluid">
 		    <div class="content">
 		      <div class="row-fluid">
 		         <div class="span12">
 
                  <h1><%= t('.title') %></h1>
 
-									<p>
-										We are sorry to report that your browser is out of date and will not properly render
-										the content from this website.
-									</p>
-									<p>
-										On the bright side, there are several free browsers that you can download
-										that are compatible with this site.
-									</p>
+									<p><%= t('.p1') %></p>
+									<p><%= t('.p2') %></p>
 									<ul class="standard">
 										<li>
-											<a href="http://www.google.com/chrome/">Chrome</a>
+											<a href="http://www.google.com/chrome/"><%= t('.chrome') %></a>
 										</li>
 										<li>
-											<a href="http://www.mozilla.org/firefox/new/">Firefox</a>
+											<a href="http://www.mozilla.org/firefox/new/"><%= t('.firefox') %></a>
 										</li>
 										<li>
-											<a href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie/">Internet Explorer (Windows only)</a>
+											<a href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie/"><%= t('.ie') %></a>
 										</li>
 										<li>
-											<a href="http://www.opera.com/download/">Opera</a>
+											<a href="http://www.opera.com/download/"><%= t('.opera') %></a>
 										</li>
 										<li>
-											<a href="http://support.apple.com/downloads/#internet">Safari</a>
+											<a href="http://support.apple.com/downloads/#internet"><%= t('.safari') %></a>
 										</li>
 									</ul>
 		          </div>
 		      </div><!--/row-->
 		    </div><!--/content-->
 	    </div> <!-- /container -->
-    </div><!--/wrap-->
+      <div class="push"><!--//--></div>
+    </div><!--/wrapper-->
 
-
-    <footer class="footer">
+    <footer class="container-fluid">
 		  <div class="row-fluid">
 				<div class="ndi-logo span2">
-					 <a href="http://www.ndi.org" target="_blank">
-							<img src="/assets/ndi-logo.png"/>
-					 </a>
+					<a href="http://www.ndi.org" target="_blank">
+						<img src="/assets/ndi-logo.png"/>
+					</a>
 				</div>
 				<div class="footer-nav span8">
+					<p>
+						<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
+						<a>|</a>
+						<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
+						<a>|</a>
+						<%= link_to t('.contact'), contact_path %>
+					</p>
 				</div>
        <div class="js-logo span2">
-					 <p><%= t(".js_link_text") %>:</p>
-					 <a href="http://www.jumpstart.ge" target="_blank">
-							 <img src="/assets/jumpstart-logo.png"/>
-					 </a>
+				 <p><%= t(".js_link_text") %>:</p>
+				 <a href="http://www.jumpstart.ge" target="_blank">
+						 <img src="/assets/jumpstart-logo.png"/>
+				 </a>
 				</div>
 	    </div><!--/row-->
     </footer>
@@ -138,6 +119,8 @@
 		<script type="text/javascript">
 			var _gaq = _gaq || [];
 			_gaq.push(['_setAccount', 'UA-12801815-7']);
+			_gaq.push(['_setDomainName', 'electionportal.ge']);
+			_gaq.push(['_setAllowLinker', true]);
 			_gaq.push(['_trackPageview']);
 			(function() {
 				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;

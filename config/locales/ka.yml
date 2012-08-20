@@ -216,7 +216,14 @@ ka:
     event_menu:
       header: არჩევნების
     unsupported_browser:
-      title: Unsupported Browser
+      title: არასათანადო ბრაუზერი
+      p1: სამწუხაროდ თქვენი ინტერნეტ ბრაუზერის მოხმარების ვადა გასულია და ვერ მოხდება ვებ-გვერდთან სრულად დაკავშირება.
+      p2: არსებობს რამდენიმე უფასო ბრაუზერი რომელის გადმოწერის შემდეგ შეძლებთ ვებ-გვერდით სარგებლობას.
+      chrome: Chrome
+      firefox: Firefox
+      ie: Internet Explorer (მხოლოდ Windows-ზე)
+      opera: Opera
+      Safari: Safari
       ndi_alt: National Democratic Institute
       ndi_title: National Democratic Institute
       signed_in: Signed in as
