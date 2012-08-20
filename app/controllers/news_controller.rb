@@ -38,6 +38,11 @@ class NewsController < ApplicationController
     # so the form will properly create all of the nested form fields
     I18n.available_locales.length.times {@news.news_translations.build}
 
+		# turn the datetime picker js on
+		# have to format dates this way so js datetime picker read them properly
+		gon.edit_news = true
+		gon.data_archive = @news_types[:data_archive]
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @news }
@@ -50,6 +55,12 @@ class NewsController < ApplicationController
 		@news_types = News::NEWS_TYPES
     # get list of data archive folders that do not have news tied to them already
 		@availabe_archives = available_archives
+
+		# turn the datetime picker js on
+		# have to format dates this way so js datetime picker read them properly
+		gon.edit_news = true
+		gon.date_posted = @news.date_posted.strftime('%m/%d/%Y %H:%M') if !@news.date_posted.nil?
+		gon.data_archive = @news_types[:data_archive]
   end
 
   # POST /news
@@ -59,9 +70,15 @@ class NewsController < ApplicationController
 
     respond_to do |format|
       if @news.save
-        format.html { redirect_to @news, notice: 'News was successfully created.' }
+        format.html { redirect_to news_index_path, notice: 'News was successfully created.' }
         format.json { render json: @news, status: :created, location: @news }
       else
+				# turn the datetime picker js on
+				# have to format dates this way so js datetime picker read them properly
+				gon.edit_news = true
+				gon.date_posted = @news.date_posted.strftime('%m/%d/%Y %H:%M') if !@news.date_posted.nil?
+				gon.data_archive = @news_types[:data_archive]
+
         format.html { render action: "new" }
         format.json { render json: @news.errors, status: :unprocessable_entity }
       end
@@ -75,9 +92,15 @@ class NewsController < ApplicationController
 
     respond_to do |format|
       if @news.update_attributes(params[:news])
-        format.html { redirect_to @news, notice: 'News was successfully updated.' }
+        format.html { redirect_to news_index_path, notice: 'News was successfully updated.' }
         format.json { head :ok }
       else
+				# turn the datetime picker js on
+				# have to format dates this way so js datetime picker read them properly
+				gon.edit_news = true
+				gon.date_posted = @news.date_posted.strftime('%m/%d/%Y %H:%M') if !@news.date_posted.nil?
+				gon.data_archive = @news_types[:data_archive]
+
         format.html { render action: "edit" }
         format.json { render json: @news.errors, status: :unprocessable_entity }
       end
@@ -98,6 +121,7 @@ class NewsController < ApplicationController
 
 	protected
 
+	# get all archives and mark which ones already have news about them
 	def available_archives
 		available = []
 		archives = DataArchive.get_archives
@@ -108,15 +132,17 @@ logger.debug "/////////// news count = #{news.length}"
 		# now determine which archives do not have a news story
 		if news && !news.empty?
 logger.debug "/////////// available archives = #{available}"
-			# news items with archives, find unused archives
-			archives.select{|x| news.index{|n| n.data_archive_folder == x["folder"]}}.each do |archive|
-				available << archive["date"]
+			# news items with archives, determine which ones have news story
+			archives.each do |archive|
+				text = archive["date"]
+				text << " *" if !news.index{|n| n.data_archive_folder == archive["folder"]}.nil?
+				available << {:id => archive["folder"], :name => text}
 			end
 		else
 logger.debug "/////////// no news items with archives"
 			# there are no news items with archives
 			archives.each do |archive|
-				available << archive["date"]
+				available << {:id => archive["folder"], :name => archive["date"]}
 			end
 		end
 logger.debug "/////////// available archives = #{available}"

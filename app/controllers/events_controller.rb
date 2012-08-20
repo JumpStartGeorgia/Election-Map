@@ -32,6 +32,10 @@ class EventsController < ApplicationController
     # so the form will properly create all of the nested form fields
     I18n.available_locales.length.times {@event.event_translations.build}
 
+		# turn the datetime picker js on
+		# have to format dates this way so js datetime picker read them properly
+		gon.edit_event = true
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @event }
@@ -41,6 +45,10 @@ class EventsController < ApplicationController
   # GET /events/1/edit
   def edit
     @event = Event.find(params[:id])
+		# turn the datetime picker js on
+		# have to format dates this way so js datetime picker read them properly
+		gon.edit_event = true
+		gon.event_date = @event.event_date.strftime('%m/%d/%Y %H:%M') if !@event.event_date.nil?
   end
 
   # POST /events

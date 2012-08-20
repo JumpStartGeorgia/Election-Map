@@ -17,7 +17,7 @@
 
 	<%= f.inputs do %>
 		<%= f.input :event_type %>
-		<%= f.input :event_date, :start_year => 2006 %>
+		<%= f.input :event_date, :as => :string, :input_html => { :size => 20 } %>
 		<%= f.input :shape_id %>
 	<% end %>
 
