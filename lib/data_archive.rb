@@ -5,7 +5,7 @@ module DataArchive
 
 	###########################################
 	### get archives on file
-	### - format = [ { "folder" => "folder_name" , "date" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
+	### - format = [ { "folder" => "folder_name" , "date" => "date", "files" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
 	###########################################
   def self.get_archives
 		Rails.cache.fetch(cache_key) {
@@ -25,12 +25,13 @@ module DataArchive
 					# generate friendly date from the folder name
 					folder = dir.gsub("_", "-").insert(13, ":").insert(16, ":")
 					date = I18n.l(Time.parse(folder), :format => :long)
+		      archive_folder["date"] = date
 	puts "date = #{date}"
 
-			    archive_folder[date] = Array.new
+			    archive_folder["files"] = Array.new
 			    Dir.glob("#{archive_root}/#{dir}/*.zip").sort.each do |file|
 			      archive_file = Hash.new
-			      archive_folder[date] << archive_file
+			      archive_folder["files"] << archive_file
 
 			      archive_file["url"] = "/#{url_path}/#{dir}/#{File.basename(file)}"
 			      archive_file["file_size"] = File.size(file)

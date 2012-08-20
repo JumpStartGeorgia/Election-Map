@@ -7,11 +7,10 @@ class News < ActiveRecord::Base
   attr_accessor :locale
 
   validates :name, :date_posted, :presence => true
-  
-  NEWS_TYPE = {:data_archive => "Data Archive", :news => "News"}
 
-  scope :data_archives, where(:data_type => NEWS_TYPE[:data_archive])
+	NEWS_TYPES =	{:data_archive => "Data Archive", :news => "News"}
+
+  scope :data_archives, where(["news_type = ? and data_archive_folder is not null", NEWS_TYPES[:data_archive]])
   scope :recent, order("date_posted desc")
-
 
 end

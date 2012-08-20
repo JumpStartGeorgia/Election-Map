@@ -187,6 +187,8 @@ en:
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by
       header: Elections
+      news: News
+      data_archives: Data Archives
     ajax_data_table:
       links: Click on a data point to view it on the map.
       sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.

@@ -2,9 +2,9 @@
 	<%= f.semantic_errors %>
 
 	<%= f.inputs do %>
-		<%= f.input :news_type %>
+		<%= f.input :news_type, :as => :select, :collection => @news_types.values %>
 		<%= f.input :date_posted %>
-		<%= f.input :data_archive_folder %>
+		<%= f.input :data_archive_folder, :as => :select, :collection => @availabe_archives %>
 	<% end %>
 
 	<%= f.inputs :for => :news_translations do |news_translation, i| %>

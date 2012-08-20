@@ -1,5 +1,6 @@
 class NewsController < ApplicationController
   before_filter :authenticate_user!, :except => [:index]
+	require 'data_archive'
 
   # GET /news
   # GET /news.json
@@ -29,8 +30,13 @@ class NewsController < ApplicationController
   # GET /news/new.json
   def new
     @news = News.new
-    
+		@news_types = News::NEWS_TYPES
     # get list of data archive folders that do not have news tied to them already
+		@availabe_archives = available_archives
+
+    # create the translation object for however many locales there are
+    # so the form will properly create all of the nested form fields
+    I18n.available_locales.length.times {@news.news_translations.build}
 
     respond_to do |format|
       format.html # new.html.erb
@@ -41,6 +47,9 @@ class NewsController < ApplicationController
   # GET /news/1/edit
   def edit
     @news = News.find(params[:id])
+		@news_types = News::NEWS_TYPES
+    # get list of data archive folders that do not have news tied to them already
+		@availabe_archives = available_archives
   end
 
   # POST /news
@@ -86,4 +95,31 @@ class NewsController < ApplicationController
       format.json { head :ok }
     end
   end
+
+	protected
+
+	def available_archives
+		available = []
+		archives = DataArchive.get_archives
+		news = News.data_archives
+logger.debug "/////////// archives count = #{archives.length}"
+logger.debug "/////////// news count = #{news.length}"
+
+		# now determine which archives do not have a news story
+		if news && !news.empty?
+logger.debug "/////////// available archives = #{available}"
+			# news items with archives, find unused archives
+			archives.select{|x| news.index{|n| n.data_archive_folder == x["folder"]}}.each do |archive|
+				available << archive["date"]
+			end
+		else
+logger.debug "/////////// no news items with archives"
+			# there are no news items with archives
+			archives.each do |archive|
+				available << archive["date"]
+			end
+		end
+logger.debug "/////////// available archives = #{available}"
+		return available
+	end
 end

@@ -46,6 +46,8 @@
   								:title=> t('.title'), :class=>"brand")%>
 
             <ul class="nav pull-right">
+							<li><%= link_to t(".news"), news_index_path %></li>
+							<li><%# link_to t(".data_archives"), data_archives_path %></li>
   						<% I18n.available_locales.each do |locale| %>
   							<% if locale != I18n.locale %>
   								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
