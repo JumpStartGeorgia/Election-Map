@@ -96,7 +96,7 @@ ka:
       download_data: ჩამოტვირთეთ რუქა
       download_map: ჩამოტვირთეთ მონაცემები
       download_help: დახმარება
-      custom_view: იხილეთ ყველა %{children_shapes} %{parent_shape}აში
+      custom_view: იხილეთ ყველა %{children_shapes} %{parent_shape}ში
     msgs:
       no_data: არ არის მონაცემი
       delete_confirm: "Are you sure?"
