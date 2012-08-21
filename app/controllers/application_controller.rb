@@ -124,6 +124,20 @@ logger.debug "---********----- shape type cache"
     result
   end
 
+	# send email status update
+  def send_status_update(message, time)
+    @message = Message.new
+		@message.name = "Application Status Update Notification"
+		@message.email = current_user.email
+		@message.time = time
+		@message.message = message
+    if @message.valid?
+      # send message
+			ContactMailer.status_update(@message).deliver
+			@email_sent = true
+    end
+  end
+
 
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier

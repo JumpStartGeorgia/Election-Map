@@ -17,8 +17,10 @@ class DataArchivesController < ApplicationController
 	# /data_archives/new
 	def new
 		if request.post?
+			start = Time.now
 			DataArchive.create_files
 			flash[:notice] = I18n.t('data_archives.new.created')
+			send_status_update(I18n.t('data_archives.new.created'), Time.now-start)
 		end
 	end
 

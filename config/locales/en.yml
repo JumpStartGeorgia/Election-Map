@@ -168,7 +168,8 @@ en:
       date_posted: Date Posted
       data_archive_folder: Data Archive Folder
   contact_mailer:
-    subject: "[Georgia Election Data] Contact Form"
+    subject_new_message: "[Georgia Election Data] Contact Form"
+    subject_status_update: "[Georgia Election Data (%{env})] Status Update"
   layouts:
     application-bootstrap:
       title: Georgia Election Data
