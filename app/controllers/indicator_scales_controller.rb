@@ -8,10 +8,13 @@ class IndicatorScalesController < ApplicationController
 		if request.post?
 			if params[:file].present?
 				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
+					start = Time.now
 					msg = IndicatorScale.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 			    if msg.nil? || msg.empty?
 			      # no errors, success!
-						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						msg = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = msg
+						send_status_update(msg, Time.now-start)
 					  redirect_to upload_indicator_scales_path #GET
 			    else
 			      # errors
