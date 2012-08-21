@@ -9,11 +9,6 @@
 		<div id="news_item">
 			<h3>
 				<%= l Date.new(news.date_posted.year, news.date_posted.month, news.date_posted.day), :format => :long %>
-			<% if news.news_type == News::NEWS_TYPES[:data_archive] && !news.data_archive_folder.nil? && !news.data_archive_folder.empty? %>
-				<span>
-					<%= link_to "Go to Data Archives", "#", :class => "btn btn-primary btn-mini" %>
-				</span>
-			<% end %>
 			<% if user_signed_in? %>
 				<span>
 				  <%= link_to t('.edit', :default => t("helpers.links.edit")),
@@ -27,6 +22,11 @@
 			<% end %>
 			</h3>
 			<%= simple_format news.description, {}, :sanitize => false %>
+			<% if news.news_type == News::NEWS_TYPES[:data_archive] && !news.data_archive_folder.nil? && !news.data_archive_folder.empty? %>
+				<p>
+					<%= link_to t('.data_archives_link'), data_archive_path(news.data_archive_folder), :class => "btn btn-mini" %>
+				</p>
+			<% end %>
 		</div>
 	<% end %>
 

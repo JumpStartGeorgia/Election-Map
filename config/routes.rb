@@ -96,6 +96,8 @@ ElectionMap::Application.routes.draw do
 		# data archives
 		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :get
 		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :post
+		match '/data_archives', :to => 'data_archives#index', :as => :data_archives, :via => :get
+		match '/data_archives/:data_archive_folder', :to => 'data_archives#show', :as => :data_archive, :via => :get
 
 
     # routes to root#index

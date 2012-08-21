@@ -1,0 +1,8 @@
+#archive_item {
+	padding: 0.3em 0;
+}
+
+#archive_item ul#archive_links li {
+	padding: 0.3em 0.5em;
+	float: left;
+}

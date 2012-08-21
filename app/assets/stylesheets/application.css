@@ -13,6 +13,7 @@
  *= require core_indicators
  *= require data_table
  *= require news
+ *= require data_archives
   *= require_self
 */
 
@@ -35,11 +36,11 @@
 
 /* make bootstrap button link color stay white */
 a.btn, a.btn:visited {
-	color: #666;
+	color: #000 !important;
 }
 a.btn-primary, a.btn-primary:visited, a.btn-info, a.btn-info:visited, a.btn-success, a.btn-success:visited,
 a.btn-warning, a.btn-warning:visited, a.btn-danger, a.btn-danger:visited, a.btn-inverse, a.btn-inverse:visited {
-	color: #fff;
+	color: #fff !important;
 }
 
 /* general */
