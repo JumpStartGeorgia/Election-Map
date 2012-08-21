@@ -127,18 +127,20 @@ class NewsController < ApplicationController
 		archives = DataArchive.get_archives
 		news = News.data_archives
 
-		# now determine which archives do not have a news story
-		if news && !news.empty?
-			# news items with archives, determine which ones have news story
-			archives.each do |archive|
-				text = archive["date"]
-				text << " *" if !news.index{|n| n.data_archive_folder == archive["folder"]}.nil?
-				available << {:id => archive["folder"], :name => text}
-			end
-		else
-			# there are no news items with archives
-			archives.each do |archive|
-				available << {:id => archive["folder"], :name => archive["date"]}
+		if archives && !archives.empty?
+			# now determine which archives do not have a news story
+			if news && !news.empty?
+				# news items with archives, determine which ones have news story
+				archives.each do |archive|
+					text = archive["date"]
+					text << " *" if !news.index{|n| n.data_archive_folder == archive["folder"]}.nil?
+					available << {:id => archive["folder"], :name => text}
+				end
+			else
+				# there are no news items with archives
+				archives.each do |archive|
+					available << {:id => archive["folder"], :name => archive["date"]}
+				end
 			end
 		end
 		return available
