@@ -40,7 +40,6 @@ namespace :deploy do
     sudo "ln -nfs #{current_path}/config/deploy/#{unicorn_init_file_loc} /etc/init.d/unicorn_#{application}"
     run "mkdir -p #{shared_path}/config"
 		run "mkdir -p #{shared_path}/json"
-		run "mkdir -p #{shared_path}/data_archives"
     put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
     puts "Now edit the config files in #{shared_path}."
   end
@@ -49,7 +48,6 @@ namespace :deploy do
   task :symlink_config, roles: :app do
     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
     run "ln -nfs #{shared_path}/json #{release_path}/public/json"
-    run "ln -nfs #{shared_path}/data_archives #{release_path}/public/data_archives"
   end
   after "deploy:finalize_update", "deploy:symlink_config"
 
