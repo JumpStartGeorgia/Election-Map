@@ -61,9 +61,11 @@ module DataArchive
 		timestamp = "#{I18n.l(start_time, :format => :file)}"
 		logs = []
 		files = {}
+		original_locale = I18n.locale
+
     # get all events
-#		events = Event.where("shape_id is not null")
-		events = Event.where(:id => 1)
+		events = Event.where("shape_id is not null")
+#		events = Event.where(:id => 20)
 
     if events && !events.empty?
 			# create folder for zip files
@@ -124,10 +126,17 @@ module DataArchive
 
 		logs << ">>>>>>>>>>> total time to create zip files was #{Time.now - start_time} seconds"
 
+		# delete the cache of data_archives
+		I18n.available_locales.each do |locale|
+			I18n.locale = locale
+			Rails.cache.delete(cache_key)
+		end
+
+		# reset the locale
+		I18n.locale = original_locale
+
 		logs.each {|x| Rails.logger.debug x}
 
-		# delete the cache of data_archives
-		Rails.cache.delete(cache_key)
   end
 
 	###########################################

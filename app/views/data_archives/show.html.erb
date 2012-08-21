@@ -27,6 +27,7 @@
 
 <% if user_signed_in? %>
 <div class="form-actions">
+	<%= link_to t('app.buttons.list'), data_archives_path, :class => "btn" %>
   <%= link_to t('.new', :default => t("app.buttons.new_data_archives")),
             data_archives_new_path,
             :class => 'btn btn-primary' %>
