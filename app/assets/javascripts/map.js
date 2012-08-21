@@ -629,6 +629,7 @@ if (gon.openlayers){
 		    });
 		  }
 
+		  
 		  jq_popup.css((function(){
 		    // initialize nesecary variables
 		    var pos = {},
@@ -639,9 +640,12 @@ if (gon.openlayers){
 		        parent_width = parseInt(jq_map.width()),
 		        parent_height = parseInt(jq_map.height()),
 		        ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
-		        ol_container_top = parseInt(jq_ol_container.css('top'))*(-1);
+		        ol_container_top = parseInt(jq_ol_container.css('top'))*(-1),
+		        jq_map_container = $("#map-container");
 
-		    // calculate positions
+            //position_top = mouse.Y-jq_map_container.offset().top-popup_height;
+            
+		    // calculate positions		       		      		      
 		      if (position_left+popup_width > parent_width)
 		        position_left -= (position_left+popup_width-parent_width)+ol_container_left;
 
@@ -653,6 +657,11 @@ if (gon.openlayers){
 
 		      if (position_top < 0)
 		        position_top += position_top*(-1)+ol_container_top;
+		        
+		        
+		      if (position_top+popup_height > mouse.Y-jq_map_container.offset().top)
+   		     position_top = mouse.Y-jq_map_container.offset().top+20;
+          
 
 		    // set final positions
 		      pos.left = position_left;
@@ -660,6 +669,8 @@ if (gon.openlayers){
 
 		    return pos;
 		  }).apply());
+		  
+		  
 		}
 
 
