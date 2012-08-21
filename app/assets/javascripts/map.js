@@ -51,7 +51,85 @@ $(document).ready(function(){
 
 });
 
+
+function full_height (element)
+{
+  if (element.length == 0)
+  {
+    return 0;
+  }
+  var values =
+  [
+    element.height(),
+    element.css('margin-top'),
+    element.css('margin-bottom'),
+    element.css('padding-top'),
+    element.css('padding-bottom'),
+    element.css('border-top-width'),
+    element.css('border-bottom-width')
+  ],
+  h = 0;
+  for (i in values)
+  {
+    h += parseInt(values[i]);
+  }
+  return h;
+}
+
+function window_width ()
+{
+  var winW;
+  if (document.body && document.body.offsetWidth)
+  {
+    winW = document.body.offsetWidth;
+  }
+  else if (document.compatMode == 'CSS1Compat' && document.documentElement && document.documentElement.offsetWidth)
+  {
+    winW = document.documentElement.offsetWidth;
+  }
+  else if (window.innerWidth)
+  {
+    winW = window.innerWidth;
+  }
+  return winW;
+}
+
+
 if (gon.openlayers){
+
+  function pan_click_handler ()
+  {
+    var d,
+    math = Math;
+    switch (this.className)
+    {
+      case 'north':
+        d = [0, -1];
+        break;
+      case 'west':
+        d = [-1, 0];
+        break;
+      case 'east':
+        d = [1, 0];
+        break;
+      case 'south':
+        d = [0, 1];
+        break;
+    }
+    for (i = 1; i <= 50; i ++)
+    {
+      setTimeout(function (k)
+      {
+        k1 = math.pow(51 - k, 5) / .5e+8;
+        map.moveByPx(d[0] * k1, d[1] * k1);
+        if (k == 50)
+        {
+          map.layers[2].redraw();
+        }
+      }, i * 20, i);
+    }
+  }
+
 
 	// Define global variables which can be used in all functions
 	var map, vector_parent, vector_child;
@@ -101,7 +179,7 @@ if (gon.openlayers){
 		  units: 'm',
 		  maxResolution: 156543.0339,
 		  maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-		  restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
+		  restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942 * 1.1, 5577916.0481658),
 		  theme: null,
 		  controls: []
 		};
@@ -115,10 +193,29 @@ if (gon.openlayers){
 		    })
 		});
 
+
+    /* ADJUSTING MAP HEIGHT */
+    var minHeight = 500,//full_height($('#indicator_menu_scale')),
+    offsetTop = $('#map-container').offset().top,
+    workHeight = $(window).innerHeight(),
+    footnoteHeight = full_height($('#footnote')),
+    marginBottom = 10,
+    mapHeight = workHeight - offsetTop - footnoteHeight - marginBottom;
+    if (mapHeight < minHeight)
+    {
+      mapHeight = minHeight;
+    }
+    $('#map').css('height', mapHeight);
+    
+
 		map = new OpenLayers.Map('map', options);
 
 		map.addControl(new OpenLayers.Control.Navigation());
-		map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
+ /*
+		map.addControl(new OpenLayers.Control.PanZoom(), new OpenLayers.Pixel(5, 25));
+ */
+
+    $('#map-container .controls .pan a').click(pan_click_handler);
 
 		map.events.register('zoomend', this, function(){
 		  var zoomLevel = map.zoom;
@@ -227,6 +324,9 @@ if (gon.openlayers){
 		  //map.restrictedExtent.right = map.restrictedExtent.right * increaseK;
 		 */
 		    map.zoomToExtent(bounds);
+		    winW = window_width();
+		    //180 for 1345 screen width
+		    map.moveByPx(winW / 7.472, 0);
 
 
 				// indicate that the parent layer has loaded

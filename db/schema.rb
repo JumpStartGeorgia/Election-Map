@@ -174,6 +174,7 @@ ActiveRecord::Schema.define(:version => 20120820082416) do
     t.text     "description"
   end
 
+  add_index "indicator_translation_olds", ["id"], :name => "index_indicator_translation_olds_on_id"
   add_index "indicator_translation_olds", ["indicator_id"], :name => "index_indicator_translations_on_indicator_id"
   add_index "indicator_translation_olds", ["locale"], :name => "index_indicator_translations_on_locale"
   add_index "indicator_translation_olds", ["name"], :name => "index_indicator_translations_on_name"

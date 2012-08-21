@@ -108,15 +108,24 @@ ol.standard li {
 	line-height: 1.1;
 }
 
+
+/* Main Container */
+#main {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+
+
 /* Map */
 #map-container {
 	position: relative;
-	width: 900px;
+	width: 100%;
 /*	float: left;*/
     margin-bottom: 25px;
 	}
 #map {
-  width: 900px;
+  width: 100%;
 	height: 600px;
   background: #edecd1;
   border-radius: 3px;
@@ -139,6 +148,109 @@ ol.standard li {
 	letter-spacing: -3px;
 }
 */
+
+#map-container .controls
+{
+  position: absolute;
+  top: 40px;
+  left: 10px;
+  z-index: 900;
+/*
+  background: rgba(0, 0, 0, .1);
+  padding: 4px 3px;
+  border-radius: 3px;
+*/
+}
+
+#map-container .controls:hover
+{
+/*
+  background: rgba(0, 0, 0, .75);
+*/
+}
+
+#map-container .controls a
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background: center center no-repeat;
+  opacity: .8;
+  filter: alpha(opacity=80);
+  transition: opacity .3s;
+  -moz-transition: opacity .3s;
+  -webkit-transition: opacity .3s;
+  -o-transition: opacity .3s;
+}
+
+#map-container .controls .zoom a
+{
+  width: 22px;
+  height: 22px;
+}
+
+#map-container .controls a:hover
+{
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+#map-container .controls .zoom .in
+{
+  background-image: url(/assets/map+.png);
+  margin-bottom: 1px;
+}
+
+#map-container .controls .zoom .out
+{
+  background-image: url(/assets/map-.png);
+}
+
+#map-container .controls .pan
+{
+  margin-bottom: 5px;
+}
+
+#map-container .controls .pan a
+{
+  width: 18px;
+  height: 18px;
+  background-image: url(/assets/map-move-south.png);
+}
+
+#map-container .controls .pan .north
+{
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+}
+
+#map-container .controls .pan .west
+{
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  float: left;
+}
+
+#map-container .controls .pan .east
+{
+  transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -webkit-transform:rotate(270deg);
+  -o-transform: rotate(270deg);
+  float: right;
+}
+
+#map-container .controls .pan .south
+{
+}
+
 #export img {
 opacity:0.7;
 filter:alpha(opacity=70); /* For IE8 and earlier */

@@ -1,7 +1,41 @@
+#indicator_menu_scale {
+  position: absolute;  
+  right: 2%;
+  margin-top: 25px;
+	z-index: 1005;
+}
+
+@media (max-width: 600px) {
+  #indicator_menu_scale {
+    position: inherit;  
+    right: inherit !important;
+ /*
+    width: 23%;
+ */
+  }
+}
+
+@media (max-width: 767px)
+{
+  #indicator_menu_scale {
+    float: left;
+    width: 23%;
+  }
+
+  #map-container {
+    float: left;
+  }
+}
+
+/*
 div#indicator_menu_scale {
 	padding: 0;
-	margin: 0;
+	float: right;
+	margin: -620px 2% 0 0;
+	z-index: 1005;
+	position: relative;
 }
+*/
 
 div#indicator_menu_scale h3 {
 	font-weight: bold;
