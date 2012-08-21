@@ -10,7 +10,7 @@ class News < ActiveRecord::Base
 
 	NEWS_TYPES =	{:data_archive => "Data Archive", :news => "News"}
 
-  scope :data_archives, where(["news_type = ? and data_archive_folder is not null", NEWS_TYPES[:data_archive]])
+  scope :data_archives, with_translations(I18n.locale).where(["news_type = ? and data_archive_folder is not null", NEWS_TYPES[:data_archive]])
   scope :recent, order("date_posted desc")
 
 	# for pagination

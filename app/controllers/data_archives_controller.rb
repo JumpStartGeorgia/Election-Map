@@ -38,27 +38,21 @@ class DataArchivesController < ApplicationController
 		available = []
 		archives = DataArchive.get_archives
 		news = News.data_archives
-logger.debug "/////////// archives count = #{archives.length}"
-logger.debug "/////////// news count = #{news.length}"
 
 		# now determine which archives have a news story
 		if news && !news.empty?
-logger.debug "/////////// available archives = #{available}"
 			# news items with archives, determine which ones have news story
 			archives.each do |archive|
 				index = news.index{|n| n.data_archive_folder == archive["folder"]}
 				if index || user_signed_in?
-logger.debug "/////////// add news #{news[index].description if index}"
 					archive["news"] =  news[index].description if index
 					available << archive
 				end
 			end
 		elsif user_signed_in?
-logger.debug "/////////// no news items with archives but user signed in so returning all"
 			# there are no news items with archives
 			available = archive
 		end
-logger.debug "/////////// available archives = #{available}"
 		return available
 	end
 end

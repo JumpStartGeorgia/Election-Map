@@ -62,8 +62,8 @@ module DataArchive
 		logs = []
 		files = {}
     # get all events
-		events = Event.where("shape_id is not null").limit(5)
-#		events = Event.where(:id => 1)
+#		events = Event.where("shape_id is not null")
+		events = Event.where(:id => 1)
 
     if events && !events.empty?
 			# create folder for zip files
@@ -126,6 +126,8 @@ module DataArchive
 
 		logs.each {|x| Rails.logger.debug x}
 
+		# delete the cache of data_archives
+		Rails.cache.delete(cache_key)
   end
 
 	###########################################

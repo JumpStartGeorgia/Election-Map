@@ -126,12 +126,9 @@ class NewsController < ApplicationController
 		available = []
 		archives = DataArchive.get_archives
 		news = News.data_archives
-logger.debug "/////////// archives count = #{archives.length}"
-logger.debug "/////////// news count = #{news.length}"
 
 		# now determine which archives do not have a news story
 		if news && !news.empty?
-logger.debug "/////////// available archives = #{available}"
 			# news items with archives, determine which ones have news story
 			archives.each do |archive|
 				text = archive["date"]
@@ -139,13 +136,11 @@ logger.debug "/////////// available archives = #{available}"
 				available << {:id => archive["folder"], :name => text}
 			end
 		else
-logger.debug "/////////// no news items with archives"
 			# there are no news items with archives
 			archives.each do |archive|
 				available << {:id => archive["folder"], :name => archive["date"]}
 			end
 		end
-logger.debug "/////////// available archives = #{available}"
 		return available
 	end
 end
