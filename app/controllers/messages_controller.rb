@@ -1,9 +1,7 @@
 class MessagesController < ApplicationController
+
   def new
     @message = Message.new
-  end
-
-  def success
   end
 
   def create

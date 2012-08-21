@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  news_type: MyString
+  date_posted: 2012-08-17 22:58:58
+  data_archive_folder: MyString
+  description: MyText
+
+two:
+  news_type: MyString
+  date_posted: 2012-08-17 22:58:58
+  data_archive_folder: MyString
+  description: MyText

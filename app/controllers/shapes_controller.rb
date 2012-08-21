@@ -9,11 +9,13 @@ class ShapesController < ApplicationController
 		if request.post?
 			if params[:file].present?
 				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
-
+					start = Time.now
 		      msg = Shape.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						msg = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = msg
+						send_status_update(msg, Time.now-start)
 				    redirect_to upload_shapes_path #GET
 		      else
 		        # errors
@@ -53,14 +55,17 @@ class ShapesController < ApplicationController
 			if params[:event_id].nil? || params[:event_id] == "" || params[:shape_type_id].nil? || params[:shape_type_id] == "0"
 				flash[:error] = I18n.t('app.msgs.missing_parameters')
 			else
+				start = Time.now
 				# delete the shapes
 				msg = Shape.delete_shapes(params[:event_id], params[:shape_type_id])
 
 				if msg.nil?
-					flash[:success] = I18n.t('app.msgs.delete_shapes_success',
+					msg = I18n.t('app.msgs.delete_shapes_success',
 					  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
+					flash[:success] = msg
+					send_status_update(msg, Time.now-start)
 
-          # reset params
+	        # reset params
           params[:event_id] = nil
           params[:shape_type_id] = nil
 

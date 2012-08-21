@@ -13,29 +13,28 @@ module ApplicationHelper
     end
   end
 
-=begin
-  def multi_language_form(destination)
-     destination = controller.controller_name.to_s + '/' + destination 
-     html = ""
-     html << multi_language_form_tab
-     html << render(:partial => destination)
-     I18n.locale = params[:locale]
-     html.html_safe
-  end
-  
-  def multi_language_form_tab
-    html = ""
-    html << '<ul class="select-form-language">'
-    @locales.each do |locale|
-      I18n.locale.to_s == locale.language ? ts = ' tab-selected' : ts = '' 
-      javascript_function =  "$('.multilanguage').hide();$('.multilanguage-menu').css('background-color','#FFF');"
-      javascript_function << "$('#form-#{locale.language}').show();$('#tab-#{locale.language}').css('background-color','#DDD')"
-      html << "<li id=\"tab-#{locale.language}\" class=\"multilanguage-menu#{ts}\" >"
-      html << link_to_function(locale.name, javascript_function)
-      html << "</li>" 
+	# Based on https://gist.github.com/1182136
+  class BootstrapLinkRenderer < ::WillPaginate::ActionView::LinkRenderer
+    protected
+
+    def html_container(html)
+      tag :div, tag(:ul, html), container_attributes
     end
-    html << "</ul>"
-    html.html_safe
+
+    def page_number(page)
+      tag :li, link(page, page, :rel => rel_value(page)), :class => ('active' if page == current_page)
+    end
+
+    def gap
+      tag :li, link(super, '#'), :class => 'disabled'
+    end
+
+    def previous_or_next_page(page, text, classname)
+      tag :li, link(text, page || '#'), :class => [classname[0..3], classname, ('disabled' unless page)].join(' ')
+    end
   end
-=end
+
+  def page_navigation_links(pages)
+    will_paginate(pages, :class => 'pagination', :inner_window => 2, :outer_window => 0, :renderer => BootstrapLinkRenderer, :previous_label => '&larr;'.html_safe, :next_label => '&rarr;'.html_safe)
+  end
 end

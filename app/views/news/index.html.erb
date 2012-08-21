@@ -1,0 +1,45 @@
+<% title t('.title') %>
+
+<% if @news.nil? || @news.empty? %>
+	<p>
+		<%= t('.no_news') %>
+	</p>
+<% else %>
+	<% @news.each do |news| %>
+		<div id="news_item">
+			<h3>
+				<%= l Date.new(news.date_posted.year, news.date_posted.month, news.date_posted.day), :format => :long %>
+			<% if user_signed_in? %>
+				<span>
+				  <%= link_to t('.edit', :default => t("helpers.links.edit")),
+				              edit_news_path(news), :class => 'btn btn-mini' %>
+				  <%= link_to t('.destroy', :default => t("helpers.links.destroy")),
+				              news_path(news),
+				              :method => :delete,
+				              :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')),
+				              :class => 'btn btn-mini btn-danger' %>
+				</span>
+			<% end %>
+			</h3>
+			<%= simple_format news.description, {}, :sanitize => false %>
+			<% if news.news_type == News::NEWS_TYPES[:data_archive] && !news.data_archive_folder.nil? && !news.data_archive_folder.empty? %>
+				<p>
+					<%= link_to t('.data_archives_link'), data_archive_path(news.data_archive_folder), :class => "btn btn-mini" %>
+				</p>
+			<% end %>
+		</div>
+	<% end %>
+
+	<%= page_navigation_links @news %>
+<% end %>
+
+
+<% if user_signed_in? %>
+<div class="form-actions">
+  <%= link_to t('.new', :default => t("app.buttons.new_news")),
+            new_news_path,
+            :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+    :class => 'btn' %>
+</div>
+<% end %>

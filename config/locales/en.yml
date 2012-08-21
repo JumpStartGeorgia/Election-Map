@@ -90,6 +90,8 @@ en:
       new_pages: New Page
       new_shape_types: New Shape Type
       new_shapes: New Shape
+      new_news: New News
+      new_data_archives: New Data Archive
       upload_csv: Process CSV File
       download_xls: Download XLS Data File
       download_csv: Download CSV Data File
@@ -163,8 +165,12 @@ en:
       total_participants: Total Subjects
       footnote_duplicates: At least two Subjects tied
       data_archive: Data Archive
+      news_type: News Type
+      date_posted: Date Posted
+      data_archive_folder: Data Archive Folder
   contact_mailer:
-    subject: "[Georgia Election Data] Contact Form"
+    subject_new_message: "[Georgia Election Data] Contact Form"
+    subject_status_update: "[Georgia Election Data (%{env})] Status Update"
   layouts:
     application-bootstrap:
       title: Georgia Election Data
@@ -183,6 +189,8 @@ en:
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by
       header: Elections
+      news: News
+      data_archives: Data Archives
     ajax_data_table:
       links: Click on a data point to view it on the map.
       sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.
@@ -253,8 +261,9 @@ en:
       change_indicator_scales: Change Indicator Scales
       data: Data
       shapes: Map Shapes
-      download_header: Download CSV Files
+      download_header: Download Files
       download_indicators: Indicators
+      data_archives: Create Data Archive Set
       delete_header: Delete Records
       delete_shapes: Map Shapes
       delete_data: Data
@@ -461,3 +470,27 @@ en:
       explanation: Create cache files for the data that builds the Overall Results bar charts in the map popup.
       time: This will take about 30 minutes.
       created: The cache files have been created.
+  data_archives:
+    new:
+      title: Create a new Data Archive set of files
+      size: This will take about 5mb of disk space.
+      time: This will take about 30 minutes.
+      created: The data archive files have been created.
+    index:
+      title: Data Archives
+      no_archives: I am sorry, but at this time we do not have any data archives.
+    show:
+      title: Data Archives
+      view_all: View All Data Archive Records
+      no_archive: I am sorry, but the requested data archive could not be found.
+  news:
+    edit:
+      title: Editing News
+    index:
+      title: News
+      data_archives_link: View Data Archive
+      no_news: I am sorry, but at this time we do not have any news.
+    new:
+      title: New News
+    show:
+      title: News Details

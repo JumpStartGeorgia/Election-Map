@@ -16,9 +16,11 @@
 //= require event_custom_views
 //= require event_indicator_relationships
 //= require event_menu
+//= require events
 //= require indicator_menu_scale
 //= require map_popup_svg
 //= require messages
+//= require news
 //= require shapes
 
 //= require map.export

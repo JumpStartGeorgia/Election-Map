@@ -1,0 +1,29 @@
+<%= semantic_form_for @news do |f| %>
+	<%= f.semantic_errors %>
+
+	<%= f.inputs do %>
+		<%= f.input :date_posted, :as => :string, :input_html => { :size => 20 } %>
+		<%= f.input :news_type, :as => :select, :collection => @news_types.values %>
+		<%= f.input :data_archive_folder, :as => :select,
+				:collection => @availabe_archives.map{|x| [x[:name], x[:id]]} %>
+	<% end %>
+
+	<%= f.inputs :for => :news_translations do |news_translation, i| %>
+
+		<% formLocale = I18n.available_locales[i-1] %>
+
+		<div id="form-<%= formLocale %>" class="multilanguage">
+			<h3><%= t("app.language.#{formLocale}") %></h3>
+
+			<%= news_translation.input :description, :as => :text %>
+			<%= news_translation.hidden_field :locale , :value => formLocale %>
+		</div>
+
+	<% end %>
+
+	<div class="form-actions">
+	  <%= f.submit nil, :class => 'btn btn-success' %>
+	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
+	  <%= link_to t('app.buttons.cancel'), news_index_path, :class => 'btn btn-mini btn-warning' %>
+	</div>
+<% end %>

@@ -1,7 +1,4 @@
 ElectionMap::Application.routes.draw do
-
-
-
 	#--------------------------------
 	# all resources should be within the scope block below
 	#--------------------------------
@@ -48,6 +45,7 @@ ElectionMap::Application.routes.draw do
 	  resources :event_custom_views
 	  resources :event_indicator_relationships
 	  resources :event_types
+    resources :news
 	  resources :pages
 	  resources :shapes do
 			collection do
@@ -94,6 +92,13 @@ ElectionMap::Application.routes.draw do
 			:as => :cache_summary_data, :via => :get
 		match '/cache/summary_data', :to => 'cache#summary_data',
 			:as => :cache_summary_data, :via => :post
+
+		# data archives
+		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :get
+		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :post
+		match '/data_archives', :to => 'data_archives#index', :as => :data_archives, :via => :get
+		match '/data_archives/:data_archive_folder', :to => 'data_archives#show', :as => :data_archive, :via => :get
+
 
     # routes to root#index
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get

@@ -8,11 +8,13 @@ class DataController < ApplicationController
 		if request.post?
 			if params[:file].present?
 				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
-
+					start = Time.now
 				  msg = Datum.build_from_csv(params[:file], params[:delete_records].nil? ? nil : true)
 		      if msg.nil? || msg.empty?
 		        # no errors, success!
-						flash[:success] = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						msg = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
+						flash[:success] = msg
+						send_status_update(msg, Time.now-start)
 				    redirect_to upload_data_path #GET
 		      else
 		        # errors
@@ -51,6 +53,7 @@ class DataController < ApplicationController
 			if params[:event_id].nil? || params[:event_id] == ""
 				flash[:error] = I18n.t('app.msgs.missing_parameters')
 			else
+				start = Time.now
 				# delete the data
 				params[:shape_type_id] = nil if params[:shape_type_id] == "" || params[:shape_type_id] == "0"
 				params[:indicator_id] = nil if params[:indicator_id] == "" || params[:indicator_id] == "0"
@@ -58,15 +61,21 @@ class DataController < ApplicationController
 
 				if msg.nil?
 					if !params[:shape_type_id].nil? && !params[:indicator_id].nil?
-						flash[:success] = I18n.t('app.msgs.delete_data_success_1',
+						msg = I18n.t('app.msgs.delete_data_success_1',
 						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip,
 							:indicator => params[:indicator_name])
+						flash[:success] = msg
+						send_status_update(msg, Time.now-start)
 					elsif !params[:shape_type_id].nil?
-						flash[:success] = I18n.t('app.msgs.delete_data_success_2',
+						msg = I18n.t('app.msgs.delete_data_success_2',
 						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
+						flash[:success] = msg
+						send_status_update(msg, Time.now-start)
 					else
-						flash[:success] = I18n.t('app.msgs.delete_data_success_3',
+						msg = I18n.t('app.msgs.delete_data_success_3',
 						  :event => params[:event_name])
+						flash[:success] = msg
+						send_status_update(msg, Time.now-start)
 					end
 
           # reset params

@@ -4,13 +4,54 @@ module DataArchive
 	require 'utf8_converter'
 
 	###########################################
-	### manage directores
+	### get archives on file
+	### - format = [ { "folder" => "folder_name" , "date" => "date", "files" => [  {  "url", "file_size", "locale", "file_type"  }  ]  }  ]
 	###########################################
-	def self.create_directory(path)
-		if !path.nil? && path != "."
-			FileUtils.mkpath(path)
-		end
-	end
+  def self.get_archives
+		Rails.cache.fetch(cache_key) {
+	    files = []
+
+			# get all archive directories in desc order
+			dirs = Dir["#{archive_root}/*/"].map { |a| File.basename(a) }.sort{|a,b| b <=> a}
+	puts "dirs = #{dirs}"
+			if dirs && !dirs.empty?
+	puts "dirs not empty"
+			  dirs.each do |dir|
+	puts "dir = #{dir}"
+			    archive_folder = Hash.new
+			    files << archive_folder
+			    archive_folder["folder"] = dir
+
+					# generate friendly date from the folder name
+					folder = dir.gsub("_", "-").insert(13, ":").insert(16, ":")
+					date = I18n.l(Time.parse(folder), :format => :long)
+		      archive_folder["date"] = date
+	puts "date = #{date}"
+
+			    archive_folder["files"] = Array.new
+			    Dir.glob("#{archive_root}/#{dir}/*.zip").sort.each do |file|
+			      archive_file = Hash.new
+			      archive_folder["files"] << archive_file
+
+			      archive_file["url"] = "/#{url_path}/#{dir}/#{File.basename(file)}"
+			      archive_file["file_size"] = File.size(file)
+			      archive_file["locale"] = nil
+			      I18n.available_locales.each do |locale|
+			        if !File.basename(file).index("_#{locale.to_s.upcase}_").nil?
+			          archive_file["locale"] = locale.to_s.upcase
+			          break
+			        end
+			      end
+			      archive_file["file_type"] = nil
+			      archive_file["file_type"] = "CSV" if !File.basename(file).index("_CSV_").nil?
+			      archive_file["file_type"] = "XLS" if !File.basename(file).index("_XLS_").nil?
+			    end
+			  end
+			end
+    	files
+		}
+  end
+
 
 	###########################################
 	### create download files
@@ -21,7 +62,8 @@ module DataArchive
 		logs = []
 		files = {}
     # get all events
-		events = Event.where("shape_id is not null").limit(1)
+		events = Event.where("shape_id is not null").limit(5)
+#		events = Event.where(:id => 1)
 
     if events && !events.empty?
 			# create folder for zip files
@@ -77,12 +119,18 @@ module DataArchive
 				logs << ">>>>>>>>>>> time to zip files was #{Time.now - zip_start} seconds"
       end
     end
+		# delete the csv/xls files that are no longer needed
+		delete_files(archive_file_path(timestamp), files)
+
 		logs << ">>>>>>>>>>> total time to create zip files was #{Time.now - start_time} seconds"
 
-		logs.each {|x| puts x}
+		logs.each {|x| Rails.logger.debug x}
 
   end
 
+	###########################################
+	### create spreadsheet formated string
+	###########################################
 	def self.create_csv_formatted_string(data)
 		csv = ""
 		if data && !data.empty?
@@ -97,7 +145,7 @@ module DataArchive
 	end
 
 	def self.create_excel_formatted_string(data)
-		xls = ""
+		xls = []
 		if data && !data.empty?
 			xls << "<?xml version=\"1.0\"?>\n"
 			xls << "<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"\n"
@@ -125,13 +173,51 @@ module DataArchive
 			xls << "  </Worksheet>\n"
 			xls << "</Workbook>"
 		end
-		return xls
+		return xls.join
 	end
 
 protected
 
+	def self.cache_key
+		return "data_archives_#{I18n.locale}"
+	end
+
+	###########################################
+	### delete files not needed
+	### - assume collection is a hash of arrays
+  ###   as used in the create_files method
+	###########################################
+	def self.delete_files(path, collection)
+		if !collection.nil? && !collection.empty?
+			collection.each_key do |key|
+				collection[key].each_key do |key2|
+					collection[key][key2].each do |file|
+						File.delete(path + "/" + file)
+					end
+				end
+			end
+		end
+	end
+
+	###########################################
+	### manage directory/file names
+	###########################################
+	def self.create_directory(path)
+		if !path.nil? && path != "."
+			FileUtils.mkpath(path)
+		end
+	end
+
+  def self.url_path
+  	"system/data_archives"
+  end
+
+  def self.archive_root
+  	"#{Rails.root}/public/#{url_path}"
+  end
+
   def self.archive_file_path(timestamp)
-  	clean_filename("#{Rails.root}/public/data_archives/#{timestamp}")
+  	clean_filename("#{archive_root}/#{timestamp}")
   end
 
   def self.zip_file_name(timestamp, file_type)

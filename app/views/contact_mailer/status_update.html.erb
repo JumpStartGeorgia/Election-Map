@@ -1,0 +1,19 @@
+<p>
+<strong>From:</strong>
+<%= @message.name %>
+</p>
+
+<p>
+<strong>User Starting Task: </strong>
+<%= @message.email %>
+</p>
+
+<p>
+<strong>Task: </strong>
+</p>
+<%= simple_format @message.message %>
+
+<p>
+<strong>Time to Complete: </strong>
+<%= @message.time %> seconds
+</p>
