@@ -94,6 +94,40 @@ function window_width ()
 
 if (gon.openlayers){
 
+  function pan_click_handler ()
+  {
+    var d,
+    math = Math;
+    switch (this.className)
+    {
+      case 'north':
+        d = [0, -1];
+        break;
+      case 'west':
+        d = [-1, 0];
+        break;
+      case 'east':
+        d = [1, 0];
+        break;
+      case 'south':
+        d = [0, 1];
+        break;
+    }
+    for (i = 1; i <= 50; i ++)
+    {
+      setTimeout(function (k)
+      {
+        k1 = math.pow(51 - k, 5) / .5e+8;
+        map.moveByPx(d[0] * k1, d[1] * k1);
+        if (k == 50)
+        {
+          map.layers[2].redraw();
+        }
+      }, i * 20, i);
+    }
+  }
+
+
 	// Define global variables which can be used in all functions
 	var map, vector_parent, vector_child;
 	var vector_parent_loaded = false;
@@ -158,7 +192,7 @@ if (gon.openlayers){
 
 
     /* ADJUSTING MAP HEIGHT */
-    var minHeight = 480,//full_height($('#indicator_menu_scale')),
+    var minHeight = 500,//full_height($('#indicator_menu_scale')),
     offsetTop = $('#map-container').offset().top,
     workHeight = $(window).innerHeight(),
     footnoteHeight = full_height($('#footnote')),
@@ -174,7 +208,11 @@ if (gon.openlayers){
 		map = new OpenLayers.Map('map', options);
 
 		map.addControl(new OpenLayers.Control.Navigation());
+ /*
 		map.addControl(new OpenLayers.Control.PanZoom(), new OpenLayers.Pixel(5, 25));
+ */
+
+    $('#map-container .controls .pan a').click(pan_click_handler);
 
 		map.events.register('zoomend', this, function(){
 		  var zoomLevel = map.zoom;

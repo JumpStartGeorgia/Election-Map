@@ -5,13 +5,25 @@
 	z-index: 1005;
 }
 
-@media (max-width: 979px) {
+@media (max-width: 600px) {
   #indicator_menu_scale {
     position: inherit;  
     right: inherit !important;
  /*
     width: 23%;
  */
+  }
+}
+
+@media (max-width: 767px)
+{
+  #indicator_menu_scale {
+    float: left;
+    width: 23%;
+  }
+
+  #map-container {
+    float: left;
   }
 }
 

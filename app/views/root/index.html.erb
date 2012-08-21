@@ -77,9 +77,19 @@
 
     <div style="position: relative;">
 		  <div id="map"></div>
-		  <div class="controls" style="position: absolute; top: 200px; left: 200px; z-index: 900;">
-		    <a href="javascript:map.zoomIn();">+</a>
-		    <a href="javascript:map.zoomOut();">-</a>
+		  <div class="controls">
+		    <div class="pan">
+		      <a class="north" href="javascript:;"></a>
+		      <div class="clear">
+	          <a class="west" href="javascript:;"></a>
+		        <a class="east" href="javascript:;"></a>
+		      </div>
+		      <a class="south" href="javascript:;"></a>
+		    </div>
+		    <div class="zoom">
+		      <a class="in" href="javascript:map.zoomIn();"></a>
+		      <a class="out" href="javascript:map.zoomOut();"></a>
+		    </div>
 		  </div>
 		  <div id="export">
 			   <p>Download:</p>
