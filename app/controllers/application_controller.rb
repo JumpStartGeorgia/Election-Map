@@ -74,7 +74,7 @@ logger.debug "---********----- event type cache"
   end
 
 	# format:
-	# [ { id, name, events => [ { id, url } ] } ]
+	# [ { id, name, events => [ { id, url, description } ] } ]
   def set_event_menu
 		json = Rails.cache.fetch("event_menu_json_#{I18n.locale}") {
 			json = []

@@ -206,11 +206,11 @@ if (gon.openlayers){
       mapHeight = minHeight;
     }
     $('#map').css('height', mapHeight);
-    
+
 
 		map = new OpenLayers.Map('map', options);
 
-		map.addControl(new OpenLayers.Control.Navigation());
+		map.addControl(new OpenLayers.Control.Navigation({zoomWheelEnabled: false}));
  /*
 		map.addControl(new OpenLayers.Control.PanZoom(), new OpenLayers.Pixel(5, 25));
  */
