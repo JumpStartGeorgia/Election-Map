@@ -2,7 +2,7 @@
 
 class AddShapeTypeSingularPossessive < ActiveRecord::Migration
   def up
-#		add_column :shape_type_translations, :name_singular_possessive, :string
+		add_column :shape_type_translations, :name_singular_possessive, :string
 
 		# add values
 		ShapeTypeTranslation.transaction do
