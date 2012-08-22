@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
    before_filter :set_locale
    before_filter :is_browser_supported?
    before_filter :set_event_types
+   before_filter :set_event_menu
    before_filter :set_shape_types
    before_filter :set_default_values
    before_filter :set_gon_data
@@ -70,6 +71,36 @@ logger.debug "---********----- event type cache"
 			x.collect{|x| x}
 		}
 #    @event_types = EventType.all
+  end
+
+  def set_event_menu
+		json = Rails.cache.fetch("event_menu_json_#{I18n.locale}") {
+			json = []
+			if @event_types && !@event_types.empty?
+				@event_types.each do |event_type|
+					type = Hash.new
+					json << type
+					type["id"] = event_type.id
+					type["name"] = event_type.name
+					type["events"] = []
+
+					event_type.events.get_events_by_type(event_type.id).each do |event|
+						if !event.shape_id.nil?
+							e = Hash.new
+							type["events"] << e
+							e["id"] = event.id
+							e["event_type_id"] = event.event_type_id
+							e["shape_id"] = event.shape_id
+							e["shape_type_id"] = event.shape.nil? ? nil : event.shape.shape_type_id
+							e["name"] = event.name
+							e["description"] = event.description
+						end
+					end
+				end
+			end
+			json
+		}
+		@event_menu = JSON.parse(json)
   end
 
   def set_shape_types

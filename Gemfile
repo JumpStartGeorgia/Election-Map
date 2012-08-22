@@ -22,7 +22,6 @@ gem "i18n-js", "~> 2.1.2" # to show translations in javascript
 gem "active_attr", "~> 0.5.1" # to create tabless models; using for contact form
 gem "dalli", "~> 2.0.5" # memory cache
 gem "kgio", "~> 2.7.4" # makes dalli faster
-#gem "girl_friday", "~> 0.9.7" # asynchronous calls
 gem "json", "~> 1.7.4" # json parser faster than default
 gem "useragent", :git => "https://github.com/jilion/useragent.git" # browser detection
 gem "rubyzip", "~> 0.9.9" # generate zip files

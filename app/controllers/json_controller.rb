@@ -1,9 +1,10 @@
 class JsonController < ApplicationController
+  layout false
 	require 'json'
 
-	################################################3
+	#################################################
 	##### shape jsons
-	################################################3
+	#################################################
   # GET /json/shape/:id/shape_type/:shape_type_id
   def shape
 		geometries = Rails.cache.fetch("parent_shape_json_#{I18n.locale}_shape_#{params[:id]}") {
@@ -23,7 +24,7 @@ class JsonController < ApplicationController
 		shape = Shape.find(params[:parent_id])
 		# see if this event at this shape type is a custom view
 		custom = EventCustomView.get_by_descendant(params[:event_id], params[:shape_type_id])
-		
+
 		parent_shape = nil
 		if !shape.nil?
 		  if custom && !custom.empty?
@@ -52,8 +53,8 @@ class JsonController < ApplicationController
           geometries['features'] = needed
   			end
       end
-      
-      # if geometries is still nil, get data from database  
+
+      # if geometries is still nil, get data from database
       if geometries.nil?
 				logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
@@ -94,9 +95,9 @@ class JsonController < ApplicationController
 		logger.debug "@ time to render custom_children_shapes json from file: #{Time.now-start} seconds"
   end
 
-	################################################3
+	#################################################
 	##### summary shape jsons
-	################################################3
+	#################################################
   # GET /json/summary_children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable(/custom_view/:custom_view))
   def summary_children_shapes
     start = Time.now
@@ -105,7 +106,7 @@ class JsonController < ApplicationController
 		shape = Shape.find(params[:parent_id])
 		# see if this event at this shape type is a custom view
 		custom = EventCustomView.get_by_descendant(params[:event_id], params[:shape_type_id])
-		
+
 		parent_shape = nil
 		if !shape.nil?
 		  if custom && !custom.empty?
@@ -135,8 +136,8 @@ class JsonController < ApplicationController
           geometries['features'] = needed
   			end
       end
-      
-      # if geometries is still nil, get data from database  
+
+      # if geometries is still nil, get data from database
       if geometries.nil?
 				logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
@@ -178,6 +179,18 @@ class JsonController < ApplicationController
 
     logger.debug "@ time to render summary_custom_children_shapes json from file: #{Time.now-start} seconds"
   end
+
+	#################################################
+	##### event menu
+	#################################################
+  # GET /:locale/json/event_menu
+  def event_menu
+		# the menu is create in the application controller
+    respond_to do |format|
+      format.json { render json: @event_menu.to_json }
+    end
+  end
+
 
 
 protected
