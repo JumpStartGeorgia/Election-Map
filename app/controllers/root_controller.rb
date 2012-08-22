@@ -109,7 +109,7 @@ logger.debug "////////////// setting @ variables"
               @parent_shape_type = parent_shape_type.id
 							@parent_shape_type_name_singular = parent_shape_type.name_singular
 							@child_shape_type_id = child_shape_type.id
-							@child_shape_type_name_singular = child_shape_type.name_singular
+							@child_shape_type_name_singular_possessive = child_shape_type.name_singular_possessive
 							@child_shape_type_name_plural = child_shape_type.name_plural
 							if @has_custom_view
 								@custom_child_shape_type_name_singular = custom_child_shape_type.name_singular
@@ -512,7 +512,7 @@ logger.debug " - no matching event found!"
 
 		# if summary view type, set indicator_description for legend title
 		if params[:view_type] == @summary_view_type_name
-			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular)
+			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular_possessive)
 		end
 
 		# indicator scales

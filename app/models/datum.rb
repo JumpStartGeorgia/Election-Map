@@ -553,7 +553,7 @@ logger.debug "=========== getting data for 1 indicator"
     logger.debug "=========== no shape type translation found"
                 return nil
               else
-                row_starter << ind.shape_type.shape_type_translations[0].name_singular
+                row_starter << ind.shape_type.shape_type_translations[0].name_singular_possessive
               end
             end
 

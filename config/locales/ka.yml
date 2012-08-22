@@ -137,6 +137,7 @@ ka:
       name: Name
       name_abbrv: Abbrveiated Name
       name_singular: Singular Name
+      name_singular_possessive: Singular Possessive
       name_plural: Plural Name
       title: Title
       description: Description

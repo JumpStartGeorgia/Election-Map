@@ -7,6 +7,7 @@
 			<h3><%= t("app.language.#{formLocale}") %></h3>
 
 			<%= shape_type_translation.input :name_singular %>
+			<%= shape_type_translation.input :name_singular_possessive %>
 			<%= shape_type_translation.input :name_plural %>
 			<%= shape_type_translation.hidden_field :locale , :value => formLocale %>
 		</div>
