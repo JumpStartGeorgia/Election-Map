@@ -7,7 +7,7 @@ $(function(){
        },
        export_click = function()
        {
-         var min_width = 94, max_width = 227;
+         var min_width = 94, max_width = 230;
          if (parseInt(map_export.css('width')) < max_width-1)
          {
             map_export.animate({

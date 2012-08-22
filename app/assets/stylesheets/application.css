@@ -111,11 +111,12 @@ ol.standard li {
 
 /* Main Container */
 #main {
-  padding-left: 0px;
-  padding-right: 0px;
+	padding-left: 0;
+	padding-right: 0;
+
+	margin-left: 25px !important;
+  margin-right: 25px !important;
 }
-
-
 
 /* Map */
 #map-container {
@@ -123,7 +124,7 @@ ol.standard li {
 	width: 100%;
 /*	float: left;*/
     margin-bottom: 25px;
-	}
+}
 #map {
   width: 100%;
 	height: 600px;
@@ -137,6 +138,7 @@ ol.standard li {
 
 /* fixes issue with bootstrap css and openlayers tile images */
 #map img { max-width:none; }
+
 /*
 #export {
 	display: none;
