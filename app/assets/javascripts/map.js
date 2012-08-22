@@ -564,16 +564,63 @@ if (gon.openlayers){
 		  return ;
 
 		removeFeaturePopups();
-
-		var popup = new OpenLayers.Popup("Feature Popup",
-			feature_data.geometry.bounds.getCenterLonLat(),
+      
+      // create popup
+      (function(){
+         
+         
+         var feature = feature_data,
+	          feature_vertices = feature.geometry.getVertices(),
+	          feature_center = feature_data.geometry.bounds.getCenterLonLat(),
+	          max_X = 0,
+	          max_Y = 0,
+	          min_X = 99999999,
+	          min_Y = 99999999;
+		      
+		      
+		      
+		      for (var i=0;i<feature_vertices.length;i++)
+		      {
+		         if (feature_vertices[i].x > max_X)
+		         {
+		            max_X = feature_vertices[i].x;
+		         }
+		         
+		         if (feature_vertices[i].y > max_Y)
+		         {
+		            max_Y = feature_vertices[i].y;
+		         }
+		         
+		         if (feature_vertices[i].x < min_X)
+		         {
+		            min_X = feature_vertices[i].x;
+		         }
+		         
+		         if (feature_vertices[i].y < min_Y)
+		         {
+		            min_Y = feature_vertices[i].y;
+		         }
+		      }
+		      		      		      		      		                  		          
+         
+         
+         var popup = new OpenLayers.Popup("Feature Popup",
+			new OpenLayers.LonLat(feature_center.lon, max_Y),
 			new OpenLayers.Size(400, 300),
 			"",
 			true);
-		//popup.panMapIfOutOfView = true;
-		map.addPopup(popup);
+			
+		   //popup.panMapIfOutOfView = true;
+		   map.addPopup(popup);
+		   
+      }).apply();
+		
+		
+		
+		
 
-		if (close_button){
+		if (close_button)
+		{
 		  var popup_close = $(".olPopupCloseBox:first");
 		  popup_close.css({
 		    "width": "30px",
@@ -621,13 +668,13 @@ if (gon.openlayers){
 		    height: window.maxSVGHeight
 		  });
 
-		  if (!stright)
+		  /*if (!stright)
 		  {
 		    jq_popup.css({
 		      left: jq_popup_offset.left(false),
 		      top: jq_popup_offset.top(false)
 		    });
-		  }
+		  }*/
 
 		  
 		  jq_popup.css((function(){
@@ -643,7 +690,9 @@ if (gon.openlayers){
 		        ol_container_top = parseInt(jq_ol_container.css('top'))*(-1),
 		        jq_map_container = $("#map-container");
 
-            //position_top = mouse.Y-jq_map_container.offset().top-popup_height;
+          // initial position
+            position_top -= popup_height;
+            position_left -= popup_width/2;
             
 		    // calculate positions		       		      		      
 		      if (position_left+popup_width > parent_width)
@@ -668,8 +717,8 @@ if (gon.openlayers){
 		      pos.top = position_top;
 
 		    return pos;
-		  }).apply());
-		  
+		  }).apply());	  		 
+		    
 		  
 		}
 
