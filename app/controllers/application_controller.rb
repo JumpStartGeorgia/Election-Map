@@ -73,6 +73,8 @@ logger.debug "---********----- event type cache"
 #    @event_types = EventType.all
   end
 
+	# format:
+	# [ { id, name, events => [ { id, url } ] } ]
   def set_event_menu
 		json = Rails.cache.fetch("event_menu_json_#{I18n.locale}") {
 			json = []
@@ -89,10 +91,10 @@ logger.debug "---********----- event type cache"
 							e = Hash.new
 							type["events"] << e
 							e["id"] = event.id
-							e["event_type_id"] = event.event_type_id
-							e["shape_id"] = event.shape_id
-							e["shape_type_id"] = event.shape.nil? ? nil : event.shape.shape_type_id
-							e["name"] = event.name
+							e["url"] = view_context.link_to(event.name, indicator_map_path(
+								:event_id => event.id, :event_type_id => event.event_type_id,
+								:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
+								:only_path => false))
 							e["description"] = event.description
 						end
 					end
@@ -100,7 +102,13 @@ logger.debug "---********----- event type cache"
 			end
 			json
 		}
-		@event_menu = JSON.parse(json)
+
+		# if returned from cache, the obj will be string and need to convert back to array/hashes
+		if json.class == String
+			@event_menu = JSON.parse(json)
+		else
+			@event_menu = json
+		end
   end
 
   def set_shape_types
