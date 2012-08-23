@@ -1,4 +1,5 @@
 require 'json_cache'
+require 'data_archive'
 
 namespace :election_data do
 	##############################
@@ -31,6 +32,14 @@ namespace :election_data do
 
     #build the cache
     JsonCache.summary_data_cache
+  end
+
+	##############################
+  desc "create archive of all event data in database"
+  task :data_archive_files => [:environment] do
+
+    #create the data archive files
+    DataArchive.create_files
   end
 
 end
