@@ -141,6 +141,9 @@ if (gon.openlayers){
 	scale_nodata['color'] = color_nodata;
 	var opacity = "0.6";
 	var map_opacity = "0.9";
+	var minZoom = 7;
+	var map_width_indicators_fall = 667;
+
 
 	// define number formatting for data values
 	var numFormat = new NumberFormat();
@@ -179,7 +182,7 @@ if (gon.openlayers){
 		  units: 'm',
 		  maxResolution: 156543.0339,
 		  maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-		  restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942 * 1.1, 5577916.0481658),
+//		  restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942 * 1.1, 5577916.0481658),
 		  theme: null,
 		  controls: []
 		};
@@ -219,8 +222,12 @@ if (gon.openlayers){
 
 		map.events.register('zoomend', this, function(){
 		  var zoomLevel = map.zoom;
-		  if (zoomLevel < 7)
-		    map.zoomTo(7);
+			// if the window width is small enough so that that indicators have fallen below the map,
+			// the country view of the map is to wide for the default minZoom
+			if (window_width() < map_width_indicators_fall)
+				minZoom = 6;
+		  if (zoomLevel < minZoom)
+		    map.zoomTo(minZoom);
 		});
 
 		// include tileOptions to avoid getting cross-origin image load errors
@@ -325,8 +332,12 @@ if (gon.openlayers){
 		 */
 		    map.zoomToExtent(bounds);
 		    winW = window_width();
-		    //180 for 1345 screen width
-		    map.moveByPx(winW / 7.472, 0);
+				if (winW > map_width_indicators_fall){
+					// the indicator window is on top of the map if width > 600
+					// so adjust the map to account for the indicator window
+				  //180 for 1345 screen width
+				  map.moveByPx(winW / 7.472, 0);
+				}
 
 
 				// indicate that the parent layer has loaded
@@ -392,9 +403,6 @@ if (gon.openlayers){
 		      console.log('highlight_shape function not found, check the script that loads it');
 		    }
 			}
-
-			// hide the loading image for the map
-			// TODO
 		}
 	}
 
