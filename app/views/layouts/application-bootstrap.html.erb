@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+  <head itemscope itemtype="http://schema.org/NGO">
+		<!-- for social sites -->
+		<meta itemprop="name" content="<%= content_for?(:title) ? "#{yield(:title)} > #{t('app.common.app_name')}" :
+				t('app.common.app_name') %>">
+		<meta itemprop="description" content="<%= @event_description.nil? ? nil : strip_tags(@event_description) %>">
+		<!-- for /social sites -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
