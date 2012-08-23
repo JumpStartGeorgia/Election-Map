@@ -557,18 +557,18 @@ if (gon.openlayers){
 	// Create the popup for the feature
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
+	   var popup;
+	   
 		if (typeof(stright) === "undefined")
 		  stright = false;
-
 		if (stright && $(".olPopupCloseBox:first").length !== 0)
 		  return ;
 
+      // remove all popups
 		removeFeaturePopups();
       
       // create popup
-      (function(){
-         
-         
+      (function(){                        
          var feature = feature_data,
 	          feature_vertices = feature.geometry.getVertices(),
 	          feature_center = feature_data.geometry.bounds.getCenterLonLat(),
@@ -576,9 +576,7 @@ if (gon.openlayers){
 	          max_Y = 0,
 	          min_X = 99999999,
 	          min_Y = 99999999;
-		      
-		      
-		      
+	          		      		      		      
 		      for (var i=0;i<feature_vertices.length;i++)
 		      {
 		         if (feature_vertices[i].x > max_X)
@@ -600,25 +598,20 @@ if (gon.openlayers){
 		         {
 		            min_Y = feature_vertices[i].y;
 		         }
-		      }
-		      		      		      		      		                  		          
-         
-         
-         var popup = new OpenLayers.Popup("Feature Popup",
+		      }		      		      		      		      		                  		                   
+                  
+         popup = new OpenLayers.Popup("Feature Popup",
 			new OpenLayers.LonLat(feature_center.lon, max_Y),
 			new OpenLayers.Size(400, 300),
 			"",
 			true);
 			
 		   //popup.panMapIfOutOfView = true;
-		   map.addPopup(popup);
-		   
-      }).apply();
+		   map.addPopup(popup);		   
+      }).apply();				
 		
 		
-		
-		
-
+      // close button
 		if (close_button)
 		{
 		  var popup_close = $(".olPopupCloseBox:first");
@@ -630,96 +623,163 @@ if (gon.openlayers){
 		    "cursor": "pointer"
 		  }).click(close_button_func);
 		}
-
-
-		// Popup coordination
-		var jq_popup = $(".olPopup:first"),
-		    jq_popup_content = $(".olPopupContent:first"),
-		    jq_map = $("#map"),
-		    jq_ol_container = jq_map.find("div:first").find("div:first"),
-		    jq_popup_offset = {
-		      top: function(use_def){
-		       return mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
-		      },
-		      left: function(use_def){
-		        return mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
-		      }
-		    };
-
-		/*jq_popup.css({
-		  left: jq_popup_offset.left(true),
-		  top: jq_popup_offset.top(true),
-		  width: 0,
-		  height: 0
-		});*/
+			
+		
+		// process popup
 		if (feature_data.attributes.results.length > 0)
+		   proc_popup();      
+
+		
+		
+		
+		function proc_popup()
 		{
-		  new MapPopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
-		    limit: 5
-		  });
+		    		    
+		    function fill_popup()
+	       {
+	         var jq_popup = $(".olPopup:first"),
+      		    jq_popup_content = $(".olPopupContent:first");
+             new MapPopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
+                limit: 5
+              });
+                            
+              jq_popup_content.css({
+                width: window.maxSVGWidth,
+                height: window.maxSVGHeight
+              });
 
-		  jq_popup_content.css({
-		    width: window.maxSVGWidth,
-		    height: window.maxSVGHeight
-		  });
-
-		  jq_popup.css({
-		    width: window.maxSVGWidth,
-		    height: window.maxSVGHeight
-		  });
-
-		  /*if (!stright)
-		  {
-		    jq_popup.css({
-		      left: jq_popup_offset.left(false),
-		      top: jq_popup_offset.top(false)
-		    });
-		  }*/
-
-		  
-		  jq_popup.css((function(){
-		    // initialize nesecary variables
-		    var pos = {},
-		        position_left = parseInt(jq_popup.css('left')),
-		        position_top = parseInt(jq_popup.css('top')),
-		        popup_width = parseInt(jq_popup.width()),
-		        popup_height = parseInt(jq_popup.height()),
-		        parent_width = parseInt(jq_map.width()),
-		        parent_height = parseInt(jq_map.height()),
-		        ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
-		        ol_container_top = parseInt(jq_ol_container.css('top'))*(-1),
-		        jq_map_container = $("#map-container");
-
-          // initial position
-            position_top -= popup_height;
-            position_left -= popup_width/2;
-            
-		    // calculate positions		       		      		      
-		      if (position_left+popup_width > parent_width)
-		        position_left -= (position_left+popup_width-parent_width)+ol_container_left;
-
-		      if (position_left < 0)
-		        position_left += position_left*(-1)+ol_container_left;
-
-		      if (position_top+popup_height > parent_height)
-		        position_top -= (position_top+popup_height-parent_height)+ol_container_top;
-
-		      if (position_top < 0)
-		        position_top += position_top*(-1)+ol_container_top;
-		        
-		        
-		      if (position_top+popup_height > mouse.Y-jq_map_container.offset().top)
-   		     position_top = mouse.Y-jq_map_container.offset().top+20;
-          
-
-		    // set final positions
-		      pos.left = position_left;
-		      pos.top = position_top;
-
-		    return pos;
-		  }).apply());	  		 
+              jq_popup.css({
+                width: window.maxSVGWidth,
+                height: window.maxSVGHeight
+              });
+	       }
+	       
+		    		    		    
 		    
-		  
+		    var jq_popup = $(".olPopup:first"),
+		        jq_map = $("#map"),
+	           jq_ol_container = jq_map.find("div:first").find("div:first");						  
+		    
+	       
+	       // fill popup with content 	  
+	       fill_popup();
+
+	       // position the popup
+	       
+	          // initialize nesecary variables
+	          var pos = {},
+	              position_left = parseInt(jq_popup.css('left')),
+	              position_top = parseInt(jq_popup.css('top')),
+	              popup_width = parseInt(jq_popup.width()),
+	              popup_height = parseInt(jq_popup.height()),
+	              parent_width = parseInt(jq_map.width()),
+	              parent_height = parseInt(jq_map.height()),
+	              ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
+	              ol_container_top = parseInt(jq_ol_container.css('top'))*(-1),
+	              jq_map_container = $("#map-container");
+                  
+                  position_change_top = popup_height;
+                  position_change_left = popup_width/2;
+                  
+             // initial position
+               //position_top -= popup_height;
+               //position_left -= popup_width/2;
+               
+	          // calculate positions		       		      		      
+	            /*if (position_left+popup_width > parent_width)
+	              position_left -= (position_left+popup_width-parent_width)+ol_container_left;
+
+	            if (position_left < 0)
+	              position_left += position_left*(-1)+ol_container_left;
+
+	            if (position_top+popup_height > parent_height)
+	              position_top -= (position_top+popup_height-parent_height)+ol_container_top;
+
+	            if (position_top < 0)
+	              position_top += position_top*(-1)+ol_container_top;
+	              
+	              
+	            if (position_top+popup_height > mouse.Y-jq_map_container.offset().top)
+      		     position_top = mouse.Y-jq_map_container.offset().top+20;*/
+             
+
+	          // set final positions
+	            pos.left = position_left;
+	            pos.top = position_top;
+
+	        
+	        
+	        function pixeltolonlat(pixels, lonlat, direction)
+	        {
+	            var _pixels = pixels,
+	                _lonlat = lonlat.toString(),
+	                _direction = direction;
+	            	            
+	            function make(type)
+	            {
+	               var i=4,
+                      first_i = _lonlat.substring(0, i),
+                      rest = _lonlat.substring(i),
+                      extra; 
+                      
+                  if (feature_data.data.data_value == "No Data")
+                  {
+                     extra = 10;
+                  }
+                  else 
+                  {
+                     extra = 50;
+                  }
+                  
+                  
+	               if (type == 0)
+	               {	                  
+	                  _lonlat = (parseInt(first_i) - parseInt(_pixels)-extra).toString()+rest;   
+	               }
+	               else
+	               {
+	                  _lonlat = (parseInt(first_i) + parseInt(_pixels)+extra).toString()+rest;
+	               }
+	               	               
+	            }
+	            console.log(feature_data);
+	            switch (_direction)
+	            {
+	               case 'top':  	                       
+   	                  make(1);  
+   	               break;
+   	            case 'bottom':
+   	                  make(0);
+   	               break;
+      	         case 'left':
+      	               make(0);
+      	            break;
+      	         case 'right':
+      	               make(1);
+      	            break;      
+	            }	            
+	            return parseFloat(_lonlat);   
+	        }
+	        
+	        
+	        
+	        var popup_lonlat = popup.lonlat;
+	        
+	        
+	        popup_lonlat.lat = pixeltolonlat(position_change_top, popup_lonlat.lat, 'top');
+	        popup_lonlat.lon = pixeltolonlat(position_change_left, popup_lonlat.lon, 'left');	       
+	        	        
+
+	        
+	        popup.destroy();
+	        popup = new OpenLayers.Popup("Feature Popup",
+		     popup_lonlat,
+		     new OpenLayers.Size(400, 300),
+		     "",
+		     true);
+		     map.addPopup(popup);
+		     fill_popup();
+		
 		}
 
 
