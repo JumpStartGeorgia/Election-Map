@@ -483,18 +483,18 @@ ka:
       created: The data archive files have been created.
     index:
       title: მონაცემთა არქივი
-      no_archives: I am sorry, but at this time we do not have any data archives.
+      no_archives: ვწუხვართ, მაგრამ ამ დროისთვის მონაცემთა არქივი არ მოიპოვება.
     show:
       title: მონაცემთა არქივი
-      view_all: View All Data Archive Records
-      no_archive: I am sorry, but the requested data archive could not be found.
+      view_all: სრული მონაცემთა არქივის ნახვა
+      no_archive: ვწუხვართ, მაგრამ მოთხოვნილი მონაცემები ვერ მოიძებნა.
   news:
     edit:
       title: Editing News
     index:
       title: სიახლეები
-      data_archives_link: View Data Archive
-      no_news: I am sorry, but at this time we do not have any news.
+      data_archives_link: მონაცემთა არქივის ნახვა
+      no_news: ვწუხვართ, მაგრამ ამ დროისთვის ახალი ინფორმაცია არ მოიპოვება.
     new:
       title: New News
     show:

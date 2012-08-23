@@ -9,7 +9,9 @@ class UpdateDataSource < ActiveRecord::Migration
 All of the original shapefiles and geographic data were obtained from the Caucasus Research Resource Center (CRRC). The CRRC can be found at <a href="http://www.crrc.ge" target="_blank" title="go to their site">http://www.crrc.ge</a>.'
 		x.save
 		x = page.page_translations.select{|x| x.locale == 'ka'}.first
-		x.description = 'ამომრჩეველთა სიისა და არჩევნების მონაცემები მოპოვებულია 2008 წლიდან ცესკოსგან საჯარო ინფორმაციის გამოთხოვის მეთოდით. ცესკოს ვებ-გვერდის მისამართია: <a href="http://www.cec.gov.ge" target="_blank">http://www.cec.gov.ge</a>.'
+		x.description = 'ამომრჩეველთა სიისა და არჩევნების მონაცემები მოპოვებულია 2008 წლიდან ცესკოსგან საჯარო ინფორმაციის გამოთხოვის მეთოდით. ცესკოს ვებ-გვერდის მისამართია: <a href="http://www.cec.gov.ge" target="_blank">http://www.cec.gov.ge</a>.
+
+გეოგრაფიული მონაცემები მოწოდებულია კავკასიის კვლევითი რესურსების ცენტრის (CRRC) მიერ. CRRC-ს ვებ გვერდის მისამართია: <a href="http://www.crrc.ge" target="_blank">http://www.crrc.ge</a>.'
 		x.save
   end
 
