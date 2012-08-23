@@ -1,5 +1,5 @@
 #indicator_menu_scale {
-  position: absolute;  
+  position: absolute;
   right: 2%;
   margin-top: 25px;
 	z-index: 1005;
@@ -7,11 +7,9 @@
 
 @media (max-width: 600px) {
   #indicator_menu_scale {
-    position: inherit;  
+    position: inherit;
     right: inherit !important;
- /*
-    width: 23%;
- */
+    width: 100% !important;
   }
 }
 
