@@ -316,9 +316,9 @@ function unhighlight_shape(feature)
 
 function mapFreeze(feature)
 {
-  map.controls[2].deactivate();
+  map.controls[1].deactivate();
   makeFeaturePopup(feature, true, true, function(){
-    map.controls[2].activate();
+    map.controls[1].activate();
     unhighlight_shape(feature);
   });
 
