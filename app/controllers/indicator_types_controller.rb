@@ -50,7 +50,9 @@ class IndicatorTypesController < ApplicationController
 
     respond_to do |format|
       if @indicator_type.save
-        format.html { redirect_to @indicator_type, notice: 'Indicator type was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.indicator_type'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @indicator_type, notice: msg }
         format.json { render json: @indicator_type, status: :created, location: @indicator_type }
       else
         format.html { render action: "new" }
@@ -66,7 +68,9 @@ class IndicatorTypesController < ApplicationController
 
     respond_to do |format|
       if @indicator_type.update_attributes(params[:indicator_type])
-        format.html { redirect_to @indicator_type, notice: 'Indicator type was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.indicator_type'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @indicator_type, notice: msg }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -81,6 +85,8 @@ class IndicatorTypesController < ApplicationController
     @indicator_type = IndicatorType.find(params[:id])
     @indicator_type.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.indicator_type'))
+		send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
     respond_to do |format|
       format.html { redirect_to indicator_types_url }
       format.json { head :ok }

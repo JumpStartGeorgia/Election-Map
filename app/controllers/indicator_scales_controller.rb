@@ -14,7 +14,7 @@ class IndicatorScalesController < ApplicationController
 			      # no errors, success!
 						msg = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 						flash[:success] = msg
-						send_status_update(msg, Time.now-start)
+						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
 					  redirect_to upload_indicator_scales_path #GET
 			    else
 			      # errors

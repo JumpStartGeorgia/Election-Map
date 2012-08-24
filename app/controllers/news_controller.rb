@@ -70,7 +70,9 @@ class NewsController < ApplicationController
 
     respond_to do |format|
       if @news.save
-        format.html { redirect_to news_index_path, notice: 'News was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.news'))
+				send_status_update(msg)
+        format.html { redirect_to news_index_path, notice: msg }
         format.json { render json: @news, status: :created, location: @news }
       else
 				# turn the datetime picker js on
@@ -92,7 +94,9 @@ class NewsController < ApplicationController
 
     respond_to do |format|
       if @news.update_attributes(params[:news])
-        format.html { redirect_to news_index_path, notice: 'News was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.news'))
+				send_status_update(msg)
+        format.html { redirect_to news_index_path, notice: msg }
         format.json { head :ok }
       else
 				# turn the datetime picker js on
@@ -113,6 +117,8 @@ class NewsController < ApplicationController
     @news = News.find(params[:id])
     @news.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.news'))
+		send_status_update(msg)
     respond_to do |format|
       format.html { redirect_to news_index_url }
       format.json { head :ok }

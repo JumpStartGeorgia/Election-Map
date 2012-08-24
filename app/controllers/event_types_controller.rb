@@ -50,7 +50,9 @@ class EventTypesController < ApplicationController
 
     respond_to do |format|
       if @event_type.save
-        format.html { redirect_to @event_type, notice: 'Event type was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.event_type'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @event_type, notice: msg }
         format.json { render json: @event_type, status: :created, location: @event_type }
       else
         format.html { render action: "new" }
@@ -66,7 +68,9 @@ class EventTypesController < ApplicationController
 
     respond_to do |format|
       if @event_type.update_attributes(params[:event_type])
-        format.html { redirect_to @event_type, notice: 'Event type was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.event_type'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @event_type, notice: msg }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -81,6 +85,8 @@ class EventTypesController < ApplicationController
     @event_type = EventType.find(params[:id])
     @event_type.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.event_type'))
+		send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
     respond_to do |format|
       format.html { redirect_to event_types_url }
       format.json { head :ok }

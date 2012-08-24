@@ -164,7 +164,7 @@ logger.debug "---********----- shape type cache"
   end
 
 	# send email status update
-  def send_status_update(message, time)
+  def send_status_update(message, time = nil)
     @message = Message.new
 		@message.name = "Application Status Update Notification"
 		@message.email = current_user.email

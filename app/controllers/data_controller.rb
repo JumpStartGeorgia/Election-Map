@@ -14,7 +14,7 @@ class DataController < ApplicationController
 		        # no errors, success!
 						msg = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 						flash[:success] = msg
-						send_status_update(msg, Time.now-start)
+						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
 				    redirect_to upload_data_path #GET
 		      else
 		        # errors
@@ -65,17 +65,17 @@ class DataController < ApplicationController
 						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip,
 							:indicator => params[:indicator_name])
 						flash[:success] = msg
-						send_status_update(msg, Time.now-start)
+						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
 					elsif !params[:shape_type_id].nil?
 						msg = I18n.t('app.msgs.delete_data_success_2',
 						  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
 						flash[:success] = msg
-						send_status_update(msg, Time.now-start)
+						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
 					else
 						msg = I18n.t('app.msgs.delete_data_success_3',
 						  :event => params[:event_name])
 						flash[:success] = msg
-						send_status_update(msg, Time.now-start)
+						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
 					end
 
           # reset params

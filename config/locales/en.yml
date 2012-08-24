@@ -127,10 +127,21 @@ en:
       select_event: Select Event First
       select_shape_type: Select Shape Level First
       no_data_download: No data was found to download.
+      success_created: "%{obj} was successfully created."
+      success_updated: "%{obj} was successfully updated."
+      success_deleted: "%{obj} was successfully deleted."
+      cache_cleared: "The memory and file cache were cleared because of the following: %{action}"
     common:
       app_name: Georgia Election Data
       important: Important
       indicator: Indicator
+      core_indicator: Core Indicator
+      data: Data
+      event_custom_view: Event Custom View
+      event_indicator_relationship: Event Indicator Relationship
+      indicator_scale: Indicator Scale
+      news: News
+      shape: Shape
       common_id: Common ID
       common_name: Common Name
       value: Value
@@ -169,6 +180,7 @@ en:
       news_type: News Type
       date_posted: Date Posted
       data_archive_folder: Data Archive Folder
+      page: Page
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"

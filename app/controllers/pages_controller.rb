@@ -6,12 +6,12 @@ class PagesController < ApplicationController
   # GET /pages/view/:name.json
   def view
     @page = Page.with_translations(I18n.locale).find_by_name(params[:name])
-    
+
 		if @page.nil?
 			# no page was found, send back to home
 			redirect_to root_path
-		else		   
-		  if !params[:layout].nil?		   
+		else
+		  if !params[:layout].nil?
 				render :layout => params[:layout]
 		  else
 		    respond_to do |format|
@@ -69,7 +69,9 @@ class PagesController < ApplicationController
 
     respond_to do |format|
       if @page.save
-        format.html { redirect_to @page, notice: 'Page was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.page'))
+				send_status_update(msg)
+        format.html { redirect_to @page, notice: page }
         format.json { render json: @page, status: :created, location: @page }
       else
         format.html { render action: "new" }
@@ -85,7 +87,9 @@ class PagesController < ApplicationController
 
     respond_to do |format|
       if @page.update_attributes(params[:page])
-        format.html { redirect_to @page, notice: 'Page was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.page'))
+				send_status_update(msg)
+        format.html { redirect_to @page, notice: msg }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -100,6 +104,8 @@ class PagesController < ApplicationController
     @page = Page.find(params[:id])
     @page.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.page'))
+		send_status_update(msg)
     respond_to do |format|
       format.html { redirect_to pages_url }
       format.json { head :ok }

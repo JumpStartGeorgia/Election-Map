@@ -58,7 +58,9 @@ class ShapeTypesController < ApplicationController
 			else
 				# add the new shape type to the parent
 		    if parent.children.create(params[:shape_type])
-		      format.html { redirect_to @shape_type, notice: 'Shape type was successfully created.' }
+					msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.shape_type'))
+					send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+		      format.html { redirect_to @shape_type, notice: msg }
 		      format.json { render json: @shape_type, status: :created, location: @shape_type }
 		    else
 		      format.html { render action: "new" }
@@ -93,7 +95,9 @@ class ShapeTypesController < ApplicationController
 				end
 
 		    if @shape_type.update_attributes(params[:shape_type])
-		      format.html { redirect_to @shape_type, notice: 'Shape type was successfully updated.' }
+					msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.shape_type'))
+					send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+		      format.html { redirect_to @shape_type, notice: msg }
 		      format.json { head :ok }
 		    else
 		      format.html { render action: "edit" }
@@ -109,6 +113,8 @@ class ShapeTypesController < ApplicationController
     @shape_type = ShapeType.find(params[:id])
     @shape_type.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.shape_type'))
+		send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
     respond_to do |format|
       format.html { redirect_to shape_types_url }
       format.json { head :ok }
@@ -118,7 +124,7 @@ class ShapeTypesController < ApplicationController
 	# GET /shape_types/event/:event_id.json
 	def by_event
 		shape_types = ancestry_options(ShapeType.by_event(params[:event_id])) {|i| "#{'-' * i.depth} #{i.name_singular}" }
-			
+
     respond_to do |format|
       format.json { render json: shape_types }
     end

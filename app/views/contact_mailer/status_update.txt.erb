@@ -5,4 +5,4 @@ User Starting Task: <%= @message.email %>
 
 Task: <%= @message.message %>
 
-Time to Complete: <%= @message.time %> seconds
+Time to Complete: <%= "#{@message.time} seconds" if @message.time %>

@@ -15,7 +15,7 @@ class ShapesController < ApplicationController
 		        # no errors, success!
 						msg = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
 						flash[:success] = msg
-						send_status_update(msg, Time.now-start)
+						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
 				    redirect_to upload_shapes_path #GET
 		      else
 		        # errors
@@ -63,7 +63,7 @@ class ShapesController < ApplicationController
 					msg = I18n.t('app.msgs.delete_shapes_success',
 					  :event => params[:event_name], :shape_type => params[:shape_type_name].gsub("-", "").strip)
 					flash[:success] = msg
-					send_status_update(msg, Time.now-start)
+						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
 
 	        # reset params
           params[:event_id] = nil

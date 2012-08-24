@@ -1,6 +1,6 @@
 module JsonCache
-require 'fileutils'
-require 'net/http'
+	require 'fileutils'
+	require 'net/http'
 
 	###########################################
 	### manage files
@@ -56,7 +56,6 @@ require 'net/http'
 
 	def self.clear_cache
 		Rails.logger.debug "################## - clearing memory cache"
-		# clear the cache too
 		Rails.cache.clear
 	end
 

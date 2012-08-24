@@ -28,7 +28,9 @@ class EventCustomViewsController < ApplicationController
 
     respond_to do |format|
       if @event_custom_view.save
-        format.html { redirect_to event_custom_views_path, notice: 'Event Custom View was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.event_custom_view'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to event_custom_views_path, notice: msg }
         format.json { render json: @event_custom_view, status: :created, location: @event_custom_view }
       else
 				gon.load_js_event_custom_view_form = true
@@ -48,7 +50,9 @@ class EventCustomViewsController < ApplicationController
 
     respond_to do |format|
       if @event_custom_view.update_attributes(params[:event_custom_view])
-        format.html { redirect_to event_custom_views_path, notice: 'Event Custom View was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.event_custom_view'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to event_custom_views_path, notice: msg }
         format.json { head :ok }
       else
 				gon.load_js_event_custom_view_form = true
@@ -67,6 +71,8 @@ class EventCustomViewsController < ApplicationController
     @event_custom_view = EventCustomView.find(params[:id])
     @event_custom_view.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.event_custom_view'))
+		send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
     respond_to do |format|
       format.html { redirect_to events_url }
       format.json { head :ok }

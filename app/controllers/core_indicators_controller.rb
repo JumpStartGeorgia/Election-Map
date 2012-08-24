@@ -62,7 +62,9 @@ class CoreIndicatorsController < ApplicationController
 
     respond_to do |format|
       if @core_indicator.save
-        format.html { redirect_to @core_indicator, notice: 'Core indicator was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.core_indicator'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @core_indicator, notice: msg }
         format.json { render json: @core_indicator, status: :created, location: @core_indicator }
       else
 		    @core_indicators = CoreIndicator.all
@@ -82,7 +84,9 @@ class CoreIndicatorsController < ApplicationController
 
     respond_to do |format|
       if @core_indicator.update_attributes(params[:core_indicator])
-        format.html { redirect_to @core_indicator, notice: 'Core indicator was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.core_indicator'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @core_indicator, notice: msg }
         format.json { head :ok }
       else
 		    @core_indicators = CoreIndicator.all
@@ -99,6 +103,8 @@ logger.debug "++++++++ errors = #{@core_indicator.errors.inspect}"
     @core_indicator = CoreIndicator.find(params[:id])
     @core_indicator.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.core_indicator'))
+		send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
     respond_to do |format|
       format.html { redirect_to core_indicators_url }
       format.json { head :ok }

@@ -67,7 +67,9 @@ class EventIndicatorRelationshipsController < ApplicationController
 			end
 
       if error_msgs.empty?
-        format.html { redirect_to event_indicator_relationship_path(params[:id]), notice: 'Event Custom View was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.event_indicator_relationship'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to event_indicator_relationship_path(params[:id]), notice: msg }
         format.json { render json: @event_indicator_relationship, status: :created, location: @event_indicator_relationship }
       else
         load_form_variables
@@ -140,7 +142,9 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
 
 			end
       if error_msgs.empty?
-        format.html { redirect_to event_indicator_relationship_path(params[:id]), notice: 'Event Custom View was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.event_custom_view'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to event_indicator_relationship_path(params[:id]), notice: msg }
         format.json { head :ok }
       else
         load_form_variables
@@ -156,6 +160,8 @@ logger.debug "++++++++++ error = relationship.errors.inspect"
 #    @event_indicator_relationship = EventIndicatorRelationship.find(params[:id])
 #    @event_indicator_relationship.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.event_custom_view'))
+		send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
     respond_to do |format|
       format.html { redirect_to event_indicator_relationships_url }
       format.json { head :ok }

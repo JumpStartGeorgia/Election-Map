@@ -58,7 +58,9 @@ class EventsController < ApplicationController
 
     respond_to do |format|
       if @event.save
-        format.html { redirect_to @event, notice: 'Event was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.event'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @event, notice: msg }
         format.json { render json: @event, status: :created, location: @event }
       else
         format.html { render action: "new" }
@@ -74,7 +76,9 @@ class EventsController < ApplicationController
 
     respond_to do |format|
       if @event.update_attributes(params[:event])
-        format.html { redirect_to @event, notice: 'Event was successfully updated.' }
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.event'))
+				send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
+        format.html { redirect_to @event, notice: msg }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -89,6 +93,8 @@ class EventsController < ApplicationController
     @event = Event.find(params[:id])
     @event.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.event'))
+		send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg))
     respond_to do |format|
       format.html { redirect_to events_url }
       format.json { head :ok }
