@@ -567,6 +567,7 @@ if (gon.openlayers){
       // remove all popups
 		removeFeaturePopups();
       
+      var min_Y;
       // create popup
       (function(){                        
          var feature = feature_data,
@@ -574,7 +575,7 @@ if (gon.openlayers){
 	          feature_center = feature_data.geometry.bounds.getCenterLonLat(),
 	          max_X = 0,
 	          max_Y = 0,
-	          min_X = 99999999,
+	          min_X = 99999999;
 	          min_Y = 99999999;
 	          		      		      		      
 		      for (var i=0;i<feature_vertices.length;i++)
@@ -696,24 +697,18 @@ if (gon.openlayers){
 	              position_top -= (position_top+popup_height-parent_height)+ol_container_top;
 
 	            if (position_top < 0)
-	              position_top += position_top*(-1)+ol_container_top;
+	              position_top += position_top*(-1)+ol_container_top;*/
 	              
 	              
-	            if (position_top+popup_height > mouse.Y-jq_map_container.offset().top)
-      		     position_top = mouse.Y-jq_map_container.offset().top+20;*/
-             
-
-	          // set final positions
-	            pos.left = position_left;
-	            pos.top = position_top;
-
+	                         	        
 	        
 	        
-	        function pixeltolonlat(pixels, lonlat, direction)
+	        function pixeltolonlat(pixels, lonlat, direction, lonorlat)
 	        {
 	            var _pixels = pixels,
 	                _lonlat = lonlat.toString(),
-	                _direction = direction;
+	                _direction = direction,
+	                _lonorlat = lonorlat;
 	            	            
 	            function make(type)
 	            {
@@ -721,8 +716,9 @@ if (gon.openlayers){
                       first_i = _lonlat.substring(0, i),
                       rest = _lonlat.substring(i),
                       extra; 
-                      
-                  if (feature_data.data.data_value == "No Data")
+                  
+                  
+                  if (feature_data.data.data_value == gon.no_data_text)
                   {
                      extra = 10;
                   }
@@ -731,18 +727,38 @@ if (gon.openlayers){
                      extra = 50;
                   }
                   
+                  var based_on_zoom_level_lat = {
+                     '7': 0,
+                     '8': 135,
+                     '9': 202
+                  }, based_on_zoom_level_lon = {
+                     '7': 0,
+                     '8': 100,
+                     '9': 170
+                  };
+                  
+                  
+                  if (_lonorlat == "lat")
+                  {
+
+                    var zoom_level_base = based_on_zoom_level_lat[map.getZoom()];   
+                  }
+                  else
+                  {
+                    var zoom_level_base = based_on_zoom_level_lon[map.getZoom()];
+                  }    
+                  
                   
 	               if (type == 0)
 	               {	                  
-	                  _lonlat = (parseInt(first_i) - parseInt(_pixels)-extra).toString()+rest;   
+	                  _lonlat = (parseInt(first_i) - parseInt(_pixels)-extra+zoom_level_base).toString()+rest;   
 	               }
 	               else
 	               {
-	                  _lonlat = (parseInt(first_i) + parseInt(_pixels)+extra).toString()+rest;
-	               }
+	                  _lonlat = (parseInt(first_i) + parseInt(_pixels)+extra-zoom_level_base).toString()+rest;
+	               }	               
 	               	               
 	            }
-	            console.log(feature_data);
 	            switch (_direction)
 	            {
 	               case 'top':  	                       
@@ -759,26 +775,25 @@ if (gon.openlayers){
       	            break;      
 	            }	            
 	            return parseFloat(_lonlat);   
-	        }
+	        }	
+	               	        
+	        var map_extent = map.getExtent().top;
+	        popup.lonlat.lat = pixeltolonlat(position_change_top, popup.lonlat.lat, 'top', 'lat');
+	        popup.lonlat.lon = pixeltolonlat(position_change_left, popup.lonlat.lon, 'left', 'lon');
 	        
-	        
-	        
-	        var popup_lonlat = popup.lonlat;
-	        
-	        
-	        popup_lonlat.lat = pixeltolonlat(position_change_top, popup_lonlat.lat, 'top');
-	        popup_lonlat.lon = pixeltolonlat(position_change_left, popup_lonlat.lon, 'left');	       
-	        	        
-
-	        
-	        popup.destroy();
-	        popup = new OpenLayers.Popup("Feature Popup",
-		     popup_lonlat,
-		     new OpenLayers.Size(400, 300),
-		     "",
-		     true);
-		     map.addPopup(popup);
-		     fill_popup();
+	        popup.updatePosition();
+	      
+	      
+	            var jq_popup = $(".olPopup:first"), 
+	                position_top = parseInt(jq_popup.css('top')),
+	                popup_height = parseInt(jq_popup.height()),
+	                jq_map_container = $("#map-container");	               
+	           
+	         if (position_top+popup_height > mouse.Y-jq_map_container.offset().top || position_top < 0)
+	         {
+		        popup.lonlat.lat = min_Y;
+		        popup.updatePosition();      		      
+      		}
 		
 		}
 
