@@ -7,8 +7,8 @@ module Utf8Converter
 	end
 
 	def self.eng
-		['a','b','g','d','e','v','z','T','i','k','l','m','n','o','p','zh','r',
-		's','t','u','f','q','gh','y','sh','ch','c','dz','ts','ch','kh','j','h']
+		['a','b','g','d','e','v','z','t','i','k','l','m','n','o','p','zh','r',
+		's','t','u','p','k','gh','q','sh','ch','ts','dz','ts','ch','kh','dj','h']
 	end
 
   def self.convert_ka_to_en (text)
