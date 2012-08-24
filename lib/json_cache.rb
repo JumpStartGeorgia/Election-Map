@@ -100,7 +100,7 @@ module JsonCache
 		if Rails.env.staging?
 			domain = "http://dev-electiondata.jumpstart.ge"
 		elsif Rails.env.production?
-			domain = "http://electiondata.jumpstart.ge"
+			domain = "http://data.electionportal.ge"
 		end
 		Rails.logger.debug "============ using domain #{domain}"
 
@@ -195,7 +195,7 @@ module JsonCache
 			if Rails.env.staging?
 				domain = "http://dev-electiondata.jumpstart.ge"
 			elsif Rails.env.production?
-				domain = "http://electiondata.jumpstart.ge"
+				domain = "http://data.electionportal.ge"
 			end
 			Rails.logger.debug "============ using domain #{domain}"
 
