@@ -567,14 +567,14 @@ if (gon.openlayers){
       // remove all popups
 		removeFeaturePopups();
       
-      var min_Y;
+      var max_X, max_X_lat, max_Y, max_Y_lon, min_X, min_X_lat, min_Y, min_Y_lon;
       // create popup
       (function(){                        
          var feature = feature_data,
 	          feature_vertices = feature.geometry.getVertices(),
-	          feature_center = feature_data.geometry.bounds.getCenterLonLat(),
-	          max_X = 0,
-	          max_Y = 0,
+	          feature_center = feature_data.geometry.bounds.getCenterLonLat();
+	          max_X = 0;
+	          max_Y = 0;
 	          min_X = 99999999;
 	          min_Y = 99999999;
 	          		      		      		      
@@ -583,21 +583,25 @@ if (gon.openlayers){
 		         if (feature_vertices[i].x > max_X)
 		         {
 		            max_X = feature_vertices[i].x;
+		            max_X_lat = feature_vertices[i].y;
 		         }
 		         
 		         if (feature_vertices[i].y > max_Y)
 		         {
 		            max_Y = feature_vertices[i].y;
+		            max_Y_lon = feature_vertices[i].x;
 		         }
 		         
 		         if (feature_vertices[i].x < min_X)
 		         {
 		            min_X = feature_vertices[i].x;
+		            min_X_lat = feature_vertices[i].y;
 		         }
 		         
 		         if (feature_vertices[i].y < min_Y)
 		         {
 		            min_Y = feature_vertices[i].y;
+		            min_Y_lon = feature_vertices[i].x;
 		         }
 		      }		      		      		      		      		                  		                   
                   
@@ -791,9 +795,31 @@ if (gon.openlayers){
 	           
 	         if (position_top+popup_height > mouse.Y-jq_map_container.offset().top || position_top < 0)
 	         {
+	            console.log(min_Y);
 		        popup.lonlat.lat = min_Y;
 		        popup.updatePosition();      		      
       		}
+      		
+      		position_top = parseInt(jq_popup.css('top'));
+      		popup_height = parseInt(jq_popup.height());
+      		if (position_top+popup_height > jq_map_container.height())
+      		{
+      		   
+      		   popup.lonlat.lon = max_X;
+      		   popup.lonlat.lat = max_X_lat;      		   
+      		   popup.updatePosition();
+      		}
+      		
+      		position_left = parseInt(jq_popup.css('left'));
+      		popup_width = parseInt(jq_popup.width());
+      		
+      		if (position_left+popup_width > jq_map_container.width())
+            {
+               popup.lonlat.lon = min_X;
+      		   popup.lonlat.lat = min_X_lat;      		   
+      		   popup.updatePosition();
+            }      		
+
 		
 		}
 
