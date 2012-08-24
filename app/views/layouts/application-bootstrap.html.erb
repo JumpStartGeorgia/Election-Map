@@ -129,23 +129,37 @@
 					</a>
 				</div>
 				<div class="footer-nav span8">
-					<p>
-						<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
-						<a>|</a>
-						<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
-						<a>|</a>
-						<%= link_to t('.contact'), contact_path %>
-						<a>|</a>
-						<%= link_to t(".news"), news_index_path %>
-						<a>|</a>
-						<%= link_to t(".data_archives"), data_archives_path %>
-					</p>
+					<ul>
+						<li>
+							<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
+						</li>
+						<li class="spacer">|</li>
+						<li>
+							<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
+						</li>
+						<li class="spacer">|</li>
+						<li>
+							<%= link_to t('.contact'), contact_path %>
+						</li>
+						<li class="spacer">|</li>
+						<li>
+							<%= link_to t(".news"), news_index_path %>
+						</li>
+						<li class="spacer">|</li>
+						<li>
+							<%= link_to t(".data_archives"), data_archives_path %>
+						</li>
+					</ul>
 				</div>
        <div class="js-logo span2">
-				 <p><%= t(".js_link_text") %>:</p>
-				 <a href="http://www.jumpstart.ge" target="_blank">
-						 <img src="/assets/jumpstart-logo.png"/>
-				 </a>
+					<ul>
+						<li id="left">
+							<%= t(".js_link_text") %>:
+						</li>
+						<li id="right">
+							<%= link_to(image_tag("jumpstart-logo.png"), "http://www.jumpstart.ge", :target => "_blank") %>
+						</li>
+					</ul>
 				</div>
 	    </div><!--/row-->
     </footer>

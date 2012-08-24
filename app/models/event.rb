@@ -23,7 +23,6 @@ class Event < ActiveRecord::Base
     if event_type_id.nil?
       return nil
     else
-logger.debug "---********----- events by event type id cache"
 			Rails.cache.fetch("events_by_type_#{event_type_id}_#{I18n.locale}") {
 				x = Event.with_translations(I18n.locale)
 				.where(:event_type_id => event_type_id)

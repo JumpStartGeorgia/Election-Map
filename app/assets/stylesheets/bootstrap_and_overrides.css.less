@@ -260,18 +260,22 @@ footer .footer-nav {
 	font-size: 12px;
 }
 
-footer .footer-nav p {
-   margin-top: 20px;
+footer .footer-nav ul {
+	margin-top: 20px;
 }
 
-footer .footer-nav p a {
-   padding: 0 10px 0 10px;
+footer .footer-nav ul li {
+	display: inline;
+	font-family: Arial;
+}
+footer .footer-nav ul li.spacer {
+  display: inline;
+}
+footer .footer-nav ul li a {
+	padding: 0 10px;
+	color: #454545;
 }
 
-footer .footer-nav p, .footer-nav p a {
-   font-family: Arial;
-   color: #454545;
-}
 
 // Footer ndi logo
 footer .ndi-logo {
@@ -282,22 +286,28 @@ footer .ndi-logo {
 // Footer JS logo
 footer .js-logo {
    margin: 0 !important;
-   margin-right: 20px !important;
-}
-
-footer .js-logo p {
-   margin-top: 20px;
-	 padding-right: 0.3em;
-   text-align: right;
-   float: left;
-   color: #454545;
-	font-size: 10pt;
 	text-align: right;
 }
 
-footer .js-logo a img {
-   margin-top: 13px;
-   float: left;
+footer .js-logo ul {
+	margin-top: 13px !important;
+}
+
+footer .js-logo ul li {
+	display: inline;
+	font-family: Arial;
+	color: #454545;
+	font-size: 10pt;
+}
+
+footer .js-logo ul li#left {
+	text-align: right;
+}
+footer .js-logo ul li#right {
+	text-align: left;
+}
+footer .js-logo ul li#right img {
+	vertical-align: middle;
 }
 
 /* Shape Layer Navigation */

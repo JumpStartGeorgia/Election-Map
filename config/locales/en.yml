@@ -459,7 +459,7 @@ en:
     clear_all:
       title: Clear All Cache
       explanation: Clear both the Memory and File cache.
-      cleared: All cache has been cleared.
+      cleared: All memory and file cache have been cleared.
     clear_memory:
       title: Clear Memory Cache
       explanation: Memory Cache holds items like the event menu and non-custom event json shape files.
