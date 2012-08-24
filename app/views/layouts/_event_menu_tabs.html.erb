@@ -15,7 +15,7 @@
 							<%
 								 index = event["url"].index(">")
 									if index
-										url = event["url"].insert(index, "class=\"#{is_active}\" title=\"#{event["description"]}\"")
+										url = event["url"].insert(index, "class=\"#{is_active}\" title=\"#{strip_tags(event["description"])}\"")
 									end
 							%>
 							<%= url %>
