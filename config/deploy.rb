@@ -3,7 +3,7 @@
 ####################################################################
 
 set :stages, %w(production staging)
-set :default_stage, "staging" # if just run 'cap deploy'' the staging environment will be used
+set :default_stage, "staging" # if just run 'cap deploy' the staging environment will be used
 
 require 'capistrano/ext/multistage' # so we can deploy to staging and production servers
 require "bundler/capistrano" # Load Bundler's capistrano plugin.
