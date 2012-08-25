@@ -53,15 +53,28 @@ class CoreIndicator < ActiveRecord::Base
 		end
 	end
 
+	# get list of unique core indicators in event at a shape type
+	def self.get_unique_indicators_in_event_and_shape_type(event_id, shape_type_id)
+		if event_id && shape_type_id
+			# get ids of core indicators in event
+			ids = self.select("distinct core_indicators.id")
+							.joins(:indicators)
+							.where(:indicators => {:event_id => event_id, :shape_type_id => shape_type_id})
+
+			self.order_by_type_name
+				.where("core_indicators.id in (?)", ids.collect(&:id))
+		end
+	end
+
   # determine if the core indicator belongs to an indicator type that has a summary
   def self.get_indicator_type_with_summary(core_indicator_id)
     if core_indicator_id
       core = find(core_indicator_id)
-      
+
       if core && core.indicator_type.has_summary
-        return core 
+        return core
       end
     end
   end
-  
+
 end

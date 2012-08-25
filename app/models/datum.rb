@@ -25,11 +25,7 @@ class Datum < ActiveRecord::Base
 
 	# format the value if it is a number
 	def formatted_value
-		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
-			return I18n.t('app.msgs.no_data')
-		else
-			return number_with_delimiter(number_with_precision(self.value))
-		end
+		format_value(self.value)
 	end
 
 	def number_format
@@ -795,7 +791,77 @@ logger.debug "------ delete all data for event #{event_id}"
 	end
 
 
+
+	def self.create_data_table(event_id, shape_type_id, shape_id)
+		start = Time.now
+		table = []
+		column_name = "ind"
+
+		if event_id && shape_type_id && shape_id
+
+			# get all of the indicators for this event at this shape type
+			core_inds = CoreIndicator.get_unique_indicators_in_event_and_shape_type(event_id, shape_type_id)
+
+			if core_inds && !core_inds.empty?
+				# build sql query
+				sql = "select et.name as 'event', stt.name_singular as 'shape_type', dt.common_id as 'data_common_id', dt.common_name as 'data_common_name', "
+				core_inds.each_with_index do |core, i|
+					sql << "sum(if(cit.name = \"#{core.name}\", d.value, null)) as '#{column_name}#{i}' "
+					sql << ", " if i < core_inds.length-1
+				end
+
+				sql << "from "
+				sql << "events as e "
+				sql << "inner join event_translations as et on et.event_id = e.id "
+				sql << "inner join indicators as i on i.event_id = e.id "
+				sql << "inner join core_indicators as ci on ci.id = i.core_indicator_id "
+				sql << "inner join core_indicator_translations as cit on cit.core_indicator_id = ci.id "
+				sql << "inner join data as d on d.indicator_id = i.id "
+				sql << "inner join datum_translations as dt on dt.datum_id = d.id "
+				sql << "inner join shape_type_translations as stt on stt.shape_type_id = i.shape_type_id "
+				sql << "where "
+				sql << "e.id = :event_id "
+				sql << "and i.shape_type_id = :shape_type_id "
+				sql << "and et.locale = :locale "
+				sql << "and cit.locale = :locale "
+				sql << "and dt.locale = :locale "
+				sql << "and stt.locale = :locale "
+				sql << "group by et.name, stt.name_singular, dt.common_name, dt.common_name "
+				sql << "order by et.name, stt.name_singular, dt.common_name "
+
+				data = Datum.find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale])
+
+				if data && !data.empty?
+					data.each do |obj|
+						row = []
+						obj.attributes.each do |k,v|
+							if k.index(column_name) == 0
+								# this is an indicator with a data value, format the value
+								row << format_value(v)
+							else
+								row << v if k != 'common_id' && k != 'common_name'
+							end
+						end
+						table << row
+					end
+				end
+			end
+		end
+
+		puts "/////// total time = #{Time.now-start} seconds"
+		return table
+	end
+
+
 protected
+	def self.format_value(value)
+		if value.nil? || value == I18n.t('app.msgs.no_data')
+			return I18n.t('app.msgs.no_data')
+		else
+			return number_with_delimiter(number_with_precision(value))
+		end
+	end
+
 
 	# define variables to be used when building json
 	# so the data translations table is not called
