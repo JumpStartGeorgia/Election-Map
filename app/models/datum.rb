@@ -796,6 +796,8 @@ logger.debug "------ delete all data for event #{event_id}"
 		start = Time.now
 		table = []
 		ind_column_name = "ind"
+		summary_column_name = "summary"
+		summary = [] # { :indicatory_type_id, :summary_name, :col_start_index, :col_end_index}
 
 		if event_id && shape_type_id && shape_id
 
@@ -808,6 +810,21 @@ logger.debug "------ delete all data for event #{event_id}"
 				# pull out the core indicator names and desc
 				core_ind_names = ind_types.map{|x| x.core_indicators.map{|y| y.core_indicator_translations[0].name}}.flatten(1)
 				core_ind_desc = ind_types.map{|x| x.core_indicators.map{|y| y.core_indicator_translations[0].description}}.flatten(1)
+
+				# if ind type has summary, save info to be used for creating summary column(s)
+				ind_types.each do |type|
+					if type.has_summary
+						s = Hash.new
+						s[:indicator_type_id] = type.id
+						s[:summary_name] = type.indicator_type_translations[0].summary_name
+						s[:col_start_index] = core_ind_names.index(type.core_indicators.first.core_indicator_translations[0].name)+1
+						s[:col_end_index] = core_ind_names.index(type.core_indicators.last.core_indicator_translations[0].name)+1
+						summary << s
+
+						# add summary name for header
+						core_ind_desc.insert(s[:col_start_index]-1, s[:summary_name])
+					end
+				end
 			end
 
       # get the shapes we need data for
@@ -817,8 +834,15 @@ logger.debug "------ delete all data for event #{event_id}"
 				# build sql query
 				sql = "select et.name as 'event', stt.name_singular as 'shape_type', dt.common_id as 'common_id', dt.common_name as 'common_name', "
 				core_ind_names.each_with_index do |core, i|
+					# if this index is the start of a summary, add the summary column for placeholder later on
+					index = summary.index{|x| x[:col_start_index]-1 == i}
+					if index
+						sql << "null as '#{summary_column_name}#{summary[index][:indicator_type_id]}', "
+					end
+
 					sql << "sum(if(cit.name = \"#{core}\", d.value, null)) as '#{ind_column_name}#{i}' "
 					sql << ", " if i < core_ind_names.length-1
+
 				end
 
 				sql << "from "
@@ -852,6 +876,32 @@ logger.debug "------ delete all data for event #{event_id}"
 					:common_names => shapes.collect(&:shape_common_name)])
 
 				if data && !data.empty?
+
+
+#TODO: move this into the loop below that adds each row to the table
+
+					# if need summary, add summary data
+hash = data.first.to_hash
+hash["summary2"] = "work damn it!"
+puts "////// attributes = #{hash}"
+					if summary && !summary.empty?
+						summary.each do |sum|
+							# add max value
+							data.each_with_index do |obj, i|
+puts "////// data obj = #{i}"
+								keys = obj.attributes.keys[
+										sum[:col_start_index]+download_header.length..sum[:col_end_index]+download_header.length]
+puts "////// data obj keys = #{keys}"
+puts "////// max = #{keys.map{|k| obj.attributes[k]}.max}"
+key = "#{summary_column_name}#{sum[:indicator_type_id]}"
+puts "////// add into #{key}; obj[key] = #{obj.attributes[key]}"
+								obj.attributes["#{summary_column_name}#{sum[:indicator_type_id]}"] = obj.attributes.keys[
+										sum[:col_start_index]+download_header.length..sum[:col_end_index]+download_header.length]
+										.map{|key| obj.attributes[key]}.max
+							end
+						end
+					end
+
 					# create header row
 					header = []
 				  header << download_header.join("||").gsub("[Level]", data.first.attributes["shape_type"]).split("||")

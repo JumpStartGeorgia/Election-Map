@@ -3,8 +3,15 @@ class DatumTranslation < ActiveRecord::Base
   belongs_to :datum
 
   validates :common_id, :common_name, :locale, :presence => true
-  # this will always call validation to fail due to the translations being 
+  # this will always call validation to fail due to the translations being
   # created while the datum is created.  probably way to fix
-#  validates :datum_id, :presence => true  
+#  validates :datum_id, :presence => true
 
+
+	def to_hash
+		hash = Hash.new
+		self.attributes.each do |k,v|
+			hash[k] = v
+		end
+	end
 end
