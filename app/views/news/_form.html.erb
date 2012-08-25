@@ -1,5 +1,5 @@
 <%= semantic_form_for @news do |f| %>
-	<%= f.semantic_errors %>
+	<%= f.error_messages %>
 
 	<%= f.inputs do %>
 		<%= f.input :date_posted, :as => :string, :input_html => { :size => 20 } %>
@@ -8,17 +8,17 @@
 				:collection => @availabe_archives.map{|x| [x[:name], x[:id]]} %>
 	<% end %>
 
-	<%= f.inputs :for => :news_translations do |news_translation, i| %>
+  <% @news.news_translations.sort{|x,y| x.locale <=> y.locale}.each do |trans| %>
+		<%= f.fields_for :news_translations, trans do |translation| %>
 
-		<% formLocale = I18n.available_locales[i-1] %>
+			<div id="form-<%= trans.locale %>" class="multilanguage">
+				<h3><%= t("app.language.#{trans.locale}") %></h3>
 
-		<div id="form-<%= formLocale %>" class="multilanguage">
-			<h3><%= t("app.language.#{formLocale}") %></h3>
+				<%= translation.input :description, :as => :text %>
+				<%= translation.hidden_field :locale , :value => trans.locale %>
+			</div>
 
-			<%= news_translation.input :description, :as => :text %>
-			<%= news_translation.hidden_field :locale , :value => formLocale %>
-		</div>
-
+		<% end %>
 	<% end %>
 
 	<div class="form-actions">

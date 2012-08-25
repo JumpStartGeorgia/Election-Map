@@ -41,7 +41,9 @@ class CoreIndicatorsController < ApplicationController
     @core_indicators = CoreIndicator.all
     # create the translation object for however many locales there are
     # so the form will properly create all of the nested form fields
-    I18n.available_locales.length.times {@core_indicator.core_indicator_translations.build}
+    I18n.available_locales.each do |locale|
+			@core_indicator.core_indicator_translations.build(:locale => locale)
+		end
 
     respond_to do |format|
       format.html # new.html.erb

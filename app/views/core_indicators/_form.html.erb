@@ -1,19 +1,21 @@
 <%= semantic_form_for @core_indicator do |f| %>
-	<%= f.semantic_errors %>
-	<%= f.inputs :for => :core_indicator_translations do |core_indicator_translation, i| %>
+	<%= f.error_messages %>
 
-		<% formLocale = I18n.available_locales[i-1] %>
+  <% @core_indicator.core_indicator_translations.sort{|x,y| x.locale <=> y.locale}.each do |trans| %>
+		<%= f.fields_for :core_indicator_translations, trans do |translation| %>
 
-		<div id="form-<%= formLocale %>" class="multilanguage">
-			<h3><%= t("app.language.#{formLocale}") %></h3>
+			<div id="form-<%= trans.locale %>" class="multilanguage">
+				<h3><%= t("app.language.#{trans.locale}") %></h3>
 
-		  <%= core_indicator_translation.input :name %>
-		  <%= core_indicator_translation.input :name_abbrv %>
-		  <%= core_indicator_translation.input :description %>
-			<%= core_indicator_translation.hidden_field :locale , :value => formLocale %>
-		</div>
+				<%= translation.input :name %>
+				<%= translation.input :name_abbrv %>
+				<%= translation.input :description %>
+				<%= translation.hidden_field :locale , :value => trans.locale %>
+			</div>
 
+		<% end %>
 	<% end %>
+
   <%= f.inputs do %>
     <%= f.input :indicator_type %>
     <%= f.input :number_format %>

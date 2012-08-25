@@ -1,17 +1,19 @@
 <%= semantic_form_for(@shape_type) do |f| %>
-	<%= f.inputs :for => :shape_type_translations do |shape_type_translation, i| %>
+	<%= f.error_messages %>
 
-		<% formLocale = I18n.available_locales[i-1] %>
+  <% @shape_type.shape_type_translations.sort{|x,y| x.locale <=> y.locale}.each do |trans| %>
+		<%= f.fields_for :shape_type_translations, trans do |translation| %>
 
-		<div id="form-<%= formLocale %>" class="multilanguage">
-			<h3><%= t("app.language.#{formLocale}") %></h3>
+			<div id="form-<%= trans.locale %>" class="multilanguage">
+				<h3><%= t("app.language.#{trans.locale}") %></h3>
 
-			<%= shape_type_translation.input :name_singular %>
-			<%= shape_type_translation.input :name_singular_possessive %>
-			<%= shape_type_translation.input :name_plural %>
-			<%= shape_type_translation.hidden_field :locale , :value => formLocale %>
-		</div>
+				<%= translation.input :name_singular %>
+				<%= translation.input :name_singular_possessive %>
+				<%= translation.input :name_plural %>
+				<%= translation.hidden_field :locale , :value => trans.locale %>
+			</div>
 
+		<% end %>
 	<% end %>
 
 	<div class="select control-group required stringish">

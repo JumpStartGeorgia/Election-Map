@@ -49,7 +49,9 @@ class PagesController < ApplicationController
     @page = Page.new
     # create the translation object for however many locales there are
     # so the form will properly create all of the nested form fields
-    I18n.available_locales.length.times {@page.page_translations.build}
+    I18n.available_locales.each do |locale|
+			@page.page_translations.build(:locale => locale)
+		end
 
     respond_to do |format|
       format.html # new.html.erb

@@ -30,7 +30,9 @@ class IndicatorTypesController < ApplicationController
     @indicator_type = IndicatorType.new
     # create the translation object for however many locales there are
     # so the form will properly create all of the nested form fields
-    I18n.available_locales.length.times {@indicator_type.indicator_type_translations.build}
+    I18n.available_locales.each do |locale|
+			@indicator_type.indicator_type_translations.build(:locale => locale)
+		end
 
     respond_to do |format|
       format.html # new.html.erb

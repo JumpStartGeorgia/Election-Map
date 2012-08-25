@@ -385,3 +385,27 @@ div#form-ka {
 span#hidden_span_width{
 	display: none;
 }
+
+/* error message styling */
+.errorExplanation
+{
+    padding: 0.8em;
+    margin-bottom: 1em;
+    border: 2px solid #ddd;
+    background: #F2DEDE;
+    color: #B94A48;
+    border: 1px solid #EED3D7;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.errorExplanation h2
+{
+    color: #B94A48 !important;
+}
+
+.errorExplanation a
+{
+    color: #B94A48;
+}

@@ -1,16 +1,17 @@
 <%= semantic_form_for @event_type do |f| %>
-	<%= f.semantic_errors %>
-	<%= f.inputs :for => :event_type_translations do |event_type_translation, i| %>
+	<%= f.error_messages %>
 
-		<% formLocale = I18n.available_locales[i-1] %>
+  <% @event_type.event_type_translations.sort{|x,y| x.locale <=> y.locale}.each do |trans| %>
+		<%= f.fields_for :event_type_translations, trans do |translation| %>
 
-		<div id="form-<%= formLocale %>" class="multilanguage">
-			<h3><%= t("app.language.#{formLocale}") %></h3>
+			<div id="form-<%= trans.locale %>" class="multilanguage">
+				<h3><%= t("app.language.#{trans.locale}") %></h3>
 
-			<%= event_type_translation.input :name %>
-			<%= event_type_translation.hidden_field :locale , :value => formLocale %>
-		</div>
+				<%= translation.input :name %>
+				<%= translation.hidden_field :locale , :value => trans.locale %>
+			</div>
 
+		<% end %>
 	<% end %>
 
 	<%= f.input :sort_order %>
