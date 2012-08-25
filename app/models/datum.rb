@@ -795,19 +795,30 @@ logger.debug "------ delete all data for event #{event_id}"
 	def self.create_data_table(event_id, shape_type_id, shape_id)
 		start = Time.now
 		table = []
-		column_name = "ind"
+		ind_column_name = "ind"
 
 		if event_id && shape_type_id && shape_id
 
 			# get all of the indicators for this event at this shape type
-			core_inds = CoreIndicator.get_unique_indicators_in_event_and_shape_type(event_id, shape_type_id)
+			ind_types = IndicatorType.find_by_event_shape_type(event_id, shape_type_id)
 
-			if core_inds && !core_inds.empty?
+			core_ind_names = []
+			core_ind_desc = []
+			if ind_types && !ind_types.empty?
+				# pull out the core indicator names and desc
+				core_ind_names = ind_types.map{|x| x.core_indicators.map{|y| y.core_indicator_translations[0].name}}.flatten(1)
+				core_ind_desc = ind_types.map{|x| x.core_indicators.map{|y| y.core_indicator_translations[0].description}}.flatten(1)
+			end
+
+      # get the shapes we need data for
+      shapes = Shape.get_shapes_by_type(shape_id, shape_type_id)
+
+			if core_ind_names && !core_ind_names.empty? && shapes && !shapes.empty?
 				# build sql query
-				sql = "select et.name as 'event', stt.name_singular as 'shape_type', dt.common_id as 'data_common_id', dt.common_name as 'data_common_name', "
-				core_inds.each_with_index do |core, i|
-					sql << "sum(if(cit.name = \"#{core.name}\", d.value, null)) as '#{column_name}#{i}' "
-					sql << ", " if i < core_inds.length-1
+				sql = "select et.name as 'event', stt.name_singular as 'shape_type', dt.common_id as 'common_id', dt.common_name as 'common_name', "
+				core_ind_names.each_with_index do |core, i|
+					sql << "sum(if(cit.name = \"#{core}\", d.value, null)) as '#{ind_column_name}#{i}' "
+					sql << ", " if i < core_ind_names.length-1
 				end
 
 				sql << "from "
@@ -822,6 +833,8 @@ logger.debug "------ delete all data for event #{event_id}"
 				sql << "where "
 				sql << "e.id = :event_id "
 				sql << "and i.shape_type_id = :shape_type_id "
+				sql << "and dt.common_id in (:common_ids) "
+				sql << "and dt.common_name in (:common_names) "
 				sql << "and et.locale = :locale "
 				sql << "and cit.locale = :locale "
 				sql << "and dt.locale = :locale "
@@ -829,17 +842,33 @@ logger.debug "------ delete all data for event #{event_id}"
 				sql << "group by et.name, stt.name_singular, dt.common_name, dt.common_name "
 				sql << "order by et.name, stt.name_singular, dt.common_name "
 
-				data = Datum.find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id, :locale => I18n.locale])
+				# hack - using data trans obj to store data because if data obj
+				#        is used, two calls for every row will be made to the data trans obj
+				#        because of using 'attributes' due to globalize3.
+				#        the obj the data is stored into is not important
+				data = DatumTranslation.find_by_sql([sql, :event_id => event_id,
+					:shape_type_id => shape_type_id, :locale => I18n.locale,
+					:common_ids => shapes.collect(&:shape_common_id),
+					:common_names => shapes.collect(&:shape_common_name)])
 
 				if data && !data.empty?
+					# create header row
+					header = []
+				  header << download_header.join("||").gsub("[Level]", data.first.attributes["shape_type"]).split("||")
+				  core_ind_desc.each do |core|
+				    header << core
+				  end
+					table << header.flatten
+
+					# add data
 					data.each do |obj|
 						row = []
 						obj.attributes.each do |k,v|
-							if k.index(column_name) == 0
+							if k.index(ind_column_name) == 0
 								# this is an indicator with a data value, format the value
 								row << format_value(v)
 							else
-								row << v if k != 'common_id' && k != 'common_name'
+								row << v if k
 							end
 						end
 						table << row
