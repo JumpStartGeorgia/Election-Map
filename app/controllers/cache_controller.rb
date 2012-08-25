@@ -6,7 +6,7 @@ class CacheController < ApplicationController
 			start = Time.now
 			JsonCache.summary_data_cache
 			flash[:notice] = I18n.t('cache.summary_data_cache.created')
-			send_status_update(I18n.t('cache.summary_data_cache.created'), Time.now-start)
+			send_status_update(I18n.t('cache.summary_data.created'), Time.now-start)
 		end
   end
 
