@@ -10,7 +10,16 @@ var dt =
     dt.left_arrow_overlay_visible = false;
     dt.right_arrow_overlay_visible = false;
 
-    dt.ph.tablesorter();
+    dt.ph.tablesorter({
+				// default sort = first column asc
+				sortList: [[0,0]],
+        // some columns have ',' (e.g., 1,250) or '-' (e.g., 6-8) and
+				// this is causing the column to be sorted by string instead of number.
+				// this will remove those so the sorting is done properly
+        textExtraction: function(node) {
+          return node.childNodes[1].innerHTML.replace(",","").replace("-","");
+        }
+    });
 
     $('#data-table-container .arrows .arrow').click(dt.arrow_click_handler);
 
