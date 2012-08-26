@@ -25,7 +25,11 @@ class Datum < ActiveRecord::Base
 
 	# format the value if it is a number
 	def formatted_value
-		format_value(self.value)
+		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
+			return I18n.t('app.msgs.no_data')
+		else
+			return number_with_delimiter(number_with_precision(self.value))
+		end
 	end
 
 	def number_format
@@ -817,12 +821,13 @@ logger.debug "------ delete all data for event #{event_id}"
 						s = Hash.new
 						s[:indicator_type_id] = type.id
 						s[:summary_name] = type.indicator_type_translations[0].summary_name
-						s[:col_start_index] = core_ind_names.index(type.core_indicators.first.core_indicator_translations[0].name)+1
-						s[:col_end_index] = core_ind_names.index(type.core_indicators.last.core_indicator_translations[0].name)+1
+						s[:col_start_index] = core_ind_names.index(type.core_indicators.first.core_indicator_translations[0].name)
+						s[:col_end_index] = core_ind_names.index(type.core_indicators.last.core_indicator_translations[0].name)
 						summary << s
 
-						# add summary name for header
-						core_ind_desc.insert(s[:col_start_index]-1, s[:summary_name])
+						# add summary name to name/desc
+#						core_ind_names.insert(s[:col_start_index], s[:summary_name])
+						core_ind_desc.insert(s[:col_start_index], s[:summary_name])
 					end
 				end
 			end
@@ -835,7 +840,7 @@ logger.debug "------ delete all data for event #{event_id}"
 				sql = "select et.name as 'event', stt.name_singular as 'shape_type', dt.common_id as 'common_id', dt.common_name as 'common_name', "
 				core_ind_names.each_with_index do |core, i|
 					# if this index is the start of a summary, add the summary column for placeholder later on
-					index = summary.index{|x| x[:col_start_index]-1 == i}
+					index = summary.index{|x| x[:col_start_index] == i}
 					if index
 						sql << "null as '#{summary_column_name}#{summary[index][:indicator_type_id]}', "
 					end
@@ -876,32 +881,6 @@ logger.debug "------ delete all data for event #{event_id}"
 					:common_names => shapes.collect(&:shape_common_name)])
 
 				if data && !data.empty?
-
-
-#TODO: move this into the loop below that adds each row to the table
-
-					# if need summary, add summary data
-hash = data.first.to_hash
-hash["summary2"] = "work damn it!"
-puts "////// attributes = #{hash}"
-					if summary && !summary.empty?
-						summary.each do |sum|
-							# add max value
-							data.each_with_index do |obj, i|
-puts "////// data obj = #{i}"
-								keys = obj.attributes.keys[
-										sum[:col_start_index]+download_header.length..sum[:col_end_index]+download_header.length]
-puts "////// data obj keys = #{keys}"
-puts "////// max = #{keys.map{|k| obj.attributes[k]}.max}"
-key = "#{summary_column_name}#{sum[:indicator_type_id]}"
-puts "////// add into #{key}; obj[key] = #{obj.attributes[key]}"
-								obj.attributes["#{summary_column_name}#{sum[:indicator_type_id]}"] = obj.attributes.keys[
-										sum[:col_start_index]+download_header.length..sum[:col_end_index]+download_header.length]
-										.map{|key| obj.attributes[key]}.max
-							end
-						end
-					end
-
 					# create header row
 					header = []
 				  header << download_header.join("||").gsub("[Level]", data.first.attributes["shape_type"]).split("||")
@@ -913,12 +892,29 @@ puts "////// add into #{key}; obj[key] = #{obj.attributes[key]}"
 					# add data
 					data.each do |obj|
 						row = []
-						obj.attributes.each do |k,v|
+            data_hash = obj.to_hash # call data trans to_hash function so can write to attributes
+					  # if need summary, add summary data
+  					if summary && !summary.empty?
+  						summary.each_with_index do |sum, index|
+  						  # summary column number
+  						  # use this to offset array index pointers below
+  						  num_summary_col = index+1
+  							# get max value
+  							max = data_hash.keys[
+  										sum[:col_start_index]+download_header.length+num_summary_col..sum[:col_end_index]+download_header.length+num_summary_col]
+  										.map{|key| data_hash[key]}.max
+  							# add name of ind that won
+  							data_hash["#{summary_column_name}#{sum[:indicator_type_id]}"] = 
+  							  core_ind_names[data_hash.values.index{|x| x == max}-download_header.length-num_summary_col]
+  						end
+  					end
+
+						data_hash.each do |k,v|
 							if k.index(ind_column_name) == 0
 								# this is an indicator with a data value, format the value
 								row << format_value(v)
 							else
-								row << v if k
+								row << v
 							end
 						end
 						table << row
