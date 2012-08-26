@@ -111,6 +111,9 @@ module DataArchive
 						z.add(file, archive_file_path(timestamp) + "/" + file)
 					end
 				end
+				# set read permissions on the file
+				File.chmod(0644, zip_file)
+
 				# xls zip file
 				zip_file = archive_file_path(timestamp) + "/" + zip_file_name(timestamp, "XLS")
 		    Zip::ZipFile.open(zip_file, Zip::ZipFile::CREATE) do |z|
@@ -118,6 +121,9 @@ module DataArchive
 						z.add(file, archive_file_path(timestamp) + "/" + file)
 					end
 				end
+				# set read permissions on the file
+				File.chmod(0644, zip_file)
+
 				logs << ">>>>>>>>>>> time to zip files was #{Time.now - zip_start} seconds"
       end
     end
