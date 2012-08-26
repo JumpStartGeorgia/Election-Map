@@ -794,6 +794,31 @@ logger.debug "------ delete all data for event #{event_id}"
 		return h;
 	end
 
+  def self.data_table_test()
+    events = Event.where("id in (1,2,3,4,5,12,15,16)")
+    
+    # new way
+    start_new = Time.now
+    events.each do |event|
+      d = Datum.create_data_table(event.id, 3, event.shape_id)
+    end
+    end_new = Time.now
+
+    # old way
+    start_old = Time.now
+    events.each do |event|
+      d = Datum.get_table_data(event.id, 3, event.shape_id)
+    end
+    end_old = Time.now
+    
+    
+    
+    puts "=================================="
+    puts "== old way took #{end_old - start_old} seconds"
+    puts "== new way took #{end_new - start_new} seconds"
+    puts "== difference = #{(end_old - start_old) - (end_new - start_new)} seconds"
+    puts "=================================="
+  end
 
 
 	def self.create_data_table(event_id, shape_type_id, shape_id)
@@ -902,10 +927,15 @@ logger.debug "------ delete all data for event #{event_id}"
   							# get max value
   							max = data_hash.keys[
   										sum[:col_start_index]+download_header.length+num_summary_col..sum[:col_end_index]+download_header.length+num_summary_col]
-  										.map{|key| data_hash[key]}.max
+  										.select{|key| data_hash[key] if !data_hash[key].nil?}.map{|key| data_hash[key]}.max
   							# add name of ind that won
-  							data_hash["#{summary_column_name}#{sum[:indicator_type_id]}"] = 
-  							  core_ind_names[data_hash.values.index{|x| x == max}-download_header.length-num_summary_col]
+  							# - possible that all values are nil
+  							if max.nil?
+  							  data_hash["#{summary_column_name}#{sum[:indicator_type_id]}"] = I18n.t('app.msgs.no_data')
+							  else
+    							data_hash["#{summary_column_name}#{sum[:indicator_type_id]}"] = 
+    							  core_ind_names[data_hash.values.index{|x| x == max}-download_header.length-num_summary_col]
+                end
   						end
   					end
 
