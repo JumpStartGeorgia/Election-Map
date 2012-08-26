@@ -1,6 +1,5 @@
 class Datum < ActiveRecord::Base
   translates :common_id, :common_name
-	include ActionView::Helpers::NumberHelper
 	require 'json_cache'
 	require 'json'
 
@@ -19,16 +18,16 @@ class Datum < ActiveRecord::Base
     if read_attribute(:value).nil? || read_attribute(:value).to_s.downcase.strip == "null"
       return I18n.t('app.msgs.no_data')
     else
-			return number_with_precision(read_attribute(:value))
+			return ActionController::Base.helpers.number_with_precision(read_attribute(:value))
     end
   end
 
 	# format the value if it is a number
-	def formatted_value
+	def formatted_value    
 		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
 			return I18n.t('app.msgs.no_data')
 		else
-			return number_with_delimiter(number_with_precision(self.value))
+			return ActionController::Base.helpers.number_with_delimiter(ActionController::Base.helpers.number_with_precision(self.value))
 		end
 	end
 
@@ -497,7 +496,7 @@ class Datum < ActiveRecord::Base
 # NOTE - to reduce n+1 queries for getting translated text, all translations
 #        are retrieved in the main query and obj.xxx_translations[0].name is used to
 #        get the translations instead of the lazy method of obj.name which causes the n+1 queries
-def self.get_table_data(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false, pretty_data = false)
+def self.get_table_data_old(event_id, shape_type_id, shape_id, indicator_id=nil, include_indicator_ids = false, pretty_data = false)
   if event_id.nil? || shape_type_id.nil? && shape_id.nil?
   logger.debug "=========== not all params provided"
   return nil
@@ -800,14 +799,14 @@ logger.debug "------ delete all data for event #{event_id}"
     # new way
     start_new = Time.now
     events.each do |event|
-      d = Datum.create_data_table(event.id, 3, event.shape_id)
+      d = Datum.create_data_table(event.id, 4, event.shape_id)
     end
     end_new = Time.now
 
     # old way
     start_old = Time.now
     events.each do |event|
-      d = Datum.get_table_data(event.id, 3, event.shape_id)
+      d = Datum.get_table_data(event.id, 4, event.shape_id)
     end
     end_old = Time.now
     
@@ -821,11 +820,11 @@ logger.debug "------ delete all data for event #{event_id}"
   end
 
 
-	def self.create_data_table(event_id, shape_type_id, shape_id)
+	def self.get_table_data(event_id, shape_type_id, shape_id)
 		start = Time.now
 		table = []
 		ind_column_name = "ind"
-		summary_column_name = "summary"
+		summary_column_name = "winner_ind"		
 		summary = [] # { :indicatory_type_id, :summary_name, :col_start_index, :col_end_index}
 
 		if event_id && shape_type_id && shape_id
@@ -837,6 +836,7 @@ logger.debug "------ delete all data for event #{event_id}"
 			core_ind_desc = []
 			if ind_types && !ind_types.empty?
 				# pull out the core indicator names and desc
+				ind_ids = ind_types.map{|x| x.core_indicators.map{|y| y.indicators.map{|z| z.id}}}.flatten(2)
 				core_ind_names = ind_types.map{|x| x.core_indicators.map{|y| y.core_indicator_translations[0].name}}.flatten(1)
 				core_ind_desc = ind_types.map{|x| x.core_indicators.map{|y| y.core_indicator_translations[0].description}}.flatten(1)
 
@@ -850,8 +850,8 @@ logger.debug "------ delete all data for event #{event_id}"
 						s[:col_end_index] = core_ind_names.index(type.core_indicators.last.core_indicator_translations[0].name)
 						summary << s
 
-						# add summary name to name/desc
-#						core_ind_names.insert(s[:col_start_index], s[:summary_name])
+						# add summary name to id/desc
+						ind_ids.insert(s[:col_start_index], summary_column_name)
 						core_ind_desc.insert(s[:col_start_index], s[:summary_name])
 					end
 				end
@@ -908,11 +908,15 @@ logger.debug "------ delete all data for event #{event_id}"
 				if data && !data.empty?
 					# create header row
 					header = []
-				  header << download_header.join("||").gsub("[Level]", data.first.attributes["shape_type"]).split("||")
+				  header_starter = download_header.join("||").gsub("[Level]", data.first.attributes["shape_type"]).split("||")
+          header << header_starter
 				  core_ind_desc.each do |core|
 				    header << core
 				  end
 					table << header.flatten
+					
+          #update list of indicator ids with header_starter
+          ind_ids.insert(0,header_starter.clone).flatten!
 
 					# add data
 					data.each do |obj|
@@ -953,20 +957,28 @@ logger.debug "------ delete all data for event #{event_id}"
 			end
 		end
 
+    # build indicator type ids hash if summary exists
+    indicator_type_ids = {}
+    if summary && !summary.empty?
+      summary.each do |s|
+        indicator_type_ids[s[:summary_name]] = s[:indicator_type_id]
+      end
+    end
+
 		puts "/////// total time = #{Time.now-start} seconds"
-		return table
+    return {:data => table, :indicator_ids => ind_ids, :indicator_type_ids => indicator_type_ids}
 	end
 
 
 protected
+
 	def self.format_value(value)
 		if value.nil? || value == I18n.t('app.msgs.no_data')
 			return I18n.t('app.msgs.no_data')
 		else
-			return number_with_delimiter(number_with_precision(value))
+			return ActionController::Base.helpers.number_with_delimiter(ActionController::Base.helpers.number_with_precision(value))
 		end
 	end
-
 
 	# define variables to be used when building json
 	# so the data translations table is not called
