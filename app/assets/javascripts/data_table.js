@@ -10,15 +10,50 @@ var dt =
     dt.left_arrow_overlay_visible = false;
     dt.right_arrow_overlay_visible = false;
 
+/*
+		$.tablesorter.addWidget({
+			// take from http://tablesorter.com/docs/example-widgets.html
+			// give the widget an id
+			id: "repeatHeaders",
+			// format is called when the on init and when a sorting has finished
+			format: function(table) {
+console.log "formatting repeat headers";
+				// cache and collect all TH headers
+				if(!this.headers) {
+					var h = this.headers = [];
+					$("thead th",table).each(function() {
+					  h.push(
+				      "" + $(this).text() + ""
+					  );
+					});
+console.log "headers = " + headers;
+				}
+
+				// remove appended headers by classname.
+				$("tr.repated-header",table).remove();
+
+				// loop all tr elements and insert a copy of the "headers"
+				for(var i=0; i < table.tBodies[0].rows.length; i++) {
+					// insert a copy of the table head every 8th row
+					if((i%8) == 7) {
+					  $("tbody tr:eq(" + i + ")",table).before(
+				      $("").html(this.headers.join(""))
+					  );
+					}
+				}
+			}
+		});
+*/
     dt.ph.tablesorter({
-				// default sort = first column asc
-				sortList: [[0,0]],
-        // some columns have ',' (e.g., 1,250) or '-' (e.g., 6-8) and
-				// this is causing the column to be sorted by string instead of number.
-				// this will remove those so the sorting is done properly
-        textExtraction: function(node) {
-          return node.childNodes[1].innerHTML.replace(",","").replace("-","");
-        }
+			// default sort = first column asc
+			sortList: [[0,0]],
+      // some columns have ',' (e.g., 1,250) or '-' (e.g., 6-8) and
+			// this is causing the column to be sorted by string instead of number.
+			// this will remove those so the sorting is done properly
+      textExtraction: function(node) {
+        return node.childNodes[1].innerHTML.replace(",","").replace("-","");
+      }/*,
+			widgets: ['zebra']*/
     });
 
     $('#data-table-container .arrows .arrow').click(dt.arrow_click_handler);
