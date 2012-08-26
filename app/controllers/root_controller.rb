@@ -311,7 +311,7 @@ logger.debug "//////////////////////////////////////////////////////// done with
     send_data = false
 		if !params[:event_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
       #get the data
-      dt = Datum.get_table_data(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
+      dt = Datum.get_table_data(params[:event_id], params[:shape_type_id], params[:shape_id])
 			@data = dt[:data]
 
 			if !@data.nil?

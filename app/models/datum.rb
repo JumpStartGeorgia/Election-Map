@@ -23,7 +23,7 @@ class Datum < ActiveRecord::Base
   end
 
 	# format the value if it is a number
-	def formatted_value    
+	def formatted_value
 		if self.value.nil? || self.value == I18n.t('app.msgs.no_data')
 			return I18n.t('app.msgs.no_data')
 		else
@@ -491,7 +491,7 @@ class Datum < ActiveRecord::Base
   	puts "****************** time to build_from_csv: #{Time.now-start} seconds"
     return msg
   end
-
+=begin OLD
 # get all of the data for a given event, shape and shape level
 # NOTE - to reduce n+1 queries for getting translated text, all translations
 #        are retrieved in the main query and obj.xxx_translations[0].name is used to
@@ -649,7 +649,7 @@ logger.debug "=========== getting data for 1 indicator"
       end
     end
   end
-
+=end
 	# get all of the data for the event in a csv format
 	def self.get_all_data_for_event(event_id)
 		data = []
@@ -793,38 +793,11 @@ logger.debug "------ delete all data for event #{event_id}"
 		return h;
 	end
 
-  def self.data_table_test()
-    events = Event.where("id in (1,2,3,4,5,12,15,16)")
-    
-    # new way
-    start_new = Time.now
-    events.each do |event|
-      d = Datum.create_data_table(event.id, 4, event.shape_id)
-    end
-    end_new = Time.now
-
-    # old way
-    start_old = Time.now
-    events.each do |event|
-      d = Datum.get_table_data(event.id, 4, event.shape_id)
-    end
-    end_old = Time.now
-    
-    
-    
-    puts "=================================="
-    puts "== old way took #{end_old - start_old} seconds"
-    puts "== new way took #{end_new - start_new} seconds"
-    puts "== difference = #{(end_old - start_old) - (end_new - start_new)} seconds"
-    puts "=================================="
-  end
-
-
 	def self.get_table_data(event_id, shape_type_id, shape_id)
 		start = Time.now
 		table = []
 		ind_column_name = "ind"
-		summary_column_name = "winner_ind"		
+		summary_column_name = "winner_ind"
 		summary = [] # { :indicatory_type_id, :summary_name, :col_start_index, :col_end_index}
 
 		if event_id && shape_type_id && shape_id
@@ -914,7 +887,7 @@ logger.debug "------ delete all data for event #{event_id}"
 				    header << core
 				  end
 					table << header.flatten
-					
+
           #update list of indicator ids with header_starter
           ind_ids.insert(0,header_starter.clone).flatten!
 
@@ -937,7 +910,7 @@ logger.debug "------ delete all data for event #{event_id}"
   							if max.nil?
   							  data_hash["#{summary_column_name}#{sum[:indicator_type_id]}"] = I18n.t('app.msgs.no_data')
 							  else
-    							data_hash["#{summary_column_name}#{sum[:indicator_type_id]}"] = 
+    							data_hash["#{summary_column_name}#{sum[:indicator_type_id]}"] =
     							  core_ind_names[data_hash.values.index{|x| x == max}-download_header.length-num_summary_col]
                 end
   						end
