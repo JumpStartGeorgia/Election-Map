@@ -99,7 +99,7 @@ if (gon.openlayers){
 		  units: 'm',
 		  maxResolution: 156543.0339,
 		  maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-		  restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
+		  //restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
 		  theme: null,
 		  controls: []
 		};
@@ -632,7 +632,9 @@ if (gon.openlayers){
 		
 		// process popup
 		if (feature_data.attributes.results.length > 0)
-		   proc_popup();      
+		{
+		   proc_popup();      		     
+		}
 
 		
 		
@@ -780,13 +782,29 @@ if (gon.openlayers){
 	            }	            
 	            return parseFloat(_lonlat);   
 	        }	
-	               	        
-	        var map_extent = map.getExtent().top;
+	        
+	        var map_lonlat_backup = map.getCenter();
+	        map.setCenter(new OpenLayers.LonLat(popup.lonlat.lon, popup.lonlat.lat));
+	        map.moveByPx(position_change_left*(-1), position_change_top*(-1));   	        
+	        popup.destroy();
+	        popup = new OpenLayers.Popup("Feature Popup",
+		      new OpenLayers.LonLat(map.getCenter().lon, map.getCenter().lat),
+		      new OpenLayers.Size(400, 300),
+		      "",
+		      true);
+		     map.addPopup(popup);
+		     
+		     fill_popup();
+		     map.setCenter(map_lonlat_backup);
+	        
+	        
+	        
+	        /*var map_extent = map.getExtent().top;
 	        popup.lonlat.lat = pixeltolonlat(position_change_top, popup.lonlat.lat, 'top', 'lat');
 	        popup.lonlat.lon = pixeltolonlat(position_change_left, popup.lonlat.lon, 'left', 'lon');
 	        
 	        popup.updatePosition();
-	      
+	         console.log(popup.lonlat);
 	      
 	            var jq_popup = $(".olPopup:first"), 
 	                position_top = parseInt(jq_popup.css('top')),
@@ -795,12 +813,11 @@ if (gon.openlayers){
 	           
 	         if (position_top+popup_height > mouse.Y-jq_map_container.offset().top || position_top < 0)
 	         {
-	            console.log(min_Y);
 		        popup.lonlat.lat = min_Y;
 		        popup.updatePosition();      		      
       		}
       		
-      		position_top = parseInt(jq_popup.css('top'));
+      		/*position_top = parseInt(jq_popup.css('top'));
       		popup_height = parseInt(jq_popup.height());
       		if (position_top+popup_height > jq_map_container.height())
       		{
@@ -818,7 +835,7 @@ if (gon.openlayers){
                popup.lonlat.lon = min_X;
       		   popup.lonlat.lat = min_X_lat;      		   
       		   popup.updatePosition();
-            }      		
+            } */     		
 
 		
 		}
