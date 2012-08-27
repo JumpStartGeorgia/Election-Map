@@ -241,7 +241,7 @@ logger.debug "//////////////////////////////////////////////////////// done with
 
 #    get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id], nil, true, true)
     get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id])
-		if !get_data.nil? && !get_data.empty?
+		if !get_data.nil? && !get_data.empty? && get_data[:data] && !get_data[:data].empty?
 		  dt = OpenStruct.new(
 		    'cols_p'             => 7, #data columns count per turn
 		    'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
