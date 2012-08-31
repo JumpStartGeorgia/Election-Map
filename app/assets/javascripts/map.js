@@ -117,12 +117,18 @@ if (gon.openlayers){
 
 		map.addControl(new OpenLayers.Control.Navigation());
 		map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
+		map.addControl(new OpenLayers.Control.MousePosition());
 
 		map.events.register('zoomend', this, function(){
 		  var zoomLevel = map.zoom;
 		  if (zoomLevel < 7)
 		    map.zoomTo(7);
 		});
+		
+		map.events.register("mousemove", map, function(e){
+         window.mouse_coordinates = map.getLonLatFromPixel(this.events.getMousePosition(e));
+      });
+
 
 		// include tileOptions to avoid getting cross-origin image load errors
 		map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity, tileOptions: {crossOriginKeyword: null} });
@@ -171,13 +177,12 @@ if (gon.openlayers){
 				callback: load_vector_child
 		});
 
-
 		// Selection
 		var select_child = new OpenLayers.Control.SelectFeature(vector_child, {
 		  hover: true,
 		  onSelect: hover_handler,
-			onUnselect: mouseout_handler,
-			clickFeature: click_handler
+		  onUnselect: mouseout_handler,
+		  clickFeature: click_handler
 		});
 
 		map.addControls([select_child]);
@@ -553,7 +558,44 @@ if (gon.openlayers){
 		    $(this).remove();
 		});
 	}
-
+   
+   var max_X, max_X_lat, max_Y, max_Y_lon, min_X, min_X_lat, min_Y, min_Y_lon;
+   
+   function getLimits(feature_vertices)
+   {
+      max_X = 0;
+      max_Y = 0;
+      min_X = 99999999;
+      min_Y = 99999999;
+       		      		      		      
+      for (var i=0;i<feature_vertices.length;i++)
+      {
+         if (feature_vertices[i].x > max_X)
+         {
+            max_X = feature_vertices[i].x;
+            max_X_lat = feature_vertices[i].y;
+         }
+         
+         if (feature_vertices[i].y > max_Y)
+         {
+            max_Y = feature_vertices[i].y;
+            max_Y_lon = feature_vertices[i].x;
+         }
+         
+         if (feature_vertices[i].x < min_X)
+         {
+            min_X = feature_vertices[i].x;
+            min_X_lat = feature_vertices[i].y;
+         }
+         
+         if (feature_vertices[i].y < min_Y)
+         {
+            min_Y = feature_vertices[i].y;
+            min_Y_lon = feature_vertices[i].x;
+         }
+      }	
+   }
+   
 	// Create the popup for the feature
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
@@ -567,53 +609,65 @@ if (gon.openlayers){
       // remove all popups
 		removeFeaturePopups();
       
-      var max_X, max_X_lat, max_Y, max_Y_lon, min_X, min_X_lat, min_Y, min_Y_lon;
+      
       // create popup
-      (function(){                        
-         var feature = feature_data,
-	          feature_vertices = feature.geometry.getVertices(),
-	          feature_center = feature_data.geometry.bounds.getCenterLonLat();
-	          max_X = 0;
-	          max_Y = 0;
-	          min_X = 99999999;
-	          min_Y = 99999999;
-	          		      		      		      
-		      for (var i=0;i<feature_vertices.length;i++)
-		      {
-		         if (feature_vertices[i].x > max_X)
-		         {
-		            max_X = feature_vertices[i].x;
-		            max_X_lat = feature_vertices[i].y;
-		         }
-		         
-		         if (feature_vertices[i].y > max_Y)
-		         {
-		            max_Y = feature_vertices[i].y;
-		            max_Y_lon = feature_vertices[i].x;
-		         }
-		         
-		         if (feature_vertices[i].x < min_X)
-		         {
-		            min_X = feature_vertices[i].x;
-		            min_X_lat = feature_vertices[i].y;
-		         }
-		         
-		         if (feature_vertices[i].y < min_Y)
-		         {
-		            min_Y = feature_vertices[i].y;
-		            min_Y_lon = feature_vertices[i].x;
-		         }
-		      }		      		      		      		      		                  		                   
-                  
-         popup = new OpenLayers.Popup("Feature Popup",
-			new OpenLayers.LonLat(feature_center.lon, max_Y),
-			new OpenLayers.Size(400, 300),
-			"",
-			true);
-			
-		   //popup.panMapIfOutOfView = true;
-		   map.addPopup(popup);		   
-      }).apply();				
+                             
+      var feature = feature_data,
+          feature_vertices = feature.geometry.getVertices(),
+          feature_center = feature_data.geometry.bounds.getCenterLonLat();
+          
+	   
+      getLimits(feature_vertices);	      		      		      		      		                 
+      
+            
+   
+	   $("#popup_svg").empty();       
+      new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
+                limit: 5
+      });         
+      popup = new OpenLayers.Popup.FramedCloud("Feature Popup",
+		new OpenLayers.LonLat(max_Y_lon, max_Y),
+		null,
+		$("#popup_svg").html(),
+		null,
+		true);		
+      popup.autoSize = true;
+	   map.addPopup(popup);		   
+	              		
+	              		
+	   var popup_arrow = $(".olPopup:first").children("div:first").children("div:last"),
+	       taken = "max";
+	       
+	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "max")
+	      {	         
+	         popup.lonlat = new OpenLayers.LonLat(min_Y_lon, min_Y);
+   	      popup.updatePosition(); 
+   	      taken = "min";
+	      }
+	      
+	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "min")
+	      {
+            popup.lonlat = new OpenLayers.LonLat(min_X, min_X_lat);
+   	      popup.updatePosition(); 
+   	      taken = "max";
+	      }
+	      
+	      
+	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "min")
+	      {
+            popup.lonlat = new OpenLayers.LonLat(max_Y_lon, max_Y);
+   	      popup.updatePosition(); 
+   	      taken = "max";
+	      }
+	      
+	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "max")
+	      {
+            popup.lonlat = new OpenLayers.LonLat(max_X, max_X_lat);
+   	      popup.updatePosition(); 
+   	      taken = "max";
+	      } 
+	      
+		
 		
 		
       // close button
@@ -627,218 +681,7 @@ if (gon.openlayers){
 		    "background-position": "right top",
 		    "cursor": "pointer"
 		  }).click(close_button_func);
-		}
-			
-		
-		// process popup
-		if (feature_data.attributes.results.length > 0)
-		{
-		   proc_popup();      		     
-		}
-
-		
-		
-		
-		function proc_popup()
-		{
-		    		    
-		    function fill_popup()
-	       {
-	         var jq_popup = $(".olPopup:first"),
-      		    jq_popup_content = $(".olPopupContent:first");
-             new MapPopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
-                limit: 5
-              });
-                            
-              jq_popup_content.css({
-                width: window.maxSVGWidth,
-                height: window.maxSVGHeight
-              });
-
-              jq_popup.css({
-                width: window.maxSVGWidth,
-                height: window.maxSVGHeight
-              });
-	       }
-	       
-		    		    		    
-		    
-		    var jq_popup = $(".olPopup:first"),
-		        jq_map = $("#map"),
-	           jq_ol_container = jq_map.find("div:first").find("div:first");						  
-		    
-	       
-	       // fill popup with content 	  
-	       fill_popup();
-
-	       // position the popup
-	       
-	          // initialize nesecary variables
-	          var pos = {},
-	              position_left = parseInt(jq_popup.css('left')),
-	              position_top = parseInt(jq_popup.css('top')),
-	              popup_width = parseInt(jq_popup.width()),
-	              popup_height = parseInt(jq_popup.height()),
-	              parent_width = parseInt(jq_map.width()),
-	              parent_height = parseInt(jq_map.height()),
-	              ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
-	              ol_container_top = parseInt(jq_ol_container.css('top'))*(-1),
-	              jq_map_container = $("#map-container");
-                  
-                  position_change_top = popup_height;
-                  position_change_left = popup_width/2;
-                  
-             // initial position
-               //position_top -= popup_height;
-               //position_left -= popup_width/2;
-               
-	          // calculate positions		       		      		      
-	            /*if (position_left+popup_width > parent_width)
-	              position_left -= (position_left+popup_width-parent_width)+ol_container_left;
-
-	            if (position_left < 0)
-	              position_left += position_left*(-1)+ol_container_left;
-
-	            if (position_top+popup_height > parent_height)
-	              position_top -= (position_top+popup_height-parent_height)+ol_container_top;
-
-	            if (position_top < 0)
-	              position_top += position_top*(-1)+ol_container_top;*/
-	              
-	              
-	                         	        
-	        
-	        
-	        function pixeltolonlat(pixels, lonlat, direction, lonorlat)
-	        {
-	            var _pixels = pixels,
-	                _lonlat = lonlat.toString(),
-	                _direction = direction,
-	                _lonorlat = lonorlat;
-	            	            
-	            function make(type)
-	            {
-	               var i=4,
-                      first_i = _lonlat.substring(0, i),
-                      rest = _lonlat.substring(i),
-                      extra; 
-                  
-                  
-                  if (feature_data.data.data_value == gon.no_data_text)
-                  {
-                     extra = 10;
-                  }
-                  else 
-                  {
-                     extra = 50;
-                  }
-                  
-                  var based_on_zoom_level_lat = {
-                     '7': 0,
-                     '8': 135,
-                     '9': 202
-                  }, based_on_zoom_level_lon = {
-                     '7': 0,
-                     '8': 100,
-                     '9': 170
-                  };
-                  
-                  
-                  if (_lonorlat == "lat")
-                  {
-
-                    var zoom_level_base = based_on_zoom_level_lat[map.getZoom()];   
-                  }
-                  else
-                  {
-                    var zoom_level_base = based_on_zoom_level_lon[map.getZoom()];
-                  }    
-                  
-                  
-	               if (type == 0)
-	               {	                  
-	                  _lonlat = (parseInt(first_i) - parseInt(_pixels)-extra+zoom_level_base).toString()+rest;   
-	               }
-	               else
-	               {
-	                  _lonlat = (parseInt(first_i) + parseInt(_pixels)+extra-zoom_level_base).toString()+rest;
-	               }	               
-	               	               
-	            }
-	            switch (_direction)
-	            {
-	               case 'top':  	                       
-   	                  make(1);  
-   	               break;
-   	            case 'bottom':
-   	                  make(0);
-   	               break;
-      	         case 'left':
-      	               make(0);
-      	            break;
-      	         case 'right':
-      	               make(1);
-      	            break;      
-	            }	            
-	            return parseFloat(_lonlat);   
-	        }	
-	        
-	        var map_lonlat_backup = map.getCenter();
-	        map.setCenter(new OpenLayers.LonLat(popup.lonlat.lon, popup.lonlat.lat));
-	        map.moveByPx(position_change_left*(-1), position_change_top*(-1));   	        
-	        popup.destroy();
-	        popup = new OpenLayers.Popup("Feature Popup",
-		      new OpenLayers.LonLat(map.getCenter().lon, map.getCenter().lat),
-		      new OpenLayers.Size(400, 300),
-		      "",
-		      true);
-		     map.addPopup(popup);
-		     
-		     fill_popup();
-		     map.setCenter(map_lonlat_backup);
-	        
-	        
-	        
-	        /*var map_extent = map.getExtent().top;
-	        popup.lonlat.lat = pixeltolonlat(position_change_top, popup.lonlat.lat, 'top', 'lat');
-	        popup.lonlat.lon = pixeltolonlat(position_change_left, popup.lonlat.lon, 'left', 'lon');
-	        
-	        popup.updatePosition();
-	         console.log(popup.lonlat);
-	      
-	            var jq_popup = $(".olPopup:first"), 
-	                position_top = parseInt(jq_popup.css('top')),
-	                popup_height = parseInt(jq_popup.height()),
-	                jq_map_container = $("#map-container");	               
-	           
-	         if (position_top+popup_height > mouse.Y-jq_map_container.offset().top || position_top < 0)
-	         {
-		        popup.lonlat.lat = min_Y;
-		        popup.updatePosition();      		      
-      		}
-      		
-      		/*position_top = parseInt(jq_popup.css('top'));
-      		popup_height = parseInt(jq_popup.height());
-      		if (position_top+popup_height > jq_map_container.height())
-      		{
-      		   
-      		   popup.lonlat.lon = max_X;
-      		   popup.lonlat.lat = max_X_lat;      		   
-      		   popup.updatePosition();
-      		}
-      		
-      		position_left = parseInt(jq_popup.css('left'));
-      		popup_width = parseInt(jq_popup.width());
-      		
-      		if (position_left+popup_width > jq_map_container.width())
-            {
-               popup.lonlat.lon = min_X;
-      		   popup.lonlat.lat = min_X_lat;      		   
-      		   popup.updatePosition();
-            } */     		
-
-		
-		}
+		}							
 
 
 	}
