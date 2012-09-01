@@ -37,10 +37,6 @@ class Shape < ActiveRecord::Base
 		end
 	end
 
-	# need this so can access ActionView::Helpers::NumberHelper helpers to format numbers in build_json
-	def self.helpers
-		ActionController::Base.helpers
-	end
 	# need this to access the number_format value in build_json
   def number_format
     attributes['number_format']
@@ -89,7 +85,7 @@ class Shape < ActiveRecord::Base
 				# have to parse it for the geo is already in json format and
 				# transforming it to json again escapes the "" and breaks openlayers
 
-				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
+				json["features"][i]["geometry"] = JSON.parse(shape.geometry) if shape.geometry
 				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
 
 			end

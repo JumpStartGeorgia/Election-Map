@@ -472,17 +472,17 @@ en:
       title: Create Cache for All Custom Event Indicators
       explanation: Create cache files for each indicator in an event that has a custom view (e.g., all indicators at the District level of the 2008 Presidential Election).
       time: This will take about 30 minutes.
-      created: The cache files have been created.
+      created: The custom event indicator cache files have been created.
     default_custom_event:
       title: Create Cache for Default Custom Event Views
       explanation: Create cache files for the default view of events that have custom views (e.g., viewing distrcits at country level).
       time: This will take about 5 minutes.
-      created: The cache files have been created.
+      created: The default event cache files have been created.
     summary_data:
       title: Create Cache for Summary Data
       explanation: Create cache files for the data that builds the Overall Results bar charts in the map popup.
       time: This will take about 30 minutes.
-      created: The cache files have been created.
+      created: The summary data cache files have been created.
   data_archives:
     new:
       title: Create a new Data Archive set of files
