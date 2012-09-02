@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120827055115) do
+ActiveRecord::Schema.define(:version => 20120902192743) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -250,6 +250,45 @@ ActiveRecord::Schema.define(:version => 20120827055115) do
   end
 
   add_index "indicators", ["event_id", "shape_type_id", "core_indicator_id"], :name => "inds_event_shape_type_core_ind"
+
+  create_table "live_data1_translations", :force => true do |t|
+    t.integer  "live_data1_id"
+    t.string   "locale"
+    t.string   "common_id"
+    t.string   "common_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "live_data1_translations", ["live_data1_id"], :name => "index_live_data1_translations_on_live_data1_id"
+  add_index "live_data1_translations", ["locale", "common_id", "common_name"], :name => "index_live_data1_trans_on_locale_and_common_id_and_common_name"
+  add_index "live_data1_translations", ["locale"], :name => "index_live_data1_translations_on_locale"
+
+  create_table "live_data1s", :force => true do |t|
+    t.integer  "indicator_id"
+    t.decimal  "value",        :precision => 16, :scale => 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "live_data1s", ["indicator_id"], :name => "index_live_data1s_on_indicator_id"
+  add_index "live_data1s", ["value"], :name => "index_live_data1s_on_value"
+
+  create_table "live_data2s", :force => true do |t|
+    t.integer  "indicator_id"
+    t.decimal  "value",          :precision => 16, :scale => 4
+    t.string   "en_common_id"
+    t.string   "en_common_name"
+    t.string   "ka_common_id"
+    t.string   "ka_common_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "live_data2s", ["en_common_id", "en_common_name"], :name => "index_live_data2_en_common_id_and_common_name"
+  add_index "live_data2s", ["indicator_id"], :name => "index_live_data2s_on_indicator_id"
+  add_index "live_data2s", ["ka_common_id", "ka_common_name"], :name => "index_live_data2_ka_common_id_and_common_name"
+  add_index "live_data2s", ["value"], :name => "index_live_data2s_on_value"
 
   create_table "locales", :force => true do |t|
     t.string   "language"
