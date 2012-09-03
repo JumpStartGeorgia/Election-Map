@@ -1,46 +1,53 @@
+<% indicators_exist = (!@indicator_types.nil? && !@indicator_types.empty?) %>
 
 <div id="indicator_menu_scale" class="clearfix span3">
-	<% if !@indicator_types.nil? && !@indicator_types.empty? %>
-		<h3 id="indicator_menu_header"><%= t('.indicator_header')%><span class="arrow_shape">▾</span></h3>
-		<div id="indicator_menu_tabs">
-			<ul>
-				<% @indicator_types.each do |indicator_type| %>
-					<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s ? "ui-tabs-selected ui-state-active" : "" %>
-					<li class="<%=is_active%>"><%= link_to indicator_type.name, "#indicator_type_#{indicator_type.id}" %></li>
-				<% end %>
-			</ul>
-			<% @indicator_types.each do |indicator_type| %>
-				<div id="<%= "indicator_type_#{indicator_type.id}"%>" class="indicator_links">
-					<ul class="menu_list">
-						<% if indicator_type.has_summary %>
-							<li>
-								<% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s &&
-											@summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
+	<% if indicators_exist %>
+		<h3 id="indicator_menu_header" class="toggler"><%= t('.indicator_header')%><span class="arrow_shape">▾</span></h3>
+		<div class="toggle">
+		  <div id="indicator_menu_tabs">
+			  <ul>
+				  <% @indicator_types.each do |indicator_type| %>
+					  <% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s ? "ui-tabs-selected ui-state-active" : "" %>
+					  <li class="<%=is_active%>"><%= link_to indicator_type.name, "#indicator_type_#{indicator_type.id}" %></li>
+				  <% end %>
+			  </ul>
+			  <% @indicator_types.each do |indicator_type| %>
+				  <div id="<%= "indicator_type_#{indicator_type.id}"%>" class="indicator_links">
+					  <ul class="menu_list">
+						  <% if indicator_type.has_summary %>
+							  <li>
+								  <% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s &&
+											  @summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
 
-								<%= link_to indicator_type.summary_name,
-									summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil, :highlight_shape => nil)),
+								  <%= link_to indicator_type.summary_name,
+									  summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil, :highlight_shape => nil)),
 
-									:class => is_active %>
-							</li>
-						<% end %>
-						<% indicator_type.core_indicators.each do |core| %>
-							<% core.indicators.each do |indicator| %>
-								<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
-								<li>
-									<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
-										:view_type => nil, :indicator_type_id => nil, :highlight_shape => nil)),
-										:title => core.description_w_parent, :class => is_active %>
-								</li>
-							<% end %>
-						<% end %>
-					</ul>
-				</div>
-			<% end %>
-		</div>
+									  :class => is_active %>
+							  </li>
+						  <% end %>
+						  <% indicator_type.core_indicators.each do |core| %>
+							  <% core.indicators.each do |indicator| %>
+								  <% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
+								  <li>
+									  <%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
+										  :view_type => nil, :indicator_type_id => nil, :highlight_shape => nil)),
+										  :title => core.description_w_parent, :class => is_active %>
+								  </li>
+							  <% end %>
+						  <% end %>
+					  </ul>
+				  </div>
+			  <% end %>
+		  </div>
 	<% end %>
-	<h3 id="indicator_description"></h3>
+	<% classname = indicators_exist ? '' : 'class="toggler"'.html_safe %>
+	<h3 id="indicator_description" <%= classname %>></h3>
+	<% if !indicators_exist %>
+	  <div class="toggle">
+	<% end %>
 	<div id="legend_container" class="clear">
 		<ul id="legend">
 		</ul>
 	</div>
+	  </div><!--.toggler-->
 </div>
