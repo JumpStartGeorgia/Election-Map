@@ -96,7 +96,7 @@ module JsonCache
     ActiveRecord::Base.logger = nil
 
 		# domain
-		domain = "http://0.0.0.0:3000"
+		domain = "http://emap.local"
 		if Rails.env.staging?
 			domain = "http://dev-electiondata.jumpstart.ge"
 		elsif Rails.env.production?
@@ -108,8 +108,8 @@ module JsonCache
 		Rails.logger.debug "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
-		events = Event.where("shape_id is not null")
-#		events = Event.where("id between 1 and 4")
+#		events = Event.where("shape_id is not null")
+		events = Event.where("id in (1,2,3,4,5,15,16)")
 		if !events.nil? && !events.empty?
 			events.each_with_index do |event, i|
 				event_start = Time.now
@@ -162,14 +162,18 @@ module JsonCache
     # turn active record logging back on
     ActiveRecord::Base.logger = old_logger
 
+		Rails.logger.debug "=================== "
 		Rails.logger.debug "============ total time took #{(end_time - start)} seconds"
+		Rails.logger.debug "=================== "
   end
 
 	# create cache for all indicators for all events that have a custom view
   def self.custom_event_indicator_cache
+		start = Time.now
 
 		# get the events that have custom views
-    custom_views = EventCustomView.all
+#    custom_views = EventCustomView.all
+		custom_views = EventCustomView.where("event_id in (1,2,3,4,5,15,16)")
 		if !custom_views.nil? && !custom_views.empty?
       custom_views.each do |custom_view|
         # event must have shape attached to it
@@ -178,6 +182,9 @@ module JsonCache
         end
       end
     end
+		Rails.logger.debug "=================== "
+		Rails.logger.debug "============ total custom event indicator time took #{(Time.now - start)} seconds"
+		Rails.logger.debug "=================== "
   end
 
 	# create cache for all indicators in an event at a shape level
@@ -191,7 +198,7 @@ module JsonCache
 
 		if !event_id.nil? && !shape_type_id.nil?
 			# domain
-			domain = "http://0.0.0.0:3000"
+			domain = "http://emap.local"
 			if Rails.env.staging?
 				domain = "http://dev-electiondata.jumpstart.ge"
 			elsif Rails.env.production?
