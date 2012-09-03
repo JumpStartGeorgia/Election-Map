@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120902192743) do
+ActiveRecord::Schema.define(:version => 20120903201953) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -290,6 +290,14 @@ ActiveRecord::Schema.define(:version => 20120902192743) do
   add_index "live_data2s", ["ka_common_id", "ka_common_name"], :name => "index_live_data2_ka_common_id_and_common_name"
   add_index "live_data2s", ["value"], :name => "index_live_data2s_on_value"
 
+  create_table "live_events", :force => true do |t|
+    t.integer  "event_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "live_events", ["event_id"], :name => "index_live_events_on_event_id"
+
   create_table "locales", :force => true do |t|
     t.string   "language"
     t.string   "name"
@@ -359,6 +367,23 @@ ActiveRecord::Schema.define(:version => 20120902192743) do
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
+
+  create_table "shape2s", :force => true do |t|
+    t.integer  "shape_type_id"
+    t.text     "geometry",       :limit => 2147483647
+    t.string   "en_common_id"
+    t.string   "en_common_name"
+    t.string   "ka_common_id"
+    t.string   "ka_common_name"
+    t.string   "ancestry"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "shape2s", ["ancestry"], :name => "index_shapes_on_ancestry"
+  add_index "shape2s", ["en_common_id", "en_common_name"], :name => "index_shapes_en_common_id_and_common_name"
+  add_index "shape2s", ["ka_common_id", "ka_common_name"], :name => "index_shapes_ka_common_id_and_common_name"
+  add_index "shape2s", ["shape_type_id"], :name => "index_shapes_on_shape_type_id"
 
   create_table "shape_names", :primary_key => "en", :force => true do |t|
     t.string "ka", :null => false

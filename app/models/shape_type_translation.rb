@@ -8,4 +8,14 @@ class ShapeTypeTranslation < ActiveRecord::Base
 #  validates :shape_type_id, :presence => true
 
   default_scope order('locale ASC, name_singular ASC')
+  
+  def self.get_names(shape_type_id)
+    if shape_type_id
+      x = where(:locale => I18n.locale, :shape_type_id => shape_type_id)
+      if x && !x.empty?
+        return x.first
+      end
+    end
+  end
+  
 end

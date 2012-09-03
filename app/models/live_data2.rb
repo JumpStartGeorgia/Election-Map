@@ -92,11 +92,10 @@ class LiveData2 < ActiveRecord::Base
 			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id  "
 			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id AND cit_parent.locale = :locale "
-			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
-			sql << "inner join shape_translations as st on s.id = st.shape_id and d.#{I18n.locale}_common_id = st.common_id and d.#{I18n.locale}_common_name = st.common_name "
+			sql << "inner join shape2s as s on i.shape_type_id = s.shape_type_id and d.#{I18n.locale}_common_id = s.#{I18n.locale}_common_id and d.#{I18n.locale}_common_name = s.#{I18n.locale}_common_name "
 			sql << "WHERE i.event_id = :event_id AND i.shape_type_id = :shape_type_id AND i.core_indicator_id = :core_indicator_id "
 			sql << "and s.id=:shape_id "
-			sql << "AND cit.locale = :locale AND st.locale = :locale "
+			sql << "AND cit.locale = :locale "
       sql << "order by s.id asc "
 			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id,
 			                  :shape_id => shape_id,
@@ -130,11 +129,10 @@ class LiveData2 < ActiveRecord::Base
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id "
 			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id AND cit_parent.locale = :locale "
 			sql << "inner join indicator_type_translations as itt on ci.indicator_type_id = itt.indicator_type_id "
-			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id "
-			sql << "inner join shape_translations as st on s.id = st.shape_id and d.#{I18n.locale}_common_id = st.common_id and d.#{I18n.locale}_common_name = st.common_name "
+			sql << "inner join shape2s as s on i.shape_type_id = s.shape_type_id and d.#{I18n.locale}_common_id = s.#{I18n.locale}_common_id and d.#{I18n.locale}_common_name = s.#{I18n.locale}_common_name "
 			sql << "WHERE i.event_id = :event_id and i.shape_type_id = :shape_type_id and ci.indicator_type_id = :indicator_type_id "
 			sql << "and s.id=:shape_id "
-			sql << "AND cit.locale = :locale AND itt.locale = :locale AND st.locale = :locale "
+			sql << "AND cit.locale = :locale AND itt.locale = :locale "
       sql << "order by s.id asc, d.value desc "
       sql << "limit :limit" if !limit.nil?
 			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id,

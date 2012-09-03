@@ -1,0 +1,15 @@
+<% title t('.title') %>
+
+<p>
+  <strong><%= t('app.common.name') %>:</strong>
+  <%= "#{@live_event.event.name} (#{l @live_event.event.event_date})" %>
+</p>
+
+<div class="form-actions">
+  <%= link_to t('app.buttons.edit'),
+              edit_live_event_path(@live_event), :class => 'btn' %>
+  <%= link_to t('app.buttons.list'),
+              live_events_path, :class => 'btn'  %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

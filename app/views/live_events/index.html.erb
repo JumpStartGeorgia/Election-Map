@@ -1,0 +1,36 @@
+<% title t('.title') %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= t('app.common.event_date') %></th>
+      <th><%= t('app.common.event') %></th>
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @live_events.each do |live_event| %>
+      <tr>
+        <td><%= l live_event.event.event_date %></td>
+        <td><%= live_event.event.name %></td>
+        <td>
+          <%= link_to t('app.buttons.edit'),
+                      edit_live_event_path(live_event), :class => 'btn btn-mini' %>
+          <%= link_to t('app.buttons.delete'),
+                      live_event_path(live_event),
+                      :method => :delete,
+                      :confirm => t('app.msgs.delete_confirm'),
+                      :class => 'btn btn-mini btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div class="form-actions">
+<%= link_to t('app.buttons.new_live_events'),
+            new_live_event_path,
+            :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
