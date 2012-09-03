@@ -99,7 +99,7 @@ if (gon.openlayers){
 		  units: 'm',
 		  maxResolution: 156543.0339,
 		  maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-		  //restrictedExtent: new OpenLayers.Bounds(4277826.1415408, 4844120.5767302, 5378519.3486942, 5577916.0481658),
+		  restrictedExtent: new OpenLayers.Bounds(4329191.8245413, 4770741.0295867, 5593766.0203153, 5703884.2707622),
 		  theme: null,
 		  controls: []
 		};
@@ -118,6 +118,7 @@ if (gon.openlayers){
 		map.addControl(new OpenLayers.Control.Navigation());
 		map.addControl(new OpenLayers.Control.PanZoomBar(), new OpenLayers.Pixel(5,25));
 		map.addControl(new OpenLayers.Control.MousePosition());
+		$(".olControlMousePosition").remove();
 
 		map.events.register('zoomend', this, function(){
 		  var zoomLevel = map.zoom;
@@ -631,13 +632,17 @@ if (gon.openlayers){
 		$("#popup_svg").html(),
 		null,
 		true);		
-      popup.autoSize = true;
-	   map.addPopup(popup);		   
+      popup.autoSize = true;      
+      
+      popup.calculateRelativePosition = function(){
+         return "tr";
+      };
+	   map.addPopup(popup);	
+	   
 	              		
 	              		
-	   var popup_arrow = $(".olPopup:first").children("div:first").children("div:last"),
-	       taken = "max";
-	       
+	   /*var popup_arrow = $(".olPopup:first").children("div:first").children("div:last");
+	      	     	      
 	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "max")
 	      {	         
 	         popup.lonlat = new OpenLayers.LonLat(min_Y_lon, min_Y);
@@ -652,20 +657,22 @@ if (gon.openlayers){
    	      taken = "max";
 	      }
 	      
+	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "max")
+	      {
+            popup.lonlat = new OpenLayers.LonLat(max_X, max_X_lat);
+   	      popup.updatePosition(); 
+   	      taken = "max";
+	      } 	      
+	      
 	      
 	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "min")
 	      {
             popup.lonlat = new OpenLayers.LonLat(max_Y_lon, max_Y);
    	      popup.updatePosition(); 
    	      taken = "max";
-	      }
+	      }*/
 	      
-	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "max")
-	      {
-            popup.lonlat = new OpenLayers.LonLat(max_X, max_X_lat);
-   	      popup.updatePosition(); 
-   	      taken = "max";
-	      } 
+	      
 	      
 		
 		
