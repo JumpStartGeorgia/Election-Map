@@ -92,6 +92,7 @@ en:
       new_shapes: New Shape
       new_news: New News
       new_data_archives: New Data Archive
+      new_live_events: New Live Events
       upload_csv: Process CSV File
       download_xls: Download XLS Data File
       download_csv: Download CSV Data File
@@ -288,6 +289,8 @@ en:
       cache_default_event: Default Custom Event View Cache
       cache_indicators: Custom Event Indicator Cache
       cache_summary_data: Summary Data Cache
+      live_events_header: Live Events
+      live_events: Schedule Live Events
     index:
       export_link_text: Export Map
       footnote: "Note: %{note}"
@@ -507,3 +510,13 @@ en:
       title: New News
     show:
       title: News Details
+  live_events:
+    edit:
+      title: Editing Live Event
+    index:
+      title: Live Events
+      no_news: I am sorry, but at this time there are no live events scheduled.
+    new:
+      title: New Live Event
+    show:
+      title: Live Event Details

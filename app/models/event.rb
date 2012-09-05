@@ -7,6 +7,7 @@ class Event < ActiveRecord::Base
   belongs_to :event_type
   has_many :event_indicator_relationships, :dependent => :destroy
 	has_many :event_custom_views, :dependent => :destroy
+	has_many :live_events, :dependent => :destroy
   accepts_nested_attributes_for :event_translations
   attr_accessible :shape_id, :event_type_id, :event_date, :event_translations_attributes
   attr_accessor :locale
@@ -42,6 +43,11 @@ class Event < ActiveRecord::Base
   def self.get_all_events(locale = I18n.locale)
 		with_translations(locale).includes(:event_type)
 		.order("event_types.sort_order asc, event_date DESC, event_translations.name ASC")
+  end
+
+  def self.get_all_events_by_date(locale = I18n.locale)
+		with_translations(locale)
+		.order("event_date DESC, event_translations.name ASC")
   end
 
 	def self.get_events_with_summary_indicators

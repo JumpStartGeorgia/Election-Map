@@ -96,7 +96,7 @@ module JsonCache
     ActiveRecord::Base.logger = nil
 
 		# domain
-		domain = "http://emap.local"
+		domain = "http://0.0.0.0:3000"
 		if Rails.env.staging?
 			domain = "http://dev-electiondata.jumpstart.ge"
 		elsif Rails.env.production?
@@ -198,7 +198,7 @@ module JsonCache
 
 		if !event_id.nil? && !shape_type_id.nil?
 			# domain
-			domain = "http://emap.local"
+			domain = "http://0.0.0.0:3000"
 			if Rails.env.staging?
 				domain = "http://dev-electiondata.jumpstart.ge"
 			elsif Rails.env.production?
