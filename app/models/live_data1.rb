@@ -12,6 +12,10 @@ class LiveData1 < ActiveRecord::Base
 
   validates :indicator_id, :presence => true
 
+	def self.test
+		"this is live data 1"
+	end
+
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
@@ -174,5 +178,5 @@ logger.debug "++++ - adding translations for #{locale}"
   	puts "****************** time to build_from_csv: #{Time.now-start} seconds"
     return msg
   end
-  
+
 end

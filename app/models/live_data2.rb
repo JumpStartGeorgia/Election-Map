@@ -12,6 +12,10 @@ class LiveData2 < ActiveRecord::Base
 		:indicator_name, :indicator_name_abbrv, :indicator_description,
 		:indicator_type_id, :indicator_type_name, :core_indicator_id
 
+	def self.test
+		"this is live data 2"
+	end
+
 	###################################
 	## special gets for attributes
 	###################################

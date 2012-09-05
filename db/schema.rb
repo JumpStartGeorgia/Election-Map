@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120903201953) do
+ActiveRecord::Schema.define(:version => 20120905112133) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -289,6 +289,16 @@ ActiveRecord::Schema.define(:version => 20120903201953) do
   add_index "live_data2s", ["indicator_id"], :name => "index_live_data2s_on_indicator_id"
   add_index "live_data2s", ["ka_common_id", "ka_common_name"], :name => "index_live_data2_ka_common_id_and_common_name"
   add_index "live_data2s", ["value"], :name => "index_live_data2s_on_value"
+
+  create_table "live_data_statuses", :force => true do |t|
+    t.integer  "live_model"
+    t.integer  "inactive_model"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "live_data_statuses", ["inactive_model"], :name => "index_live_data_statuses_on_inactive_model"
+  add_index "live_data_statuses", ["live_model"], :name => "index_live_data_statuses_on_live_model"
 
   create_table "live_events", :force => true do |t|
     t.integer  "event_id"

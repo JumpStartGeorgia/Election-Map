@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  live_model: 1
+  inactive_model: 1
+
+two:
+  live_model: 1
+  inactive_model: 1
