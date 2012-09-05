@@ -133,60 +133,75 @@ class Datum < ActiveRecord::Base
 
 	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
-    results = nil
+    results = []
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+      # get the shapes
+		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
 
   	  # get the event
   	  event = Event.find(event_id)
 
-  	  # get all of the related json data for this indicator type
-  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id,
-  	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
+      if shapes && !shapes.empty? && event
+        shapes.each do |shape|
+      	  # get all of the related json data for this indicator type
+      	  data = build_related_indicator_json(shape.id, shape_type_id, event_id,
+      	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
   	    
-  	  # find the summary data item with the indicator_type_id and use it's values to set the shape_values hash
-      summary = results.select{|x| x.has_key?("summary_data") && !x["summary_data"].nil? && !x["summary_data"].empty? &&
-                  x["summary_data"][0][:indicator_type_id].to_s == indicator_type_id.to_s &&
-									x["summary_data"][0][:formatted_value] != I18n.t('app.msgs.no_data')}
-      if summary
-        shape_values = results.select{|x| x.has_key?("shape_values") && !x["shape_values"].nil? && !x["shape_values"].empty?}
-        if shape_values && !shape_values.empty?
-          shape_values.first["shape_values"]["value"] = summary.first["summary_data"].first[:value]
-          shape_values.first["shape_values"]["number_format"] = summary.first["summary_data"].first[:number_format]
-          shape_values.first["shape_values"]["color"] = summary.first["summary_data"].first[:color]
-          shape_values.first["shape_values"]["title"] = summary.first["summary_data"].first[:summary_name]
-        end
-      end
-  	    
+      	  # find the summary data item with the indicator_type_id and use it's values to set the shape_values hash
+          summary = data.select{|x| x.has_key?("summary_data") && !x["summary_data"].nil? && !x["summary_data"].empty? &&
+                      x["summary_data"][0][:indicator_type_id].to_s == indicator_type_id.to_s &&
+    									x["summary_data"][0][:formatted_value] != I18n.t('app.msgs.no_data')}
+          if summary && !summary.empty?
+            shape_values = data.select{|x| x.has_key?("shape_values") && !x["shape_values"].nil? && !x["shape_values"].empty?}
+            if shape_values && !shape_values.empty?
+              shape_values.first["shape_values"]["value"] = summary.first["summary_data"].first[:value]
+              shape_values.first["shape_values"]["number_format"] = summary.first["summary_data"].first[:number_format]
+              shape_values.first["shape_values"]["color"] = summary.first["summary_data"].first[:color]
+              shape_values.first["shape_values"]["title"] = summary.first["summary_data"].first[:summary_name]
+            end
+          end
+
+          results << data
+  	    end
+  	  end
     end
 #		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
 
-	def self.build_json(shape_id, indicator_id)
+	def self.build_json(shape_id, shape_type_id, indicator_id)
 		start = Time.new
-    results = nil
-		if !shape_id.nil? && !indicator_id.nil?
+    results = []
+		if shape_id && indicator_id && shape_type_id
+      # get the shapes
+		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
+      
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
-			event = indicator.event
 
-  	  # get all of the related json data for this indicator
-  	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id,
-  	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
+      if shapes && !shapes.empty? && indicator
+  			event = indicator.event
+        shapes.each do |shape|
+      	  # get all of the related json data for this indicator
+      	  data = build_related_indicator_json(shape.id, shape_type_id, event.id,
+      	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
   	    
-  	  # find the data item with the indicator_id and use it's values to set the shape_values hash
-      data_item = results.select{|x| x.has_key?("data_item") && !x["data_item"].nil? && !x["data_item"].empty? && 
-                    x["data_item"][:indicator_id].to_s == indicator_id.to_s}
-      if data_item
-        shape_values = results.select{|x| x.has_key?("shape_values") && !x["shape_values"].nil? && !x["shape_values"].empty?}
-        if shape_values && !shape_values.empty?
-          shape_values.first["shape_values"]["value"] = data_item.first["data_item"][:value]
-          shape_values.first["shape_values"]["number_format"] = data_item.first["data_item"][:number_format]
-          shape_values.first["shape_values"]["title"] = data_item.first["data_item"][:indicator_name]
-          shape_values.first["shape_values"]["title_abbrv"] = data_item.first["data_item"][:indicator_name_abbrv]
+      	  # find the data item with the indicator_id and use it's values to set the shape_values hash
+          data_item = data.select{|x| x.has_key?("data_item") && !x["data_item"].nil? && !x["data_item"].empty? && 
+                        x["data_item"][:indicator_id].to_s == indicator_id.to_s}
+          if data_item && !data_item.empty?
+            shape_values = data.select{|x| x.has_key?("shape_values") && !x["shape_values"].nil? && !x["shape_values"].empty?}
+            if shape_values && !shape_values.empty?
+              shape_values.first["shape_values"]["value"] = data_item.first["data_item"][:value]
+              shape_values.first["shape_values"]["number_format"] = data_item.first["data_item"][:number_format]
+              shape_values.first["shape_values"]["title"] = data_item.first["data_item"][:indicator_name]
+              shape_values.first["shape_values"]["title_abbrv"] = data_item.first["data_item"][:indicator_name_abbrv]
+            end
+          end
+      
+          results << data
         end
       end
-      
     end
 #		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return results

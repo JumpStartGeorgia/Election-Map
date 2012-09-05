@@ -43,7 +43,7 @@ class Shape < ActiveRecord::Base
   end
 
 	# create the properly formatted json string
-	def self.build_json(shape_id, shape_type_id, indicator_id=nil)
+	def self.build_json(shape_id, shape_type_id)
     json = Hash.new()
 		start = Time.now
 		if !shape_id.nil? && !shape_type_id.nil?
@@ -63,7 +63,7 @@ class Shape < ActiveRecord::Base
 		end
 		return json
 	end
-
+=begin
 	# create the properly formatted json string
 	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
@@ -89,7 +89,7 @@ class Shape < ActiveRecord::Base
 		end
 		return json
 	end
-
+=end
   def self.build_json_properties_for_shape(shape)
     start = Time.now
     properties = Hash.new
