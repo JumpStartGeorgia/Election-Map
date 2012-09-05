@@ -270,7 +270,7 @@ module JsonCache
 				shapes.each do |shape|
 					I18n.available_locales.each do |locale|
 						I18n.locale = locale
-						Datum.get_indicator_type_data(shape.id, shape.shape_type_id, event.id, event.indicator_type_id)
+						Datum.build_summary_data_json(shape.id, shape.shape_type_id, event.id, event.indicator_type_id)
 					end
 				end
 

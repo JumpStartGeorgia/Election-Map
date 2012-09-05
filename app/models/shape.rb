@@ -57,13 +57,9 @@ class Shape < ActiveRecord::Base
 				# have to parse it for the geo is already in json format and
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape)
+				#json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id)
 			end
-		end
-		if indicator_id.nil?
-#			puts "+++ time to build json: #{Time.now-start} seconds with no indicator"
-		else
-#			puts "+++ time to build json: #{Time.now-start} seconds for indicator #{indicator_id}"
 		end
 		return json
 	end
@@ -86,14 +82,35 @@ class Shape < ActiveRecord::Base
 				# transforming it to json again escapes the "" and breaks openlayers
 
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) if shape.geometry
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape)
+				#json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
 
 			end
 		end
-#		puts "+++ time to build summary json: #{Time.now-start} seconds for event #{event_id} and indicator type #{indicator_type_id}"
 		return json
 	end
 
+  def self.build_json_properties_for_shape(shape)
+    start = Time.now
+    properties = Hash.new
+    if !shape.nil?
+			properties["id"] = shape.id
+			properties["parent_id"] = shape.parent_id
+			properties["common_id"] = shape.common_id
+			properties["common_name"] = shape.common_name
+			properties["has_children"] = shape.has_children?
+			properties["shape_type_id"] = shape.shape_type_id
+			properties["shape_type_name"] = shape.shape_type.name_singular
+      # pre-load data properties as if no data found
+		  properties["value"] = I18n.t('app.msgs.no_data')
+      # save pop-up title locattion
+			properties["title_location"] = "#{shape.shape_type.name_singular}: #{shape.common_name}"
+
+    end
+		return properties
+  end
+
+=begin
   def self.build_json_properties_for_shape(shape, ind_id, event_id=nil, isSummary = false)
     start = Time.now
     properties = Hash.new
@@ -178,7 +195,7 @@ class Shape < ActiveRecord::Base
 #		puts "+++++++++++++++++++++++++"
 		return properties
   end
-
+=end
 
   def self.csv_header
     "Event, Shape Type, Parent ID, Parent Name, Common ID, Common Name, Geometry".split(",")
