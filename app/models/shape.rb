@@ -30,7 +30,7 @@ class Shape < ActiveRecord::Base
 		  if includeGeoData
 			  Shape.find(shape_id).subtree.where(:shape_type_id => shape_type_id).with_translations(I18n.locale)
 			else
-			  Shape.find(shape_id).subtree.select("shapes.id, shape_translations.common_id as shape_common_id, shape_translations.common_name as shape_common_name")
+			  Shape.find(shape_id).subtree.select("shapes.id, shape_translations.common_id as shape_common_id, shape_translations.common_name as shape_common_name, shapes.ancestry")
 				.joins(:shape_translations)
 				.where(:shapes => {:shape_type_id => shape_type_id}, :shape_translations => {:locale => I18n.locale})
 		  end

@@ -12,6 +12,10 @@ class Datum < ActiveRecord::Base
 
   validates :indicator_id, :presence => true
 
+	FILE_CACHE_KEY_SUMMARY_DATA =
+		"event_[event_id]/[locale]/summary_data/indicator_type_[indicator_type_id]/shape_type_[shape_type_id]/shape_[shape_id]"
+
+
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
   def value
@@ -154,6 +158,8 @@ class Datum < ActiveRecord::Base
           if summary && !summary.empty?
             shape_values = data.select{|x| x.has_key?("shape_values") && !x["shape_values"].nil? && !x["shape_values"].empty?}
             if shape_values && !shape_values.empty?
+Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
+              shape_values.first["shape_values"]["parent_id"] = shape.parent_id
               shape_values.first["shape_values"]["value"] = summary.first["summary_data"].first[:value]
               shape_values.first["shape_values"]["number_format"] = summary.first["summary_data"].first[:number_format]
               shape_values.first["shape_values"]["color"] = summary.first["summary_data"].first[:color]
@@ -192,6 +198,8 @@ class Datum < ActiveRecord::Base
           if data_item && !data_item.empty?
             shape_values = data.select{|x| x.has_key?("shape_values") && !x["shape_values"].nil? && !x["shape_values"].empty?}
             if shape_values && !shape_values.empty?
+Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
+              shape_values.first["shape_values"]["parent_id"] = shape.parent_id
               shape_values.first["shape_values"]["value"] = data_item.first["data_item"][:value]
               shape_values.first["shape_values"]["number_format"] = data_item.first["data_item"][:number_format]
               shape_values.first["shape_values"]["title"] = data_item.first["data_item"][:indicator_name]
@@ -222,6 +230,7 @@ class Datum < ActiveRecord::Base
     # - will be populated with real value by the method that called this method
     shape_values = Hash.new
 	  shape_values["shape_id"] = shape_id
+	  shape_values["parent_id"] = nil
 	  shape_values["value"] = I18n.t('app.msgs.no_data')
 	  shape_values["color"] = nil
 	  shape_values["number_format"] = nil
@@ -335,8 +344,13 @@ class Datum < ActiveRecord::Base
 		results["summary_data"] = []
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
 			json = []
-  		key = "summary_data/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
-  		json = JsonCache.fetch(event_id, key) {
+  		key = FILE_CACHE_KEY_SUMMARY_DATA.gsub("[shape_id]", shape_id.to_s)
+					.gsub("[locale]", I18n.locale.to_s)
+		      .gsub("[event_id]", event_id.to_s)
+		      .gsub("[indicator_type_id]", indicator_type_id.to_s)
+		      .gsub("[shape_type_id]", shape_type_id.to_s)
+
+  		json = JsonCache.fetch_data(key) {
   			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id)
 				x = []
   			if data && !data.empty?
