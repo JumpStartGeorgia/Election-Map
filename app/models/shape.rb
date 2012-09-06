@@ -103,6 +103,7 @@ class Shape < ActiveRecord::Base
 			properties["shape_type_name"] = shape.shape_type.name_singular
       # pre-load data properties as if no data found
 		  properties["value"] = I18n.t('app.msgs.no_data')
+		  properties["color"] = nil
       # save pop-up title locattion
 			properties["title_location"] = "#{shape.shape_type.name_singular}: #{shape.common_name}"
 
