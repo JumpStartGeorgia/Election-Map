@@ -257,7 +257,8 @@ MapPopup.prototype.processJSON = function(id_el, json, options)
                      .attr("xmlns", "http://www.w3.org/2000/svg")
                      .attr("class", "elmapsvg")
 										 .attr("width", "100%")
-										 .attr("height", "100%");
+										 .attr("height", "100%")
+										 .attr("id", "svg");
     this.svg = d3elmapsvg;
 
     // process each data type in json
@@ -283,6 +284,7 @@ MapPopup.prototype.processJSON = function(id_el, json, options)
         this.processFootnote(id_el, json[index].footnote, options);
       }
     }
+    d3.select("#svg").attr("width", window.maxSVGWidth).attr("height", window.maxSVGHeight);
   }
 };
 
