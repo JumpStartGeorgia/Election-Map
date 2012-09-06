@@ -357,7 +357,7 @@ if (gon.openlayers){
 				// save the data to a global variable for later user
 				json_data = data;
 
-				// TODO add the shape_values into the features
+				// TODO add the shape_values from the data into the features
 
 				// add the features to the vector layer
 				vector_child.addFeatures(resp.features);
