@@ -5,67 +5,35 @@ module JsonCache
 #	json_file_path = "#{Rails.root}/public/json/event_[event_id]"
 	JSON_ROOT_PATH = "#{Rails.root}/public/system/json"
 	JSON_SHAPE_PATH = "#{JSON_ROOT_PATH}/shapes"
-	JSON_DATA_PATH = "#{JSON_ROOT_PATH}/event_[event_id]"
+	JSON_DATA_PATH = "#{JSON_ROOT_PATH}/data"
 
 	###########################################
 	### manage files
 	###########################################
 	def self.read_shape(filename)
 		json = nil
-		if filename
-			file_path = JSON_SHAPE_PATH + "/#{filename}.json"
-			if File.exists?(file_path)
-				json = File.open(file_path, "r") {|f| f.read()}
-			end
-		end
+		json = read(JSON_SHAPE_PATH + "/#{filename}.json") if filename
 		return json
 	end
 
-	def self.read_data(event_id, filename)
+	def self.read_data(filename)
 		json = nil
-		if event_id && filename
-			file_path = JSON_DATA_PATH.gsub("[event_id]", event_id.to_s) + "/#{filename}.json"
-			if File.exists?(file_path)
-				json = File.open(file_path, "r") {|f| f.read()}
-			end
-		end
+		json = read(JSON_DATA_PATH + "/#{filename}.json") if filename
 		return json
 	end
 
 	def self.fetch_shape(filename, &block)
 		json = nil
 		if filename
-			file_path = JSON_SHAPE_PATH + "/#{filename}.json"
-			if File.exists?(file_path)
-				json = File.open(file_path, "r") {|f| f.read()}
-			else
-				# get the json data
-				json = yield if block_given?
-
-				# create the directory tree if it does not exist
-				create_directory_shape(File.dirname(filename))
-
-				File.open(file_path, 'w') {|f| f.write(json)}
-			end
+			json = fetch(JSON_SHAPE_PATH + "/#{filename}.json") {yield if block_given?}
 		end
 		return json
 	end
 
-	def self.fetch_data(event_id, filename, &block)
+	def self.fetch_data(filename, &block)
 		json = nil
-		if event_id && filename
-			file_path = JSON_DATA_PATH.gsub("[event_id]", event_id.to_s) + "/#{filename}.json"
-			if File.exists?(file_path)
-				json = File.open(file_path, "r") {|f| f.read()}
-			else
-				# get the json data
-				json = yield if block_given?
-
-				# create the directory tree if it does not exist
-				create_directory_data(event_id, File.dirname(filename))
-
-				File.open(file_path, 'w') {|f| f.write(json)}
-			end
+		if filename
+			json = fetch(JSON_DATA_PATH + "/#{filename}.json") {yield if block_given?}
 		end
 		return json
 	end
@@ -339,20 +307,36 @@ protected
 	###########################################
 	### manage files
 	###########################################
-	def self.create_directory_shape(subpath=nil)
-		if !subpath.nil? && subpath != "."
-			FileUtils.mkpath(JSON_SHAPE_PATH + "/" + subpath)
-		else
-			FileUtils.mkpath(JSON_SHAPE_PATH)
+	def self.create_directory(file_path)
+		if !file_path.nil? && file_path != "."
+			FileUtils.mkpath(file_path)
 		end
 	end
 
-	def self.create_directory_data(event_id, subpath=nil)
-		if !subpath.nil? && subpath != "."
-			FileUtils.mkpath(JSON_DATA_PATH.gsub("[event_id]", event_id.to_s) + "/" + subpath)
-		else
-			FileUtils.mkpath(JSON_DATA_PATH.gsub("[event_id]", event_id.to_s))
+	def self.read(file_path)
+		json = nil
+		if file_path && File.exists?(file_path)
+			json = File.open(file_path, "r") {|f| f.read()}
 		end
+		return json
+	end
+
+	def self.fetch(file_path, &block)
+		json = nil
+		if file_path
+			if File.exists?(file_path)
+				json = File.open(file_path, "r") {|f| f.read()}
+			else
+				# get the json data
+				json = yield if block_given?
+
+				# create the directory tree if it does not exist
+				create_directory(File.dirname(file_path))
+
+				File.open(file_path, 'w') {|f| f.write(json)}
+			end
+		end
+		return json
 	end
 
 

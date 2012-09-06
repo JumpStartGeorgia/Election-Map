@@ -8,9 +8,9 @@ class JsonController < ApplicationController
 
 	FILE_CACHE_KEY_CUSTOM_CHILDREN_SHAPES = "custom_chlidren_shapes/[locale]/shape_type_[shape_type_id]/shape_[parent_id]"
 	FILE_CACHE_KEY_CUSTOM_CHILDREN_DATA =
-		"[locale]/custom_children_data/shape_type_[shape_type_id]/indicator_[indicator_id]"
+		"event_[event_id]/[locale]/custom_children_data/shape_type_[shape_type_id]/indicator_[indicator_id]"
 	FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA =
-		"[locale]/summary_custom_children_data/shape_type_[shape_type_id]/indicator_type_[indicator_type_id]"
+		"event_[event_id]/[locale]/summary_custom_children_data/shape_type_[shape_type_id]/indicator_type_[indicator_type_id]"
 
 
 	#################################################
