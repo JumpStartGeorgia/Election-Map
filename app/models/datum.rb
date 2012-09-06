@@ -146,7 +146,7 @@ class Datum < ActiveRecord::Base
       	  # get all of the related json data for this indicator type
       	  data = build_related_indicator_json(shape.id, shape_type_id, event_id,
       	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
-  	    
+
       	  # find the summary data item with the indicator_type_id and use it's values to set the shape_values hash
           summary = data.select{|x| x.has_key?("summary_data") && !x["summary_data"].nil? && !x["summary_data"].empty? &&
                       x["summary_data"][0][:indicator_type_id].to_s == indicator_type_id.to_s &&
@@ -175,7 +175,7 @@ class Datum < ActiveRecord::Base
 		if shape_id && indicator_id && shape_type_id
       # get the shapes
 		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
-      
+
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
 
@@ -185,9 +185,9 @@ class Datum < ActiveRecord::Base
       	  # get all of the related json data for this indicator
       	  data = build_related_indicator_json(shape.id, shape_type_id, event.id,
       	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
-  	    
+
       	  # find the data item with the indicator_id and use it's values to set the shape_values hash
-          data_item = data.select{|x| x.has_key?("data_item") && !x["data_item"].nil? && !x["data_item"].empty? && 
+          data_item = data.select{|x| x.has_key?("data_item") && !x["data_item"].nil? && !x["data_item"].empty? &&
                         x["data_item"][:indicator_id].to_s == indicator_id.to_s}
           if data_item && !data_item.empty?
             shape_values = data.select{|x| x.has_key?("shape_values") && !x["shape_values"].nil? && !x["shape_values"].empty?}
@@ -198,7 +198,7 @@ class Datum < ActiveRecord::Base
               shape_values.first["shape_values"]["title_abbrv"] = data_item.first["data_item"][:indicator_name_abbrv]
             end
           end
-      
+
           results << data
         end
       end
@@ -215,7 +215,7 @@ class Datum < ActiveRecord::Base
   # ]
 	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, relationships)
     results = []
-    
+
     # create empty shape_values hash
     # - these values will be pushed into the shape json file so they
     #    can be color coded by openlayers
@@ -230,8 +230,8 @@ class Datum < ActiveRecord::Base
 		data_hash = Hash.new
 		data_hash["shape_values"] = shape_values
 	  results << data_hash
-    
-    
+
+
 	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !relationships.nil? && !relationships.empty?
       has_duplicates = false
 	    relationships.each do |rel|

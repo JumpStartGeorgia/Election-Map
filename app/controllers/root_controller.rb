@@ -476,23 +476,20 @@ logger.debug " - no matching event found!"
 		if !params[:shape_id].nil?
 			gon.shape_path = json_shape_path(:id => params[:shape_id], :shape_type_id => @parent_shape_type)
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
-  			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id],
-  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
-  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s
-  			  )
+  			gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
+				  :shape_type_id => @child_shape_type_id)
 			elsif params[:view_type] == @summary_view_type_name
-  			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id],
-  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
-  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
+  			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
+  			  :shape_type_id => @child_shape_type_id,
+  			  :event_id => params[:event_id],
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       elsif @is_custom_view
 				gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
-				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
-				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s)
+				  :shape_type_id => @child_shape_type_id)
   		else
   			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
-  			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
-  			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
+  			  :shape_type_id => @child_shape_type_id,
+  			  :event_id => params[:event_id],
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       end
 		end
