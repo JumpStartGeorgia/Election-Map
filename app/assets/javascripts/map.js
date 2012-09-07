@@ -365,7 +365,7 @@ if (gon.openlayers){
 			$("div#map").trigger("child_layer_loaded");
 
 			// load the table of data below the map
-      load_data_table();
+      		load_data_table();
 
 		} else {
 		  console.log('vector_child - no features found');
@@ -662,7 +662,8 @@ if (gon.openlayers){
 	{
 		$(".olPopup").each(function(){
 		    $(this).remove();
-		});
+		});		
+		
 	}
 	
 	var max_X, max_X_lat, max_Y, max_Y_lon, min_X, min_X_lat, min_Y, min_Y_lon;
@@ -705,113 +706,7 @@ if (gon.openlayers){
 	// Create the popup for the feature
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
-		/*if (typeof(stright) === "undefined")
-		  stright = false;
-
-		if (stright && $(".olPopupCloseBox:first").length !== 0)
-		  return ;
-
-		removeFeaturePopups();
-
-		var popup = new OpenLayers.Popup("Feature Popup",
-			feature_data.geometry.bounds.getCenterLonLat(),
-			new OpenLayers.Size(400, 300),
-			"",
-			true);
-		//popup.panMapIfOutOfView = true;
-		map.addPopup(popup);
-
-		if (close_button){
-		  var popup_close = $(".olPopupCloseBox:first");
-		  popup_close.css({
-		    "width": "30px",
-		    "height": "30px",
-		    "background-image": "url('/assets/fancybox.png')",
-		    "background-position": "right top",
-		    "cursor": "pointer"
-		  }).click(close_button_func);
-		}
-
-
-		// Popup coordination
-		var jq_popup = $(".olPopup:first"),
-		    jq_popup_content = $(".olPopupContent:first"),
-		    jq_map = $("#map"),
-		    jq_ol_container = jq_map.find("div:first").find("div:first"),
-		    jq_popup_offset = {
-		      top: function(use_def){
-		       return mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
-		      },
-		      left: function(use_def){
-		        return mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
-		      }
-		    };
-
-		/*jq_popup.css({
-		  left: jq_popup_offset.left(true),
-		  top: jq_popup_offset.top(true),
-		  width: 0,
-		  height: 0
-		});*\/
-		if (feature_data.attributes.results.length > 0)
-		{
-		  new MapPopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
-		    limit: 5
-		  });
-
-		  jq_popup_content.css({
-		    width: window.maxSVGWidth,
-		    height: window.maxSVGHeight
-		  });
-
-		  jq_popup.css({
-		    width: window.maxSVGWidth,
-		    height: window.maxSVGHeight
-		  });
-
-		  if (!stright)
-		  {
-		    jq_popup.css({
-		      left: jq_popup_offset.left(false),
-		      top: jq_popup_offset.top(false)
-		    });
-		  }
-
-		  jq_popup.css((function(){
-		    // initialize nesecary variables
-		    var pos = {},
-		        position_left = parseInt(jq_popup.css('left')),
-		        position_top = parseInt(jq_popup.css('top')),
-		        popup_width = parseInt(jq_popup.width()),
-		        popup_height = parseInt(jq_popup.height()),
-		        parent_width = parseInt(jq_map.width()),
-		        parent_height = parseInt(jq_map.height()),
-		        ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
-		        ol_container_top = parseInt(jq_ol_container.css('top'))*(-1);
-
-		    // calculate positions
-		      if (position_left+popup_width > parent_width)
-		        position_left -= (position_left+popup_width-parent_width)+ol_container_left;
-
-		      if (position_left < 0)
-		        position_left += position_left*(-1)+ol_container_left;
-
-		      if (position_top+popup_height > parent_height)
-		        position_top -= (position_top+popup_height-parent_height)+ol_container_top;
-
-		      if (position_top < 0)
-		        position_top += position_top*(-1)+ol_container_top;
-
-		    // set final positions
-		      pos.left = position_left;
-		      pos.top = position_top;
-
-		    return pos;
-		  }).apply());
-		}*/
-		
-		
-		
+								
 		var popup;
 	   
 		if (typeof(stright) === "undefined")
@@ -860,57 +755,22 @@ if (gon.openlayers){
 	   {
 	      var map = $("#map"),
 	          popup = $(".olPopup:first"),
-	          indicators = $("#indicator_menu_scale");
+	          indicators = $("#indicator_menu_scale"),
+	          indicators_toggle = $("#indicator_menu_scale .toggle");
 	      if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators.height() === 405)    
+	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators_toggle.css('display') === "block")    
 	      {
-	         indicators_toggle();
+	         the_indicators.hide();
 	      }
 	      else if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators.height() === 40)
+	          parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators_toggle.css('display') === "none")
 	      {
-	         indicators_toggle();	        
+	         the_indicators.show();        
 	      }
+
 	   }
 	   
-	   PopupIndicatorCheckPosition();
-	   
-	              		
-	              		
-	   /*var popup_arrow = $(".olPopup:first").children("div:first").children("div:last");
-	      	     	      
-	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "max")
-	      {	         
-	         popup.lonlat = new OpenLayers.LonLat(min_Y_lon, min_Y);
-   	      popup.updatePosition(); 
-   	      taken = "min";
-	      }
-	      
-	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "min")
-	      {
-            popup.lonlat = new OpenLayers.LonLat(min_X, min_X_lat);
-   	      popup.updatePosition(); 
-   	      taken = "max";
-	      }
-	      
-	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "max")
-	      {
-            popup.lonlat = new OpenLayers.LonLat(max_X, max_X_lat);
-   	      popup.updatePosition(); 
-   	      taken = "max";
-	      } 	      
-	      
-	      
-	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "min")
-	      {
-            popup.lonlat = new OpenLayers.LonLat(max_Y_lon, max_Y);
-   	      popup.updatePosition(); 
-   	      taken = "max";
-	      }*/
-	      
-	      
-	      
-		
+	   PopupIndicatorCheckPosition();	   	              			                	      		
 		
 		
       // close button

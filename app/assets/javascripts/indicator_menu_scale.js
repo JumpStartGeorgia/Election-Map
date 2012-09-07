@@ -9,20 +9,22 @@ var the_indicators = new Object;
 the_indicators.show = function()
 {
       
-	$('div#indicator_menu_scale .toggle')
+	/*$('div#indicator_menu_scale .toggle')
 	   .css('display', 'block')
 	   .animate({	   
          height: 252
-      }, 300);
+      }, 300);*/
+    $('div#indicator_menu_scale .toggle').slideDown(300);
 };
 
 the_indicators.hide = function()
 {
-   $('div#indicator_menu_scale .toggle').animate({
+   /*$('div#indicator_menu_scale .toggle').animate({
 	   height: 0
 	}, 300, function(){
       $(this).css('display', 'none');	
-   });
+   });*/
+   $('div#indicator_menu_scale .toggle').slideUp(300);
 };
 
 $(document).ready(function ()
