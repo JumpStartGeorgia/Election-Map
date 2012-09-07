@@ -20,7 +20,7 @@
 
 # ignore the json data files
 /public/json/*
-# ignore the archive data files
-/public/system/data_archives/*
+# ignore the system folder
+/public/system/*
 
 /config/database.yml
