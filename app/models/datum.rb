@@ -226,7 +226,8 @@ class Datum < ActiveRecord::Base
 	  shape_values["color"] = nil
 	  shape_values["number_format"] = nil
 	  shape_values["title"] = I18n.t('app.msgs.no_data')
-	  shape_values["title_abbrv"] = ""
+	  shape_values["title_abbrv"] = nil
+	  shape_values["title_location"] = nil
 		data_hash = Hash.new
 		data_hash["shape_values"] = shape_values
 	  results << data_hash
