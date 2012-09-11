@@ -677,6 +677,8 @@ if (gon.openlayers){
 	}
 
 	// add/update the query paramter with the provided name and value
+	// - name is the long name of the parameter (e.g., event_id)
+	// - name2 is the abbreviated name that shows in the pretty url (e.g., event)
 	function update_query_parameter(url, name, name2, value){
 		// get the current url
 		var index = url.indexOf(name + "=");
