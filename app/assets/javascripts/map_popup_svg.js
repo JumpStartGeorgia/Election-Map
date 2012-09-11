@@ -30,7 +30,7 @@ function MapPopup() {
   /*
     old computations for widths
     title
-    window.maxSVGWidth = 30+(ths.title.location.length>th_title.length ? ths.title.location.length : th_title.length)*5+50;
+    window.maxSVGWidth = 30+(ths.shape_values.location.length>th_title.length ? ths.shape_values.location.length : th_title.length)*5+50;
     summary data
     window.maxSVGWidth = 30+ths.max_ind_width*7+80+ths.max/100*json.data[0].value+10;
     data item
@@ -40,13 +40,13 @@ function MapPopup() {
 
   */
     for(i=0;i<json.length;i++){
-      if (json[i].hasOwnProperty("title"))
+      if (json[i].hasOwnProperty("shape_values"))
       {
-        var title = typeof json[i].title.title_abbrv !== "undefined" &&
-          json[i].title.title_abbrv instanceof String &&
-          json[i].title.title_abbrv.length > 0 ? json[i].title.title_abbrv : json[i].title.title;
+        var title = typeof json[i].shape_values.title_abbrv !== "undefined" &&
+          json[i].shape_values.title_abbrv instanceof String &&
+          json[i].shape_values.title_abbrv.length > 0 ? json[i].shape_values.title_abbrv : json[i].shape_values.title;
 				var title_title_width = get_text_width(title, "15px");
-				var title_loc_width = get_text_width(json[i].title.location, "15px");
+				var title_loc_width = get_text_width(json[i].shape_values.title_location, "15px");
 // console.log("title title width = " + title_title_width);
 // console.log("title location width = " + title_loc_width);
 				var title_width = self.item_spacing*6+(title_title_width>title_loc_width ? title_title_width : title_loc_width);
@@ -115,7 +115,7 @@ function MapPopup() {
     var title = typeof json.title_abbrv !== "undefined" &&
       json.title_abbrv instanceof String &&
       json.title_abbrv.length > 0 ? json.title_abbrv : json.title;
-
+      
     // add the titles to the svg
     if (typeof window.maxSVGWidth !== "undefined")
     {
@@ -123,7 +123,7 @@ function MapPopup() {
         "x": (window.maxSVGWidth/2),
         "y": 20,
         "style": "font-size:15px;text-anchor:middle;"
-      }).text(json.location);
+      }).text(json.title_location);
 
       this.SVGElement("text", {
         "x": (window.maxSVGWidth/2),
@@ -263,10 +263,10 @@ MapPopup.prototype.processJSON = function(id_el, json, options)
 
     // process each data type in json
     for(var index=0;index<json.length;index++){
-      if (json[index].hasOwnProperty("title"))
+      if (json[index].hasOwnProperty("shape_values"))
       {
 // console.log("loading title");
-        this.processTitle(id_el, json[index].title, options);
+        this.processTitle(id_el, json[index].shape_values, options);
       }
       else if (json[index].hasOwnProperty("summary_data"))
       {

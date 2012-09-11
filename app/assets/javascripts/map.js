@@ -389,6 +389,9 @@ if (gon.openlayers){
 					feature.attributes.color = json_shape_data.color;				
 					feature.data.value = json_shape_data.value;
 					feature.attributes.value = json_shape_data.value;
+					
+					json_shape_data.title_location = feature.attributes.title_location;
+					
 				}
 			}
 		}		
@@ -757,6 +760,18 @@ if (gon.openlayers){
       }	
    }
 
+
+   function getShapeData(feature_data)
+   {
+      for(var i in json_data)
+      {
+         if (feature_data.data.id === json_data[i][0].shape_values.shape_id)
+         {
+            return json_data[i];
+         }
+      }
+   }
+   
 	// Create the popup for the feature
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
@@ -786,21 +801,21 @@ if (gon.openlayers){
       
    
 	   $("#popup_svg").empty();       
-	   console.log(feature_data);
-      new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
+	   var data = getShapeData(feature_data);
+      new MapPopup().processJSON(document.getElementById("popup_svg"), data, {
                 limit: 5
       });         
-      popup = new OpenLayers.Popup("Feature Popup",
+      popup = new OpenLayers.Popup.FramedCloud("Feature Popup",
 		new OpenLayers.LonLat(min_X+x/100*50, min_Y+y/100*70),
-		new OpenLayers.Size(100, 100),
-		'',//$("#popup_svg").html(),
+		null,
+		$("#popup_svg").html(),
 		null,
 		true);		
-      //popup.autoSize = true;      
+      popup.autoSize = true;      
       
-      /*popup.calculateRelativePosition = function(){
+      popup.calculateRelativePosition = function(){
          return "tr";
-      };*/
+      };
 	   map.addPopup(popup);	
 	   
 	   
