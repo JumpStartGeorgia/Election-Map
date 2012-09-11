@@ -349,6 +349,53 @@ if (gon.openlayers){
 		}
 	}
 
+	function recursiveSearch(niddle, array)
+	{
+		var i = 0;	
+		
+		while (i < array.length)
+		{
+			console.log(i);
+			console.log(array[i]);
+
+			if (array[i] instanceof Array ||
+				array[i] instanceof Object)
+			{
+				recursiveSearch(niddle, array[i]);
+			}
+			else if (typeof array[i] === typeof niddle && array[i] === niddle)
+			{
+				return array.color;
+			}
+
+			i++;
+		}
+	}
+
+
+
+	function bindDataToSchapes(features)
+	{		
+			
+		for (var i in features)
+		{				
+			var feature = features[i];			
+			for (var j in json_data)
+			{
+				var json_shape_data = json_data[j][0].shape_values;
+				if (feature.data.id === json_shape_data.shape_id)
+				{
+					feature.data.color = json_shape_data.color;               
+					feature.attributes.color = json_shape_data.color;				
+					feature.data.value = json_shape_data.value;
+					feature.attributes.value = json_shape_data.value;
+				}
+			}
+		}		
+		return features;
+	}
+
+
 	// load the features for the children into the vector_child layer
 	function load_vector_child(resp){
 		if (resp.success()){
@@ -356,11 +403,10 @@ if (gon.openlayers){
 			$.get(gon.data_path, function(data) {
 				// save the data to a global variable for later user
 				json_data = data;
-
 				// TODO add the shape_values from the data into the features
-
-				// add the features to the vector layer
-				vector_child.addFeatures(resp.features);
+				resp.features = bindDataToSchapes(resp.features);				
+				// add the features to the vector layer				   
+				vector_child.addFeatures(resp.features);			
 				// if this is summary view, populate gon.indicator_scales and colors with names from json file
 				populate_summary_data();
 				// now that the child vector is loaded, lets show the legend
@@ -740,22 +786,20 @@ if (gon.openlayers){
       
    
 	   $("#popup_svg").empty();       
-      new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
+     /* new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
                 limit: 5
-      });         
-      popup = new OpenLayers.Popup.FramedCloud("Feature Popup",
-		//new OpenLayers.LonLat(max_Y_lon, max_Y),
-		//feature_center,
+      }); */        
+      popup = new OpenLayers.Popup("Feature Popup",
 		new OpenLayers.LonLat(min_X+x/100*50, min_Y+y/100*70),
-		null,
-		$("#popup_svg").html(),
+		new OpenLayers.Size(100, 100),
+		'',//$("#popup_svg").html(),
 		null,
 		true);		
-      popup.autoSize = true;      
+      //popup.autoSize = true;      
       
-      popup.calculateRelativePosition = function(){
+      /*popup.calculateRelativePosition = function(){
          return "tr";
-      };
+      };*/
 	   map.addPopup(popup);	
 	   
 	   
@@ -801,7 +845,7 @@ if (gon.openlayers){
 
 	// show the popups
 	function hover_handler (feature)
-	{
+	{	   
 		// Create the popup
 		makeFeaturePopup(feature);
 	}
