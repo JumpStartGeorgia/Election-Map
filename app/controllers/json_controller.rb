@@ -279,9 +279,11 @@ class JsonController < ApplicationController
 				data = Rails.cache.fetch(key) {
 					d = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-						d = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id]).to_json
+logger.debug "++++++++++++++++++++++++++++ getting summary with parent shape clickable"
+						d = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id]).to_json
 					elsif shape.has_children?
-						d = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id]).to_json
+logger.debug "++++++++++++++++++++++++++++ getting summary with NO parent shape clickable"
+						d = Datum.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
 					end
 					d
 				}
