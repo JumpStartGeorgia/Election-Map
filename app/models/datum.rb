@@ -160,8 +160,7 @@ class Datum < ActiveRecord::Base
             if shape_values && !shape_values.empty?
 Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
               shape_values.first["shape_values"]["parent_id"] = shape.parent_id
-              shape_values.first["shape_values"]["value"] = summary.first["summary_data"].first[:value]
-              shape_values.first["shape_values"]["number_format"] = summary.first["summary_data"].first[:number_format]
+              shape_values.first["shape_values"]["value"] = summary.first["summary_data"].first[:indicator_name_abbrv]
               shape_values.first["shape_values"]["color"] = summary.first["summary_data"].first[:color]
               shape_values.first["shape_values"]["title"] = summary.first["summary_data"].first[:summary_name]
             end
