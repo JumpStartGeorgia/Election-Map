@@ -860,16 +860,17 @@ if (gon.openlayers){
 	   {
 	      var map = $("#map"),
 	          popup = $(".olPopup:first"),
-	          indicators = $("#indicator_menu_scale");
+	          indicators = $("#indicator_menu_scale"),
+	          indicators_toggle = indicators.children('.toggle:first');
 	      if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators.height() === 405)    
+	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators_toggle.css('display') === 'block')    
 	      {
-	         indicators_toggle();
+	         the_indicators.hide();
 	      }
 	      else if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators.height() === 40)
+	          parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators_toggle.css('display') === 'none')
 	      {
-	         indicators_toggle();	        
+	         the_indicators.show();	        
 	      }
 	   }
 	   
