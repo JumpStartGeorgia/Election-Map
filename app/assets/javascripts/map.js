@@ -786,9 +786,10 @@ if (gon.openlayers){
       
    
 	   $("#popup_svg").empty();       
-     /* new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
+	   console.log(feature_data);
+      new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
                 limit: 5
-      }); */        
+      });         
       popup = new OpenLayers.Popup("Feature Popup",
 		new OpenLayers.LonLat(min_X+x/100*50, min_Y+y/100*70),
 		new OpenLayers.Size(100, 100),
