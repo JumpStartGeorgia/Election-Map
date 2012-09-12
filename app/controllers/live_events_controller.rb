@@ -15,7 +15,13 @@ class LiveEventsController < ApplicationController
               params[:timestamp] && !params[:timestamp].empty? 
 
   			    start = Time.now
-            msg = nil
+  			    
+				    msg = LiveDatum.build_from_csv(params[:event_id],
+                    params[:precincts_completed],
+                    params[:precincts_total],
+                    params[:timestamp],
+      				      params[:file])
+  			    
   		      if msg.nil? || msg.empty?
   		        # no errors, success!
   						msg = I18n.t('app.msgs.upload.success_live_event', :file_name => params[:file].original_filename)

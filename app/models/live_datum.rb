@@ -7,7 +7,7 @@ class LiveDatum < ActiveRecord::Base
   attr_accessible :indicator_id, :live_dataset_id, :value,
 			:en_common_id, :en_common_name, :ka_common_id, :ka_common_name
 
-  validates :indicator_id, :presence => true
+  validates :indicator_id, :live_dataset_id, :presence => true
 
   attr_accessor :number_format, :shape_id, :shape_type_name, :color,
 		:indicator_name, :indicator_name_abbrv, :indicator_description,
@@ -374,7 +374,7 @@ class LiveDatum < ActiveRecord::Base
 	###################################
 	## load from csv
 	###################################
-  def self.build_from_csv(event_id, precincts_completed, precincts_total, timestamp, file, deleteExistingRecord)
+  def self.build_from_csv(event_id, precincts_completed, precincts_total, timestamp, file)
 		start = Time.now
     infile = file.read
     n, msg = 0, ""
@@ -450,32 +450,40 @@ class LiveDatum < ActiveRecord::Base
 										:event_id => event.id, :shape_type_id => shape_type.id, :name => row[i].strip, :locale => "en")
               	puts "******** time to look for exisitng indicator: #{Time.now-startPhase} seconds"
 
-		            startPhase = Time.now
-								# populate record
-								datum = LiveDatum.new
-								datum.live_dataset_id = dataset.id
-								datum.indicator_id = indicator.first.id
-								datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
-                datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
-                datum.en_common_name = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
-                datum.ka_common_id = datum.en_common_id
-                datum.ka_common_name = datum.en_common_name
-              	puts "******** time to build data object: #{Time.now-startPhase} seconds"
-
-
-	logger.debug "++++saving record"
-	              startPhase = Time.now
-								if datum.valid?
-									datum.save
+								if indicator.nil? || indicator.empty?
+				logger.debug "++++indicator was not found"
+									msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
+									raise ActiveRecord::Rollback
+									return msg
 								else
-									# an error occurred, stop
-							    msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)
-							    raise ActiveRecord::Rollback
-							    return msg
-								end
-              	puts "******** time to save data item: #{Time.now-startPhase} seconds"
+				logger.debug "++++indicator found, saving record"
+  		            startPhase = Time.now
+  								# populate record
+  								datum = LiveDatum.new
+  								datum.live_dataset_id = dataset.id
+  								datum.indicator_id = indicator.first.id
+  								datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
+                  datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
+                  datum.en_common_name = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
+                  datum.ka_common_id = datum.en_common_id
+                  datum.ka_common_name = datum.en_common_name
+                	puts "******** time to build data object: #{Time.now-startPhase} seconds"
 
-								i+=2 # move on to the next set of indicator/value pairs
+
+  	logger.debug "++++saving record"
+  	              startPhase = Time.now
+  								if datum.valid?
+  									datum.save
+  								else
+  									# an error occurred, stop
+  							    msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)
+  							    raise ActiveRecord::Rollback
+  							    return msg
+  								end
+                	puts "******** time to save data item: #{Time.now-startPhase} seconds"
+
+  								i+=2 # move on to the next set of indicator/value pairs
+                end
 							end
 						end
 					end

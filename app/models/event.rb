@@ -44,6 +44,11 @@ class Event < ActiveRecord::Base
     end
   end
 
+  def self.get_all_events(locale = I18n.locale)
+		with_translations(locale).includes(:event_type)
+		.order("event_types.sort_order asc, event_date DESC, event_translations.name ASC")
+  end
+  
   def self.get_all_events_by_date(locale = I18n.locale)
 		with_translations(locale)
 		.order("event_date DESC, event_translations.name ASC")
