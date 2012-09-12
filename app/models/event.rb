@@ -9,6 +9,7 @@ class Event < ActiveRecord::Base
   has_many :event_indicator_relationships, :dependent => :destroy
 	has_many :event_custom_views, :dependent => :destroy
 	has_many :live_events, :dependent => :destroy
+	has_many :live_data_sets, :dependent => :destroy
   accepts_nested_attributes_for :event_translations
   attr_accessible :shape_id, :event_type_id, :event_date,
 		:event_translations_attributes, :has_official_data, :has_live_data
