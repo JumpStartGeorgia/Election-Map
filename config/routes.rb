@@ -46,6 +46,8 @@ ElectionMap::Application.routes.draw do
 	  resources :event_custom_views
 	  resources :event_indicator_relationships
 	  resources :event_types
+    match '/live_events/load_data', :to => 'live_events#load_data', :as => 'load_data_live_events', :via => :get
+    match '/live_events/load_data', :to => 'live_events#load_data', :as => 'load_data_live_events', :via => :post
     resources :live_events
     resources :news
 	  resources :pages
@@ -74,7 +76,7 @@ ElectionMap::Application.routes.draw do
 		match '/shape_types/event/:event_id', :to => 'shape_types#by_event', :as => :shape_types_by_event, :via => :get, :defaults => {:format => 'json'}
 		match '/indicators/event/:event_id/shape_type/:shape_type_id', :to => 'indicators#by_event_shape_type', :as => :indicators_by_event_shape_type, :via => :get, :defaults => {:format => 'json'}
 		match '/event_indicator_relationships/render_js_blocks/:id/:type/:counter', :to => 'event_indicator_relationships#render_js_blocks', :via => :get, :defaults => {:format => 'json'}
-
+    
 		# cache
 		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => :get
 		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => :post

@@ -56,4 +56,13 @@ $(document).ready(function(){
 		}
 	}
 
+
+	if(gon.load_data_live_event){
+		// load the date pickers
+		$('#timestamp').datetimepicker({
+				dateFormat: 'dd.mm.yy',
+				timeFormat: 'hh:mm',
+				separator: ' '
+		});
+  }
 });

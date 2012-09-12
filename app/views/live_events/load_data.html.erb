@@ -1,0 +1,41 @@
+<% title t('.title') %>
+
+<% if !@live_events || @live_events.empty?%>
+
+  <p><%= t('.no_live_events')%></p>
+
+<% else %>
+
+  <%= form_tag load_data_live_events_path, :multipart => true do %>
+  	<div>
+  		<p>
+  			<%= t('activerecord.attributes.live_data_sets.event_id') %>
+  			<%= select_tag "event_id", options_from_collection_for_select(@live_events, "id", "name", params[:event_id]), :include_blank => true %>
+  		</p>
+  		<p>
+  			<%= t('activerecord.attributes.live_data_sets.precincts_completed') %>
+        <%= text_field_tag "precincts_completed", nil, :size => 20  %>
+  		</p>
+  		<p>
+  			<%= t('activerecord.attributes.live_data_sets.precincts_total') %>
+        <%= text_field_tag "precincts_total", nil, :size => 20  %>
+  		</p>
+  		<p>
+  			<%= t('activerecord.attributes.live_data_sets.timestamp') %>
+        <%= text_field_tag "timestamp", nil, :size => 20  %>
+  		</p>
+  		<p>
+  			<%= t('app.common.file_upload') %>
+  			<%= file_field_tag 'file', :accept => 'text/csv,text/plain' %>
+  		</p>
+  	</div>
+  	<div>
+  	  <%= submit_tag t("app.buttons.upload_csv") %>
+  	</div>
+  <% end %>
+
+<% end %>
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

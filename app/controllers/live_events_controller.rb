@@ -1,6 +1,47 @@
 class LiveEventsController < ApplicationController
   before_filter :authenticate_user!
 
+  def load_data
+    @live_events = Event.live_events("desc")
+    @live_data_set = LiveDataSet.new
+    gon.load_data_live_event = true
+    
+		if request.post?
+			if params[:file].present?
+				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
+          if params[:event_id] && !params[:event_id].empty? && 
+              params[:precincts_completed] && !params[:precincts_completed].empty? &&
+              params[:precincts_total] && !params[:precincts_total].empty?  &&
+              params[:timestamp] && !params[:timestamp].empty? 
+
+  			    start = Time.now
+            msg = nil
+  		      if msg.nil? || msg.empty?
+  		        # no errors, success!
+  						msg = I18n.t('app.msgs.upload.success_live_event', :file_name => params[:file].original_filename)
+  						flash[:success] = msg
+  						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
+  				    redirect_to load_data_live_events_path #GET
+  		      else
+  		        # errors
+  						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
+  				    redirect_to load_data_live_events_path #GET
+  		      end
+  				else
+  					flash[:error] = I18n.t('app.msgs.missing_parameters')
+  		      redirect_to load_data_live_events_path #GET
+  				end
+				else
+					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
+		      redirect_to load_data_live_events_path #GET
+				end
+			else
+				flash[:error] = I18n.t('app.msgs.upload.no_file')
+	      redirect_to load_data_live_events_path #GET
+			end
+    end
+  end
+
   # GET /live_events
   # GET /live_events.json
   def index
