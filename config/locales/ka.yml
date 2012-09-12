@@ -1,6 +1,9 @@
 # encoding: utf-8
 ka:
   models:
+    live_data:
+      msgs:
+        event_hint: "* - event has live data"
     live_dataset:
       msgs:
         dataset_not_save: The dataset record could not be created for this file.
@@ -186,6 +189,8 @@ ka:
       date_posted: Date Posted
       data_archive_folder: Data Archive Folder
       page: Page
+      menu_start_date: Live Menu Start Date
+      menu_end_date: Live Menu End Date
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"

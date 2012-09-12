@@ -2,7 +2,10 @@
 	<%= f.error_messages %>
 
 	<%= f.inputs do %>
-		<%= f.input :event, :collection => Hash[Event.get_all_events_by_date.map{|x| ["#{x.name} (#{l x.event_date})", x.id]}] %>
+		<%= f.input :event, :collection => Hash[Event.get_all_events_by_date.map{|x| ["#{x.name} (#{l x.event_date}) #{'*' if x.live_events && !x.live_events.empty?}", x.id]}],
+		    :hint => "( #{t('models.live_data.msgs.event_hint')} )"%>
+		<%= f.input :menu_start_date, :as => :string, :input_html => { :size => 20 } %>
+		<%= f.input :menu_end_date, :as => :string, :input_html => { :size => 20 } %>
 	<% end %>
 
 	<div class="form-actions">

@@ -4,6 +4,14 @@
   <strong><%= t('app.common.name') %>:</strong>
   <%= "#{@live_event.event.name} (#{l @live_event.event.event_date})" %>
 </p>
+<p>
+  <strong><%= t('app.common.menu_start_date') %>:</strong>
+  <%= l @live_event.menu_start_date if @live_event.menu_start_date %>
+</p>
+<p>
+  <strong><%= t('app.common.menu_end_date') %>:</strong>
+  <%= l @live_event.menu_end_date if @live_event.menu_end_date %>
+</p>
 
 <div class="form-actions">
   <%= link_to t('app.buttons.edit'),

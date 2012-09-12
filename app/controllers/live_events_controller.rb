@@ -27,7 +27,8 @@ class LiveEventsController < ApplicationController
   # GET /live_events/new.json
   def new
     @live_event = LiveEvent.new
-
+    gon.edit_live_event = true
+    
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @live_event }
@@ -37,6 +38,10 @@ class LiveEventsController < ApplicationController
   # GET /live_events/1/edit
   def edit
     @live_event = LiveEvent.find(params[:id])
+    gon.edit_live_event = true
+		gon.menu_start_date = @live_event.menu_start_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_start_date
+		gon.menu_end_date = @live_event.menu_end_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_end_date
+    
   end
 
   # POST /live_events
@@ -49,6 +54,9 @@ class LiveEventsController < ApplicationController
         format.html { redirect_to @live_event, notice: 'Live event was successfully created.' }
         format.json { render json: @live_event, status: :created, location: @live_event }
       else
+        gon.edit_live_event = true
+    		gon.menu_start_date = @live_event.menu_start_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_start_date
+    		gon.menu_end_date = @live_event.menu_end_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_end_date
         format.html { render action: "new" }
         format.json { render json: @live_event.errors, status: :unprocessable_entity }
       end
@@ -65,6 +73,9 @@ class LiveEventsController < ApplicationController
         format.html { redirect_to @live_event, notice: 'Live event was successfully updated.' }
         format.json { head :ok }
       else
+        gon.edit_live_event = true
+    		gon.menu_start_date = @live_event.menu_start_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_start_date
+    		gon.menu_end_date = @live_event.menu_end_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_end_date
         format.html { render action: "edit" }
         format.json { render json: @live_event.errors, status: :unprocessable_entity }
       end

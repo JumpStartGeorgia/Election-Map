@@ -5,6 +5,8 @@
     <tr>
       <th><%= t('app.common.event_date') %></th>
       <th><%= t('app.common.event') %></th>
+      <th><%= t('app.common.menu_start_date') %></th>
+      <th><%= t('app.common.menu_end_date') %></th>
       <th><%=t '.actions', :default => t("helpers.actions") %></th>
     </tr>
   </thead>
@@ -13,6 +15,8 @@
       <tr>
         <td><%= l live_event.event.event_date %></td>
         <td><%= live_event.event.name %></td>
+        <td><%= l live_event.menu_start_date if live_event.menu_start_date %></td>
+        <td><%= l live_event.menu_end_date if live_event.menu_end_date %></td>
         <td>
           <%= link_to t('app.buttons.edit'),
                       edit_live_event_path(live_event), :class => 'btn btn-mini' %>

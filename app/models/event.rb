@@ -18,10 +18,14 @@ class Event < ActiveRecord::Base
 #  validates :shape_id, :presence => true
 
 	# get all events that have live accounts
-	def self.live_events
-		with_translations(I18n.locale)
-		.joins(:live_events)
-		.order("live_events.menu_start_date, event_date, event_translations.name")
+	def self.live_events(ids_only = false)
+    if ids_only
+      select("events.id").joins(:live_events)
+    else
+  		with_translations(I18n.locale)
+  		.joins(:live_events)
+  		.order("live_events.menu_start_date, event_date, event_translations.name")
+    end
 	end
 
   def self.get_events_by_type(event_type_id)
@@ -42,11 +46,6 @@ class Event < ActiveRecord::Base
       .order("event_date DESC, event_translations.name ASC")
 =end
     end
-  end
-
-  def self.get_all_events(locale = I18n.locale)
-		with_translations(locale).includes(:event_type)
-		.order("event_types.sort_order asc, event_date DESC, event_translations.name ASC")
   end
 
   def self.get_all_events_by_date(locale = I18n.locale)

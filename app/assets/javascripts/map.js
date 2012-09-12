@@ -18,6 +18,7 @@
 //= require event_menu
 //= require events
 //= require indicator_menu_scale
+//= require live_events
 //= require map_popup_svg
 //= require messages
 //= require news
