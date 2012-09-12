@@ -505,18 +505,18 @@ logger.debug " - no matching event found!"
   			  :event_id => params[:event_id],
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       end
-      
+
       # set json paths for indicator menu ajax calls
       if @is_custom_view
 				gon.indicator_menu_data_path_summary = json_summary_custom_children_data_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id)
 				gon.indicator_menu_data_path = json_custom_children_data_path(:parent_id => params[:shape_id],
-				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
+				  :indicator_id => 'xxx', :shape_type_id => @child_shape_type_id,
 				  :event_id => params[:event_id])
       else
 				gon.indicator_menu_data_path_summary = json_summary_children_data_path(:parent_id => params[:shape_id],
-  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
+  			  :event_id => params[:event_id], :indicator_type_id => 'xxx',
   			  :shape_type_id => @child_shape_type_id,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
 				gon.indicator_menu_data_path = json_children_data_path(:parent_id => params[:shape_id],
