@@ -502,6 +502,15 @@ class LiveDatum < ActiveRecord::Base
 			ActiveRecord::Base.connection.execute("update live_data as dt, shape_names as sn set dt.ka_common_name = sn.ka where dt.ka_common_name = sn.en")
       puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
+  logger.debug "++++updating event.has_live_data to true"
+      dataset.event.has_live_data = true
+      if !dataset.event.save
+  logger.debug "++++ - error setting event.has_live_data "
+		    msg = I18n.t('models.live_dataset.msgs.failed_set_event_flag')
+		    raise ActiveRecord::Rollback
+		    return msg
+      end
+
 		end
     logger.debug "++++procssed #{n} rows in CSV file"
   	puts "****************** time to build_from_csv: #{Time.now-start} seconds"
