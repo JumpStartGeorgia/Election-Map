@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120905112133) do
+ActiveRecord::Schema.define(:version => 20120912120919) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -167,9 +167,13 @@ ActiveRecord::Schema.define(:version => 20120905112133) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.date     "event_date"
+    t.boolean  "has_official_data", :default => false
+    t.boolean  "has_live_data",     :default => false
   end
 
   add_index "events", ["event_type_id"], :name => "index_events_on_event_type_id"
+  add_index "events", ["has_live_data"], :name => "index_events_on_has_live_data"
+  add_index "events", ["has_official_data"], :name => "index_events_on_has_official_data"
   add_index "events", ["shape_id"], :name => "index_events_on_shape_id"
 
   create_table "indicator_scale_translations", :force => true do |t|
@@ -251,62 +255,46 @@ ActiveRecord::Schema.define(:version => 20120905112133) do
 
   add_index "indicators", ["event_id", "shape_type_id", "core_indicator_id"], :name => "inds_event_shape_type_core_ind"
 
-  create_table "live_data1_translations", :force => true do |t|
-    t.integer  "live_data1_id"
-    t.string   "locale"
-    t.string   "common_id"
-    t.string   "common_name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "live_data1_translations", ["live_data1_id"], :name => "index_live_data1_translations_on_live_data1_id"
-  add_index "live_data1_translations", ["locale", "common_id", "common_name"], :name => "index_live_data1_trans_on_locale_and_common_id_and_common_name"
-  add_index "live_data1_translations", ["locale"], :name => "index_live_data1_translations_on_locale"
-
-  create_table "live_data1s", :force => true do |t|
+  create_table "live_data", :force => true do |t|
     t.integer  "indicator_id"
-    t.decimal  "value",        :precision => 16, :scale => 4
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "live_data1s", ["indicator_id"], :name => "index_live_data1s_on_indicator_id"
-  add_index "live_data1s", ["value"], :name => "index_live_data1s_on_value"
-
-  create_table "live_data2s", :force => true do |t|
-    t.integer  "indicator_id"
-    t.decimal  "value",          :precision => 16, :scale => 4
+    t.decimal  "value",            :precision => 16, :scale => 4
     t.string   "en_common_id"
     t.string   "en_common_name"
     t.string   "ka_common_id"
     t.string   "ka_common_name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "live_data_set_id"
   end
 
-  add_index "live_data2s", ["en_common_id", "en_common_name"], :name => "index_live_data2_en_common_id_and_common_name"
-  add_index "live_data2s", ["indicator_id"], :name => "index_live_data2s_on_indicator_id"
-  add_index "live_data2s", ["ka_common_id", "ka_common_name"], :name => "index_live_data2_ka_common_id_and_common_name"
-  add_index "live_data2s", ["value"], :name => "index_live_data2s_on_value"
+  add_index "live_data", ["en_common_id", "en_common_name"], :name => "index_live_data_en_common"
+  add_index "live_data", ["ka_common_id", "ka_common_name"], :name => "index_live_data_ka_common"
+  add_index "live_data", ["live_data_set_id", "indicator_id"], :name => "index_live_data_ids"
+  add_index "live_data", ["value"], :name => "index_live_data_on_value"
 
-  create_table "live_data_statuses", :force => true do |t|
-    t.integer  "live_model"
-    t.integer  "inactive_model"
+  create_table "live_data_sets", :force => true do |t|
+    t.integer  "event_id"
+    t.integer  "precincts_completed"
+    t.integer  "precincts_total"
+    t.datetime "timestamp"
+    t.boolean  "show_to_public",      :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "live_data_statuses", ["inactive_model"], :name => "index_live_data_statuses_on_inactive_model"
-  add_index "live_data_statuses", ["live_model"], :name => "index_live_data_statuses_on_live_model"
+  add_index "live_data_sets", ["event_id", "show_to_public", "timestamp"], :name => "idx_live_data_sets_on_event"
 
   create_table "live_events", :force => true do |t|
     t.integer  "event_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.date     "menu_start_date"
+    t.date     "menu_end_date"
   end
 
   add_index "live_events", ["event_id"], :name => "index_live_events_on_event_id"
+  add_index "live_events", ["menu_end_date"], :name => "index_live_events_on_menu_end_date"
+  add_index "live_events", ["menu_start_date"], :name => "index_live_events_on_menu_start_date"
 
   create_table "locales", :force => true do |t|
     t.string   "language"
@@ -377,23 +365,6 @@ ActiveRecord::Schema.define(:version => 20120905112133) do
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
-
-  create_table "shape2s", :force => true do |t|
-    t.integer  "shape_type_id"
-    t.text     "geometry",       :limit => 2147483647
-    t.string   "en_common_id"
-    t.string   "en_common_name"
-    t.string   "ka_common_id"
-    t.string   "ka_common_name"
-    t.string   "ancestry"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "shape2s", ["ancestry"], :name => "index_shapes_on_ancestry"
-  add_index "shape2s", ["en_common_id", "en_common_name"], :name => "index_shapes_en_common_id_and_common_name"
-  add_index "shape2s", ["ka_common_id", "ka_common_name"], :name => "index_shapes_ka_common_id_and_common_name"
-  add_index "shape2s", ["shape_type_id"], :name => "index_shapes_on_shape_type_id"
 
   create_table "shape_names", :primary_key => "en", :force => true do |t|
     t.string "ka", :null => false

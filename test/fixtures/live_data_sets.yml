@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  event_id: 1
+  precincts_completed: 1
+  precincts_total: 1
+  timestamp: 2012-09-12 13:57:02
+  show_to_public: false
+
+two:
+  event_id: 1
+  precincts_completed: 1
+  precincts_total: 1
+  timestamp: 2012-09-12 13:57:02
+  show_to_public: false

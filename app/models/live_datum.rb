@@ -1,20 +1,17 @@
-class LiveData2 < ActiveRecord::Base
+class LiveDatum < ActiveRecord::Base
 	require 'json_cache'
 	require 'json'
 
   belongs_to :indicator
 
-  attr_accessible :indicator_id, :value, :en_common_id, :en_common_name, :ka_common_id, :ka_common_name
+  attr_accessible :indicator_id, :live_data_set_id, :value,
+			:en_common_id, :en_common_name, :ka_common_id, :ka_common_name
 
   validates :indicator_id, :presence => true
 
   attr_accessor :number_format, :shape_id, :shape_type_name, :color,
 		:indicator_name, :indicator_name_abbrv, :indicator_description,
 		:indicator_type_id, :indicator_type_name, :core_indicator_id
-
-	def self.test
-		"this is live data 2"
-	end
 
 	###################################
 	## special gets for attributes
@@ -90,16 +87,17 @@ class LiveData2 < ActiveRecord::Base
 			sql << "d.id, d.value, ci.number_format as number_format, "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as indicator_name, "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as indicator_name_abbrv "
-			sql << "FROM live_data2s as d  "
+			sql << "FROM live_data as d  "
 			sql << "inner join indicators as i on d.indicator_id = i.id  "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id  "
 			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id  "
 			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id AND cit_parent.locale = :locale "
-			sql << "inner join shape2s as s on i.shape_type_id = s.shape_type_id and d.#{I18n.locale}_common_id = s.#{I18n.locale}_common_id and d.#{I18n.locale}_common_name = s.#{I18n.locale}_common_name "
+			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
+			sql << "inner join shape_translations as st on s.id = st.shape_id and d.#{I18n.locale}_common_id = st.common_id and dt.#{I18n.locale}_common_name = st.common_name "
 			sql << "WHERE i.event_id = :event_id AND i.shape_type_id = :shape_type_id AND i.core_indicator_id = :core_indicator_id "
 			sql << "and s.id=:shape_id "
-			sql << "AND cit.locale = :locale "
+			sql << "AND cit.locale = :locale and st.locale = :locale "
       sql << "order by s.id asc "
 			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id,
 			                  :shape_id => shape_id,
@@ -126,17 +124,18 @@ class LiveData2 < ActiveRecord::Base
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as indicator_name, "
 			sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as indicator_name_abbrv, "
 			sql << "if(ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as color "
-			sql << "FROM live_data2s as d "
+			sql << "FROM live_data as d "
 			sql << "inner join indicators as i on d.indicator_id = i.id "
 			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id "
 			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
 			sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id "
 			sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id AND cit_parent.locale = :locale "
 			sql << "inner join indicator_type_translations as itt on ci.indicator_type_id = itt.indicator_type_id "
-			sql << "inner join shape2s as s on i.shape_type_id = s.shape_type_id and d.#{I18n.locale}_common_id = s.#{I18n.locale}_common_id and d.#{I18n.locale}_common_name = s.#{I18n.locale}_common_name "
+			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
+			sql << "inner join shape_translations as st on s.id = st.shape_id and d.#{I18n.locale}_common_id = st.common_id and dt.#{I18n.locale}_common_name = st.common_name "
 			sql << "WHERE i.event_id = :event_id and i.shape_type_id = :shape_type_id and ci.indicator_type_id = :indicator_type_id "
 			sql << "and s.id=:shape_id "
-			sql << "AND cit.locale = :locale AND itt.locale = :locale "
+			sql << "AND cit.locale = :locale AND itt.locale = :locale and st.locale = :locale "
       sql << "order by s.id asc, d.value desc "
       sql << "limit :limit" if !limit.nil?
 			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id,
@@ -231,7 +230,7 @@ class LiveData2 < ActiveRecord::Base
                   h = compute_placement(data["summary_data"], data["summary_data"][index][:value])
                   has_duplicates = h[:has_duplicates]
                   if !h.nil? && !h.empty?
-  		              rank = LiveData2.new
+  		              rank = LiveDatum.new
   		              rank.value = h[:rank].to_s
   		              rank["number_format"] = " / #{h[:total]}"
   		              rank["number_format"] += " *" if h[:has_duplicates]
@@ -245,7 +244,7 @@ class LiveData2 < ActiveRecord::Base
 								end
 
 	              # add total # of indicators in the summary
-	              rank = LiveData2.new
+	              rank = LiveDatum.new
 	              rank.value = data["summary_data"].length
 	              rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
 	              rank["indicator_name"] = I18n.t('app.common.total_participants')
@@ -282,7 +281,7 @@ class LiveData2 < ActiveRecord::Base
 
       # add duplicate footnote if needed
       if has_duplicates
-        footnote = LiveData2.new
+        footnote = LiveDatum.new
         footnote["indicator_name"] = "* #{I18n.t('app.common.footnote_duplicates')}"
         footnote["indicator_name_abbrv"] = "* #{I18n.t('app.common.footnote_duplicates')}"
 				data_hash = Hash.new
@@ -385,7 +384,7 @@ class LiveData2 < ActiveRecord::Base
     idx_common_name = 3
     index_first_ind = 4
 
-		LiveData2.transaction do
+		LiveDatum.transaction do
 		  CSV.parse(infile) do |row|
         startRow = Time.now
 		    n += 1
@@ -433,7 +432,7 @@ class LiveData2 < ActiveRecord::Base
 
 		            startPhase = Time.now
 								# populate record
-								datum = LiveData2.new
+								datum = LiveDatum.new
 								datum.indicator_id = indicator.first.id
 								datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
                 datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
@@ -469,9 +468,9 @@ class LiveData2 < ActiveRecord::Base
 			# ka translation is hardcoded as en in the code above
 			# update all ka records with the apropriate ka translation
 			# update common ids
-			ActiveRecord::Base.connection.execute("update live_data2s as dt, shape_names as sn set dt.ka_common_id = sn.ka where dt.ka_common_id = sn.en")
+			ActiveRecord::Base.connection.execute("update live_data as dt, shape_names as sn set dt.ka_common_id = sn.ka where dt.ka_common_id = sn.en")
 			# update common names
-			ActiveRecord::Base.connection.execute("update live_data2s as dt, shape_names as sn set dt.ka_common_name = sn.ka where dt.ka_common_name = sn.en")
+			ActiveRecord::Base.connection.execute("update live_data as dt, shape_names as sn set dt.ka_common_name = sn.ka where dt.ka_common_name = sn.en")
       puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 		end

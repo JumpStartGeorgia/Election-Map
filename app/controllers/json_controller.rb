@@ -8,7 +8,7 @@ class JsonController < ApplicationController
   # GET /json/shape/:id/shape_type/:shape_type_id
   def shape
 		geometries = Rails.cache.fetch("parent_shape_json_#{I18n.locale}_shape_#{params[:id]}") {
-			Shape2.build_json(params[:id], params[:shape_type_id]).to_json
+			Shape.build_json(params[:id], params[:shape_type_id]).to_json
 		}
 
     respond_to do |format|
@@ -21,7 +21,7 @@ class JsonController < ApplicationController
     start = Time.now
 		geometries = nil
 		# get parent of parent shape and see if custom_children cache already exists
-		shape = Shape2.find(params[:parent_id])
+		shape = Shape.find(params[:parent_id])
 		# see if this event at this shape type is a custom view
 		custom = EventCustomView.get_by_descendant(params[:event_id], params[:shape_type_id])
 
@@ -63,10 +63,10 @@ class JsonController < ApplicationController
 
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape2.build_json(shape.id, shape.shape_type_id, params[:indicator_id]).to_json
+						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id]).to_json
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape2.build_json(shape.id, params[:shape_type_id], params[:indicator_id]).to_json
+						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id]).to_json
 					end
 				}
 			end
@@ -85,7 +85,7 @@ class JsonController < ApplicationController
 		  .gsub("[indicator_id]", params[:indicator_id])
 		  .gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = JsonCache.fetch(params[:event_id], key) {
-  		Shape2.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id]).to_json
+  		Shape.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id]).to_json
 		}
 
 		logger.debug "++++++++++custom children key = #{key}"
@@ -103,7 +103,7 @@ class JsonController < ApplicationController
     start = Time.now
 		geometries = nil
 		# get parent of parent shape and see if custom_children cache already exists
-		shape = Shape2.find(params[:parent_id])
+		shape = Shape.find(params[:parent_id])
 		# see if this event at this shape type is a custom view
 		custom = EventCustomView.get_by_descendant(params[:event_id], params[:shape_type_id])
 
@@ -145,10 +145,10 @@ class JsonController < ApplicationController
 					geo = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape2.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id]).to_json
+						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id]).to_json
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape2.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
+						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
 					end
 				}
 			end
@@ -170,7 +170,7 @@ class JsonController < ApplicationController
 		      .gsub("[shape_type_id]", params[:shape_type_id])
 		geometries = JsonCache.fetch(params[:event_id], key) {
 			#shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-			geo = Shape2.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
+			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
 		}
 
     respond_to do |format|

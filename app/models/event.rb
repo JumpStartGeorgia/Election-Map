@@ -9,8 +9,8 @@ class Event < ActiveRecord::Base
 	has_many :event_custom_views, :dependent => :destroy
 	has_many :live_events, :dependent => :destroy
   accepts_nested_attributes_for :event_translations
-  attr_accessible :shape_id, :event_type_id, :event_date, :event_translations_attributes
-  attr_accessor :locale
+  attr_accessible :shape_id, :event_type_id, :event_date,
+		:event_translations_attributes, :has_official_data, :has_live_data
 
   validates :event_type_id, :event_date, :presence => true
   #do not require shape id for the geo data might not be loaded yet
