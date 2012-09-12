@@ -4,7 +4,7 @@ class LiveDatum < ActiveRecord::Base
 
   belongs_to :indicator
 
-  attr_accessible :indicator_id, :live_data_set_id, :value,
+  attr_accessible :indicator_id, :live_dataset_id, :value,
 			:en_common_id, :en_common_name, :ka_common_id, :ka_common_name
 
   validates :indicator_id, :presence => true
@@ -374,7 +374,7 @@ class LiveDatum < ActiveRecord::Base
 	###################################
 	## load from csv
 	###################################
-  def self.build_from_csv(file, deleteExistingRecord)
+  def self.build_from_csv(event_id, precincts_completed, precincts_total, timestamp, file, deleteExistingRecord)
 		start = Time.now
     infile = file.read
     n, msg = 0, ""
@@ -385,6 +385,26 @@ class LiveDatum < ActiveRecord::Base
     index_first_ind = 4
 
 		LiveDatum.transaction do
+			# create the dataset record
+			if event_id && precincts_completed && precincts_total && timestamp
+				dataset = LiveDataSet.new
+				dataset.event_id = event_id
+				dataset.precincts_completed = precincts_completed
+				dataset.precincts_total = precincts_total
+				dataset.timestamp = timestamp
+				if !dataset.save
+  logger.debug "++++could not save the dataset"
+    		  msg = I18n.t('models.live_dataset.msgs.dataset_not_save')
+		      raise ActiveRecord::Rollback
+          return msg
+				end
+			else
+  logger.debug "++++params not supplied to save the dataset"
+    		  msg = I18n.t('models.live_dataset.msgs.missing_params')
+		      raise ActiveRecord::Rollback
+          return msg
+			end
+
 		  CSV.parse(infile) do |row|
         startRow = Time.now
 		    n += 1
@@ -433,6 +453,7 @@ class LiveDatum < ActiveRecord::Base
 		            startPhase = Time.now
 								# populate record
 								datum = LiveDatum.new
+								datum.live_dataset_id = dataset.id
 								datum.indicator_id = indicator.first.id
 								datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
                 datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip

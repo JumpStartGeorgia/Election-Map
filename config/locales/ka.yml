@@ -1,6 +1,10 @@
 # encoding: utf-8
 ka:
   models:
+    live_dataset:
+      msgs:
+        dataset_not_save: The dataset record could not be created for this file.
+        missing_params: Not all parameters were provided to save the record.
     datum:
       header:
         event: არჩევნები

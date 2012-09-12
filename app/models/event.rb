@@ -3,6 +3,7 @@ class Event < ActiveRecord::Base
 
   has_many :event_translations, :dependent => :destroy
   has_many :indicators
+	has_many :live_events
   belongs_to :shape
   belongs_to :event_type
   has_many :event_indicator_relationships, :dependent => :destroy
@@ -16,9 +17,12 @@ class Event < ActiveRecord::Base
   #do not require shape id for the geo data might not be loaded yet
 #  validates :shape_id, :presence => true
 
-  scope :l10n , joins(:event_translations).where('locale = ?',I18n.locale)
-  scope :by_name , order('name').l10n
-
+	# get all events that have live accounts
+	def self.live_events
+		with_translations(I18n.locale)
+		.joins(:live_events)
+		.order("live_events.menu_start_date, event_date, event_translations.name")
+	end
 
   def self.get_events_by_type(event_type_id)
     if event_type_id.nil?
