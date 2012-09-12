@@ -351,8 +351,8 @@ if (gon.openlayers){
 
 	function recursiveSearch(niddle, array)
 	{
-		var i = 0;	
-		
+		var i = 0;
+
 		while (i < array.length)
 		{
 			console.log(i);
@@ -374,27 +374,29 @@ if (gon.openlayers){
 
 
 
-	function bindDataToSchapes(features)
-	{		
-			
+	// pull the data value and color from the data json and put into the feature
+	// - also take the feature title_location and push into the data json
+	function bindDataToShapes(features)
+	{
 		for (var i in features)
-		{				
-			var feature = features[i];			
+		{
+			var feature = features[i];
 			for (var j in json_data)
 			{
 				var json_shape_data = json_data[j][0].shape_values;
 				if (feature.data.id === json_shape_data.shape_id)
 				{
-					feature.data.color = json_shape_data.color;               
-					feature.attributes.color = json_shape_data.color;				
+					// put the color and value into the feature
+					feature.data.color = json_shape_data.color;
+					feature.attributes.color = json_shape_data.color;
 					feature.data.value = json_shape_data.value;
 					feature.attributes.value = json_shape_data.value;
-					
+
+					// move the title_location into the data json
 					json_shape_data.title_location = feature.attributes.title_location;
-					
 				}
 			}
-		}		
+		}
 		return features;
 	}
 
@@ -406,10 +408,8 @@ if (gon.openlayers){
 			$.get(gon.data_path, function(data) {
 				// save the data to a global variable for later user
 				json_data = data;
-				// TODO add the shape_values from the data into the features
-				resp.features = bindDataToSchapes(resp.features);				
-				// add the features to the vector layer				   
-				vector_child.addFeatures(resp.features);			
+				// add the features to the vector layer
+				vector_child.addFeatures(bindDataToShapes(resp.features));
 				// if this is summary view, populate gon.indicator_scales and colors with names from json file
 				populate_summary_data();
 				// now that the child vector is loaded, lets show the legend
@@ -721,19 +721,19 @@ if (gon.openlayers){
 	{
 		$(".olPopup").each(function(){
 		    $(this).remove();
-		});		
-		
+		});
+
 	}
-	
+
 	var max_X, max_X_lat, max_Y, max_Y_lon, min_X, min_X_lat, min_Y, min_Y_lon;
-   
+
    function getLimits(feature_vertices)
    {
       max_X = 0;
       max_Y = 0;
       min_X = 99999999;
       min_Y = 99999999;
-       		      		      		      
+
       for (var i=0;i<feature_vertices.length;i++)
       {
          if (feature_vertices[i].x > max_X)
@@ -741,25 +741,25 @@ if (gon.openlayers){
             max_X = feature_vertices[i].x;
             max_X_lat = feature_vertices[i].y;
          }
-         
+
          if (feature_vertices[i].y > max_Y)
          {
             max_Y = feature_vertices[i].y;
             max_Y_lon = feature_vertices[i].x;
          }
-         
+
          if (feature_vertices[i].x < min_X)
          {
             min_X = feature_vertices[i].x;
             min_X_lat = feature_vertices[i].y;
          }
-         
+
          if (feature_vertices[i].y < min_Y)
          {
             min_Y = feature_vertices[i].y;
             min_Y_lon = feature_vertices[i].x;
          }
-      }	
+      }
    }
 
 
@@ -773,13 +773,13 @@ if (gon.openlayers){
          }
       }
    }
-   
+
 	// Create the popup for the feature
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
-								
+
 		var popup;
-	   
+
 		if (typeof(stright) === "undefined")
 		  stright = false;
 		if (stright && $(".olPopupCloseBox:first").length !== 0)
@@ -787,62 +787,62 @@ if (gon.openlayers){
 
       // remove all popups
 		removeFeaturePopups();
-      
-      
+
+
       // create popup
-                             
+
       var feature = feature_data,
           feature_vertices = feature.geometry.getVertices(),
           feature_center = feature_data.geometry.bounds.getCenterLonLat();
-          
-	   
-      getLimits(feature_vertices);	      		      		      		      		                 
-      
+
+
+      getLimits(feature_vertices);
+
       var y = max_Y-min_Y;
       var x = max_X-min_X;
-      
-   
-	   $("#popup_svg").empty();       
+
+
+	   $("#popup_svg").empty();
 	   var data = getShapeData(feature_data);
       new MapPopup().processJSON(document.getElementById("popup_svg"), data, {
                 limit: 5
-      });         
+      });
       popup = new OpenLayers.Popup.FramedCloud("Feature Popup",
 		new OpenLayers.LonLat(min_X+x/100*50, min_Y+y/100*70),
 		null,
 		$("#popup_svg").html(),
 		null,
-		true);		
-      popup.autoSize = true;      
-      
+		true);
+      popup.autoSize = true;
+
       popup.calculateRelativePosition = function(){
          return "tr";
       };
-	   map.addPopup(popup);	
-	   
-	   
+	   map.addPopup(popup);
+
+
 	   function PopupIndicatorCheckPosition()
 	   {
 	      var map = $("#map"),
 	          popup = $(".olPopup:first"),
 	          indicators = $("#indicator_menu_scale"),
 	          indicators_toggle = $("#indicator_menu_scale .toggle");
-	      if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators_toggle.css('display') === "block")    
+	      if (parseInt(popup.css('left')) + parseInt(popup.width()) +
+	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators_toggle.css('display') === "block")
 	      {
 	         the_indicators.hide();
 	      }
-	      else if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
+	      else if (parseInt(popup.css('left')) + parseInt(popup.width()) +
 	          parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators_toggle.css('display') === "none")
 	      {
-	         the_indicators.show();        
+	         the_indicators.show();
 	      }
 
 	   }
-	   
-	   PopupIndicatorCheckPosition();	   	              			                	      		
-		
-		
+
+	   PopupIndicatorCheckPosition();
+
+
       // close button
 		if (close_button)
 		{
@@ -863,7 +863,7 @@ if (gon.openlayers){
 
 	// show the popups
 	function hover_handler (feature)
-	{	   
+	{
 		// Create the popup
 		makeFeaturePopup(feature);
 	}
