@@ -1,36 +1,39 @@
 <% title t('.title') %>
 
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th><%= t('app.common.event_date') %></th>
-      <th><%= t('app.common.event') %></th>
-      <th><%= t('app.common.menu_start_date') %></th>
-      <th><%= t('app.common.menu_end_date') %></th>
-      <th><%=t '.actions', :default => t("helpers.actions") %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @live_events.each do |live_event| %>
+<% if !@live_election || @live_elections.empty? %>
+  <p><%= t('.no_data')%></p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td><%= l live_event.event.event_date %></td>
-        <td><%= live_event.event.name %></td>
-        <td><%= l live_event.menu_start_date if live_event.menu_start_date %></td>
-        <td><%= l live_event.menu_end_date if live_event.menu_end_date %></td>
-        <td>
-          <%= link_to t('app.buttons.edit'),
-                      edit_live_event_path(live_event), :class => 'btn btn-mini' %>
-          <%= link_to t('app.buttons.delete'),
-                      live_event_path(live_event),
-                      :method => :delete,
-                      :confirm => t('app.msgs.delete_confirm'),
-                      :class => 'btn btn-mini btn-danger' %>
-        </td>
+        <th><%= t('app.common.event_date') %></th>
+        <th><%= t('app.common.event') %></th>
+        <th><%= t('app.common.menu_start_date') %></th>
+        <th><%= t('app.common.menu_end_date') %></th>
+        <th><%=t '.actions', :default => t("helpers.actions") %></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
-
+    </thead>
+    <tbody>
+      <% @live_events.each do |live_event| %>
+        <tr>
+          <td><%= l live_event.event.event_date %></td>
+          <td><%= live_event.event.name %></td>
+          <td><%= l live_event.menu_start_date if live_event.menu_start_date %></td>
+          <td><%= l live_event.menu_end_date if live_event.menu_end_date %></td>
+          <td>
+            <%= link_to t('app.buttons.edit'),
+                        edit_live_event_path(live_event), :class => 'btn btn-mini' %>
+            <%= link_to t('app.buttons.delete'),
+                        live_event_path(live_event),
+                        :method => :delete,
+                        :confirm => t('app.msgs.delete_confirm'),
+                        :class => 'btn btn-mini btn-danger' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 <div class="form-actions">
 <%= link_to t('app.buttons.new_live_events'),
             new_live_event_path,

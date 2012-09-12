@@ -6,6 +6,7 @@ ka:
         event_id: Event
         precincts_completed: "Precincts Completed (#)"
         precincts_total: "Total Precincts (#)"
+        precincts_percentage: "Precincts Completed (%)"
         timestamp: Time Event Data Reported
         show_to_public: Make Public?
   models:
@@ -110,6 +111,7 @@ ka:
       new_news: New News
       new_data_archives: New Data Archive
       new_live_events: New Live Events
+      new_live_datasets: Upload Live Event Data
       upload_csv: Process CSV File
       download_xls: ჩამოტვირთეთ XLS რუქა ფაილი
       download_csv: ჩამოტვირთეთ CSV რუქა ფაილი
@@ -202,6 +204,8 @@ ka:
       page: Page
       menu_start_date: Live Menu Start Date
       menu_end_date: Live Menu End Date
+      live_event: Live Event
+      live_data_set: Live Dataset
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -311,7 +315,7 @@ ka:
       cache_summary_data: Summary Data Cache
       live_events_header: Live Events
       live_events: Schedule Live Events
-      load_data_live_events: Load Live Event Data
+      load_data_live_datasets: Manage Live Datasets
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
       footnote: "შენიშვნა: %{note}"
@@ -540,11 +544,21 @@ ka:
       title: Editing Live Event
     index:
       title: Live Events
-      no_news: I am sorry, but at this time there are no live events scheduled.
+      no_data: I am sorry, but at this time there are no live events scheduled.
     new:
       title: New Live Event
     show:
       title: Live Event Details
+  live_data_sets:
+    edit:
+      title: Editing Live Dataset
+    index:
+      title: Live Datasets
+      no_data: I am sorry, but at this time there are no live datasets on file.
+    new:
+      title: New Live Dataset
+    show:
+      title: Live Dataset Details
     load_data:
       title: Load Live Event Data
       no_live_events: Data cannot be loaded until an event is marked as being live.

@@ -1,53 +1,6 @@
 class LiveEventsController < ApplicationController
   before_filter :authenticate_user!
 
-  def load_data
-    @live_events = Event.live_events("desc")
-    @live_data_set = LiveDataSet.new
-    gon.load_data_live_event = true
-    
-		if request.post?
-			if params[:file].present?
-				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
-          if params[:event_id] && !params[:event_id].empty? && 
-              params[:precincts_completed] && !params[:precincts_completed].empty? &&
-              params[:precincts_total] && !params[:precincts_total].empty?  &&
-              params[:timestamp] && !params[:timestamp].empty? 
-
-  			    start = Time.now
-  			    
-				    msg = LiveDatum.build_from_csv(params[:event_id],
-                    params[:precincts_completed],
-                    params[:precincts_total],
-                    params[:timestamp],
-      				      params[:file])
-  			    
-  		      if msg.nil? || msg.empty?
-  		        # no errors, success!
-  						msg = I18n.t('app.msgs.upload.success_live_event', :file_name => params[:file].original_filename)
-  						flash[:success] = msg
-  						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
-  				    redirect_to load_data_live_events_path #GET
-  		      else
-  		        # errors
-  						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
-  				    redirect_to load_data_live_events_path #GET
-  		      end
-  				else
-  					flash[:error] = I18n.t('app.msgs.missing_parameters')
-  		      redirect_to load_data_live_events_path #GET
-  				end
-				else
-					flash[:error] = I18n.t('app.msgs.upload.wrong_format', :file_name => params[:file].original_filename)
-		      redirect_to load_data_live_events_path #GET
-				end
-			else
-				flash[:error] = I18n.t('app.msgs.upload.no_file')
-	      redirect_to load_data_live_events_path #GET
-			end
-    end
-  end
-
   # GET /live_events
   # GET /live_events.json
   def index
@@ -98,7 +51,9 @@ class LiveEventsController < ApplicationController
 
     respond_to do |format|
       if @live_event.save
-        format.html { redirect_to @live_event, notice: 'Live event was successfully created.' }
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.live_event'))
+				send_status_update(msg)
+        format.html { redirect_to live_event_path, notice: msg }
         format.json { render json: @live_event, status: :created, location: @live_event }
       else
         gon.edit_live_event = true
@@ -117,7 +72,9 @@ class LiveEventsController < ApplicationController
 
     respond_to do |format|
       if @live_event.update_attributes(params[:live_event])
-        format.html { redirect_to @live_event, notice: 'Live event was successfully updated.' }
+				msg = I18n.t('app.msgs.success_upated', :obj => I18n.t('app.common.live_event'))
+				send_status_update(msg)
+        format.html { redirect_to live_event_path, notice: msg }
         format.json { head :ok }
       else
         gon.edit_live_event = true
@@ -135,6 +92,8 @@ class LiveEventsController < ApplicationController
     @live_event = LiveEvent.find(params[:id])
     @live_event.destroy
 
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.live_event'))
+		send_status_update(msg)
     respond_to do |format|
       format.html { redirect_to live_events_url }
       format.json { head :ok }

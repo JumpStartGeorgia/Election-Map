@@ -6,7 +6,7 @@
 
 <% else %>
 
-  <%= form_tag load_data_live_events_path, :multipart => true do %>
+  <%= form_tag load_data_live_datasets_path, :multipart => true do %>
   	<div>
   		<p>
   			<%= t('activerecord.attributes.live_data_sets.event_id') %>
@@ -14,15 +14,15 @@
   		</p>
   		<p>
   			<%= t('activerecord.attributes.live_data_sets.precincts_completed') %>
-        <%= text_field_tag "precincts_completed", nil, :size => 20  %>
+        <%= text_field_tag "precincts_completed", params[:precincts_completed], :size => 20  %>
   		</p>
   		<p>
   			<%= t('activerecord.attributes.live_data_sets.precincts_total') %>
-        <%= text_field_tag "precincts_total", nil, :size => 20  %>
+        <%= text_field_tag "precincts_total", params[:precincts_total], :size => 20  %>
   		</p>
   		<p>
   			<%= t('activerecord.attributes.live_data_sets.timestamp') %>
-        <%= text_field_tag "timestamp", nil, :size => 20  %>
+        <%= text_field_tag "timestamp", params[:timestamp], :size => 20  %>
   		</p>
   		<p>
   			<%= t('app.common.file_upload') %>
@@ -36,6 +36,8 @@
 
 <% end %>
 <div class="form-actions">
+  <%= link_to t('app.buttons.list'),
+              live_data_sets_path, :class => 'btn'  %>
 	<%= link_to t('app.buttons.admin'), admin_path,
   :class => 'btn' %>
 </div>

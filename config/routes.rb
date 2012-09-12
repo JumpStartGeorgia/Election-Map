@@ -46,8 +46,9 @@ ElectionMap::Application.routes.draw do
 	  resources :event_custom_views
 	  resources :event_indicator_relationships
 	  resources :event_types
-    match '/live_events/load_data', :to => 'live_events#load_data', :as => 'load_data_live_events', :via => :get
-    match '/live_events/load_data', :to => 'live_events#load_data', :as => 'load_data_live_events', :via => :post
+    match '/live_data_sets/load_data', :to => 'live_data_sets#load_data', :as => 'load_data_live_datasets', :via => :get
+    match '/live_data_sets/load_data', :to => 'live_data_sets#load_data', :as => 'load_data_live_datasets', :via => :post
+    resources :live_data_sets
     resources :live_events
     resources :news
 	  resources :pages

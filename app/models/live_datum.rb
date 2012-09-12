@@ -423,7 +423,8 @@ class LiveDatum < ActiveRecord::Base
 					event = Event.find_by_name(row[idx_event].strip)
 
           # if the event is not the same as the event passed into this method, stop
-          if event.nil? || dataset.event_id != event.id
+logger.debug "==========--------- event.nil? = #{event.nil?}; dataset.event_id = #{dataset.event_id}; event.id = #{event.id}"
+          if event.nil? || dataset.event_id.to_s != event.id.to_s
     logger.debug "++++spreadsheet event does not match event selected on form"
       		  msg = I18n.t('models.live_dataset.msgs.events_not_match', :row_num => n)
   		      raise ActiveRecord::Rollback
