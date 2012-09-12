@@ -24,6 +24,13 @@ class Event < ActiveRecord::Base
 		.order("live_events.menu_start_date #{order}, event_date, event_translations.name")
 	end
 
+	# get all events that have live accounts
+	def self.live_datasets(order = "asc")
+		with_translations(I18n.locale)
+		.joins(:live_datasets)
+		.order("live_datasets.timestamp #{order}, event_translations.name")
+	end
+
   def self.get_events_by_type(event_type_id)
     if event_type_id.nil?
       return nil

@@ -421,6 +421,15 @@ class LiveDatum < ActiveRecord::Base
           startPhase = Time.now
 					# get the event id
 					event = Event.find_by_name(row[idx_event].strip)
+
+          # if the event is not the same as the event passed into this method, stop
+          if event.nil? || dataset.event_id != event.id
+    logger.debug "++++spreadsheet event does not match event selected on form"
+      		  msg = I18n.t('models.live_dataset.msgs.events_not_match', :row_num => n)
+  		      raise ActiveRecord::Rollback
+            return msg
+          end
+
 					# get the shape type id
 					shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
         	puts "**** time to get event and shape type: #{Time.now-startPhase} seconds"

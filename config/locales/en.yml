@@ -17,6 +17,7 @@ en:
         dataset_not_save: The dataset record could not be created for this file.
         missing_params: Not all parameters were provided to save the record.
         failed_set_event_flag: The Has Live Data flag could not be sent for the event.
+        events_not_match: Row %{row_num} - The Live Event selected in the web form does not match the Event in the spreadshseet.
     datum:
       header:
         event: Election
