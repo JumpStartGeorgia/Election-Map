@@ -409,3 +409,21 @@ span#hidden_span_width{
 {
     color: #B94A48;
 }
+
+/* live event menu in layout */
+#live_event_menu  {
+  font-size: 25px;
+  margin-left: 3em;
+  background-color: #3692d1;
+  border: solid 2px #fff;
+  line-height: 25px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+#live_event_menu ul.dropdown-menu  {
+  margin-top: 1em;
+}
+#live_event_menu ul.dropdown-menu a  {
+  color: #000 !important;
+  font-size: 20px;
+}

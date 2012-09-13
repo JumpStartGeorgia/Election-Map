@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
    before_filter :is_browser_supported?
    before_filter :set_event_types
    before_filter :set_event_menu
+   before_filter :set_live_event_menu
    before_filter :set_shape_types
    before_filter :set_default_values
    before_filter :set_gon_data
@@ -87,7 +88,6 @@ logger.debug "---********----- event type cache"
 					type["events"] = []
 
 					event_type.events.get_events_by_type(event_type.id).each do |event|
-logger.debug "@@@@@@@@@@@ event_type #{event_type.id} event #{event.id}"					  
 						if !event.shape_id.nil?
 							e = Hash.new
 							type["events"] << e
@@ -109,6 +109,35 @@ logger.debug "@@@@@@@@@@@ event_type #{event_type.id} event #{event.id}"
 			@event_menu = JSON.parse(json)
 		else
 			@event_menu = json
+		end
+  end
+
+	# format:
+	# [ { id, url, description } ]
+  def set_live_event_menu
+		json = Rails.cache.fetch("live_event_menu_json_#{I18n.locale}") {
+			json = []
+
+			Event.active_live_events.each do |event|
+				if !event.shape_id.nil?
+					e = Hash.new
+					json << e
+					e["id"] = event.id
+					e["url"] = view_context.link_to(event.name, indicator_map_path(
+						:event_id => event.id, :event_type_id => event.event_type_id,
+						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
+						:only_path => false))
+					e["description"] = event.description
+				end
+			end
+			json
+		}
+
+		# if returned from cache, the obj will be string and need to convert back to array/hashes
+		if json.class == String
+			@live_event_menu = JSON.parse(json)
+		else
+			@live_event_menu = json
 		end
   end
 

@@ -26,6 +26,7 @@ class LiveDataSet < ActiveRecord::Base
     end
     # clear the menu cache
     I18n.available_locales.each do |locale|
+      Rails.cache.delete("live_event_menu_json_#{locale}")
       Rails.cache.delete("event_menu_json_#{locale}")
       Rails.cache.delete("events_by_type_#{self.event.event_type_id}_#{locale}")
     end

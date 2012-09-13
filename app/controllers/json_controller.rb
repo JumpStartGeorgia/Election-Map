@@ -191,6 +191,14 @@ class JsonController < ApplicationController
     end
   end
 
+  # GET /:locale/json/live_event_menu
+  def live_event_menu
+		# the menu is create in the application controller
+    respond_to do |format|
+      format.json { render json: @live_event_menu.to_json }
+    end
+  end
+
 
 
 protected
