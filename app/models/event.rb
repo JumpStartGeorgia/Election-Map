@@ -38,7 +38,7 @@ class Event < ActiveRecord::Base
     else
 			Rails.cache.fetch("events_by_type_#{event_type_id}_#{I18n.locale}") {
 				x = Event.with_translations(I18n.locale)
-				.where(:event_type_id => event_type_id)
+				.where("event_type_id = ? and (has_official_data = 1 or has_live_data = 1)", event_type_id)
 				.order("event_date DESC, event_translations.name ASC")
 				# do this to force a call to the db to get the data
 				# so the data will actually be cached
