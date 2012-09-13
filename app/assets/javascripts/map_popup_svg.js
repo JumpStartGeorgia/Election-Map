@@ -309,21 +309,65 @@ function get_text_width(string, font_size){
 	return $("span#hidden_span_width").width();
 }
 
+
+function PopupIndicatorCheckPosition(mouse_location)
+{
+	var popup_left = 0;
+  var map = $("#map"),
+      popup = $(".olPopup:first"),
+      indicators = $("#indicator_menu_scale"),
+      indicators_toggle = indicators.children('.toggle:first');
+
+	// if the mouse position was not provided, use the popup left as default
+	if (typeof(mouse_location) === "undefined") {
+		popup_left = popup.css('left');
+	} else {
+		popup_left = mouse_location.x;
+	}
+
+  if (parseInt(popup_left) + parseInt(popup.width()) +
+      parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators_toggle.css('display') === 'block')
+  {
+     the_indicators.hide();
+  }
+  else if (parseInt(popup_left) + parseInt(popup.width()) +
+      parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators_toggle.css('display') === 'none')
+  {
+     the_indicators.show();
+  }
+}
+
+function updatePopUpPosition(e) {
+if (typeof(popup) !== "undefined" && popup.visible()) {
+	var mapPntPx = map.events.getMousePosition(e);
+	// keep the bottom of the tip just a few pixels above the mouse
+	if (popup.relativePosition.indexOf('t') > -1 ){
+	  mapPntPx = mapPntPx.add(0, -5);
+	}	else {
+	  mapPntPx = mapPntPx.add(0, 20);
+	}
+
+  popup.lonlat = map.getLonLatFromViewPortPx(mapPntPx);
+  popup.updatePosition();
+  PopupIndicatorCheckPosition(mapPntPx);
+}
+}
+
 function unhighlight_shape(feature)
 {
   feature.style = f_style_backup;
   feature.layer.redraw();
 }
 
-
 function mapFreeze(feature)
 {
   map.controls[1].deactivate();
   makeFeaturePopup(feature, true, true, function(){
     map.controls[1].activate();
+		map.events.register('mousemove', map, updatePopUpPosition);
     unhighlight_shape(feature);
   });
-
+	map.events.un({'mousemove': updatePopUpPosition});
 }
 
 

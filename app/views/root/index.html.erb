@@ -20,9 +20,9 @@
 		         <li class="lev-ind">
 					   <% if type.has_children? %>
 					     <% if @summary_view_type_name == params[:view_type] %>
-				         <%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+				         <%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s, :highlight_shape => nil})), :title => type.name_singular %>
                <% else %>
-				         <%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+				         <%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s, :highlight_shape => nil})), :title => type.name_singular %>
                <% end %>
 					   <% else %>
 						   <%= type.name_singular %>
@@ -165,9 +165,6 @@
 	<%=	hidden_field_tag "hidden_form_datetime" %>
 	<%=	hidden_field_tag "hidden_form_opacity" %>
 <% end %>
-<span id="hidden_span_width"></span>			
+<span id="hidden_span_width"></span>
 
 <div id="popup_svg" style="display: none"></div>		
-
-
-

@@ -703,9 +703,9 @@ if (gon.openlayers){
    }
 
 	// Create the popup for the feature
+	var popup;
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
-	var popup;
 
 
 		if (typeof(stright) === "undefined")
@@ -744,42 +744,18 @@ if (gon.openlayers){
 		true);
       popup.autoSize = true;
 
+			// always have the popup above the mouse
       popup.calculateRelativePosition = function(){
          return "tr";
       };
+
 	   map.addPopup(popup);
 
-/*
-	   function PopupIndicatorCheckPosition()
-	   {
-	      var map = $("#map"),
-	          popup = $(".olPopup:first"),
-	          indicators = $("#indicator_menu_scale"),
-	          indicators_toggle = indicators.children('.toggle:first');
-	      if (parseInt(popup.css('left')) + parseInt(popup.width()) +
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators_toggle.css('display') === 'block')
-	      {
-	         the_indicators.hide();
-	      }
-	      else if (parseInt(popup.css('left')) + parseInt(popup.width()) +
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators_toggle.css('display') === 'none')
-	      {
-	         the_indicators.show();
-	      }
-	   }
 
 	   PopupIndicatorCheckPosition();
-*/
+
 		// when mouse moves, also move the popup
-		map.events.register('mousemove', map, function (e) {
-			if (typeof(popup) !== "undefined") {
-				var mapPntPx = map.events.getMousePosition(e);
-				// keep the bottom of the tip just a few pixels above the mouse
-			  mapPntPx = mapPntPx.add(0, -5);
-			  popup.lonlat = map.getLonLatFromViewPortPx(mapPntPx);
-			  popup.updatePosition();
-			}
-		});
+		map.events.register('mousemove', map, updatePopUpPosition);
 
     // close button
 		if (close_button)
