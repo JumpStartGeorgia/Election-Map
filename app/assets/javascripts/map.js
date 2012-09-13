@@ -25,6 +25,7 @@
 
 //= require map.export
 
+//= require ajax_map
 
 // set focus to first text box on page
 $(document).ready(function(){
@@ -268,12 +269,15 @@ if (gon.openlayers){
 		    'externalProjection': WGS84_google_mercator
 			})
 		});
+		
 
 		vector_child.protocol = prot2;
 		vector_child.strategies = strat;
 
 		// create event to load the features and set the bound
 		// after protocol has read in json
+		window.ajax_prot = prot2;
+		window.ajax_layer = vector_child;
 		prot2.read({
 				callback: load_vector_child
 		});
@@ -400,29 +404,33 @@ if (gon.openlayers){
 		return features;
 	}
 
+   function drawFeatures(data, features)
+   {
+      // save the data to a global variable for later user
+		json_data = data;
+		// add the features to the vector layer
+		vector_child.addFeatures(bindDataToShapes(features));
+		// if this is summary view, populate gon.indicator_scales and colors with names from json file
+		populate_summary_data();
+		// now that the child vector is loaded, lets show the legend
+		draw_legend();
+		// now load the values for the hidden form
+		load_hidden_form();
+
+		// indicate that the child layer has loaded
+		// - do not wait for the datatable to be loaded
+		$("div#map").trigger("child_layer_loaded");
+
+		// load the table of data below the map
+      load_data_table();
+   }
 
 	// load the features for the children into the vector_child layer
 	function load_vector_child(resp){
 		if (resp.success()){
 			// get the event data for these shapes
 			$.get(gon.data_path, function(data) {
-				// save the data to a global variable for later user
-				json_data = data;
-				// add the features to the vector layer
-				vector_child.addFeatures(bindDataToShapes(resp.features));
-				// if this is summary view, populate gon.indicator_scales and colors with names from json file
-				populate_summary_data();
-				// now that the child vector is loaded, lets show the legend
-				draw_legend();
-				// now load the values for the hidden form
-				load_hidden_form();
-
-				// indicate that the child layer has loaded
-				// - do not wait for the datatable to be loaded
-				$("div#map").trigger("child_layer_loaded");
-
-				// load the table of data below the map
-		    load_data_table();
+				drawFeatures(data, resp.features);
 			});
 		} else {
 		  console.log('vector_child - no features found');
