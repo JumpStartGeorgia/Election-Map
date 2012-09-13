@@ -87,6 +87,7 @@ logger.debug "---********----- event type cache"
 					type["events"] = []
 
 					event_type.events.get_events_by_type(event_type.id).each do |event|
+logger.debug "@@@@@@@@@@@ event_type #{event_type.id} event #{event.id}"					  
 						if !event.shape_id.nil?
 							e = Hash.new
 							type["events"] << e

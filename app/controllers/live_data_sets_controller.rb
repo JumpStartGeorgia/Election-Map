@@ -113,7 +113,7 @@ class LiveDataSetsController < ApplicationController
 
     respond_to do |format|
       if @live_data_set.update_attributes(params[:live_data_set])
-				msg = I18n.t('app.msgs.success_upated', :obj => I18n.t('app.common.live_data_set'))
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.live_data_set'))
 				send_status_update(msg)
         format.html { redirect_to live_data_sets_path, notice: msg }
         format.json { head :ok }

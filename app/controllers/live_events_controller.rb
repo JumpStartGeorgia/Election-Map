@@ -72,7 +72,7 @@ class LiveEventsController < ApplicationController
 
     respond_to do |format|
       if @live_event.update_attributes(params[:live_event])
-				msg = I18n.t('app.msgs.success_upated', :obj => I18n.t('app.common.live_event'))
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.live_event'))
 				send_status_update(msg)
         format.html { redirect_to live_events_path, notice: msg }
         format.json { head :ok }

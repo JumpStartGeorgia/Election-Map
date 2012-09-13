@@ -511,7 +511,7 @@ logger.debug "==========--------- event.nil? = #{event.nil?}; dataset.event_id =
 			# update common names
 			ActiveRecord::Base.connection.execute("update live_data as dt, shape_names as sn set dt.ka_common_name = sn.ka where dt.ka_common_name = sn.en")
       puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
-
+=begin this should only be done if dataset is marked as public
   logger.debug "++++updating event.has_live_data to true"
       dataset.event.has_live_data = true
       if !dataset.event.save
@@ -520,7 +520,7 @@ logger.debug "==========--------- event.nil? = #{event.nil?}; dataset.event_id =
 		    raise ActiveRecord::Rollback
 		    return msg
       end
-
+=end
 		end
     logger.debug "++++procssed #{n} rows in CSV file"
   	puts "****************** time to build_from_csv: #{Time.now-start} seconds"
