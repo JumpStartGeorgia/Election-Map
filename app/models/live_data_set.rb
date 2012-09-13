@@ -8,6 +8,10 @@ class LiveDataSet < ActiveRecord::Base
   
   after_save :update_live_data_flag
   
+  def precincts_percentage
+    ActionController::Base.helpers.number_to_percentage(self.precincts_completed.to_f/self.precincts_total*100) if self.precincts_completed && self.precincts_total
+  end
+  
   # - if show to pulic is true, turn on the has_live_data for this event
   # - if show public is false, and no other datasets for this event are true, turn off flag
   def update_live_data_flag
@@ -30,6 +34,12 @@ class LiveDataSet < ActiveRecord::Base
       Rails.cache.delete("event_menu_json_#{locale}")
       Rails.cache.delete("events_by_type_#{self.event.event_type_id}_#{locale}")
     end
+  end
+  
+  def self.current_live_dataset(event_id)    
+    where(:event_id => event_id, :show_to_public => true)
+    .order("timestamp desc")
+    .limit(1)
   end
   
 end

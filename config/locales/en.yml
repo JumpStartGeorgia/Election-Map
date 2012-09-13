@@ -32,6 +32,7 @@ en:
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
         already_exists: Row %{row_num} already exists in the database.
+        failed_set_event_flag: Row %{row_num} - The Has Official Data flag could not be sent for the event.
     indicator:
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event, shape type, indicator type, and/or indicator name was not found in the spreadsheet.
@@ -205,6 +206,7 @@ en:
       menu_start_date: Live Menu Start Date
       menu_end_date: Live Menu End Date
       live_event: Live Event
+      live_events: Live Events
       live_data_set: Live Dataset
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
@@ -217,9 +219,6 @@ en:
       signed_in: Signed in as
       admin: Admin
       sign_out: Sign Out
-      sign_in: Sign In
-      or: or
-      sign_up: Sign Up
       about: About Project
       data_source: Data Source
       contact: Contact Us
@@ -229,6 +228,7 @@ en:
       header: Elections
       news: News
       data_archives: Data Archives
+      live_event_status: " - %{completed} of %{total} precincts (%{percentage}) as of %{timestamp}"
     ajax_data_table:
       links: Click on a data point to view it on the map.
       sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.

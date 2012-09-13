@@ -126,6 +126,7 @@ logger.debug "---********----- event type cache"
 					e["url"] = view_context.link_to(event.name, indicator_map_path(
 						:event_id => event.id, :event_type_id => event.event_type_id,
 						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
+						:data_type => Datum::DATA_TYPE[:live],
 						:only_path => false))
 					e["description"] = event.description
 				end

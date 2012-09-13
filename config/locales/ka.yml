@@ -32,6 +32,7 @@ ka:
         indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
         already_exists: Row %{row_num} already exists in the database.
+        failed_set_event_flag: Row %{row_num} - The Has Official Data flag could not be sent for the event.
     indicator:
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event, shape type, indicator type, and/or indicator name was not found in the spreadsheet.
@@ -205,6 +206,7 @@ ka:
       menu_start_date: Live Menu Start Date
       menu_end_date: Live Menu End Date
       live_event: Live Event
+      live_events: Live Events
       live_data_set: Live Dataset
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
@@ -226,6 +228,7 @@ ka:
       header: არჩევნები
       news: სიახლეები
       data_archives: მონაცემთა არქივი
+      live_event_status: " - %{completed} of %{total} precincts (%{percentage}) as of %{timestamp}"
     ajax_data_table:
       links: რუკის სანახავად დააჭირეთ მონაცემების ღილაკს.
       sorting: "ერთდროულად რამდენიმე სვეტის სორტირებისთვის გეჭიროთ ღილაკი \"SHIFT\" და აირჩიეთ შესაბამისი სვეტების სათაურები"

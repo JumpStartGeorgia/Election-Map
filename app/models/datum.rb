@@ -453,6 +453,15 @@ class Datum < ActiveRecord::Base
 				              startPhase = Time.now
 											if datum.valid?
 												datum.save
+
+                    logger.debug "++++updating event.has_live_data to true"
+                        event.has_official_data = true
+                        if !event.save
+                    logger.debug "++++ - error setting event.has_live_data "
+                  		    msg = I18n.t('models.datum.msgs.failed_set_event_flag', :row_num => n)
+                  		    raise ActiveRecord::Rollback
+                  		    return msg
+                        end
 											else
 												# an error occurred, stop
 										    msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)

@@ -97,7 +97,15 @@
               </div>
               <div class="navmenu-select">
                  <p>
-                    <%= @event_name %>
+                   <% if params[:controller] == "root" && params[:action] == "index" %>
+                      <%= @event_name %>
+                      <% if params[:data_type] == Datum::DATA_TYPE[:live] %>
+                        <%= t('.live_event_status', :completed => @live_event_precincts_completed,
+                                :total => @live_event_precincts_total,
+                                :percentage => @live_event_precincts_percentage,
+                                :timestamp => l(@live_event_timestamp, :format => :long))%>
+                      <% end %>
+                    <% end %>
                  </p>
               </div>
               <% if user_signed_in? %>

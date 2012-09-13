@@ -21,7 +21,7 @@
         <tr>
           <td><%= live_data_set.event.name %></td>
           <td><%= l live_data_set.timestamp, :format => :long %></td>
-          <td><%= number_to_percentage(live_data_set.precincts_completed.to_f/live_data_set.precincts_total*100) %></td>
+          <td><%= live_data_set.precincts_percentage %></td>
           <td><%= live_data_set.precincts_completed %></td>
           <td><%= live_data_set.precincts_total %></td>
           <td><%= live_data_set.show_to_public %></td>
