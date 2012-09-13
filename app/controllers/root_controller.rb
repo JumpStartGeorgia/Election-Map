@@ -12,13 +12,17 @@ class RootController < ApplicationController
 		# which will cause user to go back to home page
 		flag_redirect = false
 
+		# get the data type
+logger.debug "////////////// getting data type"
+		params[:data_type] = Datum::DATA_TYPE[:official] if params[:data_type].nil? || Datum::DATA_TYPE.values.index(params[:data_type]) == nil
+
 		# get the event type id
 logger.debug "////////////// getting event type id"
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
 
 		# get the current event
 logger.debug "////////////// getting current event"
-		event = get_current_event(params[:event_type_id], params[:event_id])
+		event = get_current_event(params[:event_type_id], params[:data_type], params[:event_id])
 
 		if event.nil? || event.shape_id.nil?
 			# event could not be found or the selected event does not have a shape assigned to it
@@ -402,20 +406,23 @@ logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
 private
 
 	# get the the current event
-	def get_current_event(event_type_id, event_id)
-	  if event_type_id
+	def get_current_event(event_type_id, data_type, event_id=nil)
+	  if event_type_id && data_type
 	    event_type = @event_types.select{|x| x.id.to_s == event_type_id.to_s}
 	    if event_type && !event_type.empty? && !event_type.first.events.empty?
 	      if event_id
           # find the event that matches the passed in id
 	        event = event_type.first.events.select{|x| x.id.to_s == event_id.to_s}
 	        if event && !event.empty?
-	          return event.first
+	          # check if have correct data type
+	          return event.first if (event.has_official_data && data_type == Datum::DATA_TYPE[:official]) || 
+	                                (event.has_live_data && data_type == Datum::DATA_TYPE[:live])
           end
         else
-          # no id provided, so get first one with shape
+          # no id provided, so get first one with correct data type
           event_type.first.events.each do |event|
-            if event.shape_id
+            if event.shape_id && (event.has_official_data && data_type == Datum::DATA_TYPE[:official]) || 
+	                                (event.has_live_data && data_type == Datum::DATA_TYPE[:live])
             	# - save event_id
               params[:event_id] = event.id
               return event

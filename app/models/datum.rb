@@ -11,6 +11,8 @@ class Datum < ActiveRecord::Base
   attr_accessor :locale
 
   validates :indicator_id, :presence => true
+  
+  DATA_TYPE = {:official => "official", :live => "live"}
 
 	# instead of returning BigDecimal, convert to string
   # this will strip away any excess zeros so 234.0000 becomes 234
