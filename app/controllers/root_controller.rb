@@ -248,8 +248,8 @@ logger.debug "//////////////////////////////////////////////////////// done with
     summary_view_type_name = params[:summary_view_type_name]
     params[:custom_view] = params[:custom_view].nil? ? false : params[:custom_view]
 
-#    get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id], nil, true, true)
-    get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id])
+    #get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id])
+    get_data = LiveDatum.get_table_data(params[:event_id], 9,child_shape_type_id, params[:shape_id])
 		if !get_data.nil? && !get_data.empty? && get_data[:data] && !get_data[:data].empty?
 		  dt = OpenStruct.new(
 		    'cols_p'             => 7, #data columns count per turn
