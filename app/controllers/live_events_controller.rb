@@ -28,7 +28,7 @@ class LiveEventsController < ApplicationController
   def new
     @live_event = LiveEvent.new
     gon.edit_live_event = true
-    
+
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @live_event }
@@ -41,7 +41,7 @@ class LiveEventsController < ApplicationController
     gon.edit_live_event = true
 		gon.menu_start_date = @live_event.menu_start_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_start_date
 		gon.menu_end_date = @live_event.menu_end_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_end_date
-    
+
   end
 
   # POST /live_events
@@ -53,7 +53,7 @@ class LiveEventsController < ApplicationController
       if @live_event.save
 				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.live_event'))
 				send_status_update(msg)
-        format.html { redirect_to live_event_path, notice: msg }
+        format.html { redirect_to live_events_path, notice: msg }
         format.json { render json: @live_event, status: :created, location: @live_event }
       else
         gon.edit_live_event = true
@@ -74,7 +74,7 @@ class LiveEventsController < ApplicationController
       if @live_event.update_attributes(params[:live_event])
 				msg = I18n.t('app.msgs.success_upated', :obj => I18n.t('app.common.live_event'))
 				send_status_update(msg)
-        format.html { redirect_to live_event_path, notice: msg }
+        format.html { redirect_to live_events_path, notice: msg }
         format.json { head :ok }
       else
         gon.edit_live_event = true

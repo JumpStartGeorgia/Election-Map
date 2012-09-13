@@ -1,6 +1,6 @@
 <% title t('.title') %>
 
-<% if !@live_election || @live_elections.empty? %>
+<% if !@live_events || @live_events.empty? %>
   <p><%= t('.no_data')%></p>
 <% else %>
   <table class="table table-striped">

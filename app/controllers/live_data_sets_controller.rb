@@ -5,23 +5,23 @@ class LiveDataSetsController < ApplicationController
     @live_events = Event.live_events("desc")
     @live_data_set = LiveDataSet.new
     gon.load_data_live_dataset = true
-    
+
 		if request.post?
 			if params[:file].present?
 				if params[:file].content_type == "text/csv" || params[:file].content_type == "text/plain"
-          if params[:event_id] && !params[:event_id].empty? && 
+          if params[:event_id] && !params[:event_id].empty? &&
               params[:precincts_completed] && !params[:precincts_completed].empty? &&
               params[:precincts_total] && !params[:precincts_total].empty?  &&
-              params[:timestamp] && !params[:timestamp].empty? 
+              params[:timestamp] && !params[:timestamp].empty?
 
   			    start = Time.now
-  			    
+
 				    msg = LiveDatum.build_from_csv(params[:event_id],
                     params[:precincts_completed],
                     params[:precincts_total],
                     params[:timestamp],
       				      params[:file])
-  			    
+
   		      if msg.nil? || msg.empty?
   		        # no errors, success!
   						msg = I18n.t('app.msgs.upload.success_live_event', :file_name => params[:file].original_filename)
@@ -42,7 +42,7 @@ class LiveDataSetsController < ApplicationController
 			end
     end
   end
-  
+
   # GET /live_data_sets
   # GET /live_data_sets.json
   def index
@@ -95,7 +95,7 @@ class LiveDataSetsController < ApplicationController
       if @live_data_set.save
 				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.live_data_set'))
 				send_status_update(msg)
-        format.html { redirect_to live_data_set_path, notice: msg }
+        format.html { redirect_to live_data_sets_path, notice: msg }
         format.json { render json: @live_data_set, status: :created, location: @live_data_set }
       else
         gon.edit_live_dataset = true
@@ -115,7 +115,7 @@ class LiveDataSetsController < ApplicationController
       if @live_data_set.update_attributes(params[:live_data_set])
 				msg = I18n.t('app.msgs.success_upated', :obj => I18n.t('app.common.live_data_set'))
 				send_status_update(msg)
-        format.html { redirect_to live_data_set_path, notice: msg }
+        format.html { redirect_to live_data_sets_path, notice: msg }
         format.json { head :ok }
       else
         gon.edit_live_dataset = true
