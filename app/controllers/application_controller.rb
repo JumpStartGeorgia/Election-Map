@@ -44,7 +44,9 @@ logger.debug "////////////////////////// BROWSER = #{user_agent}"
 		if SUPPORTED_BROWSERS.any? { |browser| user_agent < browser }
 			# browser not supported
 logger.debug "////////////////////////// BROWSER NOT SUPPORTED"
-			render "layouts/unsupported_browser", :layout => false
+#			render "layouts/unsupported_browser", :layout => false
+			@error_type = "unsupported_browser"
+			render "layouts/error", :layout => false
 		end
 	end
 
@@ -182,14 +184,18 @@ logger.debug "---********----- shape type cache"
 		ExceptionNotifier::Notifier
 		  .exception_notification(request.env, exception)
 		  .deliver
-		render :file => "#{Rails.root}/public/404.html", :status => 404
+#		render :file => "#{Rails.root}/public/404.html", :status => 404
+		@error_type = "404"
+		render "layouts/error", :layout => false
 	end
 
 	def render_error(exception)
 		ExceptionNotifier::Notifier
 		  .exception_notification(request.env, exception)
 		  .deliver
-		render :file => "#{Rails.root}/public/500.html", :status => 500
+		@error_type = "500"
+		render "layouts/error", :layout => false
+#		render :file => "#{Rails.root}/public/500.html", :status => 500
 	end
 
 end

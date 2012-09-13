@@ -764,8 +764,9 @@ if (gon.openlayers){
 		  popup_close.css({
 		    "width": "30px",
 		    "height": "30px",
-		    "background-image": "url('/assets/fancybox.png')",
+		    "background-image": "url('/assets/popup-close.png')",
 		    "background-position": "right top",
+				"background-repeat": "no-repeat",
 		    "cursor": "pointer"
 		  }).click(close_button_func);
 		}

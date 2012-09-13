@@ -43,23 +43,84 @@ body {
   height: 100%;
 }
 
-#wrapper {
+#wrapper, #wrapper_error {
 	min-height: 100%;
 	height: auto !important;
 	height: 100%;
 	margin: 0 auto -80px;
 }
 
-#wrapper > .container-fluid {
+#wrapper_error{
+  background-image: url('/assets/404-map.png');
+  background-position: center;
+	background-repeat: no-repeat;
+}
+
+#wrapper > .container-fluid, #wrapper_error > .container-fluid {
 	padding-top: 150px;
+}
+
+a#header_collapsed_menu {
+	padding: 0.5em 1em !important;
+	background-color: none !important;
+	margin-top: -5px;
+	margin-right: 2em;
+}
+
+a#footer_collapsed_menu {
+	padding: 0.5em 1em !important;
+	background-color: none !important;
+	margin-top: 1em;
+	margin-left: 20px;
+	display: none;
 }
 
 .push { height: 63px; } /* Just some arbitrary space to add between footer and rest of the content, when they are close */
 
 @media (max-width: 979px) {
-  #wrapper > .container-fluid {
+  #wrapper > .container-fluid, #wrapper_error > .container-fluid {
   	padding-top: inherit;
   }
+
+	.header-nav-collapse {
+		padding-left: 1em;
+	}
+
+	a#footer_collapsed_menu {
+		display: block;
+		width: 25px;
+		margin: 10px auto 0;
+	}
+
+	.footer-nav-collapse ul li.spacer {
+		display: none !important;
+	}
+
+	footer .footer-nav .nav > li > a {
+		display: block !important;
+	}
+	footer .footer-nav .nav > li > a:hover {
+		color: #fff;
+	}
+}
+
+@media (max-width: 768px) {
+	a#footer_collapsed_menu {
+		display: block;
+		width: 25px;
+		margin: 10px;
+	}
+
+	footer .footer-nav {
+		text-align: left !important;
+	}
+	.footer-nav-collapse {
+		padding-left: 1em;
+	}
+
+	.footer-nav-collapse ul li.spacer {
+		display: none !important;
+	}
 }
 
 // Navbar
@@ -273,8 +334,9 @@ footer .footer-nav ul li {
 footer .footer-nav ul li.spacer {
   display: inline;
 }
-footer .footer-nav ul li a {
+footer .footer-nav .nav > li > a {
 	padding: 0 10px;
+	display: inline;
 	color: #454545;
 }
 
@@ -437,7 +499,16 @@ footer .js-logo ul li#right img {
    font-weight: bold;
    text-transform: uppercase;
    color: #FFF;
+
+	opacity:0.7;
+	filter:alpha(opacity=70); /* For IE8 and earlier */
 }
+
+#export:hover {
+opacity:1.0;
+filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
 
 #export p {
    margin: 0;

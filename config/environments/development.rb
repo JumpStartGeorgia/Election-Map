@@ -10,7 +10,7 @@ ElectionMap::Application.configure do
   config.whiny_nils = true
 
   # Show full error reports and disable caching
-  config.consider_all_requests_local       = true
+  config.consider_all_requests_local       = false
 
 #config.cache_store = :memory_store
 
