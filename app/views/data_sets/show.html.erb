@@ -1,0 +1,23 @@
+<% title t('.title') %>
+
+  <p><strong><%= t('activerecord.attributes.data_sets.event_id') %>:</strong>
+  <%= @data_set.event.name %></p>
+  <p><strong><%= t('activerecord.attributes.data_sets.precincts_percentage') %>:</strong>
+  <%= @data_set.precincts_percentage %></p>
+  <p><strong><%= t('activerecord.attributes.data_sets.precincts_completed') %>:</strong>
+  <%= @data_set.precincts_completed %></p>
+  <p><strong><%= t('activerecord.attributes.data_sets.precincts_total') %>:</strong>
+  <%= @data_set.precincts_total %></p>
+  <p><strong><%= t('activerecord.attributes.data_sets.timestamp') %>:</strong>
+  <%= l @data_set.timestamp, :format => :long if @data_set.timestamp %></p>
+  <p><strong><%= t('activerecord.attributes.data_sets.show_to_public') %>:</strong>
+  <%= @data_set.show_to_public %></p>
+
+<div class="form-actions">
+  <%= link_to t('app.buttons.edit'),
+              edit_data_set_path(@data_set), :class => 'btn' %>
+  <%= link_to t('app.buttons.list'),
+              data_sets_path, :class => 'btn'  %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

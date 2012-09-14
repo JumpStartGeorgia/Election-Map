@@ -3,11 +3,8 @@
 <%= render 'form' %>
 
 <div class="form-actions">
-	<%= link_to t('app.buttons.show'), @live_dataset,
-  :class => 'btn' %>
-	<%= link_to t('app.buttons.list'), live_data_sets_path,
+	<%= link_to t('app.buttons.list'), data_sets_path,
   :class => 'btn' %>
 	<%= link_to t('app.buttons.admin'), admin_path,
   :class => 'btn' %>
 </div>
-

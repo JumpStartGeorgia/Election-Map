@@ -2,8 +2,9 @@
 en:
   activerecord:
     attributes:
-      live_data_sets:
+      data_sets:
         event_id: Event
+        data_type: Data Type
         precincts_completed: "Precincts Completed (#)"
         precincts_total: "Total Precincts (#)"
         precincts_percentage: "Precincts Completed (%)"
@@ -13,12 +14,12 @@ en:
     live_data:
       msgs:
         event_hint: "* - event has live data"
-    live_dataset:
+    data_set:
       msgs:
         dataset_not_save: The dataset record could not be created for this file.
         missing_params: Not all parameters were provided to save the record.
-        failed_set_event_flag: The Has Live Data flag could not be sent for the event.
-        events_not_match: Row %{row_num} - The Live Event selected in the web form does not match the Event in the spreadshseet.
+        failed_set_event_flag: The Has Official/Live Data flag could not be set for the event.
+        events_not_match: Row %{row_num} - The Event selected in the web form does not match the Event in the spreadshseet.
     datum:
       header:
         event: Election
@@ -112,7 +113,7 @@ en:
       new_news: New News
       new_data_archives: New Data Archive
       new_menu_live_events: New Menu Live Events
-      new_live_datasets: Upload Live Event Data
+      new_data_sets: Upload Event Data
       upload_csv: Process CSV File
       download_xls: Download XLS Data File
       download_csv: Download CSV Data File
@@ -126,7 +127,6 @@ en:
       upload:
         no_file: You must select a file to upload.
         success: "Your file '%{file_name}' was successfully processed!"
-        success_live_event: "Your live event data file '%{file_name}' was successfully processed!"
         error: "Errors were encountered with '%{file_name}' and no records were saved.  The problem was the following: %{msg}"
         wrong_format: "Your file '%{file_name}' must be a CSV or tab-delimited txt format."
       download:
@@ -314,7 +314,7 @@ en:
       cache_indicators: Custom Event Indicator Cache
       cache_summary_data: Summary Data Cache
       menu_live_events: Schedule Live Events Menu
-      load_data_live_datasets: Manage Live Datasets
+      load_data_data_sets: Manage Datasets
     index:
       export_link_text: Export Map
       footnote: "Note: %{note}"
@@ -544,16 +544,16 @@ en:
       title: New Live Event Menu
     show:
       title: Live Event Menu Details
-  live_data_sets:
+  data_sets:
     edit:
-      title: Editing Live Dataset
+      title: Editing Dataset
     index:
-      title: Live Datasets
-      no_data: I am sorry, but at this time there are no live datasets on file.
+      title: Datasets
+      no_data: I am sorry, but at this time there are no datasets on file.
     new:
-      title: New Live Dataset
+      title: New Dataset
     show:
-      title: Live Dataset Details
+      title: Dataset Details
     load_data:
-      title: Load Live Event Data
+      title: Load Event Data
       no_live_events: Data cannot be loaded until an event is marked as being live.

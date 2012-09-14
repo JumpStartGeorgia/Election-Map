@@ -31,10 +31,10 @@ logger.debug "////////////// getting current event"
 
   		# save live event data if live data
   		if params[:data_type] == Datum::DATA_TYPE[:live]
-				dataset = LiveDataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
+				dataset = DataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
 				# if the data set id was not passed in or the dataset for the provided id could not be found,
 				# use the current live dataset
-        dataset = LiveDataSet.current_live_dataset(event.id) if !dataset
+        dataset = DataSet.current_dataset(event.id, params[:data_type]) if !dataset
         if dataset && !dataset.empty?
   		    @live_event_data_set_id = dataset.first.id
   		    @live_event_precincts_percentage = dataset.first.precincts_percentage

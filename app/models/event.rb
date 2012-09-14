@@ -21,24 +21,24 @@ class Event < ActiveRecord::Base
 	# get all events that have live menu records
 	def self.live_events_menu(order = "asc")
 		with_translations(I18n.locale)
-		.joins(:live_events)
-		.order("live_events.menu_start_date #{order}, event_date, event_translations.name")
+		.joins(:menu_live_events)
+		.order("menu_live_events.menu_start_date #{order}, event_date, event_translations.name")
 	end
 
 	# get all events that have live accounts and are currently active
 	def self.active_live_events_menu(order = "asc")
 		with_translations(I18n.locale)
-		.joins(:live_events)
-		.where("events.has_live_data = 1 and curdate() between live_events.menu_start_date and live_events.menu_end_date")
+		.joins(:menu_live_events)
+		.where("events.has_live_data = 1 and curdate() between menu_live_events.menu_start_date and menu_live_events.menu_end_date")
 		.where(:events => {:has_live_data => true})
-		.order("live_events.menu_start_date #{order}, event_date, event_translations.name")
+		.order("menu_live_events.menu_start_date #{order}, event_date, event_translations.name")
 	end
 
-	# get all events that have live accounts
-	def self.live_datasets(order = "asc")
+	# get all events that have datasets
+	def self.data_sets(order = "asc")
 		with_translations(I18n.locale)
-		.joins(:live_datasets)
-		.order("live_datasets.timestamp #{order}, event_translations.name")
+		.joins(:data_sets)
+		.order("data_sets.timestamp #{order}, event_translations.name")
 	end
 
   def self.get_events_by_type(event_type_id)

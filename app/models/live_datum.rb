@@ -3,11 +3,12 @@ class LiveDatum < ActiveRecord::Base
 	require 'json'
 
   belongs_to :indicator
+	belongs_to :data_set
 
-  attr_accessible :indicator_id, :live_data_set_id, :value,
+  attr_accessible :indicator_id, :data_set_id, :value,
 			:en_common_id, :en_common_name, :ka_common_id, :ka_common_name
 
-  validates :indicator_id, :live_data_set_id, :presence => true
+  validates :indicator_id, :data_set_id, :presence => true
 
   attr_accessor :number_format, :shape_id, :shape_type_name, :color,
 		:indicator_name, :indicator_name_abbrv, :indicator_description,
@@ -74,8 +75,8 @@ class LiveDatum < ActiveRecord::Base
 			:indicator_name_abbrv => self[:indicator_name_abbrv]
 		}
 	end
-	
-	
+
+
 	def to_hash_data_table
 		hash = Hash.new
 		self.attributes.each do |k,v|
@@ -88,10 +89,10 @@ class LiveDatum < ActiveRecord::Base
 	## get data
 	###################################
 	# get the data value for a shape and core indicator
-	def self.get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, core_indicator_id, live_data_set_id)
+	def self.get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, core_indicator_id, data_set_id)
     start = Time.now
     x = nil
-		if !shape_id.nil? && !core_indicator_id.nil? && !event_id.nil? && !shape_type_id.nil? && !live_data_set_id.nil?
+		if !shape_id.nil? && !core_indicator_id.nil? && !event_id.nil? && !shape_type_id.nil? && !data_set_id.nil?
 			sql = "SELECT s.id as shape_id, i.id as indicator_id, i.core_indicator_id, ci.indicator_type_id, "
 			sql << "d.id, d.value, ci.number_format as number_format, "
 			sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as indicator_name, "
@@ -105,11 +106,11 @@ class LiveDatum < ActiveRecord::Base
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
 			sql << "inner join shape_translations as st on s.id = st.shape_id and d.#{I18n.locale}_common_id = st.common_id and d.#{I18n.locale}_common_name = st.common_name "
 			sql << "WHERE i.event_id = :event_id AND i.shape_type_id = :shape_type_id AND i.core_indicator_id = :core_indicator_id "
-			sql << "and s.id=:shape_id and d.live_data_set_id = :live_data_set_id "
+			sql << "and s.id=:shape_id and d.data_set_id = :data_set_id "
 			sql << "AND cit.locale = :locale and st.locale = :locale "
       sql << "order by s.id asc "
 			x = find_by_sql([sql, :core_indicator_id => core_indicator_id, :event_id => event_id,
-			                  :shape_id => shape_id, :live_data_set_id => live_data_set_id,
+			                  :shape_id => shape_id, :data_set_id => data_set_id,
 			                  :shape_type_id => shape_type_id, :locale => I18n.locale])
 		end
 #		puts "********************* time to query data for core indicator: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id} - # of results = #{x.length}"
@@ -119,11 +120,11 @@ class LiveDatum < ActiveRecord::Base
 	# get the max data value for all indicators that belong to the
 	# indicator type and event for a specific shape
 
-	def self.get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, live_data_set_id, limit=nil)
+	def self.get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id, limit=nil)
 
     start = Time.now
     x = nil
-		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !shape_type_id.nil? && !live_data_set_id.nil?
+		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !shape_type_id.nil? && !data_set_id.nil?
 		  # if limit is a string, convert to int
 		  # will be string if value passed in via params object
 	    limit = limit.to_i if !limit.nil? && limit.class == String
@@ -143,12 +144,12 @@ class LiveDatum < ActiveRecord::Base
 			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
 			sql << "inner join shape_translations as st on s.id = st.shape_id and d.#{I18n.locale}_common_id = st.common_id and d.#{I18n.locale}_common_name = st.common_name "
 			sql << "WHERE i.event_id = :event_id and i.shape_type_id = :shape_type_id and ci.indicator_type_id = :indicator_type_id "
-			sql << "and s.id=:shape_id  and d.live_data_set_id = :live_data_set_id "
+			sql << "and s.id=:shape_id  and d.data_set_id = :data_set_id "
 			sql << "AND cit.locale = :locale AND itt.locale = :locale and st.locale = :locale "
       sql << "order by s.id asc, d.value desc "
       sql << "limit :limit" if !limit.nil?
 			x = find_by_sql([sql, :event_id => event_id, :shape_type_id => shape_type_id,
-			                  :shape_id => shape_id, :live_data_set_id => live_data_set_id, 
+			                  :shape_id => shape_id, :data_set_id => data_set_id,
 			                  :indicator_type_id => indicator_type_id, :locale => I18n.locale, :limit => limit])
 
 		end
@@ -156,46 +157,46 @@ class LiveDatum < ActiveRecord::Base
     return x
 	end
 
-	def self.get_related_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, live_data_set_id)
+	def self.get_related_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
 		start = Time.now
     results = nil
-		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !live_data_set_id.nil?
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !data_set_id.nil?
 
   	  # get the event
   	  event = Event.find(event_id)
   	  # get the relationships for this indicator type
-  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, live_data_set_id,
+  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, data_set_id,
   	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
     end
 #		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
 
-	def self.get_related_indicator_data(shape_id, indicator_id, live_data_set_id)
+	def self.get_related_indicator_data(shape_id, indicator_id, data_set_id)
 		start = Time.new
     results = nil
-		if !shape_id.nil? && !indicator_id.nil? && !live_data_set_id.nil?
+		if !shape_id.nil? && !indicator_id.nil? && !data_set_id.nil?
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
 			event = indicator.event
 
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id, live_data_set_id,
+  	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id, data_set_id,
   	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
     end
 #		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return results
   end
 
-	def self.get_related_core_indicator_data(shape_id, shape_type_id, event_id, core_indicator_id, live_data_set_id)
+	def self.get_related_core_indicator_data(shape_id, shape_type_id, event_id, core_indicator_id, data_set_id)
 		start = Time.now
     results = nil
-		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !core_indicator_id.nil? && !live_data_set_id.nil?
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !core_indicator_id.nil? && !data_set_id.nil?
   	  # get the event
   	  event = Event.find(event_id)
 
   	  # get the relationships for this indicator
-  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, live_data_set_id,
+  	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, data_set_id,
   	    event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
     end
 #		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
@@ -203,15 +204,15 @@ class LiveDatum < ActiveRecord::Base
   end
 
   # build the json string for the provided indicator relationships
-	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, live_data_set_id, relationships)
+	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, data_set_id, relationships)
     results = []
-	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !live_data_set_id.nil? && 
+	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !data_set_id.nil? &&
 	        !relationships.nil? && !relationships.empty?
       has_duplicates = false
 	    relationships.each do |rel|
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
-					data = get_indicator_type_data(shape_id, shape_type_id, event_id, rel.related_indicator_type_id, live_data_set_id)
+					data = get_indicator_type_data(shape_id, shape_type_id, event_id, rel.related_indicator_type_id, data_set_id)
 					if data && !data["summary_data"].empty?
 	        	results << data
 					end
@@ -221,7 +222,7 @@ class LiveDatum < ActiveRecord::Base
           core = CoreIndicator.get_indicator_type_with_summary(rel.related_core_indicator_id)
           if core
             # get summary data
-  					data = get_indicator_type_data(shape_id, shape_type_id, event_id, core.indicator_type_id, live_data_set_id)
+  					data = get_indicator_type_data(shape_id, shape_type_id, event_id, core.indicator_type_id, data_set_id)
   					if data && !data["summary_data"].empty?
               # add the data item for the provided indicator
               index = data["summary_data"].index{|x| x[:core_indicator_id] == rel.related_core_indicator_id}
@@ -279,7 +280,7 @@ class LiveDatum < ActiveRecord::Base
           else
             # indicator type does not have summary
             # get the data item for this indciator
-  					data = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id, live_data_set_id)
+  					data = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id, data_set_id)
   					if data && !data.empty?
   						data_hash = Hash.new
   						data_hash["data_item"] = data.first.to_hash
@@ -303,15 +304,15 @@ class LiveDatum < ActiveRecord::Base
   end
 
   # get the summary data for an indicator type in an event for a shape
-	def self.get_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, live_data_set_id)
+	def self.get_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
 		start = Time.now
 		results = Hash.new
 		results["summary_data"] = []
-		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !live_data_set_id.nil?
+		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !data_set_id.nil?
 			json = []
   		key = "summary_data/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
   		json = JsonCache.fetch(event_id, key) {
-  			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, live_data_set_id)
+  			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id)
 				x = []
   			if data && !data.empty?
   				x = data.collect{|x| x.to_hash}
@@ -389,9 +390,9 @@ class LiveDatum < ActiveRecord::Base
 
   def self.download_header
 		"#{I18n.t('models.datum.header.event')}, #{I18n.t('models.datum.header.map_level')}, #{I18n.t('models.datum.header.map_level_id')}, #{I18n.t('models.datum.header.map_level_name')}".split(",")
-  end	
-	
-  def self.build_from_csv(event_id, precincts_completed, precincts_total, timestamp, file)
+  end
+
+  def self.build_from_csv(event_id, data_type, precincts_completed, precincts_total, timestamp, file)
 		start = Time.now
     infile = file.read
     n, msg = 0, ""
@@ -403,21 +404,22 @@ class LiveDatum < ActiveRecord::Base
 
 		LiveDatum.transaction do
 			# create the dataset record
-			if event_id && precincts_completed && precincts_total && timestamp
-				dataset = LiveDataSet.new
+			if event_id && data_type && timestamp
+				dataset = DataSet.new
 				dataset.event_id = event_id
+				dataset.data_type = data_type
 				dataset.precincts_completed = precincts_completed
 				dataset.precincts_total = precincts_total
 				dataset.timestamp = timestamp
 				if !dataset.save
   logger.debug "++++could not save the dataset"
-    		  msg = I18n.t('models.live_dataset.msgs.dataset_not_save')
+    		  msg = I18n.t('models.data_set.msgs.dataset_not_save')
 		      raise ActiveRecord::Rollback
           return msg
 				end
 			else
   logger.debug "++++params not supplied to save the dataset"
-    		  msg = I18n.t('models.live_dataset.msgs.missing_params')
+    		  msg = I18n.t('models.data_set.msgs.missing_params')
 		      raise ActiveRecord::Rollback
           return msg
 			end
@@ -443,7 +445,7 @@ class LiveDatum < ActiveRecord::Base
 logger.debug "==========--------- event.nil? = #{event.nil?}; dataset.event_id = #{dataset.event_id}; event.id = #{event.id}"
           if event.nil? || dataset.event_id.to_s != event.id.to_s
     logger.debug "++++spreadsheet event does not match event selected on form"
-      		  msg = I18n.t('models.live_dataset.msgs.events_not_match', :row_num => n)
+      		  msg = I18n.t('models.data_set.msgs.events_not_match', :row_num => n)
   		      raise ActiveRecord::Rollback
             return msg
           end
@@ -487,7 +489,7 @@ logger.debug "==========--------- event.nil? = #{event.nil?}; dataset.event_id =
   		            startPhase = Time.now
   								# populate record
   								datum = LiveDatum.new
-  								datum.live_data_set_id = dataset.id
+  								datum.data_set_id = dataset.id
   								datum.indicator_id = indicator.first.id
   								datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
                   datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
@@ -533,7 +535,7 @@ logger.debug "==========--------- event.nil? = #{event.nil?}; dataset.event_id =
       dataset.event.has_live_data = true
       if !dataset.event.save
   logger.debug "++++ - error setting event.has_live_data "
-		    msg = I18n.t('models.live_dataset.msgs.failed_set_event_flag')
+		    msg = I18n.t('models.data_set.msgs.failed_set_event_flag')
 		    raise ActiveRecord::Rollback
 		    return msg
       end

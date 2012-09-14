@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120914082806) do
+ActiveRecord::Schema.define(:version => 20120914131949) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -48,6 +48,19 @@ ActiveRecord::Schema.define(:version => 20120914082806) do
 
   add_index "data", ["indicator_id"], :name => "index_data_on_indicator_id"
   add_index "data", ["value"], :name => "index_data_on_value"
+
+  create_table "data_sets", :force => true do |t|
+    t.integer  "event_id"
+    t.integer  "precincts_completed"
+    t.integer  "precincts_total"
+    t.datetime "timestamp"
+    t.boolean  "show_to_public",      :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "data_type",           :default => "official"
+  end
+
+  add_index "data_sets", ["event_id", "data_type", "show_to_public", "timestamp"], :name => "idx_data_sets_on_event"
 
   create_table "datum_translations", :force => true do |t|
     t.integer  "datum_id"
@@ -257,32 +270,20 @@ ActiveRecord::Schema.define(:version => 20120914082806) do
 
   create_table "live_data", :force => true do |t|
     t.integer  "indicator_id"
-    t.decimal  "value",            :precision => 16, :scale => 4
+    t.decimal  "value",          :precision => 16, :scale => 4
     t.string   "en_common_id"
     t.string   "en_common_name"
     t.string   "ka_common_id"
     t.string   "ka_common_name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "live_data_set_id"
+    t.integer  "data_set_id"
   end
 
+  add_index "live_data", ["data_set_id", "indicator_id"], :name => "index_live_data_ids"
   add_index "live_data", ["en_common_id", "en_common_name"], :name => "index_live_data_en_common"
   add_index "live_data", ["ka_common_id", "ka_common_name"], :name => "index_live_data_ka_common"
-  add_index "live_data", ["live_data_set_id", "indicator_id"], :name => "index_live_data_ids"
   add_index "live_data", ["value"], :name => "index_live_data_on_value"
-
-  create_table "live_data_sets", :force => true do |t|
-    t.integer  "event_id"
-    t.integer  "precincts_completed"
-    t.integer  "precincts_total"
-    t.datetime "timestamp"
-    t.boolean  "show_to_public",      :default => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "live_data_sets", ["event_id", "show_to_public", "timestamp"], :name => "idx_live_data_sets_on_event"
 
   create_table "locales", :force => true do |t|
     t.string   "language"

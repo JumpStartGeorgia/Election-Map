@@ -13,6 +13,12 @@ ElectionMap::Application.routes.draw do
 	      get :colors
       end
     end
+    resources :data_sets do
+			collection do
+	      get :load_data
+	      post :load_data
+			end
+		end
 	  resources :data do
 			collection do
 	      get :upload
@@ -46,9 +52,6 @@ ElectionMap::Application.routes.draw do
 	  resources :event_custom_views
 	  resources :event_indicator_relationships
 	  resources :event_types
-    match '/live_data_sets/load_data', :to => 'live_data_sets#load_data', :as => 'load_data_live_datasets', :via => :get
-    match '/live_data_sets/load_data', :to => 'live_data_sets#load_data', :as => 'load_data_live_datasets', :via => :post
-    resources :live_data_sets
     resources :menu_live_events
     resources :news
 	  resources :pages

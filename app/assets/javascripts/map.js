@@ -18,7 +18,7 @@
 //= require event_menu
 //= require events
 //= require indicator_menu_scale
-//= require live_datasets
+//= require data_sets
 //= require menu_live_events
 //= require map_popup_svg
 //= require messages
