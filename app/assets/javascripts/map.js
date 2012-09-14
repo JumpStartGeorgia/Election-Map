@@ -523,15 +523,6 @@ if (gon.openlayers){
 			legend.innerHTML = "";
 		}
 
-		// show the indicator descritpion if provided
-		if (gon.indicator_description) {
-			$('#indicator_description').append(gon.indicator_description);
-			$('#indicator_description').slideDown(500);
-		} else {
-			$('#indicator_description').innerHTML = "";
-			$('#indicator_description').hide(0);
-		}
-
 		$('#legend_container').slideDown(500);
 	}
 
