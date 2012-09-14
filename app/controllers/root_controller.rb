@@ -31,7 +31,10 @@ logger.debug "////////////// getting current event"
 
   		# save live event data if live data
   		if params[:data_type] == Datum::DATA_TYPE[:live]
-        dataset = LiveDataSet.current_live_dataset(event.id)
+				dataset = LiveDataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
+				# if the data set id was not passed in or the dataset for the provided id could not be found,
+				# use the current live dataset
+        dataset = LiveDataSet.current_live_dataset(event.id) if !dataset
         if dataset && !dataset.empty?
   		    @live_event_data_set_id = dataset.first.id
   		    @live_event_precincts_percentage = dataset.first.precincts_percentage
@@ -501,24 +504,24 @@ logger.debug " - no matching event found!"
   			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
-					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
 			elsif params[:view_type] == @summary_view_type_name
   			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
-					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
       elsif @is_custom_view
 				gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
 				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
 				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
-					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
   		else
   			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
   			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
   			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
-					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
       end
 		end
 
@@ -561,7 +564,7 @@ logger.debug " - no matching event found!"
 			:shape_type_id => params[:shape_type_id], :indicator_id => iid,
 			:custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id,
 			:view_type => vt, :summary_view_type_name => @summary_view_type_name,
-			:data_type => @data_type, :data_set_id => @live_event_data_set_id
+			:data_type => params[:data_type], :data_set_id => @live_event_data_set_id
 		)
 
 		gon.dt_highlight_shape = (params[:highlight_shape].nil? ? false : params[:highlight_shape])
