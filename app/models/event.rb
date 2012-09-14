@@ -65,9 +65,15 @@ class Event < ActiveRecord::Base
 		with_translations(locale).includes(:event_type)
 		.order("event_types.sort_order asc, event_date DESC, event_translations.name ASC")
   end
-  
+
   def self.get_all_events_by_date(locale = I18n.locale)
 		with_translations(locale)
+		.order("event_date DESC, event_translations.name ASC")
+  end
+
+  def self.get_all_election_events_by_date(locale = I18n.locale)
+		with_translations(locale)
+		.where("event_type_id in (1,3,4,5)")
 		.order("event_date DESC, event_translations.name ASC")
   end
 

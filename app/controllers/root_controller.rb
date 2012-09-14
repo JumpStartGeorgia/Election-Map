@@ -12,10 +12,6 @@ class RootController < ApplicationController
 		# which will cause user to go back to home page
 		flag_redirect = false
 
-		# get the data type
-logger.debug "////////////// getting data type"
-		params[:data_type] = Datum::DATA_TYPE[:official] if params[:data_type].nil? || Datum::DATA_TYPE.values.index(params[:data_type]) == nil
-
 		# get the event type id
 logger.debug "////////////// getting event type id"
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
@@ -37,6 +33,7 @@ logger.debug "////////////// getting current event"
   		if params[:data_type] == Datum::DATA_TYPE[:live]
         dataset = LiveDataSet.current_live_dataset(event.id)
         if dataset && !dataset.empty?
+  		    @live_event_data_set_id = dataset.first.id
   		    @live_event_precincts_percentage = dataset.first.precincts_percentage
   		    @live_event_precincts_completed = dataset.first.precincts_completed
   		    @live_event_precincts_total = dataset.first.precincts_total
@@ -248,52 +245,65 @@ logger.debug "//////////////////////////////////////////////////////// done with
     summary_view_type_name = params[:summary_view_type_name]
     params[:custom_view] = params[:custom_view].nil? ? false : params[:custom_view]
 
-    #get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id])
-    get_data = LiveDatum.get_table_data(params[:event_id], 9,child_shape_type_id, params[:shape_id])
-		if !get_data.nil? && !get_data.empty? && get_data[:data] && !get_data[:data].empty?
-		  dt = OpenStruct.new(
-		    'cols_p'             => 7, #data columns count per turn
-		    'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
-		    'static_cols'        => 1, #data static columns count, e.g. "District name"
+		# if data type is live, the dataset must also be provided
+		params_ok = true
+		if params[:data_type] == Datum::DATA_TYPE[:live] && !(params[:data_set_id] && !params[:data_set_id].empty?)
+			params_ok = false
+		end
 
-		    'data'               => get_data[:data],
-		    'indicator_ids'      => get_data[:indicator_ids],
-		    'indicator_type_ids' => get_data[:indicator_type_ids],
-		    'dd_titles'          => []
-		  )
-		  s = dt.skip_cols + dt.static_cols
-		  dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
-		  dt.data.each_with_index do |val, i|
-		    dt.data[i] = dt.data[i][dt.skip_cols..- 1]
-		  end
+		if params_ok
+			# get the data
+			if params[:data_type] == Datum::DATA_TYPE[:live]
+			  get_data = LiveDatum.get_table_data(params[:event_id], params[:data_set_id], child_shape_type_id, params[:shape_id])
+			else
+		  	get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id])
+			end
 
-		  # selected indicator id
-		  if params[:indicator_id].nil? || params[:indicator_id] == 'null'
-		    if params[:view_type] == summary_view_type_name
-		      dt.sid = 'winner_ind'
-		    else
-		      dt.sid = ''
-		    end
-		  else
-		    dt.sid = params[:indicator_id]
-		  end
-		  dt.sid = dt.sid.to_s
+			if !get_data.nil? && !get_data.empty? && get_data[:data] && !get_data[:data].empty?
+				dt = OpenStruct.new(
+				  'cols_p'             => 7, #data columns count per turn
+				  'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
+				  'static_cols'        => 1, #data static columns count, e.g. "District name"
 
-		  dt_count = dt.data[0].count
-		  # column groups count
-		  #dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-		  #c = dt.cols_p - dt.static_cols
-		  # dropdown titles
-		  #dt.groups.times do |i|
-		  #  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
-		  #end
-		  dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-		  dt.dd_titles = dt.data[0][dt.static_cols..-1]
-		  dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
-		  dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
+				  'data'               => get_data[:data],
+				  'indicator_ids'      => get_data[:indicator_ids],
+				  'indicator_type_ids' => get_data[:indicator_type_ids],
+				  'dd_titles'          => []
+				)
+				s = dt.skip_cols + dt.static_cols
+				dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
+				dt.data.each_with_index do |val, i|
+				  dt.data[i] = dt.data[i][dt.skip_cols..- 1]
+				end
 
-		  @dt = dt
+				# selected indicator id
+				if params[:indicator_id].nil? || params[:indicator_id] == 'null'
+				  if params[:view_type] == summary_view_type_name
+				    dt.sid = 'winner_ind'
+				  else
+				    dt.sid = ''
+				  end
+				else
+				  dt.sid = params[:indicator_id]
+				end
+				dt.sid = dt.sid.to_s
 
+				dt_count = dt.data[0].count
+				# column groups count
+				#dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+				#c = dt.cols_p - dt.static_cols
+				# dropdown titles
+				#dt.groups.times do |i|
+				#  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
+				#end
+				dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+				dt.dd_titles = dt.data[0][dt.static_cols..-1]
+				dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
+				dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
+
+				@dt = dt
+
+			end
 		end
 
     render :layout => 'ajax_data_table'
@@ -433,13 +443,13 @@ private
 	        event = event_type.first.events.select{|x| x.id.to_s == event_id.to_s}
 	        if event && !event.empty?
 	          # check if have correct data type
-	          return event.first if (event.first.has_official_data && data_type == Datum::DATA_TYPE[:official]) || 
+	          return event.first if (event.first.has_official_data && data_type == Datum::DATA_TYPE[:official]) ||
 	                                (event.first.has_live_data && data_type == Datum::DATA_TYPE[:live])
           end
         else
           # no id provided, so get first one with correct data type
           event_type.first.events.each do |event|
-            if event.shape_id && (event.has_official_data && data_type == Datum::DATA_TYPE[:official]) || 
+            if event.shape_id && (event.has_official_data && data_type == Datum::DATA_TYPE[:official]) ||
 	                                (event.has_live_data && data_type == Datum::DATA_TYPE[:live])
             	# - save event_id
               params[:event_id] = event.id
@@ -490,22 +500,25 @@ logger.debug " - no matching event found!"
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
   			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
-  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s
-  			  )
+  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
+					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
 			elsif params[:view_type] == @summary_view_type_name
   			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
-  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
+					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
       elsif @is_custom_view
 				gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
 				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
-				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s)
+				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
+					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
   		else
   			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
   			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
   			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
-  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
+					:data_type => @data_type, :data_set_id => @live_event_data_set_id)
       end
 		end
 
@@ -543,7 +556,13 @@ logger.debug " - no matching event found!"
 		# data table
     iid = (params[:indicator_id].nil? ? 'null' : params[:indicator_id])
     vt = (params[:view_type].nil? ? 'null' : params[:view_type])
-		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id], :event_id => params[:event_id], :shape_id => params[:shape_id], :shape_type_id => params[:shape_type_id], :indicator_id => iid, :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id, :view_type => vt, :summary_view_type_name => @summary_view_type_name)
+		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id],
+			:event_id => params[:event_id], :shape_id => params[:shape_id],
+			:shape_type_id => params[:shape_type_id], :indicator_id => iid,
+			:custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id,
+			:view_type => vt, :summary_view_type_name => @summary_view_type_name,
+			:data_type => @data_type, :data_set_id => @live_event_data_set_id
+		)
 
 		gon.dt_highlight_shape = (params[:highlight_shape].nil? ? false : params[:highlight_shape])
 

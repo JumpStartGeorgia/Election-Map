@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
 
    before_filter :set_locale
    before_filter :is_browser_supported?
+	 before_filter :set_data_type
    before_filter :set_event_types
    before_filter :set_event_menu
    before_filter :set_live_event_menu
@@ -62,6 +63,11 @@ logger.debug "////////////////////////// BROWSER NOT SUPPORTED"
   def default_url_options(options={})
     { :locale => I18n.locale }
   end
+
+	def set_data_type
+		# get the data type
+		params[:data_type] = Datum::DATA_TYPE[:official] if params[:data_type].nil? || Datum::DATA_TYPE.values.index(params[:data_type]) == nil
+	end
 
   def set_event_types
 logger.debug "---********----- event type cache"
