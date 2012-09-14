@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120912120919) do
+ActiveRecord::Schema.define(:version => 20120914082806) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -284,7 +284,14 @@ ActiveRecord::Schema.define(:version => 20120912120919) do
 
   add_index "live_data_sets", ["event_id", "show_to_public", "timestamp"], :name => "idx_live_data_sets_on_event"
 
-  create_table "live_events", :force => true do |t|
+  create_table "locales", :force => true do |t|
+    t.string   "language"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "menu_live_events", :force => true do |t|
     t.integer  "event_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -292,16 +299,9 @@ ActiveRecord::Schema.define(:version => 20120912120919) do
     t.date     "menu_end_date"
   end
 
-  add_index "live_events", ["event_id"], :name => "index_live_events_on_event_id"
-  add_index "live_events", ["menu_end_date"], :name => "index_live_events_on_menu_end_date"
-  add_index "live_events", ["menu_start_date"], :name => "index_live_events_on_menu_start_date"
-
-  create_table "locales", :force => true do |t|
-    t.string   "language"
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+  add_index "menu_live_events", ["event_id"], :name => "index_menu_live_events_on_event_id"
+  add_index "menu_live_events", ["menu_end_date"], :name => "index_menu_live_events_on_menu_end_date"
+  add_index "menu_live_events", ["menu_start_date"], :name => "index_menu_live_events_on_menu_start_date"
 
   create_table "news", :force => true do |t|
     t.string   "news_type"

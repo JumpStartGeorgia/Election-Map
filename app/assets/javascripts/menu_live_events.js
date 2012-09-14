@@ -1,8 +1,8 @@
 $(document).ready(function(){
 
-	if(gon.edit_live_event){
-    var startDate = $('#live_event_menu_start_date');
-    var endDate = $('#live_event_menu_end_date');
+	if(gon.edit_menu_live_event){
+    var startDate = $('#menu_live_event_menu_start_date');
+    var endDate = $('#menu_live_event_menu_end_date');
 
 		// load the date pickers
 		startDate.datepicker({

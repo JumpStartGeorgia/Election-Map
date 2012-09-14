@@ -19,7 +19,7 @@
 //= require events
 //= require indicator_menu_scale
 //= require live_datasets
-//= require live_events
+//= require menu_live_events
 //= require map_popup_svg
 //= require messages
 //= require news

@@ -111,7 +111,7 @@ en:
       new_shapes: New Shape
       new_news: New News
       new_data_archives: New Data Archive
-      new_live_events: New Live Events
+      new_menu_live_events: New Menu Live Events
       new_live_datasets: Upload Live Event Data
       upload_csv: Process CSV File
       download_xls: Download XLS Data File
@@ -205,8 +205,8 @@ en:
       page: Page
       menu_start_date: Live Menu Start Date
       menu_end_date: Live Menu End Date
-      live_event: Live Event
-      live_events: Live Events
+      menu_live_event: Live Event Menu
+      menu_live_events: Menu Live Events
       live_data_set: Live Dataset
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
@@ -313,8 +313,7 @@ en:
       cache_default_event: Default Custom Event View Cache
       cache_indicators: Custom Event Indicator Cache
       cache_summary_data: Summary Data Cache
-      live_events_header: Live Events
-      live_events: Schedule Live Events
+      menu_live_events: Schedule Live Events Menu
       load_data_live_datasets: Manage Live Datasets
     index:
       export_link_text: Export Map
@@ -535,16 +534,16 @@ en:
       title: New News
     show:
       title: News Details
-  live_events:
+  menu_live_events:
     edit:
-      title: Editing Live Event
+      title: Editing Live Event Menu
     index:
-      title: Live Events
-      no_data: I am sorry, but at this time there are no live events scheduled.
+      title: Menu Live Events
+      no_data: I am sorry, but at this time there are no menu live event records.
     new:
-      title: New Live Event
+      title: New Live Event Menu
     show:
-      title: Live Event Details
+      title: Live Event Menu Details
   live_data_sets:
     edit:
       title: Editing Live Dataset
@@ -558,4 +557,3 @@ en:
     load_data:
       title: Load Live Event Data
       no_live_events: Data cannot be loaded until an event is marked as being live.
-      

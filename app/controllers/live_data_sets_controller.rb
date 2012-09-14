@@ -2,7 +2,7 @@ class LiveDataSetsController < ApplicationController
   before_filter :authenticate_user!
 
   def load_data
-    @live_events = Event.live_events("desc")
+    @live_events = Event.live_events_menu("desc")
     @live_data_set = LiveDataSet.new
     gon.load_data_live_dataset = true
 

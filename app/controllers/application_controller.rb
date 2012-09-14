@@ -124,7 +124,7 @@ logger.debug "---********----- event type cache"
 		json = Rails.cache.fetch("live_event_menu_json_#{I18n.locale}") {
 			json = []
 
-			Event.active_live_events.each do |event|
+			Event.active_live_events_menu.each do |event|
 				if !event.shape_id.nil?
 					e = Hash.new
 					json << e

@@ -3,7 +3,7 @@ class Event < ActiveRecord::Base
 
   has_many :event_translations, :dependent => :destroy
   has_many :indicators
-	has_many :live_events
+	has_many :menu_live_events
   belongs_to :shape
   belongs_to :event_type
   has_many :event_indicator_relationships, :dependent => :destroy
@@ -18,15 +18,15 @@ class Event < ActiveRecord::Base
   #do not require shape id for the geo data might not be loaded yet
 #  validates :shape_id, :presence => true
 
-	# get all events that have live accounts
-	def self.live_events(order = "asc")
+	# get all events that have live menu records
+	def self.live_events_menu(order = "asc")
 		with_translations(I18n.locale)
 		.joins(:live_events)
 		.order("live_events.menu_start_date #{order}, event_date, event_translations.name")
 	end
 
 	# get all events that have live accounts and are currently active
-	def self.active_live_events(order = "asc")
+	def self.active_live_events_menu(order = "asc")
 		with_translations(I18n.locale)
 		.joins(:live_events)
 		.where("events.has_live_data = 1 and curdate() between live_events.menu_start_date and live_events.menu_end_date")
