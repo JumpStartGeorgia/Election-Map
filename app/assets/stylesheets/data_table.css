@@ -151,6 +151,12 @@ td.highlighted > a {
  border-radius: 2px;
 }
 
+#tips-sorting {
+   margin-left: 7px;
+   border-left: 40px solid #FFF !important;
+   border-right: 40px solid #FFF !important;
+}
+
 #data-table-container .switchers > * {
   float: left;
   margin-right: 5px;

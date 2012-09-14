@@ -453,7 +453,7 @@ if (gon.openlayers){
 	function after_vector_layers_loaded(){
 		if (vector_parent_loaded && vector_child_loaded) {
 			// if gon.dt_highlight_shape exists, highlight the shape and turn on the popup
-			$('#map-loading').fadeOut(1000, function (){ $(this).remove(); });
+			$('#map-loading').fadeOut(1000);//, function (){ $(this).remove(); });
 			if (gon.dt_highlight_shape)
 			{
 		    if (typeof highlight_shape == 'function')

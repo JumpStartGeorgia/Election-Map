@@ -9,7 +9,10 @@ function load_data_table ()
   $.get(gon.data_table_path, function (data)
   {
     container.css({height: 'auto'});
-    container.html(data);
+    container.children().each(function(){
+      $(this).css('display', 'none');
+    });
+    container.append(data);    
     //container.slideDown(5000, 'linear');
   });
 
