@@ -53,15 +53,17 @@ end %>
             <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),
   								:title=> @page_title, :class=>"brand")%>
 
-            <ul class="nav pull-right">
-							<li><%= link_to t(".news"), news_index_path %></li>
-							<li><%= link_to t(".data_archives"), data_archives_path %></li>
-  						<% I18n.available_locales.each do |locale| %>
-  							<% if locale != I18n.locale %>
-  								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
-  							<% end %>
-  						<% end %>
-            </ul>
+		        <div class="header-nav-collapse nav-collapse">
+		          <ul class="nav pull-right">
+								<li><%= link_to t(".news"), news_index_path %></li>
+								<li><%= link_to t(".data_archives"), data_archives_path %></li>
+								<% I18n.available_locales.each do |locale| %>
+									<% if locale != I18n.locale %>
+										<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+									<% end %>
+								<% end %>
+		          </ul>
+						</div>
           </div>
         </div>
 			</div>
@@ -122,27 +124,32 @@ end %>
 					<%= link_to(image_tag("ndi-logo.png"), "http://www.ndi.org", :target => "_blank") %>
 				</div>
 				<div class="footer-nav span8">
-					<ul>
-						<li>
-							<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
-						</li>
-						<li class="spacer">|</li>
-						<li>
-							<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
-						</li>
-						<li class="spacer">|</li>
-						<li>
-							<%= link_to t('.contact'), contact_path %>
-						</li>
-						<li class="spacer">|</li>
-						<li>
-							<%= link_to t(".news"), news_index_path %>
-						</li>
-						<li class="spacer">|</li>
-						<li>
-							<%= link_to t(".data_archives"), data_archives_path %>
-						</li>
-					</ul>
+	        <a id="footer_collapsed_menu" class="btn btn-navbar" data-target=".footer-nav-collapse" data-toggle="collapse">
+						<%= image_tag("footer_collapsed_menu.png") %>
+					</a>
+	        <div class="footer-nav-collapse nav-collapse">
+						<ul class="nav">
+							<li>
+								<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t('.contact'), contact_path %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t(".news"), news_index_path %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t(".data_archives"), data_archives_path %>
+							</li>
+						</ul>
+					</div>
 				</div>
        <div class="js-logo span2">
 					<ul>
