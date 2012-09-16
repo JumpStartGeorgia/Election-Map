@@ -669,7 +669,6 @@ if (gon.openlayers){
 		// if the feature has children, continue
 		if (feature.attributes.has_children == true){		  
 			// add/update the shape_id parameter
-console.log("url was: " + window.location.href);
 			var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
 
 			// add/update the shape_type_id parameter
@@ -690,10 +689,7 @@ console.log("url was: " + window.location.href);
 
 			// load the url
 			window.location.href = url;
-console.log("url is now: " + url);
-
 		}
-
 	}
 
 	// add/update the query paramter with the provided name and value
