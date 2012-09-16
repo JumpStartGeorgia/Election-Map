@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120914131949) do
+ActiveRecord::Schema.define(:version => 20120916085558) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -43,10 +43,17 @@ ActiveRecord::Schema.define(:version => 20120914131949) do
     t.integer  "indicator_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.decimal  "value",        :precision => 16, :scale => 4
+    t.decimal  "value",          :precision => 16, :scale => 4
+    t.integer  "data_set_id"
+    t.string   "en_common_id"
+    t.string   "en_common_name"
+    t.string   "ka_common_id"
+    t.string   "ka_common_name"
   end
 
-  add_index "data", ["indicator_id"], :name => "index_data_on_indicator_id"
+  add_index "data", ["data_set_id", "indicator_id"], :name => "index_data_ids"
+  add_index "data", ["en_common_id", "en_common_name"], :name => "index_data_en_common"
+  add_index "data", ["ka_common_id", "ka_common_name"], :name => "index_data_ka_common"
   add_index "data", ["value"], :name => "index_data_on_value"
 
   create_table "data_sets", :force => true do |t|
