@@ -12,6 +12,9 @@ class IndicatorScale < ActiveRecord::Base
 
   scope :l10n , joins(:indicator_scale_translations).where('locale = ?',I18n.locale)
   scope :by_name , order('name').l10n
+  
+  NO_DATA_COLOR = "#CCCCCC"
+  NO_DATA_TEXT = I18n.t('app.msgs.no_data')
 
   # have to turn this off so csv upload works since adding indicator and scale at same time, no indicator id exists yet
   #validates :indicator_id, :presence => true
@@ -29,21 +32,35 @@ class IndicatorScale < ActiveRecord::Base
 logger.debug "+++ num of indicator scales = #{num_levels}"
 			if !num_levels.nil?
         colors = ScaleColors.get_colors("OrRd", num_levels)
+        # insert no data color
+        colors.insert(0, NO_DATA_COLOR)
         colors = [] if colors.nil?
 				return colors
 			end
 		end
 		return nil
 	end
-
+	
 	# get all indicator scales for an indicator
-	def self.find_by_indicator_id(indicator_id)
+	def self.for_indicator(indicator_id)
 		if !indicator_id.nil?
-#			Rails.cache.fetch("indicator_scales_by_indicator_#{indicator_id}") {
-				where(:indicator_id => indicator_id)
-#			}
+      scales = with_translations(I18n.locale).where(:indicator_id => indicator_id)
+      if scales && !scales.empty?
+        # insert no data record
+        x = {:name => NO_DATA_TEXT, :color => NO_DATA_COLOR}
+        hash = scales.map{|x| x.to_hash}
+        hash.insert(0,x)
+        return hash
+      end
 		end
 	end
+
+	def to_hash
+	  {
+	    :name => self.name,
+	    :color => self.color
+	  }
+  end
 
   def self.csv_all_header
     "Event, Shape Type, Indicatory Type, en: Indicator Name, ka: Indicator Name, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")

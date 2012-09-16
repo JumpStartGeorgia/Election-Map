@@ -527,10 +527,11 @@ logger.debug " - no matching event found!"
 		end
 
 		# view type
-		gon.view_type = params[:view_type]
+#		gon.view_type = params[:view_type]
 
 		gon.summary_view_type_name = @summary_view_type_name
 
+=begin
 		# indicator name
 		if !@indicator.nil?
 			gon.indicator_name = @indicator.name
@@ -539,17 +540,18 @@ logger.debug " - no matching event found!"
 			gon.indicator_number_format = @indicator.number_format.nil? ? "" : @indicator.number_format
 			gon.indicator_scale_colors = IndicatorScale.get_colors(@indicator.id)
 		end
+=end
 
 		# if summary view type, set indicator_description for legend title
 		if params[:view_type] == @summary_view_type_name
 			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular_possessive)
 		end
-
+=begin
 		# indicator scales
 		if !params[:indicator_id].nil? && params[:view_type] != @summary_view_type_name
 			build_indicator_scale_array
 		end
-
+=end
     # save the map title for export
 		if !params[:event_id].nil?
 		  gon.event_id = params[:event_id]

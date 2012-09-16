@@ -156,27 +156,28 @@ if (gon.openlayers){
 	var WGS84 = new OpenLayers.Projection("EPSG:4326");
 	// WGS84 Google Mercator projection
 	var WGS84_google_mercator = new OpenLayers.Projection("EPSG:900913");
-
+/*
 	// gon.indicator_number_format will not exist for the summary view
 	// so have to create local variable to store value;
 	var number_format = "";
-
+*/
 	OpenLayers.ImgPath = gon.openlayers_img_path;
 
 
 	// Function called from body tag
 	function map_init(){
+/*
 		// add no data to scales
-		if (gon.indicator_scale_colors && gon.indicator_scales){
-			gon.indicator_scale_colors.splice(0,0,color_nodata);
-			gon.indicator_scales.splice(0,0,scale_nodata);
+		if (json_data["indicator"]["scale_colors"] && json_data["indicator"]["scales"]){
+			json_data["indicator"]["scale_colors"].splice(0,0,color_nodata);
+			json_data["indicator"]["scales"].splice(0,0,scale_nodata);
 		}
 
 		// if gon.indicator_number_format has a value, save it
 		if (gon.indicator_number_format){
 			number_format = gon.indicator_number_format;
 		}
-
+*/
 		var options = {
 		  projection: WGS84_google_mercator,
 		  displayProjection: WGS84,
@@ -237,7 +238,7 @@ if (gon.openlayers){
 
 		vector_parent = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
-		vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
+		vector_child = new OpenLayers.Layer.Vector("Child Layer");
 
 		map.addLayers([map_layer, vector_parent, vector_child]);
 
@@ -385,9 +386,9 @@ if (gon.openlayers){
 		for (var i in features)
 		{
 			var feature = features[i];
-			for (var j in json_data)
+			for (var j in json_data["shape_data"])
 			{
-				var json_shape_data = json_data[j][0].shape_values;
+				var json_shape_data = json_data["shape_data"][j][0].shape_values;
 				if (feature.data.id === json_shape_data.shape_id)
 				{
 					// put the color and value into the feature
@@ -404,33 +405,31 @@ if (gon.openlayers){
 		return features;
 	}
 
-   function drawFeatures(data, features)
-   {
-      // save the data to a global variable for later user
-		json_data = data;
-		// add the features to the vector layer
-		vector_child.addFeatures(bindDataToShapes(features));
-		// if this is summary view, populate gon.indicator_scales and colors with names from json file
-		populate_summary_data();
-		// now that the child vector is loaded, lets show the legend
-		draw_legend();
-		// now load the values for the hidden form
-		load_hidden_form();
-
-		// indicate that the child layer has loaded
-		// - do not wait for the datatable to be loaded
-		$("div#map").trigger("child_layer_loaded");
-
-		// load the table of data below the map
-      load_data_table();
-   }
-
 	// load the features for the children into the vector_child layer
 	function load_vector_child(resp){
 		if (resp.success()){
 			// get the event data for these shapes
 			$.get(gon.data_path, function(data) {
-				drawFeatures(data, resp.features);
+      // save the data to a global variable for later user
+  		json_data = data;
+  		// add the features to the vector layer
+  		vector_child.addFeatures(bindDataToShapes(resp.features));
+  		// if this is summary view, create the scales
+  		create_summary_scales();
+  	  // add style map
+  	  vector_child.styleMap = build_indicator_scale_styles();
+  		vector_child.redraw();
+  		// now that the child vector is loaded, lets show the legend
+  		draw_legend();
+  		// now load the values for the hidden form
+  		load_hidden_form();
+
+  		// indicate that the child layer has loaded
+  		// - do not wait for the datatable to be loaded
+  		$("div#map").trigger("child_layer_loaded");
+
+  		// load the table of data below the map
+        load_data_table();
 			});
 		} else {
 		  console.log('vector_child - no features found');
@@ -473,33 +472,28 @@ if (gon.openlayers){
 	}
 
 	// go through each feature and get unique indicator names and their colors
-	function populate_summary_data(){
-		if (gon.view_type == gon.summary_view_type_name) {
-			gon.indicator_scale_colors = [color_nodata];
-			gon.indicator_scales = [scale_nodata];
+	function create_summary_scales(){
+		if (json_data["view_type"] == gon.summary_view_type_name) {
 
-		  var names = [gon.indicator_scales[0].name];
+      // create unique names array, starting with the no_data item which is first
+		  var names = [json_data["indicator"]["scales"][0].name];
+		  
 		  for (var i=0; i<vector_child.features.length; i++)
 		  {
 		    // see if name has already been saved
 		    if (names.indexOf(vector_child.features[i].attributes.value) == -1){
 		      // save name and color
-		      gon.indicator_scale_colors[gon.indicator_scales.length] = vector_child.features[i].attributes.color;
-		      gon.indicator_scales[gon.indicator_scales.length] = {"name":vector_child.features[i].attributes.value};
+		      json_data["indicator"]["scale_colors"][json_data["indicator"]["scales"].length] = vector_child.features[i].attributes.color;
+		      json_data["indicator"]["scales"][json_data["indicator"]["scales"].length] = {"name":vector_child.features[i].attributes.value};
 		      // record the name so can easily test for new unique name in if statement above
-		      names[gon.indicator_scales.length] = vector_child.features[i].attributes.value;
+		      names[json_data["indicator"]["scales"].length] = vector_child.features[i].attributes.value;
 		    }
 
 				// see if the number format has already been saved
-				if (number_format.length == 0 && vector_child.features[i].attributes.number_format != null){
-					number_format = vector_child.features[i].attributes.number_format;
+				if (json_data["indicator"]["number_format"] != null && vector_child.features[i].attributes.number_format != null){
+					json_data["indicator"]["number_format"] = vector_child.features[i].attributes.number_format;
 				}
 		  }
-
-		  // add style map
-	//    vector_child.styleMap = null;
-		  vector_child.styleMap = build_indicator_scale_styles();
-			vector_child.redraw();
 		}
 	}
 
@@ -508,23 +502,23 @@ if (gon.openlayers){
 	{
 		var legend = $('#legend');
 
-		if (gon.view_type == gon.summary_view_type_name) {
+		if (json_data["view_type"] == gon.summary_view_type_name) {
 		  // create legend
-		  for (var i=0; i<gon.indicator_scales.length; i++)
+		  for (var i=0; i<json_data["indicator"]["scales"].length; i++)
 		  {
-		    legend.append('<li><span style="background-color: ' + gon.indicator_scale_colors[i] + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + gon.indicator_scales[i].name + '</li>');
+		    legend.append('<li><span style="background-color: ' + json_data["indicator"]["scale_colors"][i] + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + json_data["indicator"]["scales"][i].name + '</li>');
 			}
-		} else  if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
+		} else  if (json_data["indicator"]["scales"] && json_data["indicator"]["scales"].length > 0 && json_data["indicator"]["scale_colors"] && json_data["indicator"]["scale_colors"].length > 0){
 			var color = "";
-			for (var i=0; i<gon.indicator_scales.length; i++){
+			for (var i=0; i<json_data["indicator"]["scales"].length; i++){
 				// if the scale has a color, use it, otherwise use app color
-				if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
-					color = gon.indicator_scales[i].color;
+				if (json_data["indicator"]["scales"][i].color && json_data["indicator"]["scales"][i].color.length > 0){
+					color = json_data["indicator"]["scales"][i].color;
 				} else {
-					color = gon.indicator_scale_colors[i];
+					color = json_data["indicator"]["scale_colors"][i];
 				}
 
-		    legend.append('<li><span style="background-color: ' + color + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
+		    legend.append('<li><span style="background-color: ' + color + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + format_number(json_data["indicator"]["scales"][i].name) + '</li>');
 			}
 		} else {
 			// no legend
@@ -544,18 +538,18 @@ if (gon.openlayers){
 		    cursor: "pointer",
 		    fillOpacity: opacity
 		});
-		if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
+		if (json_data["indicator"]["scales"] && json_data["indicator"]["scales"].length > 0 && json_data["indicator"]["scale_colors"] && json_data["indicator"]["scale_colors"].length > 0){
 
 			// look at each scale and create the builder
-			for (var i=0; i<gon.indicator_scales.length; i++){
+			for (var i=0; i<json_data["indicator"]["scales"].length; i++){
 				var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
-				var name = gon.indicator_scales[i].name;
+				var name = json_data["indicator"]["scales"][i].name;
 				var color = "";
 				// if the scale has a color, use it, otherwise use app color
-				if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
-					color = gon.indicator_scales[i].color;
+				if (json_data["indicator"]["scales"][i].color && json_data["indicator"]["scales"][i].color.length > 0){
+					color = json_data["indicator"]["scales"][i].color;
 				} else {
-					color = gon.indicator_scale_colors[i];
+					color = json_data["indicator"]["scale_colors"][i];
 				}
 
 				// look in the name for >, <, or -
@@ -764,11 +758,11 @@ if (gon.openlayers){
 
    function getShapeData(feature_data)
    {
-      for(var i in json_data)
+      for(var i in json_data["shape_data"])
       {
-         if (feature_data.data.id === json_data[i][0].shape_values.shape_id)
+         if (feature_data.data.id === json_data["shape_data"][i][0].shape_values.shape_id)
          {
-            return json_data[i];
+            return json_data["shape_data"][i];
          }
       }
    }
@@ -877,7 +871,7 @@ if (gon.openlayers){
 	// load the hidden form with the values so the export link works
 	function load_hidden_form()
 	{
-		if (gon.indicator_name || (gon.view_type == gon.summary_view_type_name)){
+		if (json_data["indicator"]["name"] || (json_data["view_type"] == gon.summary_view_type_name)){
 			// update the url for the download data link
 			$("#export-data-xls").attr('href',update_query_parameter($("#export-data-xls").attr('href'), "event_name", "event_name", gon.event_name));
 			$("#export-data-xls").attr('href',update_query_parameter($("#export-data-xls").attr('href'), "map_title", "map_title", gon.map_title));
@@ -888,21 +882,21 @@ if (gon.openlayers){
 				// get the indicator names and colors
 				var scales = [];
 				var colors = [];
-				for (i=0; i<gon.indicator_scales.length; i++){
-					scales[i] = format_number(gon.indicator_scales[i].name);
-					if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
-						colors[i] = gon.indicator_scales[i].color;
+				for (i=0; i<json_data["indicator"]["scales"].length; i++){
+					scales[i] = format_number(json_data["indicator"]["scales"][i].name);
+					if (json_data["indicator"]["scales"][i].color && json_data["indicator"]["scales"][i].color.length > 0){
+						colors[i] = json_data["indicator"]["scales"][i].color;
 					} else {
-						colors[i] = gon.indicator_scale_colors[i];
+						colors[i] = json_data["indicator"]["scale_colors"][i];
 					}
 				}
 
 				$("#hidden_form_parent_layer").val($("#map").find("svg:eq(0)").parent().html());
 				$("#hidden_form_child_layer").val($("#map").find("svg:eq(1)").parent().html());
 		    $("#hidden_form_map_title").val(gon.map_title);
-				$("#hidden_form_indicator_name").val(gon.indicator_name);
-				$("#hidden_form_indicator_name_abbrv").val(gon.indicator_name_abbrv);
-				$("#hidden_form_indicator_description").val(gon.indicator_description);
+				$("#hidden_form_indicator_name").val(json_data["indicator"]["name"]);
+				$("#hidden_form_indicator_name_abbrv").val(json_data["indicator"]["name_abbrv"]);
+				$("#hidden_form_indicator_description").val(json_data["indicator"]["description"]);
 				$("#hidden_form_event_name").val(gon.event_name);
 				$("#hidden_form_scales").val(scales.join("||"));
 				$("#hidden_form_colors").val(colors.join("||"));

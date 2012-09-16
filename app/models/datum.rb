@@ -137,13 +137,29 @@ class Datum < ActiveRecord::Base
 
 	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
 		start = Time.now
-    results = []
+    results = Hash.new
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
       # get the shapes
 		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
 
   	  # get the event
   	  event = Event.find(event_id)
+  	  
+      # add info about this data
+  	  # add the indicator info
+  	  results["indicator"] = Hash.new
+      results["indicator"]["name"] = nil
+			results["indicator"]["name_abbrv"] = nil
+			results["indicator"]["description"] = nil
+			results["indicator"]["number_format"] = nil
+      results["indicator"]["scales"] = [{:name => IndicatorScale::NO_DATA_TEXT, :color => IndicatorScale::NO_DATA_COLOR }]
+			results["indicator"]["scale_colors"] = [IndicatorScale::NO_DATA_COLOR]
+      
+      # indicate this is summary data
+      results["view_type"] = "summary"
+
+      # add the data
+      results["shape_data"] = []
 
       if shapes && !shapes.empty? && event
         shapes.each do |shape|
@@ -151,7 +167,6 @@ class Datum < ActiveRecord::Base
       	  data = build_related_indicator_json(shape.id, shape_type_id, event_id,
       	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
 
-      	  # find the summary data item with the indicator_type_id and use it's values to set the shape_values hash
           summary = data.select{|x| x.has_key?("summary_data") && !x["summary_data"].nil? && !x["summary_data"].empty? &&
                       x["summary_data"][0][:indicator_type_id].to_s == indicator_type_id.to_s &&
     									x["summary_data"][0][:formatted_value] != I18n.t('app.msgs.no_data')}
@@ -166,7 +181,8 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
             end
           end
 
-          results << data
+          # save the data
+      	  results["shape_data"] << data
   	    end
   	  end
     end
@@ -176,7 +192,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 
 	def self.build_json(shape_id, shape_type_id, indicator_id)
 		start = Time.new
-    results = []
+    results = Hash.new
 		if shape_id && indicator_id && shape_type_id
       # get the shapes
 		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
@@ -184,6 +200,22 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
 
+      # add info about this data
+  	  # add the indicator info
+  	  results["indicator"] = Hash.new
+      results["indicator"]["name"] = indicator.name
+			results["indicator"]["name_abbrv"] = indicator.name_abbrv_w_parent
+			results["indicator"]["description"] = indicator.description_w_parent
+			results["indicator"]["number_format"] = indicator.number_format.nil? ? "" : indicator.number_format
+      results["indicator"]["scales"] = IndicatorScale.for_indicator(indicator.id)
+			results["indicator"]["scale_colors"] = IndicatorScale.get_colors(indicator.id)
+      
+      # indicate this is not summary data
+      results["view_type"] = "normal"
+
+      # add the data
+      results["shape_data"] = []
+      
       if shapes && !shapes.empty? && indicator
   			event = indicator.event
         shapes.each do |shape|
@@ -205,8 +237,9 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
               shape_values.first["shape_values"]["title_abbrv"] = data_item.first["data_item"][:indicator_name_abbrv]
             end
           end
-
-          results << data
+          
+          # save the data
+      	  results["shape_data"] << data
         end
       end
     end
@@ -215,10 +248,11 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
   end
 
   # build the json string for the provided indicator relationships
-  # [
-  #  {"summary_data" => []}
-  #  {"data_item" => {}}
-  #  {"footnote" => {}}
+  # [ 
+  #    {shape_values => {}}
+  #    {"summary_data" => []}
+  #    {"data_item" => {}}
+  #    {"footnote" => {}}
   # ]
 	def self.build_related_indicator_json(shape_id, shape_type_id, event_id, relationships)
     results = []
@@ -236,11 +270,10 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 	  shape_values["title"] = I18n.t('app.msgs.no_data')
 	  shape_values["title_abbrv"] = nil
 	  shape_values["title_location"] = nil
-		data_hash = Hash.new
+    data_hash = Hash.new
 		data_hash["shape_values"] = shape_values
 	  results << data_hash
-
-
+	  
 	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !relationships.nil? && !relationships.empty?
       has_duplicates = false
 	    relationships.each do |rel|

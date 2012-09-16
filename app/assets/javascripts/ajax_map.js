@@ -31,8 +31,8 @@ $(function(){
           
           $("#indicator_description").empty();
           $("#legend").empty();
-          // if this is summary view, populate gon.indicator_scales and colors with names from json file
-		    populate_summary_data();
+          // if this is summary view, create the scales
+		    create_summary_scales();
 		    // now that the child vector is loaded, lets show the legend		    
 		    draw_legend();
  		    // now load the values for the hidden form
