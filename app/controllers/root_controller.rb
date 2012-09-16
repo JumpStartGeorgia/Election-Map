@@ -256,11 +256,7 @@ logger.debug "//////////////////////////////////////////////////////// done with
 
 		if params_ok
 			# get the data
-			if params[:data_type] == Datum::DATA_TYPE[:live]
-			  get_data = LiveDatum.get_table_data(params[:event_id], params[:data_set_id], child_shape_type_id, params[:shape_id])
-			else
-		  	get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id])
-			end
+		  get_data = Datum.get_table_data(params[:event_id], params[:data_set_id], child_shape_type_id, params[:shape_id])
 
 			if !get_data.nil? && !get_data.empty? && get_data[:data] && !get_data[:data].empty?
 				dt = OpenStruct.new(

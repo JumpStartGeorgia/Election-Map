@@ -2,7 +2,7 @@ class DataSetsController < ApplicationController
   before_filter :authenticate_user!
 
   def load_data
-		@events = Event.get_all_events
+		@events = Event.get_all_events_by_date
     @live_events_menu = Event.live_events_menu("desc")
     @data_set = DataSet.new
     gon.load_data_dataset = true
@@ -23,14 +23,14 @@ class DataSetsController < ApplicationController
   			    start = Time.now
 						msg = nil
 						if params[:data_type] == Datum::DATA_TYPE[:official]
-						  msg = LiveDatum.build_from_csv(params[:event_id_official],
+						  msg = Datum.build_from_csv(params[:event_id_official],
 											params[:data_type],
 		                  nil,
 		                  nil,
 		                  params[:timestamp],
 		    				      params[:file])
 						elsif params[:data_type] == Datum::DATA_TYPE[:live]
-						  msg = LiveDatum.build_from_csv(params[:event_id_live],
+						  msg = Datum.build_from_csv(params[:event_id_live],
 											params[:data_type],
 		                  params[:precincts_completed],
 		                  params[:precincts_total],
@@ -62,7 +62,7 @@ class DataSetsController < ApplicationController
   # GET /data_sets
   # GET /data_sets.json
   def index
-    @data_sets = DataSet.all
+    @data_sets = DataSet.ordered
 
     respond_to do |format|
       format.html # index.html.erb

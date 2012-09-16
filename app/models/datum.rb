@@ -4,10 +4,7 @@ class Datum < ActiveRecord::Base
 	require 'json'
 
   belongs_to :indicator
-#  has_many :datum_translations, :dependent => :destroy
-#  accepts_nested_attributes_for :datum_translations
 
- # attr_accessible :indicator_id, :value, :datum_translations_attributes
   attr_accessible :indicator_id, :data_set_id, :value,
 			:en_common_id, :en_common_name, :ka_common_id, :ka_common_name
 
@@ -249,7 +246,7 @@ class Datum < ActiveRecord::Base
                   h = compute_placement(data["summary_data"], data["summary_data"][index][:value])
                   has_duplicates = h[:has_duplicates]
                   if !h.nil? && !h.empty?
-  		              rank = LiveDatum.new
+  		              rank = Datum.new
   		              rank.value = h[:rank].to_s
   		              rank["number_format"] = " / #{h[:total]}"
   		              rank["number_format"] += " *" if h[:has_duplicates]
@@ -263,7 +260,7 @@ class Datum < ActiveRecord::Base
 								end
 
 	              # add total # of indicators in the summary
-	              rank = LiveDatum.new
+	              rank = Datum.new
 	              rank.value = data["summary_data"].length
 	              rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
 	              rank["indicator_name"] = I18n.t('app.common.total_participants')
@@ -300,7 +297,7 @@ class Datum < ActiveRecord::Base
 
       # add duplicate footnote if needed
       if has_duplicates
-        footnote = LiveDatum.new
+        footnote = Datum.new
         footnote["indicator_name"] = "* #{I18n.t('app.common.footnote_duplicates')}"
         footnote["indicator_name_abbrv"] = "* #{I18n.t('app.common.footnote_duplicates')}"
 				data_hash = Hash.new
@@ -441,7 +438,7 @@ class Datum < ActiveRecord::Base
 		  CSV.parse(infile) do |row|
         startRow = Time.now
 		    n += 1
-  puts "**************** processing row #{n}"
+  puts "@@@@@@@@@@@@@@@@@@ processing row #{n}"
         if n == 1
           # get the event
 					event = Event.find(event_id)
@@ -454,10 +451,13 @@ class Datum < ActiveRecord::Base
           end
           
           # get all shape types now instead of doing a query for every row
+logger.debug "****************getting all shape types"          
           shape_types = ShapeType.all
           
           # get the indicators for all shape types
-          (index_first_ind..row.length).each do |ind_index|
+logger.debug "****************getting all indicators between columns #{index_first_ind} and #{row.length-1}"          
+          (index_first_ind..row.length-1).each do |ind_index|
+logger.debug "****************indicator index = #{ind_index}"          
   					indicator = Indicator.select("indicators.id, indicators.shape_type_id")
   						.includes(:core_indicator => :core_indicator_translations)
   						.where('indicators.event_id=:event_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name',
@@ -466,7 +466,7 @@ class Datum < ActiveRecord::Base
             if !indicator || indicator.empty?
               # indicator not found
 		logger.debug "++++indicator was not found"
-							msg = I18n.t('models.datum.msgs.indicator_not_found', :name => ind_name)
+							msg = I18n.t('models.datum.msgs.indicator_not_found', :name => row[ind_index])
 							raise ActiveRecord::Rollback
 							return msg
             else
@@ -490,12 +490,14 @@ class Datum < ActiveRecord::Base
 				# get the shape type id
 				shape_type = shape_types.select{|x| x.name_singular == row[idx_shape_type].strip}
 
-				if shape_type.nil?
+				if shape_type.nil? || shape_type.empty?
 		logger.debug "++++ shape type was not found"
 	  		  msg = I18n.t('models.datum.msgs.no_shape_db', :row_num => n)
 			    raise ActiveRecord::Rollback
 	  		  return msg
 	  		end
+	  		
+	  		shape_type = shape_type.first
 
 	logger.debug "++++shape found, checking for common values"
         if row[idx_common_id].nil? || row[idx_common_name].nil?
@@ -507,7 +509,7 @@ logger.debug "++++**missing data in row"
 	
 	logger.debug "++++ common values found, processing indicators"
 				i = index_first_ind
-        (index_first_ind..row.length).each do |ind_index|
+        (index_first_ind..row.length-1).each do |ind_index|
           if !row[ind_index].nil?
             # get the indicator id
             indicator_id = indicators[ind_index-index_first_ind].select{|x| x.shape_type_id == shape_type.id}
@@ -518,22 +520,16 @@ logger.debug "++++**missing data in row"
 							raise ActiveRecord::Rollback
 							return msg
 						end
-#########						
-# TODO - determine if what to check for existing data record
-=begin
-										alreadyExists = Datum.select("data.id").joins(:datum_translations)
-											.where(:data => {:indicator_id => indicator.first.id},
-												:datum_translations => {
-													:locale => 'en',
-													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
-													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip})
-=end													
-########	
+
             # save the data record
-						datum = LiveDatum.new
+						datum = Datum.new
 						datum.data_set_id = dataset.id
 						datum.indicator_id = indicator_id
-						datum.value = row[ind_index].strip if !row[ind_index].nil? && row[ind_index].downcase.strip != "null"
+            if row[ind_index] || row[ind_index].downcase.strip == "null" || row[ind_index].downcase.strip == I18n.t('app.msgs.no_data')
+						  datum.value = nil
+						else
+						  datum.value = row[ind_index].strip 
+						end
             datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
             datum.en_common_name = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
             datum.ka_common_id = datum.en_common_id
@@ -548,9 +544,9 @@ logger.debug "++++**missing data in row"
 					    return msg
 						end
           end
-          	puts "******** time to process row: #{Time.now-startRow} seconds"
-			      puts "************************ total time so far : #{Time.now-start} seconds"
         end
+      	puts "******** time to process row: #{Time.now-startRow} seconds"
+	      puts "************************ total time so far : #{Time.now-start} seconds"
       end
       
   logger.debug "++++updating ka records with ka text in shape_names"
@@ -558,9 +554,9 @@ logger.debug "++++**missing data in row"
 			# ka translation is hardcoded as en in the code above
 			# update all ka records with the apropriate ka translation
 			# update common ids
-			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_id = sn.ka where dt.locale = 'ka' and dt.common_id = sn.en")
+			ActiveRecord::Base.connection.execute("update data as dt, shape_names as sn set dt.ka_common_id = sn.ka where dt.ka_common_id = sn.en")
 			# update common names
-			ActiveRecord::Base.connection.execute("update datum_translations as dt, shape_names as sn set dt.common_name = sn.ka where dt.locale = 'ka' and dt.common_name = sn.en")
+			ActiveRecord::Base.connection.execute("update data as dt, shape_names as sn set dt.ka_common_name = sn.ka where dt.ka_common_name = sn.en")
       puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 		end
@@ -677,7 +673,7 @@ logger.debug "++++**missing data in row"
 				sql << "group by et.name, stt.name_singular, d.#{I18n.locale}_common_name, d.#{I18n.locale}_common_name "
 				sql << "order by et.name, stt.name_singular, d.#{I18n.locale}_common_name "
 
-				data = LiveDatum.find_by_sql([sql, :event_id => event_id,
+				data = Datum.find_by_sql([sql, :event_id => event_id,
 					:shape_type_id => shape_type_id, :locale => I18n.locale,
 					:common_ids => shapes.collect(&:shape_common_id),
 					:common_names => shapes.collect(&:shape_common_name)])
