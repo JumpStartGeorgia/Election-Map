@@ -1,22 +1,22 @@
-var f_style_backup,
-container = $('#data-table-container');
+var f_style_backup;
 
-
+function reset_data_table ()
+{
+  // reset the data table to the loading state
+  $('#data-table-container #loading_image').css('display', 'block');
+  $('#data-table-container #blur_table_image').css('display', 'block');
+  $('#data-table-container #data-table').empty();    
+}
 function load_data_table ()
 {
-	//$('head').append('<link href="/assets/data_table/style.css" media="screen" rel="stylesheet" type="text/css" />');
-
+  // get the data and load it
   $.get(gon.data_table_path, function (data)
   {
-    container.css({height: 'auto'});
-    container.children().each(function(){
-      $(this).css('display', 'none');
-    });
-    container.append(data);    
-    //container.slideDown(5000, 'linear');
+    $('#data-table-container').css({height: 'auto'});
+    $('#data-table-container #loading_image').css('display', 'none');
+    $('#data-table-container #blur_table_image').css('display', 'none');
+    $('#data-table-container #data-table').append(data);    
   });
-
-  //$('body').append('<script src="/assets/data_table.js" type="text/javascript"></script>');
 }
 
 

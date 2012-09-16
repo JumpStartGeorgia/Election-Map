@@ -544,7 +544,7 @@ logger.debug " - no matching event found!"
 
 		# if summary view type, set indicator_description for legend title
 		if params[:view_type] == @summary_view_type_name
-			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular_possessive)
+			gon.summary_indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular_possessive)
 		end
 =begin
 		# indicator scales
@@ -562,7 +562,11 @@ logger.debug " - no matching event found!"
 		# data table
     iid = (params[:indicator_id].nil? ? 'null' : params[:indicator_id])
     vt = (params[:view_type].nil? ? 'null' : params[:view_type])
-		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id], :event_id => params[:event_id], :shape_id => params[:shape_id], :shape_type_id => params[:shape_type_id], :indicator_id => iid, :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id, :view_type => vt, :summary_view_type_name => @summary_view_type_name)
+		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id], 
+		  :event_id => params[:event_id], :shape_id => params[:shape_id], 
+		  :shape_type_id => params[:shape_type_id], :indicator_id => iid, 
+		  :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id, 
+		  :view_type => vt, :summary_view_type_name => @summary_view_type_name)
 
 		gon.dt_highlight_shape = (params[:highlight_shape].nil? ? false : params[:highlight_shape])
 

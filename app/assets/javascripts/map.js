@@ -399,11 +399,33 @@ if (gon.openlayers){
 
 					// move the title_location into the data json
 					json_shape_data.title_location = feature.attributes.title_location;
+					
+					// if this is summary set indicator description from gon variable
+      		if (json_data["view_type"] == gon.summary_view_type_name) {
+      		  json_data["indicator"]["description"] = gon.summary_indicator_description
+    		  }
 				}
 			}
 		}
 		return features;
 	}
+
+  // create the scales and legend 
+  function create_scales_legend(){
+    // empty existing legend content
+    $("#indicator_description").empty();
+    $("#legend").empty();
+          
+		// if this is summary view, create the scales
+		create_summary_scales();
+	  // add style map
+	  vector_child.styleMap = build_indicator_scale_styles();
+		vector_child.redraw();
+		// now that the child vector is loaded, lets show the legend
+		draw_legend();
+		// now load the values for the hidden form
+		load_hidden_form();
+  }
 
 	// load the features for the children into the vector_child layer
 	function load_vector_child(resp){
@@ -414,15 +436,9 @@ if (gon.openlayers){
   		json_data = data;
   		// add the features to the vector layer
   		vector_child.addFeatures(bindDataToShapes(resp.features));
-  		// if this is summary view, create the scales
-  		create_summary_scales();
-  	  // add style map
-  	  vector_child.styleMap = build_indicator_scale_styles();
-  		vector_child.redraw();
-  		// now that the child vector is loaded, lets show the legend
-  		draw_legend();
-  		// now load the values for the hidden form
-  		load_hidden_form();
+
+      // create the scales and legend
+      create_scales_legend();
 
   		// indicate that the child layer has loaded
   		// - do not wait for the datatable to be loaded
@@ -451,8 +467,8 @@ if (gon.openlayers){
 	// run code after the parent and child vector layers are loaded
 	function after_vector_layers_loaded(){
 		if (vector_parent_loaded && vector_child_loaded) {
+			$('#map-loading').fadeOut(100);
 			// if gon.dt_highlight_shape exists, highlight the shape and turn on the popup
-			$('#map-loading').fadeOut(1000);//, function (){ $(this).remove(); });
 			if (gon.dt_highlight_shape)
 			{
 		    if (typeof highlight_shape == 'function')
@@ -523,6 +539,15 @@ if (gon.openlayers){
 		} else {
 			// no legend
 			legend.innerHTML = "";
+		}
+
+    // show the indicator descritpion if provided
+		if (json_data["indicator"]["description"]) {
+			$('#indicator_description').append(json_data["indicator"]["description"]);
+			$('#indicator_description').slideDown(500);
+		} else {
+			$('#indicator_description').innerHTML = "";
+			$('#indicator_description').hide(0);
 		}
 
 		$('#legend_container').slideDown(500);
@@ -896,7 +921,7 @@ if (gon.openlayers){
 		    $("#hidden_form_map_title").val(gon.map_title);
 				$("#hidden_form_indicator_name").val(json_data["indicator"]["name"]);
 				$("#hidden_form_indicator_name_abbrv").val(json_data["indicator"]["name_abbrv"]);
-				$("#hidden_form_indicator_description").val(json_data["indicator"]["description"]);
+			  $("#hidden_form_indicator_description").val(json_data["indicator"]["description"]);
 				$("#hidden_form_event_name").val(gon.event_name);
 				$("#hidden_form_scales").val(scales.join("||"));
 				$("#hidden_form_colors").val(colors.join("||"));
