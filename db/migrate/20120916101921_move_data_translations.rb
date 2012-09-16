@@ -1,19 +1,22 @@
 class MoveDataTranslations < ActiveRecord::Migration
   def up
-    # for each event, create a dataset record and add the id to the data records
-    Event.all.each do |event|
-      puts "processing event #{event.name}"
+    connection = ActiveRecord::Base.connection()
+    puts "moving en data fields"
+    connection.execute("update data as d, datum_translations as dt
+    set d.en_common_id = dt.common_id, d.en_common_name = dt.common_name
+    where d.id = dt.datum_id
+    and dt.locale = 'en'")    
 
-      connection = ActiveRecord::Base.connection()
-      sql = "update data set data_set_id = #{dataset.id} "
-      sql << "where indicator_id in (select id from indicators where event_id = #{event.id})"
-      connection.execute(sql)          
-    end
+    puts "moving ka data fields"
+    connection.execute("update data as d, datum_translations as dt
+    set d.ka_common_id = dt.common_id, d.ka_common_name = dt.common_name
+    where d.id = dt.datum_id
+    and dt.locale = 'ka'")    
   end
 
   def down
     # delete all translation values
-      connection = ActiveRecord::Base.connection()
-      connection.execute("update data set en_common_id = null, en_common_name = null, ka_common_id = null, ka_common_name = null")          
+    connection = ActiveRecord::Base.connection()
+    connection.execute("update data set en_common_id = null, en_common_name = null, ka_common_id = null, ka_common_name = null")          
   end
 end

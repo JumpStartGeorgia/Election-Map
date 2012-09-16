@@ -393,7 +393,7 @@ class Datum < ActiveRecord::Base
 	## load from csv
 	###################################
   def self.csv_header
-    "Event, Shape Type, Common ID, Common Name, Indicator, Value, Indicator, Value".split(",")
+    "Shape Type, Common ID, Common Name, Indicator1, Indicator2, Indicator3".split(",")
   end
 
   def self.download_header
