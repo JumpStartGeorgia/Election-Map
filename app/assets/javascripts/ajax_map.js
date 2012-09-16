@@ -4,22 +4,26 @@ $(function(){
    
    function indicator_click()
    {
-        $("#map-loading").fadeIn(100);
+        $("#map-loading").fadeIn(300);
         // reset the data table so the loading wheel appears
         reset_data_table();
 
         var link = $(this).attr('href'),
             id = $(this).attr('href').split('/')[11],
-            ths = $(this);               
+            ths = $(this),
+            query,new_url;
+                           
          if (link.search('summary') !== -1)
          {
             query = update_query_parameter(gon.indicator_menu_data_path_summary, 'indicator_type_id', 'indicator_type', id);
             gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', "null"); 
+            new_url = update_query_parameter(window.location.href, 'indicator_type_id', 'indicator_type', id);
          }
          else
          {
             query = update_query_parameter(gon.indicator_menu_data_path, 'indicator_id', 'indicator', id);      
             gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', id); 
+            new_url = update_query_parameter(window.location.href, 'indicator_id', 'indicator', id);
          }         
 
         $.get(query, function(data){   
@@ -53,7 +57,7 @@ $(function(){
           document.title = new_title;
       	 
       	 // update url
-      	 history.pushState(null, new_title, query);
+      	 history.pushState(null, new_title, new_url);
       	 
           $("#map-loading").fadeOut(100);
           
