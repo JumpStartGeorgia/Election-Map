@@ -27,10 +27,11 @@ en:
         map_level_id: "[Level] ID"
         map_level_name: "[Level] Name"
       msgs:
-        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
-        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        no_event_db: The event was not found in the database.
+        indicator_not_found: Indicator %{name} could not be found.
+        no_shape_spreadsheet: Row %{row_num} - The shape type was not found in the spreadsheet.
+        no_shape_db: Row %{row_num} - The shape type was not found in the database.
         missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
-        indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
         already_exists: Row %{row_num} already exists in the database.
         failed_set_event_flag: Row %{row_num} - The Has Official Data flag could not be sent for the event.

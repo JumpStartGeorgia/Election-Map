@@ -400,152 +400,159 @@ class Datum < ActiveRecord::Base
 		"#{I18n.t('models.datum.header.event')}, #{I18n.t('models.datum.header.map_level')}, #{I18n.t('models.datum.header.map_level_id')}, #{I18n.t('models.datum.header.map_level_name')}".split(",")
   end
 
-  def self.build_from_csv(file, deleteExistingRecord)
+  # csv must have the columns listed in csv_header var
+  # 
+  def self.build_from_csv(event_id, data_type, precincts_completed, precincts_total, timestamp, file)
 		start = Time.now
     infile = file.read
     n, msg = 0, ""
-    idx_event = 0
-    idx_shape_type = 1
-    idx_common_id = 2
-    idx_common_name = 3
-    index_first_ind = 4
+    event = nil
+    shape_types = nil
+    indicators = []
+    idx_shape_type = 0
+    idx_common_id = 1
+    idx_common_name = 2
+    index_first_ind = 3
+		original_locale = I18n.locale
+    I18n.locale = :en
 
 		Datum.transaction do
+			# create the dataset record
+			if event_id && data_type && timestamp
+				dataset = DataSet.new
+				dataset.event_id = event_id
+				dataset.data_type = data_type
+				dataset.precincts_completed = precincts_completed
+				dataset.precincts_total = precincts_total
+				dataset.timestamp = timestamp
+				if !dataset.save
+  logger.debug "++++could not save the dataset"
+    		  msg = I18n.t('models.data_set.msgs.dataset_not_save')
+		      raise ActiveRecord::Rollback
+          return msg
+				end
+			else
+  logger.debug "++++params not supplied to save the dataset"
+    		  msg = I18n.t('models.data_set.msgs.missing_params')
+		      raise ActiveRecord::Rollback
+          return msg
+			end
+
 		  CSV.parse(infile) do |row|
         startRow = Time.now
 		    n += 1
-		    # SKIP: header i.e. first row OR blank row
-		    next if n == 1 or row.join.blank?
   puts "**************** processing row #{n}"
-
-        if row[idx_event].nil? || row[idx_event].strip.length == 0 || row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
-  logger.debug "++++event or shape type was not found in spreadsheet"
-    		  msg = I18n.t('models.datum.msgs.no_event_shape_spreadsheet', :row_num => n)
-		      raise ActiveRecord::Rollback
-          return msg
-				else
-          startPhase = Time.now
-					# get the event id
-					event = Event.find_by_name(row[idx_event].strip)
-					# get the shape type id
-					shape_type = ShapeType.find_by_name_singular(row[idx_shape_type].strip)
-        	puts "**** time to get event and shape type: #{Time.now-startPhase} seconds"
-
-					if event.nil? || shape_type.nil?
+        if n == 1
+          # get the event
+					event = Event.find(event_id)
+          
+					if event.nil?
 			logger.debug "++++event or shape type was not found"
-		  		  msg = I18n.t('models.datum.msgs.no_event_shape_db', :row_num => n)
+		  		  msg = I18n.t('models.datum.msgs.no_event_db')
 				    raise ActiveRecord::Rollback
 		  		  return msg
-					else
-			logger.debug "++++event and shape found, procesing indicators"
-						finishedIndicators = false
-						i = index_first_ind
+          end
+          
+          # get all shape types now instead of doing a query for every row
+          shape_types = ShapeType.all
+          
+          # get the indicators for all shape types
+          (index_first_ind..row.length).each do |ind_index|
+  					indicator = Indicator.select("indicators.id, indicators.shape_type_id")
+  						.includes(:core_indicator => :core_indicator_translations)
+  						.where('indicators.event_id=:event_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name',
+  							:event_id => event.id, :name => row[ind_index], :locale => "en")
+            
+            if !indicator || indicator.empty?
+              # indicator not found
+		logger.debug "++++indicator was not found"
+							msg = I18n.t('models.datum.msgs.indicator_not_found', :name => ind_name)
+							raise ActiveRecord::Rollback
+							return msg
+            else
+              # save the indciator
+              indicators << indicator
+            end
+          end
+          
+          # go to the next row
+		      next
+        end
 
-						until finishedIndicators do
-							if row[i].nil? || row[i+1].nil?
-			logger.debug "++++found empty cells, stopping processing for row"
-							  # found empty cell, stop
-							  finishedIndicators = true
-							else
-              	puts "******** loading next indicator in row"
-		            # only conintue if required fields provided
-		            if row[idx_common_id].nil? || row[idx_common_name].nil?
-		        		  msg = I18n.t('models.datum.msgs.missing_data_spreadsheet', :row_num => n)
-		  logger.debug "++++**missing data in row"
-		              raise ActiveRecord::Rollback
-		              return msg
-		            else
-                  startPhase = Time.now
-									# see if indicator already exists for the provided event and shape_type
-									indicator = Indicator.select("indicators.id")
-										.includes(:core_indicator => :core_indicator_translations)
-										.where('indicators.event_id=:event_id and indicators.shape_type_id=:shape_type_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name',
-											:event_id => event.id, :shape_type_id => shape_type.id, :name => row[i].strip, :locale => "en")
-                	puts "******** time to look for exisitng indicator: #{Time.now-startPhase} seconds"
 
-									if indicator.nil? || indicator.empty?
-					logger.debug "++++indicator was not found"
-										msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
-										raise ActiveRecord::Rollback
-										return msg
-									else
-					logger.debug "++++indicator found, checking if data exists"
-                    startPhase = Time.now
-										# check if data already exists
+        if row[idx_shape_type].nil? || row[idx_shape_type].strip.length == 0
+  logger.debug "++++shape type was not found in spreadsheet"
+    		  msg = I18n.t('models.datum.msgs.no_shape_spreadsheet', :row_num => n)
+		      raise ActiveRecord::Rollback
+          return msg
+				end
+				
+				# get the shape type id
+				shape_type = shape_types.select{|x| x.name_singular == row[idx_shape_type].strip}
+
+				if shape_type.nil?
+		logger.debug "++++ shape type was not found"
+	  		  msg = I18n.t('models.datum.msgs.no_shape_db', :row_num => n)
+			    raise ActiveRecord::Rollback
+	  		  return msg
+	  		end
+
+	logger.debug "++++shape found, checking for common values"
+        if row[idx_common_id].nil? || row[idx_common_name].nil?
+    		  msg = I18n.t('models.datum.msgs.missing_data_spreadsheet', :row_num => n)
+logger.debug "++++**missing data in row"
+          raise ActiveRecord::Rollback
+          return msg
+	      end
+	
+	logger.debug "++++ common values found, processing indicators"
+				i = index_first_ind
+        (index_first_ind..row.length).each do |ind_index|
+          if !row[ind_index].nil?
+            # get the indicator id
+            indicator_id = indicators[ind_index-index_first_ind].select{|x| x.shape_type_id == shape_type.id}
+          
+						if indicator_id.nil?
+		logger.debug "++++indicator was not found"
+							msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
+							raise ActiveRecord::Rollback
+							return msg
+						end
+#########						
+# TODO - determine if what to check for existing data record
+=begin
 										alreadyExists = Datum.select("data.id").joins(:datum_translations)
 											.where(:data => {:indicator_id => indicator.first.id},
 												:datum_translations => {
 													:locale => 'en',
 													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
 													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip})
-
-                  	puts "******** time to look for exisitng data item: #{Time.now-startPhase} seconds"
-
-				            # if the datum already exists and deleteExistingRecord is true, delete the datum
-				            if !alreadyExists.nil? && alreadyExists.length > 0 && deleteExistingRecord
-					logger.debug "+++++++ deleting existing #{alreadyExists.length} datum records "
-					              alreadyExists.each do |exists|
-				                  Datum.destroy (exists.id)
-                        end
-				                alreadyExists = nil
-				            end
-
-										if alreadyExists.nil? || alreadyExists.empty?
-					logger.debug "++++data does not exist, save it"
-					            startPhase = Time.now
-											# populate record
-											datum = Datum.new
-											datum.indicator_id = indicator.first.id
-											datum.value = row[i+1].strip if !row[i+1].nil? && row[i+1].downcase.strip != "null"
-
-											# add translations
-											I18n.available_locales.each do |locale|
-			logger.debug "++++ - adding translations for #{locale}"
-												datum.datum_translations.build(:locale => locale,
-													:common_id => row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip,
-													:common_name => row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip)
-											end
-                    	puts "******** time to build data object: #{Time.now-startPhase} seconds"
-
-
-				logger.debug "++++saving record"
-				              startPhase = Time.now
-											if datum.valid?
-												datum.save
-
-                    logger.debug "++++updating event.has_live_data to true"
-                        event.has_official_data = true
-                        if !event.save
-                    logger.debug "++++ - error setting event.has_live_data "
-                  		    msg = I18n.t('models.datum.msgs.failed_set_event_flag', :row_num => n)
-                  		    raise ActiveRecord::Rollback
-                  		    return msg
-                        end
-											else
-												# an error occurred, stop
-										    msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)
-										    raise ActiveRecord::Rollback
-										    return msg
-											end
-                    	puts "******** time to save data item: #{Time.now-startPhase} seconds"
-
-											i+=2 # move on to the next set of indicator/value pairs
-										else
-				logger.debug "++++**record already exists!"
-											msg = I18n.t('models.datum.msgs.already_exists', :row_num => n)
-											raise ActiveRecord::Rollback
-											return msg
-										end
-									end
-								end
-							end
+=end													
+########	
+            # save the data record
+						datum = LiveDatum.new
+						datum.data_set_id = dataset.id
+						datum.indicator_id = indicator_id
+						datum.value = row[ind_index].strip if !row[ind_index].nil? && row[ind_index].downcase.strip != "null"
+            datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
+            datum.en_common_name = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
+            datum.ka_common_id = datum.en_common_id
+            datum.ka_common_name = datum.en_common_name
+	
+						if datum.valid?
+							datum.save
+						else
+							# an error occurred, stop
+					    msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)
+					    raise ActiveRecord::Rollback
+					    return msg
 						end
-					end
-				end
-			  puts "************ time to process row: #{Time.now-startRow} seconds"
-			  puts "************************ total time so far : #{Time.now-start} seconds"
-			end
-
+          end
+          	puts "******** time to process row: #{Time.now-startRow} seconds"
+			      puts "************************ total time so far : #{Time.now-start} seconds"
+        end
+      end
+      
   logger.debug "++++updating ka records with ka text in shape_names"
       startPhase = Time.now
 			# ka translation is hardcoded as en in the code above
@@ -559,6 +566,10 @@ class Datum < ActiveRecord::Base
 		end
     logger.debug "++++procssed #{n} rows in CSV file"
   	puts "****************** time to build_from_csv: #{Time.now-start} seconds"
+
+		# reset the locale
+		I18n.locale = original_locale
+
     return msg
   end
 
