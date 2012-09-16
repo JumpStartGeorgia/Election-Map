@@ -145,11 +145,14 @@ class Datum < ActiveRecord::Base
   	  # get the event
   	  event = Event.find(event_id)
   	  
+  	  # get indicator type
+  	  indicator_type = IndicatorType.find(indicator_type_id)
+  	  
       # add info about this data
   	  # add the indicator info
   	  results["indicator"] = Hash.new
       results["indicator"]["name"] = nil
-			results["indicator"]["name_abbrv"] = nil
+			results["indicator"]["name_abbrv"] = indicator_type.nil? ? nil : indicator_type.summary_name
 			results["indicator"]["description"] = nil
 			results["indicator"]["number_format"] = nil
       results["indicator"]["scales"] = [{:name => IndicatorScale::NO_DATA_TEXT, :color => IndicatorScale::NO_DATA_COLOR }]

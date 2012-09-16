@@ -36,7 +36,24 @@ $(function(){
             $(value).attr('class', 'not_active');
           });
           ths.attr('class', 'active');
+          
+          // update page title
+          var seperator = ' > ';
+          var new_title = '';
+          var old_title_ary = document.title.split(seperator);
+          for(var i=0; i<old_title_ary.length;i++){
+           if (i==1)
+            new_title += json_data["indicator"]["name_abbrv"];
+           else
+            new_title += old_title_ary[i];
+  
+            if (i < old_title_ary.length-1)
+              new_title += seperator;
+          }
+          document.title = new_title;
       	 
+      	 // update url
+      	 history.pushState(null, new_title, query);
       	 
           $("#map-loading").fadeOut(100);
           
