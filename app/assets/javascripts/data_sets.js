@@ -13,6 +13,23 @@ $(document).ready(function(){
 		{
 			$('#data_set_timestamp').datepicker("setDate", new Date(gon.timestamp));
 		}
+
+    
+		// if the form is loading with data, make sure the correct fields are showing
+		if ($('input:radio[name=data_set[data_type]]:checked').val() === $('#data_type_official').val()) {
+      $('#live_fields').hide();
+		} else if ($('input:radio[name=data_set[data_type]]:checked').val() === $('#data_type_official').val()) {
+      $('#live_fields').show();
+	  }
+
+		$('#data_set_data_type_official').change(function() {
+      $('#live_fields').hide();
+		});
+		$('#data_set_data_type_live').change(function() {
+      $('#live_fields').show();
+		});
+
+
   }
 
 	if(gon.load_data_dataset){

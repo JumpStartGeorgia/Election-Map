@@ -15,13 +15,15 @@
   					<% event_type["events"].each do |event| %>
   						<% is_active = event["id"].to_s == params[:event_id].to_s ? "active" : "not_active" %>
   						<li>
-  							<%
-  								 index = event["url"].index(">")
-  									if index
-  										url = event["url"].insert(index, "class=\"#{is_active}\" title=\"#{strip_tags(event["description"])}\"")
-  									end
-  							%>
-  							<%= url %>
+  		          <%= event["name"] %>
+                <% if event["url_official"] && !event["url_official"].empty? %>
+                  <%= link_to(image_tag("menu_official.png"),
+                      event["url_official"], :title => strip_tags(event["description"]))%>
+                <% end %>
+                <% if event["url_live"] && !event["url_live"].empty? %>
+                  <%= link_to(image_tag("menu_live.png"),
+                      event["url_live"], :title => strip_tags(event["description"]))%>
+                <% end %>
   						</li>
   					<% end %>
   				</ul>

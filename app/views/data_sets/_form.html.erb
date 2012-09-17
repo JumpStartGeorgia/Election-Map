@@ -3,8 +3,11 @@
 
 	<%= f.inputs do %>
     <h2><%= @data_set.event.name %></h2>
-		<%= f.input :precincts_completed, :as => :number, :input_html => { :size => 10 } %>
-		<%= f.input :precincts_total, :as => :number, :input_html => { :size => 10 } %>
+		<%= f.input :data_type, :as => :radio, :collection => Datum::DATA_TYPE %>
+		<div id="live_fields" style="display:none;">
+		<%= f.input :precincts_completed, :as => :string, :input_html => { :size => 20 } %>
+		<%= f.input :precincts_total, :as => :string, :input_html => { :size => 20 } %>
+		</div>
 		<%= f.input :timestamp, :as => :string, :input_html => { :size => 20 } %>
 		<%= f.input :show_to_public, :as => :radio %>
 	<% end %>

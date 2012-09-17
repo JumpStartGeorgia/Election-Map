@@ -97,11 +97,24 @@ logger.debug "---********----- event type cache"
 							e = Hash.new
 							type["events"] << e
 							e["id"] = event.id
-							e["url"] = view_context.link_to(event.name, indicator_map_path(
-								:event_id => event.id, :event_type_id => event.event_type_id,
-								:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
-								:only_path => false))
+              e["name"] = event.name
 							e["description"] = event.description
+              e["url_official"] = nil
+              e["url_live"] = nil
+              if event.has_official_data
+  							e["url_official"] = view_context.url_for(indicator_map_path(
+  								:event_id => event.id, :event_type_id => event.event_type_id,
+  								:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
+  						    :data_type => Datum::DATA_TYPE[:official],
+  								:only_path => false))
+              end
+              if event.has_live_data
+  							e["url_live"] = view_context.url_for(indicator_map_path(
+  								:event_id => event.id, :event_type_id => event.event_type_id,
+  								:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
+  						    :data_type => Datum::DATA_TYPE[:live],
+  								:only_path => false))
+              end
 						end
 					end
 				end
