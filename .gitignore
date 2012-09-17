@@ -20,6 +20,7 @@
 
 # ignore the json data files
 /public/json/*
+
 # ignore the system folder
 /public/system/*
 

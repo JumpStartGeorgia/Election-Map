@@ -239,15 +239,21 @@ en:
       js_link_text: Built by JumpStart Georgia
     event_menu:
       header: Elections
-    unsupported_browser:
-      title: Unsupported Browser
-      p1: We are sorry to report that your browser is out of date and will not properly render the content from this website.
-      p2: On the bright side, there are several free browsers that you can download that are compatible with this site.
-      chrome: Chrome
-      firefox: Firefox
-      ie: Internet Explorer (Windows only)
-      opera: Opera
-      Safari: Safari
+    error:
+      unsupported_browser_title: Unsupported Browser
+      unsupported_browser_p1: We are sorry to report that your browser is out of date and will not properly render the content from this website.
+      unsupported_browser_p2: On the bright side, there are several free browsers that you can download that are compatible with this site.
+      unsupported_browser_chrome: Chrome
+      unsupported_browser_firefox: Firefox
+      unsupported_browser_ie: Internet Explorer (Windows only)
+      unsupported_browser_opera: Opera
+      unsupported_browser_Safari: Safari
+      500_title: "We're sorry, but something went wrong."
+      500_p1: "We've been notified about this issue and we'll take a look at it shortly."
+      404_title: "The page you were looking for doesn't exist."
+      404_p1: "You may have mistyped the address or the page may have moved."
+      unknown_title: "We're sorry, but something went wrong."
+      unknown_p1: "We've been notified about this issue and we'll take a look at it shortly."
       ndi_alt: National Democratic Institute
       ndi_title: National Democratic Institute
       signed_in: Signed in as

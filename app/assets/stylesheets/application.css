@@ -213,53 +213,34 @@ ol.standard li {
   margin-bottom: 5px;
 }
 
-#map-container .controls .pan a
-{
-  width: 18px;
-  height: 18px;
-  background-image: url(/assets/map-move-south.png);
-}
-
 #map-container .controls .pan .north
 {
-  transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-  -moz-transform: rotate(180deg);
-  -webkit-transform: rotate(180deg);
-  -o-transform: rotate(180deg);
+  width: 22px;
+  height: 12px;
+  background-image: url(/assets/top.png);
 }
 
 #map-container .controls .pan .west
 {
-  transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-  -webkit-transform: rotate(90deg);
-  -o-transform: rotate(90deg);
+  width: 21px;
+  height: 20px;
+  background-image: url(/assets/left.png);
   float: left;
 }
 
 #map-container .controls .pan .east
 {
-  transform: rotate(270deg);
-  -ms-transform: rotate(270deg);
-  -moz-transform: rotate(270deg);
-  -webkit-transform:rotate(270deg);
-  -o-transform: rotate(270deg);
+  width: 21px;
+  height: 20px;
+  background-image: url(/assets/right.png);
   float: right;
 }
 
 #map-container .controls .pan .south
 {
-}
-
-#export img {
-opacity:0.7;
-filter:alpha(opacity=70); /* For IE8 and earlier */
-}
-#export img:hover {
-opacity:1.0;
-filter:alpha(opacity=100); /* For IE8 and earlier */
+  width: 22px;
+  height: 12px;
+  background-image: url(/assets/bottom.png);
 }
 
 #map-loading

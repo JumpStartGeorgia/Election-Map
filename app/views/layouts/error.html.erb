@@ -1,10 +1,20 @@
+<% if @error_type == "unsupported_browser"
+  @page_title = t('.unsupported_browser_title')
+elsif @error_type == "500"
+  @page_title = t('.500_title')
+elsif @error_type == "404"
+  @page_title = t('.404_title')
+else
+  @page_title = t('.unknown_title')
+end %>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= "#{t('.title')} > #{t('app.common.app_name')}" %></title>
+    <title><%= "#{@page_title} > #{t('app.common.app_name')}" %></title>
     <%= csrf_meta_tags %>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -35,21 +45,25 @@
     <%= favicon_link_tag '/favicon.ico', :rel => 'shortcut icon' %>
   </head>
   <body>
-		<div id="wrapper">
+		<div id="wrapper_error">
       <div class="navbar navbar-fixed-top">
         <!-- Navbar header -->
         <div class="navbar-inner-head navbar-inner">
           <div class="container-fluid">
             <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),
-  								:title=> t('.title'), :class=>"brand")%>
+  								:title=> @page_title, :class=>"brand")%>
 
-            <ul class="nav pull-right">
-  						<% I18n.available_locales.each do |locale| %>
-  							<% if locale != I18n.locale %>
-  								<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
-  							<% end %>
-  						<% end %>
-            </ul>
+		        <div class="header-nav-collapse nav-collapse">
+		          <ul class="nav pull-right">
+								<li><%= link_to t(".news"), news_index_path %></li>
+								<li><%= link_to t(".data_archives"), data_archives_path %></li>
+								<% I18n.available_locales.each do |locale| %>
+									<% if locale != I18n.locale %>
+										<li><%= link_to t("app.language.#{locale}"), params.merge(:locale => locale) %></li>
+									<% end %>
+								<% end %>
+		          </ul>
+						</div>
           </div>
         </div>
 			</div>
@@ -58,28 +72,45 @@
 		    <div class="content">
 		      <div class="row-fluid">
 		         <div class="span12">
+								<% if @error_type == "unsupported_browser" %>
+                 <h1><%= t('.unsupported_browser_title') %></h1>
 
-                 <h1><%= t('.title') %></h1>
-
-									<p><%= t('.p1') %></p>
-									<p><%= t('.p2') %></p>
+									<p><%= t('.unsupported_browser_p1') %></p>
+									<p><%= t('.unsupported_browser_p2') %></p>
 									<ul class="standard">
 										<li>
-											<a href="http://www.google.com/chrome/"><%= t('.chrome') %></a>
+											<a href="http://www.google.com/chrome/"><%= t('.unsupported_browser_chrome') %></a>
 										</li>
 										<li>
-											<a href="http://www.mozilla.org/firefox/new/"><%= t('.firefox') %></a>
+											<a href="http://www.mozilla.org/firefox/new/"><%= t('.unsupported_browser_firefox') %></a>
 										</li>
 										<li>
-											<a href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie/"><%= t('.ie') %></a>
+											<a href="http://windows.microsoft.com/en-US/internet-explorer/downloads/ie/"><%= t('.unsupported_browser_ie') %></a>
 										</li>
 										<li>
-											<a href="http://www.opera.com/download/"><%= t('.opera') %></a>
+											<a href="http://www.opera.com/download/"><%= t('.unsupported_browser_opera') %></a>
 										</li>
 										<li>
-											<a href="http://support.apple.com/downloads/#internet"><%= t('.safari') %></a>
+											<a href="http://support.apple.com/downloads/#internet"><%= t('.unsupported_browser_safari') %></a>
 										</li>
 									</ul>
+
+								<% elsif @error_type == "500" %>
+									<h1><%= t('.500_title') %></h1>
+
+									<p><%= t('.500_p1') %></p>
+
+								<% elsif @error_type == "404" %>
+									<h1><%= t('.404_title') %></h1>
+
+									<p><%= t('.404_p1') %></p>
+
+								<% else %>
+									<h1><%= t('.unknown_title') %></h1>
+
+									<p><%= t('.unknown_p1') %></p>
+
+							<% end %>
 		          </div>
 		      </div><!--/row-->
 		    </div><!--/content-->
@@ -90,24 +121,45 @@
     <footer class="container-fluid">
 		  <div class="row-fluid">
 				<div class="ndi-logo span2">
-					<a href="http://www.ndi.org" target="_blank">
-						<img src="/assets/ndi-logo.png"/>
-					</a>
+					<%= link_to(image_tag("ndi-logo.png"), "http://www.ndi.org", :target => "_blank") %>
 				</div>
 				<div class="footer-nav span8">
-					<p>
-						<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
-						<a>|</a>
-						<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
-						<a>|</a>
-						<%= link_to t('.contact'), contact_path %>
-					</p>
+	        <a id="footer_collapsed_menu" class="btn btn-navbar" data-target=".footer-nav-collapse" data-toggle="collapse">
+						<%= image_tag("footer_collapsed_menu.png") %>
+					</a>
+	        <div class="footer-nav-collapse nav-collapse">
+						<ul class="nav">
+							<li>
+								<%= link_to t('.about'), view_pages_path(:name => "about", :layout => "fancybox"), :class => "fancybox" %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t('.data_source'), view_pages_path(:name => "data_source", :layout => "fancybox"), :class => "fancybox" %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t('.contact'), contact_path %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t(".news"), news_index_path %>
+							</li>
+							<li class="spacer">|</li>
+							<li>
+								<%= link_to t(".data_archives"), data_archives_path %>
+							</li>
+						</ul>
+					</div>
 				</div>
        <div class="js-logo span2">
-				 <p><%= t(".js_link_text") %>:</p>
-				 <a href="http://www.jumpstart.ge" target="_blank">
-						 <img src="/assets/jumpstart-logo.png"/>
-				 </a>
+					<ul>
+						<li id="left">
+							<%= t(".js_link_text") %>:
+						</li>
+						<li id="right">
+							<%= link_to(image_tag("jumpstart-logo.png"), "http://www.jumpstart.ge", :target => "_blank") %>
+						</li>
+					</ul>
 				</div>
 	    </div><!--/row-->
     </footer>

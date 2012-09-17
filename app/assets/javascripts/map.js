@@ -664,16 +664,16 @@ if (gon.openlayers){
 		    $(this).remove();
 		});
 	}
-	
+
 	var max_X, max_X_lat, max_Y, max_Y_lon, min_X, min_X_lat, min_Y, min_Y_lon;
-   
+
    function getLimits(feature_vertices)
    {
       max_X = 0;
       max_Y = 0;
       min_X = 99999999;
       min_Y = 99999999;
-       		      		      		      
+
       for (var i=0;i<feature_vertices.length;i++)
       {
          if (feature_vertices[i].x > max_X)
@@ -681,165 +681,59 @@ if (gon.openlayers){
             max_X = feature_vertices[i].x;
             max_X_lat = feature_vertices[i].y;
          }
-         
+
          if (feature_vertices[i].y > max_Y)
          {
             max_Y = feature_vertices[i].y;
             max_Y_lon = feature_vertices[i].x;
          }
-         
+
          if (feature_vertices[i].x < min_X)
          {
             min_X = feature_vertices[i].x;
             min_X_lat = feature_vertices[i].y;
          }
-         
+
          if (feature_vertices[i].y < min_Y)
          {
             min_Y = feature_vertices[i].y;
             min_Y_lon = feature_vertices[i].x;
          }
-      }	
+      }
    }
 
 	// Create the popup for the feature
+	var popup;
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
-		/*if (typeof(stright) === "undefined")
-		  stright = false;
-
-		if (stright && $(".olPopupCloseBox:first").length !== 0)
-		  return ;
-
-		removeFeaturePopups();
-
-		var popup = new OpenLayers.Popup("Feature Popup",
-			feature_data.geometry.bounds.getCenterLonLat(),
-			new OpenLayers.Size(400, 300),
-			"",
-			true);
-		//popup.panMapIfOutOfView = true;
-		map.addPopup(popup);
-
-		if (close_button){
-		  var popup_close = $(".olPopupCloseBox:first");
-		  popup_close.css({
-		    "width": "30px",
-		    "height": "30px",
-		    "background-image": "url('/assets/fancybox.png')",
-		    "background-position": "right top",
-		    "cursor": "pointer"
-		  }).click(close_button_func);
-		}
 
 
-		// Popup coordination
-		var jq_popup = $(".olPopup:first"),
-		    jq_popup_content = $(".olPopupContent:first"),
-		    jq_map = $("#map"),
-		    jq_ol_container = jq_map.find("div:first").find("div:first"),
-		    jq_popup_offset = {
-		      top: function(use_def){
-		       return mouse.Y-jq_map.offset().top-jq_popup.height()-10+parseInt(jq_ol_container.css('top'))*(-1);
-		      },
-		      left: function(use_def){
-		        return mouse.X-jq_map.offset().left-jq_popup.width()/2+parseInt(jq_ol_container.css('left'))*(-1);
-		      }
-		    };
-
-		/*jq_popup.css({
-		  left: jq_popup_offset.left(true),
-		  top: jq_popup_offset.top(true),
-		  width: 0,
-		  height: 0
-		});*\/
-		if (feature_data.attributes.results.length > 0)
-		{
-		  new MapPopup().processJSON(document.getElementsByClassName("olPopupContent")[0], feature_data.attributes.results, {
-		    limit: 5
-		  });
-
-		  jq_popup_content.css({
-		    width: window.maxSVGWidth,
-		    height: window.maxSVGHeight
-		  });
-
-		  jq_popup.css({
-		    width: window.maxSVGWidth,
-		    height: window.maxSVGHeight
-		  });
-
-		  if (!stright)
-		  {
-		    jq_popup.css({
-		      left: jq_popup_offset.left(false),
-		      top: jq_popup_offset.top(false)
-		    });
-		  }
-
-		  jq_popup.css((function(){
-		    // initialize nesecary variables
-		    var pos = {},
-		        position_left = parseInt(jq_popup.css('left')),
-		        position_top = parseInt(jq_popup.css('top')),
-		        popup_width = parseInt(jq_popup.width()),
-		        popup_height = parseInt(jq_popup.height()),
-		        parent_width = parseInt(jq_map.width()),
-		        parent_height = parseInt(jq_map.height()),
-		        ol_container_left = parseInt(jq_ol_container.css('left'))*(-1),
-		        ol_container_top = parseInt(jq_ol_container.css('top'))*(-1);
-
-		    // calculate positions
-		      if (position_left+popup_width > parent_width)
-		        position_left -= (position_left+popup_width-parent_width)+ol_container_left;
-
-		      if (position_left < 0)
-		        position_left += position_left*(-1)+ol_container_left;
-
-		      if (position_top+popup_height > parent_height)
-		        position_top -= (position_top+popup_height-parent_height)+ol_container_top;
-
-		      if (position_top < 0)
-		        position_top += position_top*(-1)+ol_container_top;
-
-		    // set final positions
-		      pos.left = position_left;
-		      pos.top = position_top;
-
-		    return pos;
-		  }).apply());
-		}*/
-		
-		
-		
-		var popup;
-	   
 		if (typeof(stright) === "undefined")
 		  stright = false;
 		if (stright && $(".olPopupCloseBox:first").length !== 0)
 		  return ;
 
       // remove all popups
-		removeFeaturePopups();
-      
-      
+			removeFeaturePopups();
+
+
       // create popup
-                             
+
       var feature = feature_data,
           feature_vertices = feature.geometry.getVertices(),
           feature_center = feature_data.geometry.bounds.getCenterLonLat();
-          
-	   
-      getLimits(feature_vertices);	      		      		      		      		                 
-      
+
+
+      getLimits(feature_vertices);
+
       var y = max_Y-min_Y;
       var x = max_X-min_X;
-      
-   
-	   $("#popup_svg").empty();       
+
+
+	   $("#popup_svg").empty();
       new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
                 limit: 5
-      });         
+      });
       popup = new OpenLayers.Popup.FramedCloud("Feature Popup",
 		//new OpenLayers.LonLat(max_Y_lon, max_Y),
 		//feature_center,
@@ -847,89 +741,38 @@ if (gon.openlayers){
 		null,
 		$("#popup_svg").html(),
 		null,
-		true);		
-      popup.autoSize = true;      
-      
+		true);
+      popup.autoSize = true;
+
+			// always have the popup above the mouse
       popup.calculateRelativePosition = function(){
          return "tr";
       };
-	   map.addPopup(popup);	
-	   
-	   
-	   function PopupIndicatorCheckPosition()
-	   {
-	      var map = $("#map"),
-	          popup = $(".olPopup:first"),
-	          indicators = $("#indicator_menu_scale");
-	      if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) > map.width() && indicators.height() === 405)    
-	      {
-	         indicators_toggle();
-	      }
-	      else if (parseInt(popup.css('left')) + parseInt(popup.width()) + 
-	          parseInt(indicators.width()) + parseInt(indicators.css('right')) <= map.width() && indicators.height() === 40)
-	      {
-	         indicators_toggle();	        
-	      }
-	   }
-	   
+
+	   map.addPopup(popup);
+
+
 	   PopupIndicatorCheckPosition();
-	   
-	              		
-	              		
-	   /*var popup_arrow = $(".olPopup:first").children("div:first").children("div:last");
-	      	     	      
-	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "max")
-	      {	         
-	         popup.lonlat = new OpenLayers.LonLat(min_Y_lon, min_Y);
-   	      popup.updatePosition(); 
-   	      taken = "min";
-	      }
-	      
-	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "min")
-	      {
-            popup.lonlat = new OpenLayers.LonLat(min_X, min_X_lat);
-   	      popup.updatePosition(); 
-   	      taken = "max";
-	      }
-	      
-	      if (parseInt(popup_arrow.css("bottom")) === 0 && taken === "max")
-	      {
-            popup.lonlat = new OpenLayers.LonLat(max_X, max_X_lat);
-   	      popup.updatePosition(); 
-   	      taken = "max";
-	      } 	      
-	      
-	      
-	      if (parseInt(popup_arrow.css("top")) === 0 && taken === "min")
-	      {
-            popup.lonlat = new OpenLayers.LonLat(max_Y_lon, max_Y);
-   	      popup.updatePosition(); 
-   	      taken = "max";
-	      }*/
-	      
-	      
-	      
-		
-		
-		
-      // close button
+
+		// when mouse moves, also move the popup
+		map.events.register('mousemove', map, updatePopUpPosition);
+
+    // close button
 		if (close_button)
 		{
 		  var popup_close = $(".olPopupCloseBox:first");
 		  popup_close.css({
 		    "width": "30px",
 		    "height": "30px",
-		    "background-image": "url('/assets/fancybox.png')",
+		    "background-image": "url('/assets/popup-close.png')",
 		    "background-position": "right top",
+				"background-repeat": "no-repeat",
 		    "cursor": "pointer"
 		  }).click(close_button_func);
 		}
 
-
-
-
 	}
+
 
 	// show the popups
 	function hover_handler (feature)
