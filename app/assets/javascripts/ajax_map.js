@@ -71,6 +71,7 @@ $(function(){
       var link = $(this).attr('href'),
           id = link.split('/')[11];
       indicator_click($(this), link, id);
+      return false;
    });
    
    var facebook = $("a[title=facebook]"),
