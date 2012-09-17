@@ -72,12 +72,11 @@ logger.debug "////////////////////////// BROWSER NOT SUPPORTED"
   def set_event_types
 logger.debug "---********----- event type cache"
     @event_types = Rails.cache.fetch("event_types_#{I18n.locale}") {
-			x = EventType.all
-			# do this to force a call to the db to get the data
+			event_types = EventType.with_public_events
+      # do this to force a call to the db to get the data
 			# so the data will actually be cached
-			x.collect{|x| x}
+      event_types.collect{|x| x}
 		}
-#    @event_types = EventType.all
   end
 
 	# format:
@@ -93,7 +92,7 @@ logger.debug "---********----- event type cache"
 					type["name"] = event_type.name
 					type["events"] = []
 
-					event_type.events.get_events_by_type(event_type.id).each do |event|
+					event_type.events.get_public_events_by_type(event_type.id).each do |event|
 						if !event.shape_id.nil?
 							e = Hash.new
 							type["events"] << e

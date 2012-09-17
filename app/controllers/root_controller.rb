@@ -13,6 +13,10 @@ class RootController < ApplicationController
 		flag_redirect = false
 
 		# get the event type id
+    if params[:event_type_id].nil? && @event_types.empty?
+logger.debug "////////////// event type id does not exist and no event types with public events exist"
+# TODO - what to do?      
+    end
 logger.debug "////////////// getting event type id"
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
 
@@ -416,8 +420,6 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
   # GET /admin
   # GET /admin.json
   def admin
-logger.debug "env to email: #{ENV['APPLICATION_ERROR_FROM_EMAIL']}"
-logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @event }

@@ -34,6 +34,20 @@ class Event < ActiveRecord::Base
 		.order("menu_live_events.menu_start_date #{order}, event_date, event_translations.name")
 	end
 
+
+  def self.get_public_events_by_type(event_type_id)
+    if event_type_id
+			Rails.cache.fetch("events_by_type_#{event_type_id}_#{I18n.locale}") {
+				x = Event.with_translations(I18n.locale)
+				.where("event_type_id = ? and shape_id is not null and (has_official_data = 1 || has_live_data = 1)", event_type_id)
+				.order("event_date DESC, event_translations.name ASC")
+				# do this to force a call to the db to get the data
+				# so the data will actually be cached
+				x.collect{|x| x}
+			}
+    end
+  end
+
 	# get all events that have datasets
 	def self.data_sets(order = "asc")
 		with_translations(I18n.locale)
@@ -53,11 +67,6 @@ class Event < ActiveRecord::Base
 				# so the data will actually be cached
 				x.collect{|x| x}
 			}
-=begin
-      includes(:event_translations)
-      .where(:event_type_id => event_type_id)
-      .order("event_date DESC, event_translations.name ASC")
-=end
     end
   end
 
