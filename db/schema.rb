@@ -275,23 +275,6 @@ ActiveRecord::Schema.define(:version => 20120916101921) do
 
   add_index "indicators", ["event_id", "shape_type_id", "core_indicator_id"], :name => "inds_event_shape_type_core_ind"
 
-  create_table "live_data", :force => true do |t|
-    t.integer  "indicator_id"
-    t.decimal  "value",          :precision => 16, :scale => 4
-    t.string   "en_common_id"
-    t.string   "en_common_name"
-    t.string   "ka_common_id"
-    t.string   "ka_common_name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "data_set_id"
-  end
-
-  add_index "live_data", ["data_set_id", "indicator_id"], :name => "index_live_data_ids"
-  add_index "live_data", ["en_common_id", "en_common_name"], :name => "index_live_data_en_common"
-  add_index "live_data", ["ka_common_id", "ka_common_name"], :name => "index_live_data_ka_common"
-  add_index "live_data", ["value"], :name => "index_live_data_on_value"
-
   create_table "locales", :force => true do |t|
     t.string   "language"
     t.string   "name"

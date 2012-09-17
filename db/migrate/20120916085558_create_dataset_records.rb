@@ -8,19 +8,20 @@ class CreateDatasetRecords < ActiveRecord::Migration
       dataset.event_id = event.id
       dataset.data_type = Datum::DATA_TYPE[:official]
       dataset.timestamp = event.event_date.next_month # it takes 3 weeks to make data official
+			dataset.show_to_public = true
       dataset.save
-      
+
       # add dataset id to data
       connection = ActiveRecord::Base.connection()
       sql = "update data set data_set_id = #{dataset.id} "
       sql << "where indicator_id in (select id from indicators where event_id = #{event.id})"
-      connection.execute(sql)          
+      connection.execute(sql)
     end
   end
 
   def down
     # delete all dataset values
       connection = ActiveRecord::Base.connection()
-      connection.execute("update data set data_set_id = null")          
+      connection.execute("update data set data_set_id = null")
   end
 end
