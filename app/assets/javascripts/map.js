@@ -704,6 +704,8 @@ if (gon.openlayers){
 
 	// Create the popup for the feature
 	var popup;
+	var qwer;
+
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
 
@@ -736,8 +738,8 @@ if (gon.openlayers){
       });
       popup = new OpenLayers.Popup.FramedCloud("Feature Popup",
 		//new OpenLayers.LonLat(max_Y_lon, max_Y),
-		//feature_center,
-		new OpenLayers.LonLat(min_X+x/100*50, min_Y+y/100*70),
+		feature_center,
+//		new OpenLayers.LonLat(min_X+x/100*50, min_Y+y/100*70),
 		null,
 		$("#popup_svg").html(),
 		null,
@@ -751,8 +753,8 @@ if (gon.openlayers){
 
 	   map.addPopup(popup);
 
-
-	   PopupIndicatorCheckPosition();
+     // pass in center of feature as starting point
+	   PopupIndicatorCheckPosition(map.getViewPortPxFromLonLat(feature_center));
 
 		// when mouse moves, also move the popup
 		map.events.register('mousemove', map, updatePopUpPosition);
@@ -772,7 +774,6 @@ if (gon.openlayers){
 		}
 
 	}
-
 
 	// show the popups
 	function hover_handler (feature)
