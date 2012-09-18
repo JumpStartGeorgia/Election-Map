@@ -18,26 +18,26 @@ values (@event_id, 'ka', '2012 წლის აგვისტო ამომ�
 insert into core_indicators (indicator_type_id, number_format, created_at, updated_at)
 values (1, null, now(), now());
 
-set @id = LAST_INSERT_ID();
+set @unv_num_id = LAST_INSERT_ID();
 
 insert into core_indicator_translations(core_indicator_id, locale, name, name_abbrv, description, created_at, updated_at)
-values(@id, 'en', 'Unverified by Voter List Commission (#)', 'Unverified (#)', 'Unverified by Voter List Commission (#)', now(), now());
+values(@unv_num_id, 'en', 'Unverified by Voter List Commission (#)', 'Unverified (#)', 'Unverified by Voter List Commission (#)', now(), now());
 
 insert into core_indicator_translations(core_indicator_id, locale, name, name_abbrv, description, created_at, updated_at)
-values(@id, 'ka', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (#)', 'დაუზუსტებელი (#)', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (#)', now(), now());
+values(@unv_num_id, 'ka', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (#)', 'დაუზუსტებელი (#)', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (#)', now(), now());
 
 
 # unverified %
 insert into core_indicators (indicator_type_id, number_format, created_at, updated_at)
 values (1, '%', now(), now());
 
-set @id = LAST_INSERT_ID();
+set @unv_perc_id = LAST_INSERT_ID();
 
 insert into core_indicator_translations(core_indicator_id, locale, name, name_abbrv, description, created_at, updated_at)
-values(@id, 'en', 'Unverified by Voter List Commission (%)', 'Unverified (%)', 'Unverified by Voter List Commission (%)', now(), now());
+values(@unv_perc_id, 'en', 'Unverified by Voter List Commission (%)', 'Unverified (%)', 'Unverified by Voter List Commission (%)', now(), now());
 
 insert into core_indicator_translations(core_indicator_id, locale, name, name_abbrv, description, created_at, updated_at)
-values(@id, 'ka', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (%)', 'დაუზუსტებელი (%)', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (%)', now(), now());
+values(@unv_perc_id, 'ka', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (%)', 'დაუზუსტებელი (%)', 'ამომრჩევეთა სიების დაზუსტების უზრუნველყოფის კომისიის მიერ დაუზუსტებელი ამომრჩევლები (%)', now(), now());
 
 ################################
 # add custom view
@@ -62,54 +62,54 @@ values
 (@event_id, 1, 13, 2, now(), now()),
 (@event_id, 1, 14, 3, now(), now()),
 (@event_id, 1, 12, 4, now(), now()),
-(@event_id, 1, 66, 5, now(), now()),
-(@event_id, 1, 67, 6, now(), now()),
+(@event_id, 1, @unv_num_id, 5, now(), now()),
+(@event_id, 1, @unv_perc_id, 6, now(), now()),
 (@event_id, 1, 17, 7, now(), now()),
 
 (@event_id, 13, 1, 1, now(), now()),
 (@event_id, 13, 13, 2, now(), now()),
 (@event_id, 13, 14, 3, now(), now()),
 (@event_id, 13, 12, 4, now(), now()),
-(@event_id, 13, 66, 5, now(), now()),
-(@event_id, 13, 67, 6, now(), now()),
+(@event_id, 13, @unv_num_id, 5, now(), now()),
+(@event_id, 13, @unv_perc_id, 6, now(), now()),
 (@event_id, 13, 17, 7, now(), now()),
 
 (@event_id, 14, 1, 1, now(), now()),
 (@event_id, 14, 13, 2, now(), now()),
 (@event_id, 14, 14, 3, now(), now()),
 (@event_id, 14, 12, 4, now(), now()),
-(@event_id, 14, 66, 5, now(), now()),
-(@event_id, 14, 67, 6, now(), now()),
+(@event_id, 14, @unv_num_id, 5, now(), now()),
+(@event_id, 14, @unv_perc_id, 6, now(), now()),
 (@event_id, 14, 17, 7, now(), now()),
 
 (@event_id, 12, 1, 1, now(), now()),
 (@event_id, 12, 13, 2, now(), now()),
 (@event_id, 12, 14, 3, now(), now()),
 (@event_id, 12, 12, 4, now(), now()),
-(@event_id, 12, 66, 5, now(), now()),
-(@event_id, 12, 67, 6, now(), now()),
+(@event_id, 12, @unv_num_id, 5, now(), now()),
+(@event_id, 12, @unv_perc_id, 6, now(), now()),
 (@event_id, 12, 17, 7, now(), now()),
 
 (@event_id, 17, 1, 1, now(), now()),
 (@event_id, 17, 13, 2, now(), now()),
 (@event_id, 17, 14, 3, now(), now()),
 (@event_id, 17, 12, 4, now(), now()),
-(@event_id, 17, 66, 5, now(), now()),
-(@event_id, 17, 67, 6, now(), now()),
+(@event_id, 17, @unv_num_id, 5, now(), now()),
+(@event_id, 17, @unv_perc_id, 6, now(), now()),
 (@event_id, 17, 17, 7, now(), now()),
 
-(@event_id, 66, 1, 1, now(), now()),
-(@event_id, 66, 13, 2, now(), now()),
-(@event_id, 66, 14, 3, now(), now()),
-(@event_id, 66, 12, 4, now(), now()),
-(@event_id, 66, 66, 5, now(), now()),
-(@event_id, 66, 67, 6, now(), now()),
-(@event_id, 66, 17, 7, now(), now()),
+(@event_id, @unv_num_id, 1, 1, now(), now()),
+(@event_id, @unv_num_id, 13, 2, now(), now()),
+(@event_id, @unv_num_id, 14, 3, now(), now()),
+(@event_id, @unv_num_id, 12, 4, now(), now()),
+(@event_id, @unv_num_id, @unv_num_id, 5, now(), now()),
+(@event_id, @unv_num_id, @unv_perc_id, 6, now(), now()),
+(@event_id, @unv_num_id, 17, 7, now(), now()),
 
-(@event_id, 67, 1, 1, now(), now()),
-(@event_id, 67, 13, 2, now(), now()),
-(@event_id, 67, 14, 3, now(), now()),
-(@event_id, 67, 12, 4, now(), now()),
-(@event_id, 67, 66, 5, now(), now()),
-(@event_id, 67, 67, 6, now(), now()),
-(@event_id, 67, 17, 7, now(), now());
+(@event_id, @unv_perc_id, 1, 1, now(), now()),
+(@event_id, @unv_perc_id, 13, 2, now(), now()),
+(@event_id, @unv_perc_id, 14, 3, now(), now()),
+(@event_id, @unv_perc_id, 12, 4, now(), now()),
+(@event_id, @unv_perc_id, @unv_num_id, 5, now(), now()),
+(@event_id, @unv_perc_id, @unv_perc_id, 6, now(), now()),
+(@event_id, @unv_perc_id, 17, 7, now(), now());
