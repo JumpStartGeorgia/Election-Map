@@ -1,9 +1,9 @@
 $(function(){
    var indicators = $("#indicator_menu_scale .indicator_links a"),
-       new_url;
+       new_url, highlighted_shape;
    
    
-   function indicator_click(ths, link, id)
+   function indicator_click(ths, link, id, removehighlight)
    {
         $("#map-loading").fadeIn(300);
         // reset the data table so the loading wheel appears
@@ -62,15 +62,24 @@ $(function(){
           
           // update the data table
           load_data_table();
+          
+          if (removehighlight)
+          {
+             map.controls[1].activate();
+             $.each(map.popups, function(index, value){
+                map.removePopup(map.popups[index]);
+             });
+             unhighlight_shape(highlighted_shape);
+          }
+          
         });
-
-        return false;
    }
    
    indicators.click(function(){
       var link = $(this).attr('href'),
           id = link.split('/')[11];
-      indicator_click($(this), link, id);
+      indicator_click($(this), link, id, true);      
+      return false;
    });
    
    var facebook = $("a[title=facebook]"),
@@ -87,29 +96,70 @@ $(function(){
    });
 
    var data_table = $("table#data-table");
-   function data_table_link_click()
+   
+   function highlight_indicator(ths)
+   {
+      var indicators = $("#indicator_type_1 > .menu_list, #indicator_type_2 > .menu_list").find("li"),
+          indicator_id = (function(){
+            return ths.attr('href').split('/')[11];    
+          }).apply();
+
+      indicators.each(function(){         
+         ths = $(this).children("a:first");
+         if(parseInt(indicator_id) === parseInt((function(){
+            return ths.attr('href').split('/')[11];
+         }).apply()))
+         {
+            $(this).children("a:first").removeClass('not_active').addClass('active');
+            var tab_li = $("a[href=#" + $(this).parent().parent().attr("id") + "]:first");
+            tab_li.click();
+         }
+         else
+         {
+            $(this).children("a:first").removeClass('active').addClass('not_active');
+         }
+      });
+   }
+   
+   
+   function data_table_link_click(ths)
    {  
-      var link = $(this).attr('href'),
+      var link = ths.attr('href'),
           link_arr = link.split('/'),
           id = link_arr[11],
-          shape = link_arr[link_arr.length-1];
-
-      indicator_click($(this), link_arr.pop().pop().join(''), id);
-      gon.dt_highlight_shape = shape;
-      highlight_shape();
-      return false;
+          shape = link_arr[link_arr.length-1];            
+      indicator_click(ths, link, id, false);
+      
+      gon.dt_highlight_shape = decodeURIComponent(shape);
+      mapFreeze((function(){
+        var features = map.layers[2].features;
+        for (i = 0, num = features.length; i < num; i ++)
+        {
+          if (gon.dt_highlight_shape == features[i].data.common_name)
+          {
+            highlighted_shape = features[i];
+            return highlighted_shape;
+          }         
+        }
+      }).apply());
+      highlight_shape();    
+      highlight_indicator(ths);              
    }
+   
    data_table.live({
       'DOMNodeInserted': function()
       {
-         var data_table_links = $(this).children("tbody").find("a");
+         var data_table_links = $(this).children("tbody:first").find("a");
          if (data_table_links.length > 0)
-         {
+         {           
             data_table_links.each(function(){
-               $(this).click(data_table_link_click);
+               $(this).click(function(){
+                  data_table_link_click($(this));
+                  return false;
+               });               
             });
          }
       }
-   });
+   }); 
    
 });

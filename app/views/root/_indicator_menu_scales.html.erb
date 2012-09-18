@@ -6,10 +6,13 @@
 		<div class="toggle">
 		  <div id="indicator_menu_tabs">
 			  <ul>
-				  <% @indicator_types.each do |indicator_type| %>
+				  <% 
+				     @indicator_types.each do |indicator_type| %>
 					  <% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s ? "ui-tabs-selected ui-state-active" : "" %>
 					  <li class="<%=is_active%>"><%= link_to indicator_type.name, "#indicator_type_#{indicator_type.id}" %></li>
-				  <% end %>
+				  <% end
+
+				   %>
 			  </ul>
 			  <% @indicator_types.each do |indicator_type| %>
 				  <div id="<%= "indicator_type_#{indicator_type.id}"%>" class="indicator_links">
