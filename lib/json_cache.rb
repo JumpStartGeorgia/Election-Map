@@ -147,22 +147,28 @@ module JsonCache
 						I18n.available_locales.each do |locale|
 							# load the children shapes
               if is_custom_view
-							  uri = URI("#{domain}/#{locale}/json/summary_custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}")
+							  uri_shape = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}")
+							  uri_data = URI("#{domain}/#{locale}/json/summary_custom_children_data/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}")
 							else
-							  uri = URI("#{domain}/#{locale}/json/summary_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}")
+							  uri_shape = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}")
+							  uri_data = URI("#{domain}/#{locale}/json/summary_children_data/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}")
 						  end
-							Net::HTTP.get(uri)
+							Net::HTTP.get(uri_shape)
+							Net::HTTP.get(uri_data)
 						end
 					elsif !indicator_types[0].core_indicators.nil? && !indicator_types[0].core_indicators.empty? &&
 								!indicator_types[0].core_indicators[0].indicators.nil? && !indicator_types[0].core_indicators[0].indicators.empty?
 						I18n.available_locales.each do |locale|
 							# load the children shapes
 							if is_custom_view
-							  uri = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}")
+							  uri_shape = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}")
+							  uri_data = URI("#{domain}/#{locale}/json/custom_children_data/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}")
 							else
-							  uri = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}")
+							  uri_shape = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false")
+							  uri_data = URI("#{domain}/#{locale}/json/children_data/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/parent_clickable/false")
 						  end
-							Net::HTTP.get(uri)
+							Net::HTTP.get(uri_shape)
+							Net::HTTP.get(uri_data)
 						end
 					end
 					Rails.logger.debug "=================== "
@@ -236,11 +242,14 @@ module JsonCache
       				ind_start = Time.now
     					# load the children shapes
     					if is_custom_view
-							  uri = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}/custom_view/#{is_custom_view}")
+							  uri_shape = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}")
+							  uri_data = URI("#{domain}/#{locale}/json/custom_children_data/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}")
 							else
-							  uri = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator.id}/custom_view/#{is_custom_view}")
+							  uri_shape = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false")
+							  uri_data = URI("#{domain}/#{locale}/json/children_data/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}/parent_clickable/false")
     				  end
-							Net::HTTP.get(uri)
+							Net::HTTP.get(uri_shape)
+							Net::HTTP.get(uri_data)
       				Rails.logger.debug "=================== "
     					Rails.logger.debug "=================== time to load indicator #{indicator.id} for event #{event.id} was #{(Time.now-ind_start)} seconds"
     					Rails.logger.debug "=================== "
