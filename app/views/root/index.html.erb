@@ -1,167 +1,177 @@
 <% title @page_title %>
 
-<div id="shape_nav_social_links" class="row-fluid">
-	<div id="shape_layer_navigation" class="span9">
-   <ul class="clear">
-	   <% if @shape_types.length > 0 %>
-	      <%
-	         i = 0
-					 j = 0
-	         @shape_types.each do |type|
-	            if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?
-	               i += 1
-	            end
-	         end
-	      %>
-		   <% @shape_types.each do |type| %>
-			   <% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
-						<% j+=1 %>
-		         <li class="lev-ind">
-					   <% if type.has_children? %>
-					     <% if @summary_view_type_name == params[:view_type] %>
-				         <%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
-               <% else %>
-				         <%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
-               <% end %>
-					   <% else %>
-						   <%= type.name_singular %>
-					   <% end %>
+<% if @live_event_with_no_data %>
+  <div id="live_event_no_data" class="row-fluid">
+    <p>
+      <%= @live_event.name %> will have LIVE data updates starting on ...
+    </p>
+  </div>
+<% else %>
+  <div id="shape_nav_social_links" class="row-fluid">
+  	<div id="shape_layer_navigation" class="span9">
+     <ul class="clear">
+  	   <% if @shape_types.length > 0 %>
+  	      <%
+  	         i = 0
+  					 j = 0
+  	         @shape_types.each do |type|
+  	            if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?
+  	               i += 1
+  	            end
+  	         end
+  	      %>
+  		   <% @shape_types.each do |type| %>
+  			   <% if type.id == @child_shape_type_id || !type.descendant_ids.index(@child_shape_type_id).nil?%>
+  						<% j+=1 %>
+  		         <li class="lev-ind">
+  					   <% if type.has_children? %>
+  					     <% if @summary_view_type_name == params[:view_type] %>
+  				         <%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+                 <% else %>
+  				         <%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+                 <% end %>
+  					   <% else %>
+  						   <%= type.name_singular %>
+  					   <% end %>
 
-				   </li>
-           <% if j < i %>
-			      <li class="level-arrow">
-			         >
-			      </li>
-				   <% end %>
+  				   </li>
+             <% if j < i %>
+  			      <li class="level-arrow">
+  			         >
+  			      </li>
+  				   <% end %>
 
-			   <% end %>
-		   <% end %>
-	   <% end %>
-	   <% if @has_custom_view %>
-			<li class="switch_view">
-				<% if @summary_view_type_name == params[:view_type] %>
-					<%= link_to(image_tag("refresh.png",
-						:alt => t('app.buttons.custom_view',
-							:children_shapes => @custom_child_shape_type_name_plural,
-							:parent_shape => @parent_shape_type_name_singular)),
-						summary_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
-						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
-							:children_shapes => @custom_child_shape_type_name_plural,
-							:parent_shape => @parent_shape_type_name_singular)) %>
-				<% else %>
-					<%= link_to(image_tag("refresh.png",
-						:alt => t('app.buttons.custom_view',
-							:children_shapes => @custom_child_shape_type_name_plural,
-							:parent_shape => @parent_shape_type_name_singular)),
-						indicator_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
-						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
-							:children_shapes => @custom_child_shape_type_name_plural,
-							:parent_shape => @parent_shape_type_name_singular)) %>
-				<% end %>
-			</li>
-		<% end %>
-   </ul>
-	</div>
-	<div id="social_links" class="span3">
-		<ul class="clear">
-			<li class="f">
-				<a href="<%= "http://www.facebook.com/share.php?u=#{request.protocol}#{request.host_with_port}#{request.fullpath}" %>" target="_blank" title="facebook"></a>
-			</li>
-			<li class="t">
-				<a href="https://twitter.com/share" target="_blank" title="twitter"></a>
-			</li>
-<%
+  			   <% end %>
+  		   <% end %>
+  	   <% end %>
+  	   <% if @has_custom_view %>
+  			<li class="switch_view">
+  				<% if @summary_view_type_name == params[:view_type] %>
+  					<%= link_to(image_tag("refresh.png",
+  						:alt => t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular)),
+  						summary_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
+  						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular)) %>
+  				<% else %>
+  					<%= link_to(image_tag("refresh.png",
+  						:alt => t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular)),
+  						indicator_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
+  						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular)) %>
+  				<% end %>
+  			</li>
+  		<% end %>
+     </ul>
+  	</div>
+  	<div id="social_links" class="span3">
+  		<ul class="clear">
+  			<li class="f">
+  				<a href="<%= "http://www.facebook.com/share.php?u=#{request.protocol}#{request.host_with_port}#{request.fullpath}" %>" target="_blank" title="facebook"></a>
+  			</li>
+  			<li class="t">
+  				<a href="https://twitter.com/share" target="_blank" title="twitter"></a>
+  			</li>
+  <%
 =begin %>
 			<li class="g">
 				<a href="<%= "https://plusone.google.com/_/+1/confirm?hl=en&url=#{request.protocol}#{request.host_with_port}#{request.fullpath}"%>" target="_blank" title="google+"></a>
 			</li>
 <%
 =end %>
-		</ul>
-	</div>
-</div>
-
-<div class="clear row-fluid">
-
-	<section id="map-container" class="group span12">
-
-    <div style="position: relative;">
-		  <div id="map"></div>
-		  <div class="controls">
-		    <div class="pan">
-		      <a class="north" href="javascript:;"></a>
-		      <div class="clear">
-	          <a class="west" href="javascript:;"></a>
-		        <a class="east" href="javascript:;"></a>
-		      </div>
-		      <a class="south" href="javascript:;"></a>
-		    </div>
-		    <div class="zoom">
-		      <a class="in" href="javascript:map.zoomIn();"></a>
-		      <a class="out" href="javascript:map.zoomOut();"></a>
-		    </div>
-		  </div>
-		  <div id="export">
-			   <p>Download:</p>
-
-			  <a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
-
-			  <%= link_to("XLS",
-				  download_data_xls_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
-				  :id => "export-data-xls", :title => t('app.buttons.download_xls')) %>
-
-			  <%= link_to("CSV",
-				  download_data_csv_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
-				  :id => "export-data-csv", :title => t('app.buttons.download_csv')) %>
-
-			  <%= link_to("?",
-					  view_pages_path(:name => "export_help", :layout => "fancybox"),
-						  :class => "fancybox", :title => t('app.buttons.download_help')) %>
-		  </div>
-		</div>
-
-		<div id="map-loading"></div>
-
-		<div id="map-title"><%= @map_title%></div>
-
-		<% if @custom_view_note %>
-			<div id="footnote">
-				<%= t('.footnote', :note => @custom_view_note) %>
-			</div>
-		<% end %>
-
-		<% if @event_description %>
-			<div id='event_description'>
-				<h3><%= "#{@event_name}:" %></h3>
-				<%= simple_format(@event_description, {}, :sanitize => false) %>
-			</div>
-		<% end %>
-
-  </section>
-
-  <%= render :partial => "root/indicator_menu_scales"%>
-
-</div>
-
-<div class="row-fluid">
-  <div id="data-table-container" class="span12">
-    <div class="loading"></div>
-    <img src="/assets/table-blur.jpg" width="100%" />
+  		</ul>
+  	</div>
   </div>
-</div>
+
+  <div class="clear row-fluid">
+
+  	<section id="map-container" class="group span12">
+
+      <div style="position: relative;">
+  		  <div id="map"></div>
+  		  <div class="controls">
+  		    <div class="pan">
+  		      <a class="north" href="javascript:;"></a>
+  		      <div class="clear">
+  	          <a class="west" href="javascript:;"></a>
+  		        <a class="east" href="javascript:;"></a>
+  		      </div>
+  		      <a class="south" href="javascript:;"></a>
+  		    </div>
+  		    <div class="zoom">
+  		      <a class="in" href="javascript:map.zoomIn();"></a>
+  		      <a class="out" href="javascript:map.zoomOut();"></a>
+  		    </div>
+  		  </div>
+  		  <div id="export">
+  			   <p>Download:</p>
+
+  			  <a href="javascript:;" id="export-map" title="<%= t('app.buttons.download_map') %>">SVG</a>
+
+  			  <%= link_to("XLS",
+  				  download_data_xls_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
+  				  :id => "export-data-xls", :title => t('app.buttons.download_xls')) %>
+
+  			  <%= link_to("CSV",
+  				  download_data_csv_path(:event_id => params[:event_id], :shape_type_id => @child_shape_type_id, :shape_id => params[:shape_id], :map_title => "placeholder", :event_name => "placeholder"),
+  				  :id => "export-data-csv", :title => t('app.buttons.download_csv')) %>
+
+  			  <%= link_to("?",
+  					  view_pages_path(:name => "export_help", :layout => "fancybox"),
+  						  :class => "fancybox", :title => t('app.buttons.download_help')) %>
+  		  </div>
+  		</div>
+
+  		<div id="map-loading"></div>
+
+  		<div id="map-title"><%= @map_title%></div>
+
+  		<% if @custom_view_note %>
+  			<div id="footnote">
+  				<%= t('.footnote', :note => @custom_view_note) %>
+  			</div>
+  		<% end %>
+
+  		<% if @event_description %>
+  			<div id='event_description'>
+  				<h3><%= "#{@event_name}:" %></h3>
+  				<%= simple_format(@event_description, {}, :sanitize => false) %>
+  			</div>
+  		<% end %>
+
+    </section>
+
+    <%= render :partial => "root/indicator_menu_scales"%>
+
+  </div>
+
+  <div class="row-fluid">
+    <div id="data-table-container" class="span12">
+      <div class="loading"></div>
+      <img src="/assets/table-blur.jpg" width="100%" />
+    </div>
+  </div>
 
 
-<%= form_tag "/#{I18n.locale}/export.svg", :method => :post, :id => "hidden_form" do %>
-	<%=	hidden_field_tag "hidden_form_parent_layer" %>
-	<%= hidden_field_tag "hidden_form_child_layer" %>
-	<%=	hidden_field_tag "hidden_form_map_title" %>
-	<%=	hidden_field_tag "hidden_form_indicator_name" %>
-	<%=	hidden_field_tag "hidden_form_indicator_name_abbrv" %>
-	<%=	hidden_field_tag "hidden_form_indicator_description" %>
-	<%=	hidden_field_tag "hidden_form_event_name" %>
-	<%=	hidden_field_tag "hidden_form_scales" %>
-	<%=	hidden_field_tag "hidden_form_colors" %>
-	<%=	hidden_field_tag "hidden_form_datetime" %>
-	<%=	hidden_field_tag "hidden_form_opacity" %>
+
+  <%= form_tag "/#{I18n.locale}/export.svg", :method => :post, :id => "hidden_form" do %>
+  	<%=	hidden_field_tag "hidden_form_parent_layer" %>
+  	<%= hidden_field_tag "hidden_form_child_layer" %>
+  	<%=	hidden_field_tag "hidden_form_map_title" %>
+  	<%=	hidden_field_tag "hidden_form_indicator_name" %>
+  	<%=	hidden_field_tag "hidden_form_indicator_name_abbrv" %>
+  	<%=	hidden_field_tag "hidden_form_indicator_description" %>
+  	<%=	hidden_field_tag "hidden_form_event_name" %>
+  	<%=	hidden_field_tag "hidden_form_scales" %>
+  	<%=	hidden_field_tag "hidden_form_colors" %>
+  	<%=	hidden_field_tag "hidden_form_datetime" %>
+  	<%=	hidden_field_tag "hidden_form_opacity" %>
+  <% end %>
+  <span id="hidden_span_width"></span>			
+
 <% end %>
-<span id="hidden_span_width"></span>			

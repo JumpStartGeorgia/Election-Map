@@ -1,5 +1,6 @@
 class MenuLiveEventsController < ApplicationController
   before_filter :authenticate_user!
+	cache_sweeper :menu_live_event_sweeper, :only => [:create, :update, :destroy]
 
   # GET /menu_live_events
   # GET /menu_live_events.json
@@ -51,7 +52,7 @@ class MenuLiveEventsController < ApplicationController
 
     respond_to do |format|
       if @live_event.save
-				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.live_event'))
+				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.menu_live_event'))
 				send_status_update(msg)
         format.html { redirect_to menu_live_events_path, notice: msg }
         format.json { render json: @live_event, status: :created, location: @live_event }
@@ -72,7 +73,7 @@ class MenuLiveEventsController < ApplicationController
 
     respond_to do |format|
       if @live_event.update_attributes(params[:menu_live_event])
-				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.live_event'))
+				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.menu_live_event'))
 				send_status_update(msg)
         format.html { redirect_to menu_live_events_path, notice: msg }
         format.json { head :ok }
@@ -92,7 +93,7 @@ class MenuLiveEventsController < ApplicationController
     @live_event = MenuLiveEvent.find(params[:id])
     @live_event.destroy
 
-		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.live_event'))
+		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.menu_live_event'))
 		send_status_update(msg)
     respond_to do |format|
       format.html { redirect_to menu_live_events_url }

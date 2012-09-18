@@ -21,36 +21,43 @@ logger.debug "////////////// getting event type id"
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
 
 		# get the current event
-logger.debug "////////////// getting current event"
+logger.debug "////////////// getting current event for event type #{params[:event_type_id]}"
 		event = get_current_event(params[:event_type_id], params[:data_type], params[:event_id])
 
 		if event.nil? || event.shape_id.nil?
 			# event could not be found or the selected event does not have a shape assigned to it
 			logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
-			flag_redirect = true
+			
+			# if this is a live event, mark flag to show user message that data does not exist yet and to come back
+			if params[:data_type] == Datum::DATA_TYPE[:live] && @live_event_menu.select{|x| x["id"] == params["event_id"]}
+			  logger.debug "+++++++++ this is live event but no data has been loaded yet"
+        @live_event_with_no_data = true
+        gon.live_event_with_no_data = true
+        @live_event = Event.find(params[:event_id])
+      else
+			  flag_redirect = true
+      end
 		else
 			# save the event name
 			@event_name = event.name
 			@event_description = event.description
 
-  		# save live event data if live data
-  		if params[:data_type] == Datum::DATA_TYPE[:live]
-				dataset = DataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
-				# if the data set id was not passed in or the dataset for the provided id could not be found,
-				# use the current live dataset
-        dataset = DataSet.current_dataset(event.id, params[:data_type]) if !dataset
-        if dataset && !dataset.empty?
-  		    @live_event_data_set_id = dataset.first.id
-  		    @live_event_precincts_percentage = dataset.first.precincts_percentage
-  		    @live_event_precincts_completed = dataset.first.precincts_completed
-  		    @live_event_precincts_total = dataset.first.precincts_total
-  		    @live_event_timestamp = dataset.first.timestamp
-  		  else
-    			# live dataset could not be found for event
-    			logger.debug "+++++++++ an active live data set could not be found for event"
-    			flag_redirect = true
-		    end
-  	  end
+  		# get data set info
+			dataset = DataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
+			# if the data set id was not passed in or the dataset for the provided id could not be found,
+			# use the current public dataset
+      dataset = DataSet.current_dataset(event.id, params[:data_type]) if !dataset
+      if dataset && !dataset.empty?
+        params[:data_set_id] = dataset.first.id.to_s
+		    @live_event_precincts_percentage = dataset.first.precincts_percentage
+		    @live_event_precincts_completed = dataset.first.precincts_completed
+		    @live_event_precincts_total = dataset.first.precincts_total
+		    @live_event_timestamp = dataset.first.timestamp
+		  else
+  			# dataset could not be found for event
+  			logger.debug "+++++++++ an public data set could not be found for event"
+  			flag_redirect = true
+	    end
 
       if !flag_redirect
   			# get the shape
@@ -236,7 +243,7 @@ logger.debug "////////////// getting current event"
 
 		# set js variables
 logger.debug "////////////// setting gon variables"
-    set_gon_variables if !flag_redirect
+    set_gon_variables if !flag_redirect && !@live_event_with_no_data
 
 logger.debug "//////////////////////////////////////////////////////// done with index action"
 
@@ -502,24 +509,24 @@ logger.debug " - no matching event found!"
   			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
-					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
 			elsif params[:view_type] == @summary_view_type_name
   			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
-					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
       elsif @is_custom_view
 				gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
 				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
 				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
-					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
   		else
   			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
   			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
   			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
-					:data_type => params[:data_type], :data_set_id => @live_event_data_set_id)
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
       end
 		end
 
@@ -562,7 +569,7 @@ logger.debug " - no matching event found!"
 			:shape_type_id => params[:shape_type_id], :indicator_id => iid,
 			:custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id,
 			:view_type => vt, :summary_view_type_name => @summary_view_type_name,
-			:data_type => params[:data_type], :data_set_id => @live_event_data_set_id
+			:data_type => params[:data_type], :data_set_id => params[:data_set_id]
 		)
 
 		gon.dt_highlight_shape = (params[:highlight_shape].nil? ? false : params[:highlight_shape])

@@ -29,9 +29,9 @@ class Event < ActiveRecord::Base
 	def self.active_live_events_menu(order = "asc")
 		with_translations(I18n.locale)
 		.joins(:menu_live_events)
-		.where("events.has_live_data = 1 and curdate() between menu_live_events.menu_start_date and menu_live_events.menu_end_date")
-		.where(:events => {:has_live_data => true})
+		.where("curdate() between menu_live_events.menu_start_date and menu_live_events.menu_end_date")
 		.order("menu_live_events.menu_start_date #{order}, event_date, event_translations.name")
+#		.where("events.has_live_data = 1 and curdate() between menu_live_events.menu_start_date and menu_live_events.menu_end_date")
 	end
 
 

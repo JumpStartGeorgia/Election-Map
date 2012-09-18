@@ -208,6 +208,7 @@ ka:
       menu_end_date: Live Menu End Date
       menu_live_event: Live Event Menu
       menu_live_events: Menu Live Events
+      live_events: Live Events
       data_set: Dataset
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
