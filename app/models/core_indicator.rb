@@ -10,9 +10,16 @@ class CoreIndicator < ActiveRecord::Base
   attr_accessible :indicator_type_id, :number_format, :color, :ancestry, :core_indicator_translations_attributes
   attr_accessor :locale
 
+	before_validation :reset_ancestry
+
   validates :indicator_type_id, :presence => true
 
   scope :with_colors , with_translations(I18n.locale).where("color is not null").order("color asc")
+
+	# if ancestry is '', make it nil
+	def reset_ancestry
+		self.ancestry = nil if self.ancestry.empty?
+	end
 
   def self.order_by_type_name
     with_translations(I18n.locale)
