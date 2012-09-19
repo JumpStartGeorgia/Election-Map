@@ -5,7 +5,7 @@ function reset_data_table ()
   // reset the data table to the loading state
   $('#data-table-container #loading_image').css('display', 'block');
   $('#data-table-container #blur_table_image').css('display', 'block');
-  $('#data-table-container #data-table').empty();    
+  $('#dt_ajax_replace').empty();
 }
 function load_data_table ()
 {
@@ -13,9 +13,11 @@ function load_data_table ()
   $.get(gon.data_table_path, function (data)
   {
     $('#data-table-container').css({height: 'auto'});
-    $('#data-table-container #loading_image').css('display', 'none');
-    $('#data-table-container #blur_table_image').css('display', 'none');
-    $('#data-table-container #data-table').append(data);    
+    $('#loading_image').hide();
+    $('#blur_table_image').hide();
+    $('#dt_ajax_replace').html(data);
+    dt.clean();
+    dt.init();
   });
 }
 

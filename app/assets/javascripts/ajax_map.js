@@ -122,8 +122,10 @@ $(function(){
    }
    
    
-   function data_table_link_click(ths)
-   {  
+   function data_table_link_click()
+   {
+      var ths = $(this);
+
       var link = ths.attr('href'),
           link_arr = link.split('/'),
           id = link_arr[11],
@@ -143,13 +145,16 @@ $(function(){
         }
       }).apply());
       highlight_shape();    
-      highlight_indicator(ths);              
+      highlight_indicator(ths);      
+
+      return false;
    }
    
    data_table.live({
       'DOMNodeInserted': function()
       {
-         var data_table_links = $(this).children("tbody:first").find("a");
+         var data_table_links = $(this).children("tbody:first").find("a").click(data_table_link_click);
+      /*
          if (data_table_links.length > 0)
          {           
             data_table_links.each(function(){
@@ -159,6 +164,7 @@ $(function(){
                });               
             });
          }
+      */
       }
    }); 
    

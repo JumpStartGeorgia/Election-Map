@@ -1,6 +1,17 @@
 var dt =
 {
 
+  clean: function ()
+  {
+    for (i in dt)
+    {
+      if (typeof dt[i] != 'function')
+      {
+        delete dt[i];
+      }
+    }
+  },
+
   init: function ()
   {
     dt.ph = $('#data-table');
@@ -46,7 +57,7 @@ console.log "headers = " + headers;
 */
     dt.ph.tablesorter({
 			// default sort = first column asc
-			sortList: [[0,0]],
+			// sortList: [[0,0]],              // for some reason this causes the apocalypse. commented out
       // some columns have ',' (e.g., 1,250) or '-' (e.g., 6-8) and
 			// this is causing the column to be sorted by string instead of number.
 			// this will remove those so the sorting is done properly
