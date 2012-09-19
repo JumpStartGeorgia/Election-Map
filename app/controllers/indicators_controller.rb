@@ -90,7 +90,7 @@ class IndicatorsController < ApplicationController
   # GET /indicators/download
   # GET /indicators/download.json
   def download
-    @events = Event.get_all_events
+    @events = Event.get_all_events_by_date
 
 		if request.post?
       event = nil

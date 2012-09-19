@@ -49,7 +49,7 @@ class ShapesController < ApplicationController
   # GET /shapes/delete.json
   def delete
 		gon.load_js_shape_delete = true
-		@events = Event.get_all_events
+		@events = Event.get_all_events_by_date
 
 		if request.post?
 			if params[:event_id].nil? || params[:event_id] == "" || params[:shape_type_id].nil? || params[:shape_type_id] == "0"

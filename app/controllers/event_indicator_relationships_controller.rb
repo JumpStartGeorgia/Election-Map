@@ -13,7 +13,7 @@ class EventIndicatorRelationshipsController < ApplicationController
   end
 
   def index
-		@events = Event.get_all_events.includes(:event_indicator_relationships)
+		@events = Event.get_all_events_by_date.includes(:event_indicator_relationships)
   end
 
 	def show
