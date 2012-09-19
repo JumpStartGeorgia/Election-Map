@@ -5,7 +5,7 @@ class Shape < ActiveRecord::Base
   has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type
   accepts_nested_attributes_for :shape_translations
-  attr_accessible :shape_type_id, :geometry, :shape_translations_attributes
+  attr_accessible :shape_type_id, :num_precincts, :geometry, :shape_translations_attributes
   attr_accessor :locale
 
   validates :shape_type_id, :geometry, :presence => true
@@ -417,7 +417,7 @@ class Shape < ActiveRecord::Base
           puts "************ time to process row: #{Time.now-startRow} seconds"
         end
 
-  logger.debug "++++updating ka records with ka text in shape_names"
+			  logger.debug "++++updating ka records with ka text in shape_names"
         startPhase = Time.now
 				# ka translation is hardcoded as en in the code above
 				# update all ka records with the apropriate ka translation
@@ -427,8 +427,12 @@ class Shape < ActiveRecord::Base
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_name = sn.ka where st.locale = 'ka' and st.common_name = sn.en")
 #      	puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
+			  logger.debug "++++add precinct counts"
+				# add precinct counts to each new shape file
+				add_precinct_count(root.id)
+
 			end
-  logger.debug "++++procssed #{n} rows in CSV file"
+		  logger.debug "++++procssed #{n} rows in CSV file"
 #	    puts "****************** time to build_from_csv: #{Time.now-start} seconds"
       return msg
     end
@@ -488,6 +492,49 @@ class Shape < ActiveRecord::Base
 				return msg
 			end
 			return msg
+		end
+
+		#######################
+		# compute number of precincts within each shape that belongs to the provided root shape
+		#######################
+		def self.add_precinct_count(root_id)
+			start = Time.now
+			shape = Shape.find(root_id)
+			shape_types = ShapeType.precincts
+			if shape && shape_types && !shape_types.empty?
+				# get number for root
+				shape.num_precincts = compute_number_precincts(shape.id, shape_types)
+				shape.save
+
+				# process each descendant that is not a precinct
+				descendants = shape.descendants.where("shape_type_id not in (:ids)", :ids => shape_types.collect(&:id))
+				descendants.each do |descendant|
+					descendant.num_precincts = compute_number_precincts(descendant.id, shape_types)
+					descendant.save
+				end
+			end
+			logger.debug "************* time to add precincts count to shape set was #{Time.now - start} seconds"
+		end
+
+		# compute number of precincts that are a child of each shape and add to record
+		def self.compute_number_precincts(shape_id, shape_types)
+			number = nil
+			if shape_types && !shape_types.empty?
+				number = Shape.find(shape_id).descendants.where("shape_type_id in (:ids)", :ids => shape_types.collect(&:id)).length
+			end
+			return number
+		end
+
+		# update precinct count for all shapes
+		def self.add_precinct_count_all_shapes
+			start = Time.now
+			shapes = Shape.where("ancestry is null")
+			if shapes && !shapes.empty?
+				shapes.each do |shape|
+					add_precinct_count(shape.id)
+				end
+			end
+			logger.debug "************* time to add precincts count to ALL shapes was #{Time.now - start} seconds"
 		end
 
 

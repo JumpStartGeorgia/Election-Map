@@ -6,6 +6,7 @@
     <th><%= t('app.common.name_singular')%></th>
     <th><%= t('app.common.name_singular_possessive')%></th>
     <th><%= t('app.common.name_plural')%></th>
+    <th><%= t('app.common.is_precinct')%></th>
     <th><%= t('app.common.parent_shape')%></th>
     <th></th>
     <th></th>
@@ -17,6 +18,7 @@
     <td><%= link_to shape_type.name_singular, shape_type %></td>
     <td><%= shape_type.name_singular_possessive %></td>
     <td><%= shape_type.name_plural %></td>
+    <td><%= shape_type.is_precinct %></td>
     <td><%= shape_type.parent.name_singular if !shape_type.parent.nil? %></td>
     <td><%= link_to t('app.buttons.edit'), edit_shape_type_path(shape_type), :class => 'btn btn-mini' %></td>
     <td><%= link_to t('app.buttons.delete'), shape_type, :confirm => t('app.msgs.delete_confirm'), :method => :delete,

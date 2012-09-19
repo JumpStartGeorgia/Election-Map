@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120919072456) do
+ActiveRecord::Schema.define(:version => 20120919083607) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -391,9 +391,11 @@ ActiveRecord::Schema.define(:version => 20120919072456) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "ancestry"
+    t.boolean  "is_precinct", :default => false
   end
 
   add_index "shape_types", ["ancestry"], :name => "index_shape_types_on_ancestry"
+  add_index "shape_types", ["is_precinct"], :name => "index_shape_types_on_is_precinct"
 
   create_table "shapes", :force => true do |t|
     t.integer  "shape_type_id"
@@ -401,6 +403,7 @@ ActiveRecord::Schema.define(:version => 20120919072456) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "ancestry"
+    t.integer  "num_precincts"
   end
 
   add_index "shapes", ["ancestry"], :name => "index_shapes_on_ancestry"

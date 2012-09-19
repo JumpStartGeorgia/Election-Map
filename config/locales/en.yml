@@ -210,6 +210,7 @@ en:
       menu_live_events: Menu Live Events
       live_events: Live Events
       data_set: Dataset
+      is_precinct: Is Precinct
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
