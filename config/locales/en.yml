@@ -321,6 +321,7 @@ en:
     index:
       export_link_text: Export Map
       footnote: "Note: %{note}"
+      live_event_available: "Please come back at %{time} to see the latest election results as the CEC releases them to the public."
     indicator_menu_scales:
       indicator_header: Indicators
   data:

@@ -27,7 +27,7 @@ class Event < ActiveRecord::Base
 	# get all events that have live accounts and are currently active
 	def self.active_live_events_menu(order = "asc")
 		with_translations(I18n.locale)
-		.joins(:menu_live_events)
+		.includes(:menu_live_events)
 		.where("curdate() between menu_live_events.menu_start_date and menu_live_events.menu_end_date")
 		.order("menu_live_events.menu_start_date #{order}, event_date, event_translations.name")
 #		.where("events.has_live_data = 1 and curdate() between menu_live_events.menu_start_date and menu_live_events.menu_end_date")

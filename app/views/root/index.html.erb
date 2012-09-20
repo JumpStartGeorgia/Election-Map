@@ -2,8 +2,11 @@
 
 <% if @live_event_with_no_data %>
   <div id="live_event_no_data" class="row-fluid">
+    <h2>
+      <%= @live_event_name %>
+    </h2>
     <p>
-      <%= @live_event.name %> will have LIVE data updates starting on ...
+      <%= t('.live_event_available', :time => l(@live_event_data_available, :format => :long))%>
     </p>
   </div>
 <% else %>

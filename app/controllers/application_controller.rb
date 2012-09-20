@@ -131,7 +131,7 @@ logger.debug "---********----- event type cache"
   end
 
 	# format:
-	# [ { id, url, description } ]
+	# [ { id, url, description, :date_available_at } ]
   def set_live_event_menu
 		json = Rails.cache.fetch("live_event_menu_json_#{I18n.locale}") {
 			json = []
@@ -146,7 +146,10 @@ logger.debug "---********----- event type cache"
 						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
 						:data_type => Datum::DATA_TYPE[:live],
 						:only_path => false))
+					e["name"] = event.name
 					e["description"] = event.description
+          e["data_available_at"] = nil
+					e["data_available_at"] = event.menu_live_events.first.data_available_at if event.menu_live_events && !event.menu_live_events.empty?
 				end
 			end
 			json

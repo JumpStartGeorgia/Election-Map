@@ -42,6 +42,7 @@ class MenuLiveEventsController < ApplicationController
     gon.edit_menu_live_event = true
 		gon.menu_start_date = @live_event.menu_start_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_start_date
 		gon.menu_end_date = @live_event.menu_end_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_end_date
+		gon.data_available_at = @live_event.data_available_at.strftime('%m/%d/%Y %H:%M') if @live_event.data_available_at
 
   end
 
@@ -60,6 +61,7 @@ class MenuLiveEventsController < ApplicationController
         gon.edit_menu_live_event = true
     		gon.menu_start_date = @live_event.menu_start_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_start_date
     		gon.menu_end_date = @live_event.menu_end_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_end_date
+		    gon.data_available_at = @live_event.data_available_at.strftime('%m/%d/%Y %H:%M') if @live_event.data_available_at
         format.html { render action: "new" }
         format.json { render json: @live_event.errors, status: :unprocessable_entity }
       end
@@ -81,6 +83,7 @@ class MenuLiveEventsController < ApplicationController
         gon.edit_menu_live_event = true
     		gon.menu_start_date = @live_event.menu_start_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_start_date
     		gon.menu_end_date = @live_event.menu_end_date.strftime('%m/%d/%Y %H:%M') if @live_event.menu_end_date
+		    gon.data_available_at = @live_event.data_available_at.strftime('%m/%d/%Y %H:%M') if @live_event.data_available_at
         format.html { render action: "edit" }
         format.json { render json: @live_event.errors, status: :unprocessable_entity }
       end

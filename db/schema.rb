@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120919083607) do
+ActiveRecord::Schema.define(:version => 20120920202929) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -288,8 +288,10 @@ ActiveRecord::Schema.define(:version => 20120919083607) do
     t.datetime "updated_at"
     t.date     "menu_start_date"
     t.date     "menu_end_date"
+    t.datetime "data_available_at"
   end
 
+  add_index "menu_live_events", ["data_available_at"], :name => "index_menu_live_events_on_data_available_at"
   add_index "menu_live_events", ["event_id"], :name => "index_menu_live_events_on_event_id"
   add_index "menu_live_events", ["menu_end_date"], :name => "index_menu_live_events_on_menu_end_date"
   add_index "menu_live_events", ["menu_start_date"], :name => "index_menu_live_events_on_menu_start_date"

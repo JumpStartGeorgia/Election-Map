@@ -3,6 +3,7 @@ $(document).ready(function(){
 	if(gon.edit_menu_live_event){
     var startDate = $('#menu_live_event_menu_start_date');
     var endDate = $('#menu_live_event_menu_end_date');
+    var availableTime = $('#menu_live_event_data_available_at');
 
 		// load the date pickers
 		startDate.datepicker({
@@ -54,6 +55,20 @@ $(document).ready(function(){
 		{
 			endDate.datepicker("setDate", new Date(gon.menu_end_date));
 		}
+
+		$(availableTime).datetimepicker({
+				dateFormat: 'dd.mm.yy',
+				timeFormat: 'hh:mm',
+				separator: ' '
+		});
+
+		if (gon.data_available_at !== undefined &&
+				gon.data_available_at.length > 0)
+		{
+			$(availableTime).datepicker("setDate", new Date(gon.data_available_at));
+		}
+
 	}
+
 
 });

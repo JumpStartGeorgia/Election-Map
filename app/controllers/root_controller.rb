@@ -29,11 +29,14 @@ logger.debug "////////////// getting current event for event type #{params[:even
 			logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
 			
 			# if this is a live event, mark flag to show user message that data does not exist yet and to come back
-			if params[:data_type] == Datum::DATA_TYPE[:live] && @live_event_menu.select{|x| x["id"] == params["event_id"]}
+      live_event = @live_event_menu.select{|x| x["id"].to_s == params["event_id"].to_s}
+logger.debug "$$$$$$$$$$$$$$$$$$ live event = #{live_event}"      
+			if params[:data_type] == Datum::DATA_TYPE[:live] && live_event && !live_event.empty?
 			  logger.debug "+++++++++ this is live event but no data has been loaded yet"
         @live_event_with_no_data = true
         gon.live_event_with_no_data = true
-        @live_event = Event.find(params[:event_id])
+        @live_event_name = live_event.first["name"]
+        @live_event_data_available = live_event.first["data_available_at"]
       else
 			  flag_redirect = true
       end
