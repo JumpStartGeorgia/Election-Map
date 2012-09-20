@@ -190,6 +190,7 @@ class Shape < ActiveRecord::Base
       start = Time.now
 	    infile = file.read
 	    n, msg = 0, ""
+			root = nil
 			old_root_id = nil
       idx_event = 0
       idx_shape_type = 1
@@ -293,6 +294,11 @@ class Shape < ActiveRecord::Base
 		              raise ActiveRecord::Rollback
 		              return msg
 		            end
+		          elsif n == 2
+		    logger.debug "++++ this is the first row and root already exists"
+		      		  msg = I18n.t('models.shape.msgs.root_already_exists', :row_num => n)
+		            raise ActiveRecord::Rollback
+		            return msg
 		          else
 		    logger.debug "++++root already exists"
 		            # found root, continue
@@ -429,7 +435,7 @@ class Shape < ActiveRecord::Base
 
 			  logger.debug "++++add precinct counts"
 				# add precinct counts to each new shape file
-				add_precinct_count(root.id)
+				add_precinct_count(root.id) if root
 
 			end
 		  logger.debug "++++procssed #{n} rows in CSV file"
