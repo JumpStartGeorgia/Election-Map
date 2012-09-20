@@ -29,7 +29,6 @@ $(function(){
 
    function indicator_click(ths, link, id, removehighlight)
    {
-<<<<<<< HEAD
 			// show loading wheel
 		  $("#map-loading").fadeIn(300);
 
@@ -123,8 +122,9 @@ $(function(){
 
 
 	// click function for links in data table
-	function data_table_link_click(ths)
-	{
+	function data_table_link_click()
+	 {
+    var ths = $(this);
 		var link = ths.attr('href'),
 				link_arr = link.split('/'),
 				id = link_arr[11];
@@ -134,6 +134,7 @@ $(function(){
 		// load the new data
 		indicator_click(ths, link, id, false);
 
+		return false;
 
 /*
 		mapFreeze((function(){

@@ -3,9 +3,9 @@ var f_style_backup;
 function reset_data_table ()
 {
   // reset the data table to the loading state
-  $('#data-table-container #loading_image').delay(300).css('display', 'block');
-  $('#data-table-container #blur_table_image').delay(300).css('display', 'block');
-  $('#data-table-container #data-table').delay(300).empty();
+  $('#data-table-container #loading_image').delay(500).css('display', 'block');
+  $('#data-table-container #blur_table_image').delay(500).css('display', 'block');
+  $('#dt_ajax_replace').delay(500).empty();
 }
 function load_data_table ()
 {
