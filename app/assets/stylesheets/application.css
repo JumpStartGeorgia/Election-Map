@@ -427,3 +427,22 @@ span#hidden_span_width{
   color: #000 !important;
   font-size: 20px;
 }
+
+/* countdown timer for live event data */
+#counter .cntSeparator {
+  font-size: 54px;
+  margin: 10px 7px;
+  color: #000;
+}
+#counter_labels { margin: 7px 3px; }
+#counter_labels div {
+  float: left;
+  font-family: Arial;
+  width: 105px;
+  margin-right: 30px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+}
+      

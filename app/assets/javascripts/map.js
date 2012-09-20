@@ -24,7 +24,7 @@
 //= require messages
 //= require news
 //= require shapes
-
+//= require countdown
 //= require map.export
 
 

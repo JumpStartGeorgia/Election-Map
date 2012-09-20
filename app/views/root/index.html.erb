@@ -8,6 +8,14 @@
     <p>
       <%= t('.live_event_available', :time => l(@live_event_data_available, :format => :long))%>
     </p>
+    <div id="counter"></div>
+      <div id="counter_labels" class="clear">
+        <div><%= t('datetime.prompts.day')%></div>
+        <div><%= t('datetime.prompts.hour')%></div>
+        <div><%= t('datetime.prompts.minute')%></div>
+        <div><%= t('datetime.prompts.second')%></div>
+      </div>
+    </div>    
   </div>
 <% else %>
   <div id="shape_nav_social_links" class="row-fluid">
