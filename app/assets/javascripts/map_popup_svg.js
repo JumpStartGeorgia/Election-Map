@@ -311,7 +311,6 @@ function get_text_width(string, font_size){
 
 function unhighlight_shape(feature, redraw_layer)
 {
-	gon.dt_highlight_shape = null;
 	if (feature !== undefined && f_style_backup !== undefined){
 		feature.style = f_style_backup;
 		if (redraw_layer !== undefined && redraw_layer) {

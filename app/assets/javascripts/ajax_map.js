@@ -29,18 +29,26 @@ $(function(){
 
    function indicator_click(ths, link, id, removehighlight)
    {
+			// show loading wheel
 		  $("#map-loading").fadeIn(300);
+
+			// scroll to the top
+			$('html,body').animate({
+				scrollTop: 0
+				},
+				300
+			);
+
+
 		  // reset the data table so the loading wheel appears
 		  reset_data_table();
 
 			// reset popups
 			map.controls[1].activate();
-alert("reseting popups");
 			$.each(map.popups, function(index, value){
 				map.removePopup(map.popups[index]);
 			});
 			// if shape is highlighted, turn it off
-alert("unhighlighting shape");
 			unhighlight_shape(current_highlighted_feature, false);
 
 
@@ -61,7 +69,6 @@ alert("unhighlighting shape");
 
 			// get the data json and process it
 		  $.get(query, function(data){
-alert("got json data");
 				// save the data to a global variable for later user
 				json_data = data;
 
@@ -106,11 +113,10 @@ alert("got json data");
 	// add click functions to all indicator menu items
 	var jq_indicators = $("#indicator_menu_scale .indicator_links a")
 	jq_indicators.click(function(){
-alert("ind link clicked");
 		var link = $(this).attr('href'),
 		    id = link.split('/')[11];
+		gon.dt_highlight_shape = null;
 		indicator_click($(this), link, id, true);
-alert("ind link - click fn done, returning false");
 		return false;
 	});
 
@@ -118,7 +124,6 @@ alert("ind link - click fn done, returning false");
 	// click function for links in data table
 	function data_table_link_click(ths)
 	{
-alert("data table link clicked");
 		var link = ths.attr('href'),
 				link_arr = link.split('/'),
 				id = link_arr[11];
@@ -128,8 +133,6 @@ alert("data table link clicked");
 		// load the new data
 		indicator_click(ths, link, id, false);
 
-
-alert("data table link - click fn done, returning false");
 
 /*
 		mapFreeze((function(){
