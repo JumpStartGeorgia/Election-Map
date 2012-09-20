@@ -89,7 +89,8 @@ $(function(){
 				document.title = new_title;
 
 				// update url
-				history.pushState(null, new_title, new_url);
+//				history.pushState(null, new_title, new_url);
+        History.pushState({this: ths, link:link, id:id, datai:datai}, new_title, new_url);
 
 				// update the shapes with the new values/colors
 				bindDataToShapes(vector_child.features);
