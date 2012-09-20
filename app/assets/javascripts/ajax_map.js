@@ -2,14 +2,50 @@ $(function(){
    var new_url, highlighted_shape;
 
 
+	// highlight the indicator menu link to match the data that is being loaded
+	function highlight_indicator(ths)
+	{
+		var indicators = $("#indicator_menu_tabs > div > .menu_list").find("li"),
+		    indicator_id = (function(){
+		      return ths.attr('href').split('/')[11];
+		    }).apply();
+
+		indicators.each(function(){
+		   ths = $(this).children("a:first");
+		   if(parseInt(indicator_id) === parseInt((function(){
+		      return ths.attr('href').split('/')[11];
+		   }).apply()))
+		   {
+		      $(this).children("a:first").removeClass('not_active').addClass('active');
+		      var tab_li = $("a[href=#" + $(this).parent().parent().attr("id") + "]:first");
+		      tab_li.click();
+		   }
+		   else
+		   {
+		      $(this).children("a:first").removeClass('active').addClass('not_active');
+		   }
+		});
+	}
+
    function indicator_click(ths, link, id, removehighlight)
    {
 		  $("#map-loading").fadeIn(300);
 		  // reset the data table so the loading wheel appears
 		  reset_data_table();
 
-		  var query;
+			// reset popups
+			map.controls[1].activate();
+alert("reseting popups");
+			$.each(map.popups, function(index, value){
+				map.removePopup(map.popups[index]);
+			});
+			// if shape is highlighted, turn it off
+alert("unhighlighting shape");
+			unhighlight_shape(current_highlighted_feature, false);
 
+
+			// create the new url for the data json, data table json, and the page url
+		  var query;
 		   if (link.search('summary') !== -1)
 		   {
 		      query = update_query_parameter(gon.indicator_menu_data_path_summary, 'indicator_type_id', 'indicator_type', id);
@@ -23,8 +59,9 @@ $(function(){
 		      new_url = update_query_parameter(link, 'indicator_id', 'indicator', id);
 		   }
 
-
+			// get the data json and process it
 		  $.get(query, function(data){
+alert("got json data");
 				// save the data to a global variable for later user
 				json_data = data;
 
@@ -53,25 +90,14 @@ $(function(){
 				create_scales_legend();
 
 				// highlight the link that was clicked on
-				var all_lis = ths.parent().parent().find('a');
-				all_lis.each(function(index, value){
-					$(value).attr('class', 'not_active');
-				});
-				ths.attr('class', 'active');
+				highlight_indicator(ths);
 
-				// update the data table
-				load_data_table();
+				// indicate that the child layer has loaded
+				// - do not wait for the datatable to be loaded
+				$("div#map").trigger("child_layer_loaded");
 
-				$("#map-loading").fadeOut(100);
-
-				if (removehighlight)
-				{
-					 map.controls[1].activate();
-					 $.each(map.popups, function(index, value){
-							map.removePopup(map.popups[index]);
-					 });
-					 unhighlight_shape(highlighted_shape);
-				}
+				// load the table of data below the map
+        load_data_table();
 
 		  });
    }
@@ -80,63 +106,32 @@ $(function(){
 	// add click functions to all indicator menu items
 	var jq_indicators = $("#indicator_menu_scale .indicator_links a")
 	jq_indicators.click(function(){
+alert("ind link clicked");
 		var link = $(this).attr('href'),
 		    id = link.split('/')[11];
 		indicator_click($(this), link, id, true);
+alert("ind link - click fn done, returning false");
 		return false;
 	});
-
-	// create popup window for social links
-	var facebook = $("a[title=facebook]"),
-		 twitter = $("a[title=twitter]");
-	facebook.click(function(){
-		var facebookWindow = window.open("http://www.facebook.com/share.php?u=" + window.location.href, "FaceBook", "location=no, menubar=no, width=500, height=500, scrollbars=no");
-		facebookWindow.moveTo($(window).width()/2-200, $(window).height()/2-100);
-		return false;
-	});
-	twitter.click(function(){
-		var twitterWindow = window.open("https://twitter.com/share", "Twitter", "location=no, menubar=no, width=500, height=550, scrollbars=no");
-		twitterWindow.moveTo($(window).width()/2-200, $(window).height()/2-100);
-		return false;
-	});
-
-
-	// highlight the indicator menu link to match the data that is being loaded
-	function highlight_indicator(ths)
-	{
-		var indicators = $("#indicator_type_1 > .menu_list, #indicator_type_2 > .menu_list").find("li"),
-		    indicator_id = (function(){
-		      return ths.attr('href').split('/')[11];
-		    }).apply();
-
-		indicators.each(function(){
-		   ths = $(this).children("a:first");
-		   if(parseInt(indicator_id) === parseInt((function(){
-		      return ths.attr('href').split('/')[11];
-		   }).apply()))
-		   {
-		      $(this).children("a:first").removeClass('not_active').addClass('active');
-		      var tab_li = $("a[href=#" + $(this).parent().parent().attr("id") + "]:first");
-		      tab_li.click();
-		   }
-		   else
-		   {
-		      $(this).children("a:first").removeClass('active').addClass('not_active');
-		   }
-		});
-	}
 
 
 	// click function for links in data table
 	function data_table_link_click(ths)
 	{
+alert("data table link clicked");
 		var link = ths.attr('href'),
 				link_arr = link.split('/'),
-				id = link_arr[11],
-				shape = link_arr[link_arr.length-1];
+				id = link_arr[11];
+		// save the shape to highlight
+		gon.dt_highlight_shape = decodeURIComponent(link_arr[link_arr.length-1]);
+
+		// load the new data
 		indicator_click(ths, link, id, false);
 
-		gon.dt_highlight_shape = decodeURIComponent(shape);
+
+alert("data table link - click fn done, returning false");
+
+/*
 		mapFreeze((function(){
 			var features = map.layers[2].features;
 			for (i = 0, num = features.length; i < num; i ++)
@@ -150,6 +145,7 @@ $(function(){
 		}).apply());
 		highlight_shape();
 		highlight_indicator(ths);
+*/
 	}
 
 
@@ -170,5 +166,21 @@ $(function(){
 			 }
 		}
 	});
+
+
+	// create popup window for social links
+	var facebook = $("a[title=facebook]"),
+		 twitter = $("a[title=twitter]");
+	facebook.click(function(){
+		var facebookWindow = window.open("http://www.facebook.com/share.php?u=" + window.location.href, "FaceBook", "location=no, menubar=no, width=500, height=500, scrollbars=no");
+		facebookWindow.moveTo($(window).width()/2-200, $(window).height()/2-100);
+		return false;
+	});
+	twitter.click(function(){
+		var twitterWindow = window.open("https://twitter.com/share", "Twitter", "location=no, menubar=no, width=500, height=550, scrollbars=no");
+		twitterWindow.moveTo($(window).width()/2-200, $(window).height()/2-100);
+		return false;
+	});
+
 
 });

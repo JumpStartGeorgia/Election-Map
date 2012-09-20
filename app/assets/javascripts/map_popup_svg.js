@@ -115,7 +115,7 @@ function MapPopup() {
     var title = typeof json.title_abbrv !== "undefined" &&
       json.title_abbrv instanceof String &&
       json.title_abbrv.length > 0 ? json.title_abbrv : json.title;
-      
+
     // add the titles to the svg
     if (typeof window.maxSVGWidth !== "undefined")
     {
@@ -303,16 +303,21 @@ MapPopup.prototype.SVGElement = function(elname, attributes)
 // and getting the span tag's width
 function get_text_width(string, font_size){
 	// if no font_size provided, use defautl of 12px
-	if (typeof font_size == 'undefined' ) font_size = '12px';
+	if (font_size === undefined ) font_size = '12px';
 	$("span#hidden_span_width").text(string);
 	$("span#hidden_span_width").css("font-size", font_size);
 	return $("span#hidden_span_width").width();
 }
 
-function unhighlight_shape(feature)
+function unhighlight_shape(feature, redraw_layer)
 {
-  feature.style = f_style_backup;
-  feature.layer.redraw();
+	gon.dt_highlight_shape = null;
+	if (feature !== undefined && f_style_backup !== undefined){
+		feature.style = f_style_backup;
+		if (redraw_layer !== undefined && redraw_layer) {
+			feature.layer.redraw();
+		}
+	}
 }
 
 
@@ -321,16 +326,17 @@ function mapFreeze(feature)
   map.controls[1].deactivate();
   makeFeaturePopup(feature, true, true, function(){
     map.controls[1].activate();
-    unhighlight_shape(feature);
+    unhighlight_shape(feature, true);
   });
 
 }
 
 
-
+/*
 $(document).mouseover(function(e){
   window.mouse = {
     X: e.pageX,
     Y: e.pageY
   };
 });
+*/

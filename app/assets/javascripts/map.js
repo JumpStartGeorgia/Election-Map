@@ -270,7 +270,7 @@ if (gon.openlayers){
 		    'externalProjection': WGS84_google_mercator
 			})
 		});
-		
+
 
 		vector_child.protocol = prot2;
 		vector_child.strategies = strat;
@@ -399,7 +399,7 @@ if (gon.openlayers){
 
 					// move the title_location into the data json
 					json_shape_data.title_location = feature.attributes.title_location;
-					
+
 					// if this is summary set indicator description from gon variable
       		if (json_data["view_type"] == gon.summary_view_type_name) {
       		  json_data["indicator"]["description"] = gon.summary_indicator_description
@@ -410,12 +410,12 @@ if (gon.openlayers){
 		return features;
 	}
 
-  // create the scales and legend 
+  // create the scales and legend
   function create_scales_legend(){
     // empty existing legend content
     $("#indicator_description").empty();
     $("#legend").empty();
-          
+
 		// if this is summary view, create the scales
 		create_summary_scales();
 	  // add style map
@@ -432,19 +432,19 @@ if (gon.openlayers){
 		if (resp.success()){
 			// get the event data for these shapes
 			$.get(gon.data_path, function(data) {
-      // save the data to a global variable for later user
-  		json_data = data;
-  		// add the features to the vector layer
-  		vector_child.addFeatures(bindDataToShapes(resp.features));
+		    // save the data to a global variable for later user
+				json_data = data;
+				// add the features to the vector layer
+				vector_child.addFeatures(bindDataToShapes(resp.features));
 
-      // create the scales and legend
-      create_scales_legend();
+		    // create the scales and legend
+		    create_scales_legend();
 
-  		// indicate that the child layer has loaded
-  		// - do not wait for the datatable to be loaded
-  		$("div#map").trigger("child_layer_loaded");
+				// indicate that the child layer has loaded
+				// - do not wait for the datatable to be loaded
+				$("div#map").trigger("child_layer_loaded");
 
-  		// load the table of data below the map
+				// load the table of data below the map
         load_data_table();
 			});
 		} else {
@@ -467,6 +467,7 @@ if (gon.openlayers){
 	// run code after the parent and child vector layers are loaded
 	function after_vector_layers_loaded(){
 		if (vector_parent_loaded && vector_child_loaded) {
+console.log("vector layers are loaded!");
 			$('#map-loading').fadeOut(100);
 			// if gon.dt_highlight_shape exists, highlight the shape and turn on the popup
 			if (gon.dt_highlight_shape)
@@ -493,7 +494,7 @@ if (gon.openlayers){
 
       // create unique names array, starting with the no_data item which is first
 		  var names = [json_data["indicator"]["scales"][0].name];
-		  
+
 		  for (var i=0; i<vector_child.features.length; i++)
 		  {
 		    // see if name has already been saved
@@ -667,7 +668,7 @@ if (gon.openlayers){
 	function click_handler (feature)
 	{
 		// if the feature has children, continue
-		if (feature.attributes.has_children == true){		  
+		if (feature.attributes.has_children == true){
 			// add/update the shape_id parameter
 			var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
 
