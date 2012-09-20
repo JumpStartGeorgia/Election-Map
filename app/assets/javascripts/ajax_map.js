@@ -29,6 +29,7 @@ $(function(){
 
    function indicator_click(ths, link, id, removehighlight)
    {
+<<<<<<< HEAD
 			// show loading wheel
 		  $("#map-loading").fadeIn(300);
 
@@ -155,20 +156,22 @@ $(function(){
 	// add click functions to all links in data table
 	var jq_data_table = $("table#data-table");
 	jq_data_table.live({
-		'DOMNodeInserted': function()
-		{
-			 var data_table_links = $(this).children("tbody:first").find("a");
-			 if (data_table_links.length > 0)
-			 {
-					data_table_links.each(function(){
-					   $(this).click(function(){
-					      data_table_link_click($(this));
-					      return false;
-					   });
-					});
-			 }
-		}
-	});
+      'DOMNodeInserted': function()
+      {
+         var data_table_links = $(this).children("tbody:first").find("a").click(data_table_link_click);
+      /*
+         if (data_table_links.length > 0)
+         {
+            data_table_links.each(function(){
+               $(this).click(function(){
+                  data_table_link_click($(this));
+                  return false;
+               });
+            });
+         }
+      */
+      }
+   });
 
 
 	// create popup window for social links
@@ -184,6 +187,7 @@ $(function(){
 		twitterWindow.moveTo($(window).width()/2-200, $(window).height()/2-100);
 		return false;
 	});
+
 
 
 });

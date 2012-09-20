@@ -9,6 +9,7 @@
 //= require vendor_map
 //= require jquery.tablesorter.min
 //= require data_table_loader
+//= require data_table
 //= require d3.v2.min
 //= require jquery.slimscroll
 
