@@ -163,9 +163,10 @@ class JsonController < ApplicationController
   				# cache exists, pull out shapes that have this parent_id
   				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
           json = JSON.parse(custom_children_cache)
-					item = json.select{|x| x.first.has_key?("shape_values") && !x.first["shape_values"].nil? && !x.first["shape_values"].empty? && x.first["shape_values"]["parent_id"].to_s == params[:parent_id]}
+					shape_data = json["shape_data"].select{|x| x.first.has_key?("shape_values") && !x.first["shape_values"].nil? && !x.first["shape_values"].empty? && x.first["shape_values"]["parent_id"].to_s == params[:parent_id]}
+					json["shape_data"] = shape_data
 
-					data = item if item && !item.empty?
+					data = json if json && !json.empty?
   			end
       end
 
@@ -255,9 +256,10 @@ class JsonController < ApplicationController
   				# cache exists, pull out need shapes
   				logger.debug "++++++++++custom children cache exists, pulling out desired shapes"
           json = JSON.parse(custom_children_cache)
-					item = json.select{|x| x.first.has_key?("shape_values") && !x.first["shape_values"].nil? && !x.first["shape_values"].empty? && x.first["shape_values"]["parent_id"].to_s == params[:parent_id]}
+					shape_data = json["shape_data"].select{|x| x.first.has_key?("shape_values") && !x.first["shape_values"].nil? && !x.first["shape_values"].empty? && x.first["shape_values"]["parent_id"].to_s == params[:parent_id]}
+					json["shape_data"] = shape_data
 
-					data = item if item && !item.empty?
+					data = json if json && !json.empty?
   			end
       end
 

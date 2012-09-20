@@ -468,7 +468,6 @@ if (gon.openlayers){
 	// run code after the parent and child vector layers are loaded
 	function after_vector_layers_loaded(){
 		if (vector_parent_loaded && vector_child_loaded) {
-console.log("vector layers are loaded!");
 			$('#map-loading').fadeOut(100);
 			// if gon.dt_highlight_shape exists, highlight the shape and turn on the popup
 			if (gon.dt_highlight_shape)

@@ -144,10 +144,10 @@ class Datum < ActiveRecord::Base
 
   	  # get the event
   	  event = Event.find(event_id)
-  	  
+
   	  # get indicator type
   	  indicator_type = IndicatorType.find(indicator_type_id)
-  	  
+
       # add info about this data
   	  # add the indicator info
   	  results["indicator"] = Hash.new
@@ -157,7 +157,7 @@ class Datum < ActiveRecord::Base
 			results["indicator"]["number_format"] = nil
       results["indicator"]["scales"] = [{:name => IndicatorScale::NO_DATA_TEXT, :color => IndicatorScale::NO_DATA_COLOR }]
 			results["indicator"]["scale_colors"] = [IndicatorScale::NO_DATA_COLOR]
-      
+
       # indicate this is summary data
       results["view_type"] = "summary"
 
@@ -212,13 +212,13 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 			results["indicator"]["number_format"] = indicator.number_format.nil? ? "" : indicator.number_format
       results["indicator"]["scales"] = IndicatorScale.for_indicator(indicator.id)
 			results["indicator"]["scale_colors"] = IndicatorScale.get_colors(indicator.id)
-      
+
       # indicate this is not summary data
       results["view_type"] = "normal"
 
       # add the data
       results["shape_data"] = []
-      
+
       if shapes && !shapes.empty? && indicator
   			event = indicator.event
         shapes.each do |shape|
@@ -240,7 +240,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
               shape_values.first["shape_values"]["title_abbrv"] = data_item.first["data_item"][:indicator_name_abbrv]
             end
           end
-          
+
           # save the data
       	  results["shape_data"] << data
         end
@@ -251,7 +251,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
   end
 
   # build the json string for the provided indicator relationships
-  # [ 
+  # [
   #    {shape_values => {}}
   #    {"summary_data" => []}
   #    {"data_item" => {}}
@@ -276,7 +276,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
     data_hash = Hash.new
 		data_hash["shape_values"] = shape_values
 	  results << data_hash
-	  
+
 	  if !shape_id.nil? && !event_id.nil? && !shape_type_id.nil? && !relationships.nil? && !relationships.empty?
       has_duplicates = false
 	    relationships.each do |rel|

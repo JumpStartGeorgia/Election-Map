@@ -27,10 +27,25 @@ $(function(){
 		});
 	}
 
-   function indicator_click(ths, link, id, removehighlight)
+   function indicator_click(ths, link, id, datai)
    {
+			// create the new url for the data json, data table json, and the page url
+		  var query;
+		   if (link.search('summary') !== -1)
+		   {
+		      query = update_query_parameter(gon.indicator_menu_data_path_summary, 'indicator_type_id', 'indicator_type', id);
+//		      gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', "null");
+		      new_url = update_query_parameter(link, 'indicator_type_id', 'indicator_type', id);
+		   }
+		   else
+		   {
+		      query = update_query_parameter(gon.indicator_menu_data_path, 'indicator_id', 'indicator', id);
+//		      gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', id);
+		      new_url = update_query_parameter(link, 'indicator_id', 'indicator', id);
+		   }
+
 			// show loading wheel
-		  $("#map-loading").fadeIn(300);
+			$("#map-loading").fadeIn(300);
 
 			// scroll to the top
 			$('html,body').animate({
@@ -40,8 +55,8 @@ $(function(){
 			);
 
 
-		  // reset the data table so the loading wheel appears
-		  reset_data_table();
+			// reset the data table so the loading wheel appears
+//		  reset_data_table();
 
 			// reset popups
 			map.controls[1].activate();
@@ -52,23 +67,9 @@ $(function(){
 			unhighlight_shape(current_highlighted_feature, false);
 
 
-			// create the new url for the data json, data table json, and the page url
-		  var query;
-		   if (link.search('summary') !== -1)
-		   {
-		      query = update_query_parameter(gon.indicator_menu_data_path_summary, 'indicator_type_id', 'indicator_type', id);
-		      gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', "null");
-		      new_url = update_query_parameter(link, 'indicator_type_id', 'indicator_type', id);
-		   }
-		   else
-		   {
-		      query = update_query_parameter(gon.indicator_menu_data_path, 'indicator_id', 'indicator', id);
-		      gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', id);
-		      new_url = update_query_parameter(link, 'indicator_id', 'indicator', id);
-		   }
 
 			// get the data json and process it
-		  $.get(query, function(data){
+			$.get(query, function(data){
 				// save the data to a global variable for later user
 				json_data = data;
 
@@ -104,19 +105,50 @@ $(function(){
 				$("div#map").trigger("child_layer_loaded");
 
 				// load the table of data below the map
-        load_data_table();
+//        load_data_table();
 
-		  });
+				// highlight the correct column in the data table
+				if (datai !== undefined && datai !== null){
+					// get datai of current selected column
+					current_datai = $('#dt_dd_switcher').children('option:selected').data('i');
+					if (current_datai != datai) {
+						// remove current selection
+						$('#dt_dd_switcher option[selected=selected]').attr("selected", null);
+						// select new column
+						$('#dt_dd_switcher option[data-i=' + datai + ']').attr("selected", "selected");
+						// update data table highlighting
+						dt.highlight();
+					}
+				}
+
+			});
    }
-
 
 	// add click functions to all indicator menu items
 	var jq_indicators = $("#indicator_menu_scale .indicator_links a")
 	jq_indicators.click(function(){
 		var link = $(this).attr('href'),
+				title = $(this).attr('title')
 		    id = link.split('/')[11];
+		// reset highlight since indicator clicks do not have highlight
 		gon.dt_highlight_shape = null;
-		indicator_click($(this), link, id, true);
+
+		// get the data-i of the th tag that has the same text as the link's title
+		var table_headers = $('#data-table tr th')
+		var datai = null;
+		// if the title does not exist, use the link text
+		if (title == undefined || title == null){
+			title = $(this).text().trim();
+		}
+		for (var i=0;i<table_headers.length;i++){
+			if (title.trim().indexOf(table_headers[i].innerText.trim()) != -1) {
+				datai = $(table_headers[i]).attr('data-i');
+				break;
+			}
+		}
+
+		// load the new data
+		indicator_click($(this), link, id, datai);
 		return false;
 	});
 
@@ -131,47 +163,23 @@ $(function(){
 		// save the shape to highlight
 		gon.dt_highlight_shape = decodeURIComponent(link_arr[link_arr.length-1]);
 
+		// get the data-i of the td tag that has the link that was just clicked
+		var datai = ths.parent().data('i');
+
 		// load the new data
-		indicator_click(ths, link, id, false);
+		indicator_click(ths, link, id, datai);
 
 		return false;
-
-/*
-		mapFreeze((function(){
-			var features = map.layers[2].features;
-			for (i = 0, num = features.length; i < num; i ++)
-			{
-				if (gon.dt_highlight_shape == features[i].data.common_name)
-				{
-					highlighted_shape = features[i];
-					return highlighted_shape;
-				}
-			}
-		}).apply());
-		highlight_shape();
-		highlight_indicator(ths);
-*/
 	}
 
 
 	// add click functions to all links in data table
 	var jq_data_table = $("table#data-table");
 	jq_data_table.live({
-      'DOMNodeInserted': function()
-      {
-         var data_table_links = $(this).children("tbody:first").find("a").click(data_table_link_click);
-      /*
-         if (data_table_links.length > 0)
-         {
-            data_table_links.each(function(){
-               $(this).click(function(){
-                  data_table_link_click($(this));
-                  return false;
-               });
-            });
-         }
-      */
-      }
+    'DOMNodeInserted': function()
+    {
+     var data_table_links = $(this).children("tbody:first").find("a").click(data_table_link_click);
+    }
    });
 
 
