@@ -15,15 +15,27 @@
   					<% event_type["events"].each do |event| %>
   						<% is_active = event["id"].to_s == params[:event_id].to_s ? "active" : "not_active" %>
   						<li>
-  		          <%= event["name"] %>
-                <% if event["url_official"] && !event["url_official"].empty? %>
-                  <%= link_to(image_tag("menu_official.png"),
-                      event["url_official"], :title => strip_tags(event["description"]))%>
-                <% end %>
-                <% if event["url_live"] && !event["url_live"].empty? %>
-                  <%= link_to(image_tag("menu_live.png"),
-                      event["url_live"], :title => strip_tags(event["description"]))%>
-                <% end %>
+								<ul class="menu_item clear">
+									<li class="live_data">
+				            <% if event["url_live"] && !event["url_live"].empty? %>
+				              <%= link_to(image_tag("menu_live.png"),
+				                  event["url_live"], "title" => t('app.common.live_data'))%>
+										<% else %>
+											&nbsp;
+				            <% end %>
+									</li>
+									<li class="official_data">
+				            <% if event["url_official"] && !event["url_official"].empty? %>
+				              <%= link_to(image_tag("menu_official.png"),
+				                  event["url_official"], "title" => t('app.common.official_data'))%>
+										<% else %>
+											&nbsp;
+				            <% end %>
+									</li>
+									<li class="event_name">
+		  		          <span title="<%= strip_tags(event["description"]) %>"><%= event["name"] %></span>
+									</li>
+								</ul>
   						</li>
   					<% end %>
   				</ul>

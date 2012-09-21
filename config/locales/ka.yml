@@ -211,6 +211,8 @@ ka:
       live_events: მიმდინარე არჩევნები
       data_set: Dataset
       is_precinct: Is Precinct
+      live_data: მიმდინარე მონაცემები
+      official_data: ოფიციალური მონაცემები
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -322,7 +324,7 @@ ka:
       export_link_text: ჩამოტვირთეთ მონაცემები
       footnote: "შენიშვნა: %{note}"
       live_event_available: "%{time} გვესტუმრეთ და იხილეთ, ცესკოს  მიმდინარე მონაცებები საარჩევნო ხმების დათვლის პროცესში."
-      live_event_countdown_header: Time to Live Updates
+      live_event_countdown_header: ინფორმაციის განახლებამდე დარჩენილია
     indicator_menu_scales:
       indicator_header: ინდიკატორები
   data:
