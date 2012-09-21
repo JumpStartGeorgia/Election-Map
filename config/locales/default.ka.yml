@@ -130,6 +130,12 @@ ka:
       hour:   "საათი"
       minute: "წუთი"
       second: "წამი"
+      years:   "წელი"
+      months:  "თვე"
+      days:    "დღე"
+      hours:   "საათი"
+      minutes: "წუთი"
+      seconds: "წამი"
 
   helpers:
     select:

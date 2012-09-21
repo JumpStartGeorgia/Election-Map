@@ -15,7 +15,7 @@ class RootController < ApplicationController
 		# get the event type id
     if params[:event_type_id].nil? && @event_types.empty?
 logger.debug "////////////// event type id does not exist and no event types with public events exist"
-# TODO - what to do?      
+# TODO - what to do?
     end
 logger.debug "////////////// getting event type id"
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
@@ -27,7 +27,7 @@ logger.debug "////////////// getting current event for event type #{params[:even
 		if event.nil? || event.shape_id.nil?
 			# event could not be found or the selected event does not have a shape assigned to it
 			logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
-			
+
 			# if this is a live event, mark flag to show user message that data does not exist yet and to come back
       live_event = @live_event_menu.select{|x| x["id"].to_s == params["event_id"].to_s}
 			if params[:data_type] == Datum::DATA_TYPE[:live] && live_event && !live_event.empty?
@@ -36,7 +36,7 @@ logger.debug "////////////// getting current event for event type #{params[:even
         @live_event_name = live_event.first["name"]
         @live_event_data_available = live_event.first["data_available_at"]
         gon.live_event_with_no_data = true
-        gon.live_event_time_to_data = countdown_duration(Time.now.in_time_zone('UTC'), live_event.first["data_available_at"])
+        gon.live_event_time_to_data = countdown_duration(Time.now, live_event.first["data_available_at"])
       else
 			  flag_redirect = true
       end

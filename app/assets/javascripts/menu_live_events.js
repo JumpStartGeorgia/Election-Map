@@ -59,7 +59,10 @@ $(document).ready(function(){
 		$(availableTime).datetimepicker({
 				dateFormat: 'dd.mm.yy',
 				timeFormat: 'hh:mm',
-				separator: ' '
+				separator: ' ',
+				timezoneList: [
+					{ value: '+0400', label: 'Tbilisi'},
+				]
 		});
 
 		if (gon.data_available_at !== undefined &&
