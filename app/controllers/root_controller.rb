@@ -50,12 +50,13 @@ logger.debug "////////////// getting current event for event type #{params[:even
 			# if the data set id was not passed in or the dataset for the provided id could not be found,
 			# use the current public dataset
       dataset = DataSet.current_dataset(event.id, params[:data_type]) if !dataset
-      if dataset && !dataset.empty?
-        params[:data_set_id] = dataset.first.id.to_s
-		    @live_event_precincts_percentage = dataset.first.precincts_percentage
-		    @live_event_precincts_completed = dataset.first.precincts_completed
-		    @live_event_precincts_total = dataset.first.precincts_total
-		    @live_event_timestamp = dataset.first.timestamp
+			dataset = dataset.first if dataset.class == ActiveRecord::Relation
+      if dataset
+        params[:data_set_id] = dataset.id.to_s
+		    @live_event_precincts_percentage = dataset.precincts_percentage
+		    @live_event_precincts_completed = dataset.precincts_completed
+		    @live_event_precincts_total = dataset.precincts_total
+		    @live_event_timestamp = dataset.timestamp
 		  else
   			# dataset could not be found for event
   			logger.debug "+++++++++ an public data set could not be found for event"

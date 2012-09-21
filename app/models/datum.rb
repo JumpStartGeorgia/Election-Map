@@ -13,7 +13,7 @@ class Datum < ActiveRecord::Base
   attr_accessor :number_format, :shape_id, :shape_type_name, :color,
 		:indicator_name, :indicator_name_abbrv, :indicator_description,
 		:indicator_type_id, :indicator_type_name, :core_indicator_id
-  
+
   DATA_TYPE = {:official => "official", :live => "live"}
 
 	###################################
@@ -173,7 +173,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, data_set_id,
   	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
     end
-#		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+		logger.debug "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
 
@@ -189,7 +189,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, indicator.shape_type_id, event.id, data_set_id,
   	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
     end
-#		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
+		logger.debug "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
     return results
   end
 
@@ -204,7 +204,7 @@ class Datum < ActiveRecord::Base
   	  results = build_related_indicator_json(shape_id, shape_type_id, event_id, data_set_id,
   	    event.event_indicator_relationships.where(:core_indicator_id => core_indicator_id))
     end
-#		puts "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
+		logger.debug "****************** time to get_related_core_indicator_data: #{Time.now-start} seconds for event #{event_id} and core indicator #{core_indicator_id}"
     return results
   end
 
@@ -385,7 +385,7 @@ class Datum < ActiveRecord::Base
 		h[:has_duplicates] = has_duplicates
 		return h
 	end
-	
+
 	###################################
 	## load from csv
 	###################################
@@ -398,7 +398,7 @@ class Datum < ActiveRecord::Base
   end
 
   # csv must have the columns listed in csv_header var
-  # 
+  #
   def self.build_from_csv(event_id, data_type, precincts_completed, precincts_total, timestamp, file)
 		start = Time.now
     infile = file.read
@@ -442,27 +442,27 @@ class Datum < ActiveRecord::Base
         if n == 1
           # get the event
 					event = Event.find(event_id)
-          
+
 					if event.nil?
 			logger.debug "++++event or shape type was not found"
 		  		  msg = I18n.t('models.datum.msgs.no_event_db')
 				    raise ActiveRecord::Rollback
 		  		  return msg
           end
-          
+
           # get all shape types now instead of doing a query for every row
-logger.debug "****************getting all shape types"          
+logger.debug "****************getting all shape types"
           shape_types = ShapeType.all
-          
+
           # get the indicators for all shape types
-logger.debug "****************getting all indicators between columns #{index_first_ind} and #{row.length-1}"          
+logger.debug "****************getting all indicators between columns #{index_first_ind} and #{row.length-1}"
           (index_first_ind..row.length-1).each do |ind_index|
-logger.debug "****************indicator index = #{ind_index}"          
+logger.debug "****************indicator index = #{ind_index}"
   					indicator = Indicator.select("indicators.id, indicators.shape_type_id")
   						.includes(:core_indicator => :core_indicator_translations)
   						.where('indicators.event_id=:event_id and core_indicator_translations.locale=:locale and core_indicator_translations.name=:name',
   							:event_id => event.id, :name => row[ind_index], :locale => "en")
-            
+
             if !indicator || indicator.empty?
               # indicator not found
 		logger.debug "++++indicator was not found"
@@ -474,7 +474,7 @@ logger.debug "****************indicator index = #{ind_index}"
               indicators << indicator
             end
           end
-          
+
           # go to the next row
 		      next
         end
@@ -486,7 +486,7 @@ logger.debug "****************indicator index = #{ind_index}"
 		      raise ActiveRecord::Rollback
           return msg
 				end
-				
+
 				# get the shape type id
 				shape_type = shape_types.select{|x| x.name_singular == row[idx_shape_type].strip}
 
@@ -496,7 +496,7 @@ logger.debug "****************indicator index = #{ind_index}"
 			    raise ActiveRecord::Rollback
 	  		  return msg
 	  		end
-	  		
+
 	  		shape_type = shape_type.first
 
 	logger.debug "++++shape found, checking for common values"
@@ -506,15 +506,15 @@ logger.debug "++++**missing data in row"
           raise ActiveRecord::Rollback
           return msg
 	      end
-	
+
 	logger.debug "++++ common values found, processing indicators"
 				i = index_first_ind
         (index_first_ind..row.length-1).each do |ind_index|
           if !row[ind_index].nil?
-            # get the indicator id
-            indicator_id = indicators[ind_index-index_first_ind].select{|x| x.shape_type_id == shape_type.id}
-          
-						if indicator_id.nil?
+            # get the indicator
+            indicator = indicators[ind_index-index_first_ind].select{|x| x.shape_type_id == shape_type.id}
+
+						if indicator.nil? && !indicator.empty?
 		logger.debug "++++indicator was not found"
 							msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
 							raise ActiveRecord::Rollback
@@ -524,17 +524,17 @@ logger.debug "++++**missing data in row"
             # save the data record
 						datum = Datum.new
 						datum.data_set_id = dataset.id
-						datum.indicator_id = indicator_id
-            if row[ind_index] || row[ind_index].downcase.strip == "null" || row[ind_index].downcase.strip == I18n.t('app.msgs.no_data')
+						datum.indicator_id = indicator.first.id
+            if row[ind_index].empty? || row[ind_index].downcase.strip == "null" || row[ind_index].downcase.strip == I18n.t('app.msgs.no_data')
 						  datum.value = nil
 						else
-						  datum.value = row[ind_index].strip 
+						  datum.value = row[ind_index].strip
 						end
             datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
             datum.en_common_name = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
             datum.ka_common_id = datum.en_common_id
             datum.ka_common_name = datum.en_common_name
-	
+
 						if datum.valid?
 							datum.save
 						else
@@ -548,7 +548,7 @@ logger.debug "++++**missing data in row"
       	puts "******** time to process row: #{Time.now-startRow} seconds"
 	      puts "************************ total time so far : #{Time.now-start} seconds"
       end
-      
+
   logger.debug "++++updating ka records with ka text in shape_names"
       startPhase = Time.now
 			# ka translation is hardcoded as en in the code above
@@ -660,7 +660,7 @@ logger.debug "++++**missing data in row"
 				sql << "inner join indicators as i on i.event_id = e.id "
 				sql << "inner join core_indicators as ci on ci.id = i.core_indicator_id "
 				sql << "inner join core_indicator_translations as cit on cit.core_indicator_id = ci.id "
-				sql << "inner join live_data as d on d.indicator_id = i.id "
+				sql << "inner join data as d on d.indicator_id = i.id "
 				sql << "inner join shape_type_translations as stt on stt.shape_type_id = i.shape_type_id "
 				sql << "where "
 				sql << "e.id = :event_id "
@@ -741,9 +741,9 @@ logger.debug "++++**missing data in row"
 		puts "/////// total time = #{Time.now-start} seconds"
     return {:data => table, :indicator_ids => ind_ids, :indicator_type_ids => indicator_type_ids}
 	end
-	
-	
-=begin  
+
+
+=begin
 	###################################
 	## delete data
 	###################################

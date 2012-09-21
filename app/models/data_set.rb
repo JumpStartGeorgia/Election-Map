@@ -1,6 +1,6 @@
 class DataSet < ActiveRecord::Base
   belongs_to :event
-  has_many :live_data, :dependent => :destroy
+  has_many :data, :dependent => :destroy
 
   attr_accessible :event_id, :data_type, :precincts_completed, :precincts_total, :timestamp, :show_to_public
 
@@ -9,7 +9,7 @@ class DataSet < ActiveRecord::Base
 
   after_save :update_data_flag
   before_destroy :destroy_data_flag
-  
+
   def precincts_percentage
     ActionController::Base.helpers.number_to_percentage(self.precincts_completed.to_f/self.precincts_total*100) if self.precincts_completed && self.precincts_total
   end
@@ -18,7 +18,7 @@ class DataSet < ActiveRecord::Base
     joins(:event)
     .order("events.event_date desc")
   end
-  
+
   # - if show to pulic is true, turn on the has_xxx_data for this event
   # - if show public is false, and no other datasets for this event are true, turn off flag
   def update_data_flag

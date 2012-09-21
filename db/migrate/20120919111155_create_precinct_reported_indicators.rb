@@ -1,11 +1,11 @@
 # encoding: utf-8
 class CreatePrecinctReportedIndicators < ActiveRecord::Migration
   def up
-		core = CoreIndicator.create(:indicator_type_id => 2, :number_format => nil)
+		core = CoreIndicator.create(:indicator_type_id => 1, :number_format => nil)
 		core.core_indicator_translations.create(:locale => 'en', :name => 'Precincts Reported (#)', :name_abbrv => 'Precincts Reported (#)', :description => 'Precincts Reported (#)')
 		core.core_indicator_translations.create(:locale => 'ka', :name => 'უბნებმა მოგვაწოდეს ინფორმაცია (#)', :name_abbrv => 'უბნებმა მოგვაწოდეს ინფორმაცია (#)', :description => 'უბნებმა მოგვაწოდეს ინფორმაცია (#)')
 
-		core = CoreIndicator.create(:indicator_type_id => 2, :number_format => nil)
+		core = CoreIndicator.create(:indicator_type_id => 1, :number_format => '%')
 		core.core_indicator_translations.create(:locale => 'en', :name => 'Precincts Reported (%)', :name_abbrv => 'Precincts Reported (%)', :description => 'Precincts Reported (%)')
 		core.core_indicator_translations.create(:locale => 'ka', :name => 'უბნებმა მოგვაწოდეს ინფორმაცია (%)', :name_abbrv => 'უბნებმა მოგვაწოდეს ინფორმაცია (%)', :description => 'უბნებმა მოგვაწოდეს ინფორმაცია (%)')
   end

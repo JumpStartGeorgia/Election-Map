@@ -121,10 +121,10 @@ class Shape < ActiveRecord::Base
         # get the data for the provided base shape and using the ancestry path to this shape
         if isSummary
   			  #data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id)
-  			  data = LiveDatum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id, 7)
+  			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id, 27)
         else
     			#data = Datum.get_related_indicator_data(shape.id, ind_id)
-    			data = LiveDatum.get_related_indicator_data(shape.id, ind_id, 7)
+    			data = Datum.get_related_indicator_data(shape.id, ind_id, 27)
         end
 
   			# look for data

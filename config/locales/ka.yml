@@ -233,7 +233,7 @@ ka:
       header: არჩევნები
       news: სიახლეები
       data_archives: მონაცემთა არქივი
-      live_event_status: " - %{completed} of %{total} precincts (%{percentage}) as of %{timestamp}"
+      live_event_status: " ( %{completed} / %{total} უბნები (%{percentage}) - %{timestamp} )"
     ajax_data_table:
       links: რუკის სანახავად დააჭირეთ მონაცემების ღილაკს.
       sorting: "ერთდროულად რამდენიმე სვეტის სორტირებისთვის გეჭიროთ ღილაკი \"SHIFT\" და აირჩიეთ შესაბამისი სვეტების სათაურები"

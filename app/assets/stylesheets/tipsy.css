@@ -1,6 +1,7 @@
 /* Tipsy */
 .tipsy
 {
+		font-family: Arial;
     font-size: 12px;
     position: absolute;
     padding: 5px;

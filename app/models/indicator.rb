@@ -3,7 +3,6 @@ class Indicator < ActiveRecord::Base
   has_one :indicator_type, :through => :core_indicator
   has_many :indicator_scales, :dependent => :destroy
   has_many :data, :dependent => :destroy
-  has_many :live_data, :dependent => :destroy
   belongs_to :event
   belongs_to :shape_type
   attr_accessible :core_indicator_id, :event_id, :shape_type_id
@@ -135,7 +134,7 @@ class Indicator < ActiveRecord::Base
 		logger.debug "++++found event, shape type, indicator type and core indicator, seeing if record already exists"
 						# see if indicator already exists for the provided event and shape_type
 						alreadyExists = Indicator.select("indicators.id").includes(:core_indicator)
-						  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.core_indicators_id = ? and core_indicators.indicator_type_id = ? ',
+						  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.core_indicator_id = ? and core_indicators.indicator_type_id = ? ',
 						    event.id, shape_type.id, indicator_type.id, core_indicator.id)
 
 	          # if the indicator already exists and deleteExistingRecord is true, delete the indicator

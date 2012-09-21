@@ -233,7 +233,7 @@ en:
       header: Elections
       news: News
       data_archives: Data Archives
-      live_event_status: " - %{completed} of %{total} precincts (%{percentage}) as of %{timestamp}"
+      live_event_status: " ( %{completed} / %{total} Precincts (%{percentage}) - %{timestamp} )"
     ajax_data_table:
       links: Click on a data point to view it on the map.
       sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.
