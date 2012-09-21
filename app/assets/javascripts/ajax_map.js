@@ -55,9 +55,6 @@ $(function(){
 			);
 
 
-			// reset the data table so the loading wheel appears
-//		  reset_data_table();
-
 			// reset popups
 			map.controls[1].activate();
 			$.each(map.popups, function(index, value){
@@ -66,6 +63,8 @@ $(function(){
 			// if shape is highlighted, turn it off
 			unhighlight_shape(current_highlighted_feature, false);
 
+			// reset the map extent based on the vector parent bounds
+			set_map_extent();
 
 
 			// get the data json and process it
@@ -89,8 +88,8 @@ $(function(){
 				document.title = new_title;
 
 				// update url
-//				history.pushState(null, new_title, new_url);
-        History.pushState({this: ths, link:link, id:id, datai:datai}, new_title, new_url);
+				history.pushState(null, new_title, new_url);
+//        History.pushState({this: ths, link:link, id:id, datai:datai}, new_title, new_url);
 
 				// update the shapes with the new values/colors
 				bindDataToShapes(vector_child.features);
@@ -104,9 +103,6 @@ $(function(){
 				// indicate that the child layer has loaded
 				// - do not wait for the datatable to be loaded
 				$("div#map").trigger("child_layer_loaded");
-
-				// load the table of data below the map
-//        load_data_table();
 
 				// highlight the correct column in the data table
 				if (datai !== undefined && datai !== null){

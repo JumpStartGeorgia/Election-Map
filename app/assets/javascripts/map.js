@@ -27,19 +27,19 @@
 //= require map.export
 
 //= require ajax_map
-
+/*
 (function(window,undefined){
 
     // Prepare
     var History = window.History; // Note: We are using a capital H instead of a lower h
-				    
+
     if ( !History.enabled ) {
          // History.js is disabled for this browser.
          // This is because we can optionally choose to support HTML4 browsers or not.
         return false;
     }
 
-    var State = History.getState(); 
+    var State = History.getState();
 
     // Log Initial State
 		History.log('initial:', State.data, State.title, State.url);
@@ -52,6 +52,7 @@
     });
 
 })(window);
+*/
 
 // set focus to first text box on page
 $(document).ready(function(){
@@ -324,53 +325,40 @@ if (gon.openlayers){
 
 	}
 
+	function set_map_extent() {
+		if (vecotr_parent_bounds !== undefined){
+		  map.zoomToExtent(vecotr_parent_bounds);
+		  winW = window_width();
+			if (winW > map_width_indicators_fall){
+				// the indicator window is on top of the map if width > 600
+				// so adjust the map to account for the indicator window
+				//180 for 1345 screen width
+				map.moveByPx(winW / 7.472, 0);
+			}
+		}
+	}
+
 	// load the features and set the bound
 	// after protocol has read in json
+  var vecotr_parent_bounds;
 	function load_vector_parent(resp){
 		if (resp.success()){
 			var features = resp.features;
-		  var bounds;
 			if(features) {
 		    if(features.constructor != Array) {
 		        features = [features];
 		    }
 		    for(var i=0; i<features.length; ++i) {
-		      if (!bounds) {
-		          bounds = features[i].geometry.getBounds();
+		      if (!vecotr_parent_bounds) {
+		          vecotr_parent_bounds = features[i].geometry.getBounds();
 		      } else {
-		          bounds.extend(features[i].geometry.getBounds());
+		          vecotr_parent_bounds.extend(features[i].geometry.getBounds());
 		      }
 		    }
 		    vector_parent.addFeatures(features);
 
-     /*
-		    var shapeWidth = bounds.right - bounds.left;
-		    var worldWidth = map.maxExtent.right - map.maxExtent.left;
-		    console.log(map.maxExtent.right, map.maxExtent.left);
-		    console.log(bounds.right, bounds.left);
-		    var increaseK = 1 + shapeWidth / worldWidth * 50;
-		    console.log(increaseK);
-		    if (increaseK > 1.1)
-		    {
-		      increaseK = 1.1;
-		    }
-		    else if (increaseK < 1.03)
-		    {
-		      increaseK = 1.03;
-		    }
-		    console.log(increaseK);
-		    bounds.right = bounds.right * increaseK;
-		  //map.restrictedExtent.right = map.restrictedExtent.right * increaseK;
-		 */
-		    map.zoomToExtent(bounds);
-		    winW = window_width();
-				if (winW > map_width_indicators_fall){
-					// the indicator window is on top of the map if width > 600
-					// so adjust the map to account for the indicator window
-				  //180 for 1345 screen width
-				  map.moveByPx(winW / 7.472, 0);
-				}
-
+				// set the map extent based on the vector parent bounds
+				set_map_extent();
 
 				// indicate that the parent layer has loaded
 				$("div#map").trigger("parent_layer_loaded");
