@@ -314,7 +314,6 @@ logger.debug "//////////////////////////////////////////////////////// done with
 				dt.dd_titles = dt.data[0][dt.static_cols..-1]
 				dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
 				dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
-
 				@dt = dt
 
 			end

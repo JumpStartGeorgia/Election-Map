@@ -16,9 +16,9 @@ $(document).ready(function(){
 
     
 		// if the form is loading with data, make sure the correct fields are showing
-		if ($('input:radio[name=data_set[data_type]]:checked').val() === $('#data_type_official').val()) {
+		if ($('input:radio[name=data_set[data_type]]:checked').val() === $('#data_set_data_type_official').val()) {
       $('#live_fields').hide();
-		} else if ($('input:radio[name=data_set[data_type]]:checked').val() === $('#data_type_official').val()) {
+		} else if ($('input:radio[name=data_set[data_type]]:checked').val() === $('#data_set_data_type_live').val()) {
       $('#live_fields').show();
 	  }
 

@@ -1,5 +1,4 @@
 class Datum < ActiveRecord::Base
-  translates :common_id, :common_name
 	require 'json_cache'
 	require 'json'
 
@@ -687,7 +686,6 @@ logger.debug "++++**missing data in row"
 				    header << core
 				  end
 					table << header.flatten
-
           #update list of indicator ids with header_starter
           ind_ids.insert(0,header_starter.clone).flatten!
 
