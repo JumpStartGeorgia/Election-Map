@@ -322,6 +322,7 @@ ka:
       export_link_text: ჩამოტვირთეთ მონაცემები
       footnote: "შენიშვნა: %{note}"
       live_event_available: "%{time} გვესტუმრეთ და იხილეთ, ცესკოს  მიმდინარე მონაცებები საარჩევნო ხმების დათვლის პროცესში."
+      live_event_countdown_header: Time to Live Updates
     indicator_menu_scales:
       indicator_header: ინდიკატორები
   data:
