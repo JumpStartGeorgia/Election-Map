@@ -1,47 +1,122 @@
 $(function(){
-   var new_url, highlighted_shape;
+   var highlighted_shape;
 
 
 	// highlight the indicator menu link to match the data that is being loaded
-	function highlight_indicator(ths)
+	function highlight_indicator(link)
 	{
 		var indicators = $("#indicator_menu_tabs > div > .menu_list").find("li"),
-		    indicator_id = (function(){
-		      return ths.attr('href').split('/')[11];
-		    }).apply();
+		    id;
 
-		indicators.each(function(){
-		   ths = $(this).children("a:first");
-		   if(parseInt(indicator_id) === parseInt((function(){
-		      return ths.attr('href').split('/')[11];
-		   }).apply()))
-		   {
-		      $(this).children("a:first").removeClass('not_active').addClass('active');
-		      var tab_li = $("a[href=#" + $(this).parent().parent().attr("id") + "]:first");
-		      tab_li.click();
-		   }
-		   else
-		   {
-		      $(this).children("a:first").removeClass('active').addClass('not_active');
-		   }
-		});
+		if (link.search('summary') !== -1) {
+			id = get_query_parameter(link, 'indicator_type_id', 'indicator_type');
+
+			indicators.each(function(){
+				 ths = $(this).children("a:first");
+				 if (id === get_query_parameter(ths.attr('href'), 'indicator_type_id', 'indicator_type'))
+				 {
+				    ths.removeClass('not_active').addClass('active');
+				    var tab_li = $("a[href=#" + $(this).parent().parent().attr("id") + "]:first");
+				    tab_li.click();
+				 }
+				 else
+				 {
+				    ths.removeClass('active').addClass('not_active');
+				 }
+			});
+
+		} else {
+			id = get_query_parameter(link, 'indicator_id', 'indicator');
+
+			indicators.each(function(){
+				 ths = $(this).children("a:first");
+				 if (id === get_query_parameter(ths.attr('href'), 'indicator', 'indicator'))
+				 {
+				    ths.removeClass('not_active').addClass('active');
+				    var tab_li = $("a[href=#" + $(this).parent().parent().attr("id") + "]:first");
+				    tab_li.click();
+				 }
+				 else
+				 {
+				    ths.removeClass('active').addClass('not_active');
+				 }
+			});
+		}
 	}
 
    function indicator_click(ths, link, id, datai)
    {
-			// create the new url for the data json, data table json, and the page url
-		  var query;
+			// update the urls
+		  var new_url, query;
 		   if (link.search('summary') !== -1)
 		   {
-		      query = update_query_parameter(gon.indicator_menu_data_path_summary, 'indicator_type_id', 'indicator_type', id);
-//		      gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', "null");
+					// page url
 		      new_url = update_query_parameter(link, 'indicator_type_id', 'indicator_type', id);
+					// json data path
+		      query = update_query_parameter(gon.indicator_menu_data_path_summary, 'indicator_type_id', 'indicator_type', id);
+
+					// shape navigation
+					// - add ind type id and view type
+					$('#shape_layer_navigation ul li.lev-ind a').each(function(index){
+						$(this).attr('href',
+							update_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type', id));
+						$(this).attr('href',
+							update_query_parameter($(this).attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+					});
+
+					// custom shape view switcher
+					// - add ind type id and view type
+					// - switcher might not exist, so see if is there
+					if ($('#switch-custom-view').length > 0) {
+						$('#switch-custom-view').attr('href',
+							update_query_parameter($('#switch-custom-view').attr('href'), 'indicator_type_id', 'indicator_type', id));
+						$('#switch-custom-view').attr('href',
+							update_query_parameter($('#switch-custom-view').attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+					}
+
+					// language
+					// - add ind type id and view type
+					$('a.language_link_switcher').each(function(index){
+						$(this).attr('href',
+							update_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type', id));
+						$(this).attr('href',
+							update_query_parameter($(this).attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+					});
 		   }
 		   else
 		   {
-		      query = update_query_parameter(gon.indicator_menu_data_path, 'indicator_id', 'indicator', id);
-//		      gon.data_table_path = update_query_parameter(gon.data_table_path, 'indicator_id', 'indicator', id);
+					// page url
 		      new_url = update_query_parameter(link, 'indicator_id', 'indicator', id);
+					// json data path
+		      query = update_query_parameter(gon.indicator_menu_data_path, 'indicator_id', 'indicator', id);
+
+					// shape navigation
+					// - add ind type id and view type
+					$('#shape_layer_navigation ul li.lev-ind a').each(function(index){
+						$(this).attr('href',
+							update_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', id));
+						$(this).attr('href',
+							remove_query_parameter($(this).attr('href'), 'view_type', 'view_type'));
+					});
+
+					// custom shape view switcher
+					// - add ind id and view type
+					// - switcher might not exist, so see if is there
+					if ($('#switch-custom-view').length > 0) {
+						$('#switch-custom-view').attr('href',
+							update_query_parameter($('#switch-custom-view').attr('href'), 'indicator_id', 'indicator', id));
+						$('#switch-custom-view').attr('href',
+							remove_query_parameter($('#switch-custom-view').attr('href'), 'view_type', 'view_type'));
+					}
+
+					// language
+					// - add ind id and view type
+					$('a.language_link_switcher').each(function(index){
+						$(this).attr('href',
+							update_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', id));
+						$(this).attr('href',
+							remove_query_parameter($(this).attr('href'), 'view_type', 'view_type'));
+					});
 		   }
 
 			// show loading wheel
@@ -98,7 +173,7 @@ $(function(){
 				create_scales_legend();
 
 				// highlight the link that was clicked on
-				highlight_indicator(ths);
+				highlight_indicator(link);
 
 				// indicate that the child layer has loaded
 				// - do not wait for the datatable to be loaded
@@ -125,8 +200,15 @@ $(function(){
 	var jq_indicators = $("#indicator_menu_scale .indicator_links a")
 	jq_indicators.click(function(){
 		var link = $(this).attr('href'),
-				title = $(this).attr('title')
-		    id = link.split('/')[11];
+				title = $(this).attr('title'),
+				id;
+
+		if (link.search('summary') !== -1) {
+			id = get_query_parameter(link, 'indicator_type_id', 'indicator_type');
+		} else {
+			id = get_query_parameter(link, 'indicator_id', 'indicator');
+		}
+
 		// reset highlight since indicator clicks do not have highlight
 		gon.dt_highlight_shape = null;
 
@@ -138,12 +220,12 @@ $(function(){
 			title = $(this).text().trim();
 		}
 		for (var i=0;i<table_headers.length;i++){
-			if (title.trim().indexOf(table_headers[i].innerText.trim()) != -1) {
+			var index = title.trim().indexOf(table_headers[i].innerText.trim());
+			if (index != -1) {
 				datai = $(table_headers[i]).attr('data-i');
 				break;
 			}
 		}
-
 		// load the new data
 		indicator_click($(this), link, id, datai);
 		return false;
@@ -156,7 +238,14 @@ $(function(){
     var ths = $(this);
 		var link = ths.attr('href'),
 				link_arr = link.split('/'),
-				id = link_arr[11];
+				id;
+
+		if (link.search('summary') !== -1) {
+			id = get_query_parameter(link, 'indicator_type_id', 'indicator_type');
+		} else {
+			id = get_query_parameter(link, 'indicator_id', 'indicator');
+		}
+
 		// save the shape to highlight
 		gon.dt_highlight_shape = decodeURIComponent(link_arr[link_arr.length-1]);
 

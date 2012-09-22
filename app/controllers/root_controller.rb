@@ -507,9 +507,10 @@ logger.debug " - no matching event found!"
       end
 
       # set json paths for indicator menu ajax calls
+			# - 'xxx' are placeholders that will be replaced with the id from the link the user clicks on
       if @is_custom_view
 				gon.indicator_menu_data_path_summary = json_summary_custom_children_data_path(:parent_id => params[:shape_id],
-  			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
+  			  :event_id => params[:event_id], :indicator_type_id => 'xxx',
   			  :shape_type_id => @child_shape_type_id)
 				gon.indicator_menu_data_path = json_custom_children_data_path(:parent_id => params[:shape_id],
 				  :indicator_id => 'xxx', :shape_type_id => @child_shape_type_id,
@@ -520,7 +521,7 @@ logger.debug " - no matching event found!"
   			  :shape_type_id => @child_shape_type_id,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
 				gon.indicator_menu_data_path = json_children_data_path(:parent_id => params[:shape_id],
-  			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
+  			  :indicator_id => 'xxx', :shape_type_id => @child_shape_type_id,
   			  :event_id => params[:event_id],
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
       end
@@ -562,10 +563,10 @@ logger.debug " - no matching event found!"
 		# data table
     iid = (params[:indicator_id].nil? ? 'null' : params[:indicator_id])
     vt = (params[:view_type].nil? ? 'null' : params[:view_type])
-		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id], 
-		  :event_id => params[:event_id], :shape_id => params[:shape_id], 
-		  :shape_type_id => params[:shape_type_id], :indicator_id => iid, 
-		  :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id, 
+		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id],
+		  :event_id => params[:event_id], :shape_id => params[:shape_id],
+		  :shape_type_id => params[:shape_type_id], :indicator_id => iid,
+		  :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id,
 		  :view_type => vt, :summary_view_type_name => @summary_view_type_name)
 
 		gon.dt_highlight_shape = (params[:highlight_shape].nil? ? false : params[:highlight_shape])
