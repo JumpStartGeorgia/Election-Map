@@ -58,20 +58,32 @@ $(function(){
 					// shape navigation
 					// - add ind type id and view type
 					$('#shape_layer_navigation ul li.lev-ind a').each(function(index){
-						$(this).attr('href',
-							update_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type', id));
-						$(this).attr('href',
-							update_query_parameter($(this).attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+						// if the link does not have the indicator type param, switch it in for the indidcator id
+						if (get_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type') == undefined){
+							$(this).attr('href',
+								replace_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', 'indicator_type_id', 'indicator_type', id + '&view_type=' + gon.summary_view_type_name, id + '/view_type/' + gon.summary_view_type_name));
+						} else {
+							$(this).attr('href',
+								update_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type', id));
+							$(this).attr('href',
+								update_query_parameter($(this).attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+						}
 					});
 
 					// custom shape view switcher
 					// - add ind type id and view type
 					// - switcher might not exist, so see if is there
+					// if the link does not have the indicator type param, switch it in for the indidcator id
 					if ($('#switch-custom-view').length > 0) {
-						$('#switch-custom-view').attr('href',
-							update_query_parameter($('#switch-custom-view').attr('href'), 'indicator_type_id', 'indicator_type', id));
-						$('#switch-custom-view').attr('href',
-							update_query_parameter($('#switch-custom-view').attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+						if (get_query_parameter($('#switch-custom-view').attr('href'), 'indicator_type_id', 'indicator_type') == undefined){
+							$('#switch-custom-view').attr('href',
+								replace_query_parameter($('#switch-custom-view').attr('href'), 'indicator_id', 'indicator', 'indicator_type_id', 'indicator_type', id + '&view_type=' + gon.summary_view_type_name, id + '/view_type/' + gon.summary_view_type_name));
+						} else {
+							$('#switch-custom-view').attr('href',
+								update_query_parameter($('#switch-custom-view').attr('href'), 'indicator_type_id', 'indicator_type', id));
+							$('#switch-custom-view').attr('href',
+								update_query_parameter($('#switch-custom-view').attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+						}
 					}
 
 					// language
@@ -93,8 +105,14 @@ $(function(){
 					// shape navigation
 					// - add ind type id and view type
 					$('#shape_layer_navigation ul li.lev-ind a').each(function(index){
-						$(this).attr('href',
-							update_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', id));
+						// if the link does not have the indicator param, switch it in for the indidcator type
+						if (get_query_parameter($(this).attr('href'), 'indicator_id', 'indicator') == undefined){
+							$(this).attr('href',
+								replace_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type', 'indicator_id', 'indicator', id, id));
+						} else {
+							$(this).attr('href',
+								update_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', id));
+						}
 						$(this).attr('href',
 							remove_query_parameter($(this).attr('href'), 'view_type', 'view_type'));
 					});
@@ -103,8 +121,14 @@ $(function(){
 					// - add ind id and view type
 					// - switcher might not exist, so see if is there
 					if ($('#switch-custom-view').length > 0) {
-						$('#switch-custom-view').attr('href',
-							update_query_parameter($('#switch-custom-view').attr('href'), 'indicator_id', 'indicator', id));
+						// if the link does not have the indicator param, switch it in for the indidcator type
+						if (get_query_parameter($('#switch-custom-view').attr('href'), 'indicator_id', 'indicator') == undefined){
+							$('#switch-custom-view').attr('href',
+								replace_query_parameter($('#switch-custom-view').attr('href'), 'indicator_type_id', 'indicator_type', 'indicator_id', 'indicator', id, id));
+						} else {
+							$('#switch-custom-view').attr('href',
+								update_query_parameter($('#switch-custom-view').attr('href'), 'indicator_id', 'indicator', id));
+						}
 						$('#switch-custom-view').attr('href',
 							remove_query_parameter($('#switch-custom-view').attr('href'), 'view_type', 'view_type'));
 					}
