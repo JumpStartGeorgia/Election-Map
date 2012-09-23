@@ -10,9 +10,23 @@ class DataSet < ActiveRecord::Base
   after_save :update_data_flag
   before_destroy :destroy_data_flag
 
+	###################################
+	## special gets for attributes
+	###################################
   def precincts_percentage
-    ActionController::Base.helpers.number_to_percentage(self.precincts_completed.to_f/self.precincts_total*100) if self.precincts_completed && self.precincts_total
+    ActionController::Base.helpers.number_to_percentage(read_attribute(:precincts_completed).to_f/read_attribute(:precincts_total)*100) if read_attribute(:precincts_completed) && read_attribute(:precincts_total)
   end
+  def precincts_completed
+    if read_attribute(:precincts_completed)
+			return ActionController::Base.helpers.number_with_delimiter(read_attribute(:precincts_completed))
+    end
+  end
+  def precincts_total
+    if read_attribute(:precincts_total)
+			return ActionController::Base.helpers.number_with_delimiter(read_attribute(:precincts_total))
+    end
+  end
+
 
   def self.ordered
     joins(:event)

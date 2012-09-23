@@ -195,7 +195,7 @@ class Datum < ActiveRecord::Base
 
 			if num && !num.empty? && perc && !perc.empty?
 				hash = Hash.new
-				hash[:num_precincts] = num.first["num_precincts"]
+				hash[:num_precincts] = ActionController::Base.helpers.number_with_delimiter(num.first["num_precincts"])
 				hash[:completed_number] = num.first.formatted_value
 				hash[:completed_percent] = ActionController::Base.helpers.number_to_percentage(perc.first.formatted_value)
 			end
