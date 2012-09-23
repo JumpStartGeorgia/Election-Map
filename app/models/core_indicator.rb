@@ -18,7 +18,7 @@ class CoreIndicator < ActiveRecord::Base
 
 	# if ancestry is '', make it nil
 	def reset_ancestry
-		self.ancestry = nil if self.ancestry.empty?
+		self.ancestry = nil if self.ancestry && self.ancestry.empty?
 	end
 
   def self.order_by_type_name
