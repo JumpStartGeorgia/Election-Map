@@ -228,13 +228,19 @@ logger.debug "////////////// getting current event for event type #{params[:even
   								# get the selected indicator
   								@indicator = Indicator.find(params[:indicator_id])
   							end
-  							# save the indicator type id so the indicator menu works
-  							params[:indicator_type_id] = @indicator.core_indicator.indicator_type_id if params[:indicator_type_id].nil?
+  							if @indicator
+    							# save the indicator type id so the indicator menu works
+    							params[:indicator_type_id] = @indicator.core_indicator.indicator_type_id if params[:indicator_type_id].nil?
+							  else
+  								# could not find an indicator
+  								logger.debug "+++++++++ cound not find the desired indicator"
+  								flag_redirect = true
+						    end
   logger.debug "////////////// done getting current indicator"
   						end
 
   						# if have custom view, get indicator if user wants to switch between custom view and non-custom view
-  						if @has_custom_view
+  						if !flag_redirect && @has_custom_view
   logger.debug "////////////// is custom view, getting indicator to switch between views"
   							@custom_indicator_id = nil
 

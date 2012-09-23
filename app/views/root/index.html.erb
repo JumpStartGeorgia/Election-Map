@@ -6,7 +6,7 @@
       <%= @live_event_name %>
     </h2>
     <p>
-      <%= t('.live_event_available', :time => l(@live_event_data_available, :format => :long))%>
+      <%= t('.live_event_available', :time => l(@live_event_data_available, :format => :long)) if @live_event_data_available%>
     </p>
 
 		<h3><%= t('.live_event_countdown_header') %>
