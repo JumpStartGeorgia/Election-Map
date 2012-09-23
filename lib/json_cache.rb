@@ -95,65 +95,39 @@ module JsonCache
     old_logger = ActiveRecord::Base.logger
     ActiveRecord::Base.logger = nil
 
-		# domain
-		domain = "http://0.0.0.0:3000"
-		if Rails.env.staging?
-			domain = "http://dev-electiondata.jumpstart.ge"
-		elsif Rails.env.production?
-			domain = "http://data.electionportal.ge"
-		end
-		Rails.logger.debug "============ using domain #{domain}"
-
 		start = Time.now
 		Rails.logger.debug "============ starting build cache at #{start}"
 		# get the events that have shapes assigned to them
 		# if no shape assigned, then not appearing on site
-#		events = Event.where("shape_id is not null")
-		events = Event.where("id in (1,2,3,4,5,15,16)")
+		events = Event.where("shape_id is not null")
+#		events = Event.where("id in (1,2,3,4,5,15,16)")
 		if !events.nil? && !events.empty?
 			events.each_with_index do |event, i|
 				event_start = Time.now
 				shape_type_id = event.shape.shape_type_id
-				# see if event has custom view
-				custom_view = event.event_custom_views.where(:shape_type_id => shape_type_id)
+				# if have offical data, get the most current dataset
+				if event.has_official_data?
+					dataset = DataSet.current_dataset(event.id, Datum::DATA_TYPE[:official])
 
-        is_custom_view = false
-				if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
-					# has custom view, use the custom shape type
-					shape_type_id = custom_view.first.descendant_shape_type_id
-					is_custom_view = true
-				end
-
-				indicator_types = IndicatorType.find_by_event_shape_type(event.id, shape_type_id)
-				if !indicator_types.nil? && !indicator_types.empty?
-					# if the first indicator type has a summary, load summary data
-					# else, load data for first indicator
-					if indicator_types[0].has_summary
-						I18n.available_locales.each do |locale|
-							# load the children shapes
-              if is_custom_view
-							  uri = URI("#{domain}/#{locale}/json/summary_custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}")
-							else
-							  uri = URI("#{domain}/#{locale}/json/summary_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}")
-						  end
-							Net::HTTP.get(uri)
-						end
-					elsif !indicator_types[0].core_indicators.nil? && !indicator_types[0].core_indicators.empty? &&
-								!indicator_types[0].core_indicators[0].indicators.nil? && !indicator_types[0].core_indicators[0].indicators.empty?
-						I18n.available_locales.each do |locale|
-							# load the children shapes
-							if is_custom_view
-							  uri = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}")
-							else
-							  uri = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}")
-						  end
-							Net::HTTP.get(uri)
-						end
+					if dataset && !dataset.empty?
+						# build default event cache
+						build_event_default_cache(event, dataset.first.id, dataset.first.data_type, event.shape_id, shape_type_id)
 					end
-					Rails.logger.debug "=================== "
-					Rails.logger.debug "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"
-					Rails.logger.debug "=================== "
 				end
+
+				# if have live data, get the most current dataset
+				if event.has_live_data?
+					dataset = DataSet.current_dataset(event.id, Datum::DATA_TYPE[:live])
+
+					if dataset && !dataset.empty?
+						# build default event cache
+						build_event_default_cache(event, dataset.first.id, dataset.first.data_type, event.shape_id, shape_type_id)
+					end
+				end
+
+				Rails.logger.debug "=================== "
+				Rails.logger.debug "=================== time to load event #{event.id} was #{(Time.now-event_start)} seconds"
+				Rails.logger.debug "=================== "
 			end
 		end
 
@@ -172,8 +146,8 @@ module JsonCache
 		start = Time.now
 
 		# get the events that have custom views
-#    custom_views = EventCustomView.all
-		custom_views = EventCustomView.where("event_id in (1,2,3,4,5,15,16)")
+    custom_views = EventCustomView.all
+#		custom_views = EventCustomView.where("event_id in (1,2,3,4,5,15,16)")
 		if !custom_views.nil? && !custom_views.empty?
       custom_views.each do |custom_view|
         # event must have shape attached to it
@@ -197,48 +171,29 @@ module JsonCache
 		Rails.logger.debug "============ starting build cache at #{start}"
 
 		if !event_id.nil? && !shape_type_id.nil?
-			# domain
-			domain = "http://0.0.0.0:3000"
-			if Rails.env.staging?
-				domain = "http://dev-electiondata.jumpstart.ge"
-			elsif Rails.env.production?
-				domain = "http://data.electionportal.ge"
-			end
-			Rails.logger.debug "============ using domain #{domain}"
-
 			# get the event
 			event = Event.find(event_id)
 			if !event.nil?
-				# see if event has custom view at this shape type
-				custom_view = event.event_custom_views.where(:descendant_shape_type_id => shape_type_id)
-        is_custom_view = false
-				if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
-					# has custom view, use the custom shape type
-  				Rails.logger.debug "=================== "
-					Rails.logger.debug "=================== event #{event_id} at shape type #{shape_type_id} is a custom view"
-  				Rails.logger.debug "=================== "
-					is_custom_view = true
+				# if have offical data, get the most current dataset
+				if event.has_official_data?
+					dataset = DataSet.current_dataset(event.id, Datum::DATA_TYPE[:official])
+
+					if dataset && !dataset.empty?
+						#build custom indicator cache
+						build_event_indicator_cache(event, dataset.first.id, dataset.first.data_type, event.shape_id, shape_type_id, false, true)
+					end
 				end
 
-				# get all indicators for this event and shape type
-				indicators = Indicator.where(:event_id => event_id, :shape_type_id => shape_type_id)
-				if !indicators.nil? && !indicators.empty?
-					I18n.available_locales.each do |locale|
-  				  indicators.each do |indicator|
-      				ind_start = Time.now
-    					# load the children shapes
-    					if is_custom_view
-							  uri = URI("#{domain}/#{locale}/json/custom_children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}/custom_view/#{is_custom_view}")
-							else
-							  uri = URI("#{domain}/#{locale}/json/children_shapes/#{event.shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator.id}/custom_view/#{is_custom_view}")
-    				  end
-							Net::HTTP.get(uri)
-      				Rails.logger.debug "=================== "
-    					Rails.logger.debug "=================== time to load indicator #{indicator.id} for event #{event.id} was #{(Time.now-ind_start)} seconds"
-    					Rails.logger.debug "=================== "
-            end
-  				end
+				# if have live data, get the most current dataset
+				if event.has_live_data?
+					dataset = DataSet.current_dataset(event.id, Datum::DATA_TYPE[:live])
+
+					if dataset && !dataset.empty?
+						#build custom indicator cache
+						build_event_indicator_cache(event, dataset.first.id, dataset.first.data_type, event.shape_id, shape_type_id, false, true)
+					end
 				end
+
 			end
 		end
 		end_time = Time.now
@@ -296,11 +251,134 @@ module JsonCache
   end
 
 
+	###########################################
+	### create data_set json cache
+	###########################################
+  def self.build_data_set_json_cache(event_id, data_set_id)
+    # turn off the active record logging
+    old_logger = ActiveRecord::Base.logger
+    ActiveRecord::Base.logger = nil
+
+    start = Time.now
+
+		Rails.logger.debug "============ starting build cache at #{start}"
+		# get the events that have shapes assigned to them
+		# if no shape assigned, then not appearing on site
+		event = Event.find(event_id)
+		dataset = DataSet.find(data_set_id)
+		if event && dataset
+			shape_type_id = event.shape.shape_type_id
+
+			# build default event cache
+			build_event_default_cache(event, data_set_id, dataset.data_type, event.shape_id, shape_type_id)
+
+			#build custom indicator cache
+			build_event_indicator_cache(event, data_set_id, dataset.data_type, event.shape_id, shape_type_id)
+		end
+
+		end_time = Time.now
+
+    # turn active record logging back on
+    ActiveRecord::Base.logger = old_logger
+
+		Rails.logger.debug "=================== "
+		Rails.logger.debug "============ total time took #{(end_time - start)} seconds"
+		Rails.logger.debug "=================== "
+  end
+
 
 
 protected
 
 	def self.json_file_path
 		"#{Rails.root}/public/json/event_[event_id]"
+	end
+
+	def self.json_domain
+		# domain
+		domain = "http://emap.local"
+		if Rails.env.staging?
+			domain = "http://dev-electiondata.jumpstart.ge"
+		elsif Rails.env.production?
+			domain = "http://data.electionportal.ge"
+		end
+		Rails.logger.debug "============ using domain #{domain}"
+		return domain
+	end
+
+	###########################################
+	### create the cache for an event's default view
+	###########################################
+	def self.build_event_default_cache(event, data_set_id, data_type, shape_id, shape_type_id)
+		# see if event has custom view
+		custom_view = event.event_custom_views.where(:shape_type_id => shape_type_id)
+
+		is_custom_view = false
+		if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
+			# has custom view, use the custom shape type
+			shape_type_id = custom_view.first.descendant_shape_type_id
+			is_custom_view = true
+		end
+
+		indicator_types = IndicatorType.find_by_event_shape_type(event.id, shape_type_id)
+		if !indicator_types.nil? && !indicator_types.empty?
+			# if the first indicator type has a summary, load summary data
+			# else, load data for first indicator
+			if indicator_types[0].has_summary
+				I18n.available_locales.each do |locale|
+					# load the children shapes
+		      if is_custom_view
+						uri = URI("#{json_domain}/#{locale}/json/summary_custom_children_shapes/#{shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}&data_set_id=#{data_set_id}&data_type=#{data_type}")
+					else
+						uri = URI("#{json_domain}/#{locale}/json/summary_children_shapes/#{shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator_type/#{indicator_types[0].id}?custom_view=#{is_custom_view}&data_set_id=#{data_set_id}&data_type=#{data_type}")
+					end
+					Net::HTTP.get(uri)
+				end
+			elsif !indicator_types[0].core_indicators.nil? && !indicator_types[0].core_indicators.empty? &&
+						!indicator_types[0].core_indicators[0].indicators.nil? && !indicator_types[0].core_indicators[0].indicators.empty?
+				I18n.available_locales.each do |locale|
+					# load the children shapes
+					if is_custom_view
+						uri = URI("#{json_domain}/#{locale}/json/custom_children_shapes/#{shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}?data_set_id=#{data_set_id}&data_type=#{data_type}")
+					else
+						uri = URI("#{json_domain}/#{locale}/json/children_shapes/#{shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator_types[0].core_indicators[0].indicators[0].id}/custom_view/#{is_custom_view}?data_set_id=#{data_set_id}&data_type=#{data_type}")
+					end
+					Net::HTTP.get(uri)
+				end
+			end
+		end
+	end
+
+	###########################################
+	### create the cache for each of the event's
+	### indicators for custom views
+	###########################################
+	def self.build_event_indicator_cache(event, data_set_id, data_type, shape_id, shape_type_id, check_custom_view = true, is_custom_view = false)
+
+		if check_custom_view
+			# see if event has custom view
+			custom_view = event.event_custom_views.where(:shape_type_id => shape_type_id)
+			if !custom_view.nil? && !custom_view.empty? && custom_view.first.is_default_view
+				# has custom view, use the custom shape type
+				shape_type_id = custom_view.first.descendant_shape_type_id
+				is_custom_view = true
+			end
+		end
+
+		indicators = Indicator.where(:event_id => event.id, :shape_type_id => shape_type_id)
+		if !indicators.nil? && !indicators.empty?
+			I18n.available_locales.each do |locale|
+				indicators.each do |indicator|
+					ind_start = Time.now
+					# load the children shapes
+					if is_custom_view
+						uri = URI("#{json_domain}/#{locale}/json/custom_children_shapes/#{shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/indicator/#{indicator.id}/custom_view/#{is_custom_view}?data_set_id=#{data_set_id}&data_type=#{data_type}")
+					else
+						uri = URI("#{json_domain}/#{locale}/json/children_shapes/#{shape_id}/shape_type/#{shape_type_id}/event/#{event.id}/parent_clickable/false/indicator/#{indicator.id}/custom_view/#{is_custom_view}?data_set_id=#{data_set_id}&data_type=#{data_type}")
+					end
+					Net::HTTP.get(uri)
+		    end
+			end
+		end
 	end
 end
