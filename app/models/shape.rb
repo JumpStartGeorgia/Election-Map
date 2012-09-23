@@ -160,8 +160,8 @@ class Shape < ActiveRecord::Base
     	      end
     		  end
 
-					# if this is live data, add the precincts reported numbers
-					if data_type == Datum::DATA_TYPE[:live]
+					# if this is live data and not a precinct, add the precincts reported numbers
+					if data_type == Datum::DATA_TYPE[:live] && !shape.shape_type.is_precinct?
 						precincts_reporting = Datum.get_precincts_reported(shape.id, event_id, data_set_id)
 						if precincts_reporting && !precincts_reporting.empty?
 							title["precincts_completed"] =
