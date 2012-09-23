@@ -157,6 +157,7 @@ class Datum < ActiveRecord::Base
 			results["indicator"]["number_format"] = nil
       results["indicator"]["scales"] = [{:name => IndicatorScale::NO_DATA_TEXT, :color => IndicatorScale::NO_DATA_COLOR }]
 			results["indicator"]["scale_colors"] = [IndicatorScale::NO_DATA_COLOR]
+			results["indicator"]["switcher_indicator_id"] = nil
 
       # indicate this is summary data
       results["view_type"] = "summary"
@@ -212,6 +213,23 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 			results["indicator"]["number_format"] = indicator.number_format.nil? ? "" : indicator.number_format
       results["indicator"]["scales"] = IndicatorScale.for_indicator(indicator.id)
 			results["indicator"]["scale_colors"] = IndicatorScale.get_colors(indicator.id)
+			results["indicator"]["switcher_indicator_id"] = nil
+
+			# if this event has a custom view at this level, get indicator id for other shape live
+			new_indicator = nil
+			custom_view = indicator.event.event_custom_views.where(:shape_type_id => shape_type_id)
+			if custom_view && !custom_view.empty?
+				new_indicator = Indicator.find_new_id(indicator_id, custom_view.first.descendant_shape_type_id)
+			else
+				custom_view = indicator.event.event_custom_views.where(:descendant_shape_type_id => shape_type_id)
+				if custom_view && !custom_view.empty?
+					new_indicator = Indicator.find_new_id(indicator_id, custom_view.first.shape_type.child_ids.first)
+				end
+			end
+			if new_indicator
+				# is custom view, update switcher indicator id
+				results["indicator"]["switcher_indicator_id"] = new_indicator.first.id
+			end
 
       # indicate this is not summary data
       results["view_type"] = "normal"
