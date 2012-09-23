@@ -1,0 +1,66 @@
+<% title t('.title') %>
+
+<% if !@live_events_menu || @live_events_menu.empty?%>
+
+  <p><%= t('.no_live_events')%></p>
+
+<% else %>
+
+  <%= form_tag load_data_data_sets_path, :multipart => true do %>
+  	<div>
+  		<p>
+  			<%= t('activerecord.attributes.data_sets.data_type') %>
+				<label class="radio inline">
+	  			<%= radio_button_tag "data_type", Datum::DATA_TYPE[:official],
+						params[:data_type] == Datum::DATA_TYPE[:official] %>
+	  			<%= Datum::DATA_TYPE[:official].titleize %>
+				</label>
+				<label class="radio inline">
+					<%= radio_button_tag "data_type", Datum::DATA_TYPE[:live],
+						params[:data_type] == Datum::DATA_TYPE[:live] %>
+					<%= Datum::DATA_TYPE[:live].titleize %>
+				</label>
+  		</p>
+			<div id="hidden_fields_live" style="display: none;">
+				<p>
+					<%= t('activerecord.attributes.data_sets.event_id') %>
+					<%= select_tag "event_id_live", options_from_collection_for_select(@live_events_menu, "id", "name", params[:event_id_live]), :include_blank => true %>
+				</p>
+				<p>
+					<%= t('activerecord.attributes.data_sets.precincts_completed') %>
+			    <%= text_field_tag "precincts_completed", params[:precincts_completed], :size => 20  %>
+				</p>
+				<p>
+					<%= t('activerecord.attributes.data_sets.precincts_total') %>
+			    <%= text_field_tag "precincts_total", params[:precincts_total], :size => 20  %>
+				</p>
+			</div>
+			<div id="hidden_fields_official" style="display: none;">
+				<p>
+					<%= t('activerecord.attributes.data_sets.event_id') %>
+					<%= select_tag "event_id_official", options_from_collection_for_select(@events, "id", "name", params[:event_id_official]), :include_blank => true %>
+				</p>
+			</div>
+			<div id="hidden_fields_common" style="display: none;">
+				<p>
+					<%= t('activerecord.attributes.data_sets.timestamp') %>
+			    <%= text_field_tag "timestamp", params[:timestamp], :size => 20  %>
+				</p>
+				<p>
+					<%= t('app.common.file_upload') %>
+					<%= file_field_tag 'file', :accept => 'text/csv,text/plain' %>
+				</p>
+			</div>
+  	</div>
+  	<div id="hidden_button" style="display: none;">
+  	  <%= submit_tag t("app.buttons.upload_csv") %>
+  	</div>
+  <% end %>
+
+<% end %>
+<div class="form-actions">
+  <%= link_to t('app.buttons.list'),
+              data_sets_path, :class => 'btn'  %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

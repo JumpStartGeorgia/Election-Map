@@ -5,7 +5,7 @@ class Shape < ActiveRecord::Base
   has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type
   accepts_nested_attributes_for :shape_translations
-  attr_accessible :shape_type_id, :geometry, :shape_translations_attributes
+  attr_accessible :shape_type_id, :num_precincts, :geometry, :shape_translations_attributes
   attr_accessor :locale
 
   validates :shape_type_id, :geometry, :presence => true
@@ -19,7 +19,7 @@ class Shape < ActiveRecord::Base
 
 	# get the name of the shape (common_id)
 	def self.get_shape_no_geometry(shape_id)
-		return shape_id.nil? ? "" : select("shapes.id, shapes.shape_type_id, shape_translations.common_id, shape_translations.common_name, ancestry")
+		return shape_id.nil? ? "" : select("shapes.id, shapes.shape_type_id, shape_translations.common_id, shape_translations.common_name, shapes.ancestry, shapes.num_precincts")
 					.joins(:shape_translations)
 					.where(:shapes => {:id => shape_id}, :shape_translations => {:locale => I18n.locale}).first
 	end
@@ -43,7 +43,7 @@ class Shape < ActiveRecord::Base
   end
 
 	# create the properly formatted json string
-	def self.build_json(shape_id, shape_type_id, indicator_id=nil)
+	def self.build_json(shape_id, shape_type_id, data_set_id=nil, indicator_id=nil)
     json = Hash.new()
 		start = Time.now
 		if !shape_id.nil? && !shape_type_id.nil?
@@ -57,7 +57,7 @@ class Shape < ActiveRecord::Base
 				# have to parse it for the geo is already in json format and
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id, data_set_id)
 			end
 		end
 		if indicator_id.nil?
@@ -69,7 +69,7 @@ class Shape < ActiveRecord::Base
 	end
 
 	# create the properly formatted json string
-	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
+	def self.build_summary_json(shape_id, shape_type_id, event_id, data_set_id, indicator_type_id)
 		start = Time.now
     json = Hash.new()
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
@@ -86,7 +86,7 @@ class Shape < ActiveRecord::Base
 				# transforming it to json again escapes the "" and breaks openlayers
 
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) if shape.geometry
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, data_set_id, event_id, true)
 
 			end
 		end
@@ -94,7 +94,7 @@ class Shape < ActiveRecord::Base
 		return json
 	end
 
-  def self.build_json_properties_for_shape(shape, ind_id, event_id=nil, isSummary = false)
+  def self.build_json_properties_for_shape(shape, ind_id, data_set_id, event_id=nil, isSummary = false)
     start = Time.now
     properties = Hash.new
     if !shape.nil?
@@ -117,12 +117,14 @@ class Shape < ActiveRecord::Base
 			title["title"] = I18n.t('app.msgs.no_data')
 			title["title_abbrv"] = ""
 
-      if !ind_id.nil?
+      if !ind_id.nil? && !data_set_id.nil?
         # get the data for the provided base shape and using the ancestry path to this shape
         if isSummary
-  			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id)
+  			  #data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id)
+  			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id, data_set_id)
         else
-    			data = Datum.get_related_indicator_data(shape.id, ind_id)
+    			#data = Datum.get_related_indicator_data(shape.id, ind_id)
+    			data = Datum.get_related_indicator_data(shape.id, ind_id, data_set_id)
         end
 
   			# look for data
@@ -188,6 +190,7 @@ class Shape < ActiveRecord::Base
       start = Time.now
 	    infile = file.read
 	    n, msg = 0, ""
+			root = nil
 			old_root_id = nil
       idx_event = 0
       idx_shape_type = 1
@@ -291,6 +294,11 @@ class Shape < ActiveRecord::Base
 		              raise ActiveRecord::Rollback
 		              return msg
 		            end
+		          elsif n == 2
+		    logger.debug "++++ this is the first row and root already exists"
+		      		  msg = I18n.t('models.shape.msgs.root_already_exists', :row_num => n)
+		            raise ActiveRecord::Rollback
+		            return msg
 		          else
 		    logger.debug "++++root already exists"
 		            # found root, continue
@@ -415,7 +423,7 @@ class Shape < ActiveRecord::Base
           puts "************ time to process row: #{Time.now-startRow} seconds"
         end
 
-  logger.debug "++++updating ka records with ka text in shape_names"
+			  logger.debug "++++updating ka records with ka text in shape_names"
         startPhase = Time.now
 				# ka translation is hardcoded as en in the code above
 				# update all ka records with the apropriate ka translation
@@ -425,8 +433,12 @@ class Shape < ActiveRecord::Base
 				ActiveRecord::Base.connection.execute("update shape_translations as st, shape_names as sn set st.common_name = sn.ka where st.locale = 'ka' and st.common_name = sn.en")
 #      	puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
+			  logger.debug "++++add precinct counts"
+				# add precinct counts to each new shape file
+				add_precinct_count(root.id) if root
+
 			end
-  logger.debug "++++procssed #{n} rows in CSV file"
+		  logger.debug "++++procssed #{n} rows in CSV file"
 #	    puts "****************** time to build_from_csv: #{Time.now-start} seconds"
       return msg
     end
@@ -486,6 +498,49 @@ class Shape < ActiveRecord::Base
 				return msg
 			end
 			return msg
+		end
+
+		#######################
+		# compute number of precincts within each shape that belongs to the provided root shape
+		#######################
+		def self.add_precinct_count(root_id)
+			start = Time.now
+			shape = Shape.find(root_id)
+			shape_types = ShapeType.precincts
+			if shape && shape_types && !shape_types.empty?
+				# get number for root
+				shape.num_precincts = compute_number_precincts(shape.id, shape_types)
+				shape.save
+
+				# process each descendant that is not a precinct
+				descendants = shape.descendants.where("shape_type_id not in (:ids)", :ids => shape_types.collect(&:id))
+				descendants.each do |descendant|
+					descendant.num_precincts = compute_number_precincts(descendant.id, shape_types)
+					descendant.save
+				end
+			end
+			logger.debug "************* time to add precincts count to shape set was #{Time.now - start} seconds"
+		end
+
+		# compute number of precincts that are a child of each shape and add to record
+		def self.compute_number_precincts(shape_id, shape_types)
+			number = nil
+			if shape_types && !shape_types.empty?
+				number = Shape.find(shape_id).descendants.where("shape_type_id in (:ids)", :ids => shape_types.collect(&:id)).length
+			end
+			return number
+		end
+
+		# update precinct count for all shapes
+		def self.add_precinct_count_all_shapes
+			start = Time.now
+			shapes = Shape.where("ancestry is null")
+			if shapes && !shapes.empty?
+				shapes.each do |shape|
+					add_precinct_count(shape.id)
+				end
+			end
+			logger.debug "************* time to add precincts count to ALL shapes was #{Time.now - start} seconds"
 		end
 
 

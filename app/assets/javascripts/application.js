@@ -26,5 +26,5 @@
 
 // set focus to first text box on page
 $(document).ready(function(){
-  $("input:visible:first").focus();
+  $(":input:visible:first").focus();
 });

@@ -32,13 +32,15 @@
 				<%= link_to("XLS",
 					download_data_xls_path(:event_id => params[:event_id],
 						:shape_type_id => params[:child_shape_type_id], :shape_id => params[:shape_id],
-						:map_title => "placeholder", :event_name => "placeholder"),
+						:map_title => "placeholder", :event_name => "placeholder",
+						:data_type => params[:data_type], :data_set_id => params[:data_set_id]),
 					:id => "export-data-xls2", :title => t('app.buttons.download_xls')) %>
 
 				<%= link_to("CSV",
 					download_data_csv_path(:event_id => params[:event_id],
 						:shape_type_id => params[:child_shape_type_id], :shape_id => params[:shape_id],
-						:map_title => "placeholder", :event_name => "placeholder"),
+						:map_title => "placeholder", :event_name => "placeholder",
+						:data_type => params[:data_type], :data_set_id => params[:data_set_id]),
 					:id => "export-data-csv2", :title => t('app.buttons.download_csv')) %>
 			</div>
 		</div>
@@ -80,9 +82,18 @@
 		          <% if i == 0 %>
 		            <span><%= value %></span>
 		          <% elsif i == 1 && !@dt.indicator_type_ids.empty?%>
-		            <%= link_to value, summary_map_path(:event_type_id => params[:event_type_id], :event_id => params[:event_id], :shape_type_id => params[:shape_type_id], :shape_id => params[:shape_id], :indicator_type_id => @dt.indicator_type_ids[td[0][i]], :view_type => @summary_view_type_name, :custom_view => params[:custom_view], :highlight_shape => row[0]) %>
+		            <%= link_to value, summary_map_path(:event_type_id => params[:event_type_id],
+										:event_id => params[:event_id], :shape_type_id => params[:shape_type_id],
+										:shape_id => params[:shape_id], :indicator_type_id => @dt.indicator_type_ids[td[0][i]],
+										:view_type => @summary_view_type_name, :custom_view => params[:custom_view],
+										:data_type => params[:data_type], :data_set_id => params[:data_set_id],
+										:highlight_shape => row[0]) %>
 		          <% else %>
-		            <%= link_to(value, indicator_map_path(:event_type_id => params[:event_type_id], :event_id => params[:event_id], :shape_id => params[:shape_id], :shape_type_id => params[:shape_type_id], :indicator_id => @dt.indicator_ids[i], :custom_view => params[:custom_view], :highlight_shape => row[0])) %>
+		            <%= link_to(value, indicator_map_path(:event_type_id => params[:event_type_id],
+										:event_id => params[:event_id], :shape_id => params[:shape_id],
+										:shape_type_id => params[:shape_type_id], :indicator_id => @dt.indicator_ids[i],
+										:custom_view => params[:custom_view], :highlight_shape => row[0],
+										:data_type => params[:data_type], :data_set_id => params[:data_set_id])) %>
 		          <% end %>
 		        </td>
 		      <% end %>

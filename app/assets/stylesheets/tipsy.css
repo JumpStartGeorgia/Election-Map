@@ -1,17 +1,20 @@
 /* Tipsy */
 .tipsy
 {
-    font-size: 10px;
+		font-family: Arial;
+    font-size: 12px;
     position: absolute;
     padding: 5px;
     z-index: 100000;
+		opacity: 0.95 !important;
+		filter: alpha(opacity=95) !important;
 }
 
 .tipsy-inner
 {
-    background-color: #000;
+    background-color: #3692D1;
     color: #FFF;
-    max-width: 200px;
+    max-width: 250px;
     padding: 5px 8px 4px 8px;
     text-align: center;
 }
@@ -23,41 +26,33 @@
     -webkit-border-radius: 3px;
 }
 
-/*
-.tipsy-inner
-{
-    box-shadow: 0 0 5px #000000;
-    -webkit-box-shadow: 0 0 5px #000000;
-    -moz-box-shadow: 0 0 5px #000000;
-}
-*/
 .tipsy-arrow
 {
     position: absolute;
     width: 0;
     height: 0;
     line-height: 0;
-    border: 5px dashed #000;
+    border: 5px dashed #3692D1;
 }
 
 .tipsy-arrow-n
 {
-    border-bottom-color: #000;
+    border-bottom-color: #3692D1;
 }
 
 .tipsy-arrow-s
 {
-    border-top-color: #000;
+    border-top-color: #3692D1;
 }
 
 .tipsy-arrow-e
 {
-    border-left-color: #000;
+    border-left-color: #3692D1;
 }
 
 .tipsy-arrow-w
 {
-    border-right-color: #000;
+    border-right-color: #3692D1;
 }
 
 .tipsy-n .tipsy-arrow

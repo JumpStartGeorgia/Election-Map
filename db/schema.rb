@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120827055115) do
+ActiveRecord::Schema.define(:version => 20120921191211) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -43,11 +43,31 @@ ActiveRecord::Schema.define(:version => 20120827055115) do
     t.integer  "indicator_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.decimal  "value",        :precision => 16, :scale => 4
+    t.decimal  "value",          :precision => 16, :scale => 4
+    t.integer  "data_set_id"
+    t.string   "en_common_id"
+    t.string   "en_common_name"
+    t.string   "ka_common_id"
+    t.string   "ka_common_name"
   end
 
-  add_index "data", ["indicator_id"], :name => "index_data_on_indicator_id"
+  add_index "data", ["data_set_id", "indicator_id"], :name => "index_data_ids"
+  add_index "data", ["en_common_id", "en_common_name"], :name => "index_data_en_common"
+  add_index "data", ["ka_common_id", "ka_common_name"], :name => "index_data_ka_common"
   add_index "data", ["value"], :name => "index_data_on_value"
+
+  create_table "data_sets", :force => true do |t|
+    t.integer  "event_id"
+    t.integer  "precincts_completed"
+    t.integer  "precincts_total"
+    t.datetime "timestamp"
+    t.boolean  "show_to_public",      :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "data_type",           :default => "official"
+  end
+
+  add_index "data_sets", ["event_id", "data_type", "show_to_public", "timestamp"], :name => "idx_data_sets_on_event"
 
   create_table "datum_translations", :force => true do |t|
     t.integer  "datum_id"
@@ -139,9 +159,13 @@ ActiveRecord::Schema.define(:version => 20120827055115) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.date     "event_date"
+    t.boolean  "has_official_data", :default => false
+    t.boolean  "has_live_data",     :default => false
   end
 
   add_index "events", ["event_type_id"], :name => "index_events_on_event_type_id"
+  add_index "events", ["has_live_data"], :name => "index_events_on_has_live_data"
+  add_index "events", ["has_official_data"], :name => "index_events_on_has_official_data"
   add_index "events", ["shape_id"], :name => "index_events_on_shape_id"
 
   create_table "indicator_scale_translations", :force => true do |t|
@@ -223,6 +247,20 @@ ActiveRecord::Schema.define(:version => 20120827055115) do
   end
 
   add_index "indicators", ["event_id", "shape_type_id", "core_indicator_id"], :name => "inds_event_shape_type_core_ind"
+
+  create_table "menu_live_events", :force => true do |t|
+    t.integer  "event_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.date     "menu_start_date"
+    t.date     "menu_end_date"
+    t.datetime "data_available_at"
+  end
+
+  add_index "menu_live_events", ["data_available_at"], :name => "index_menu_live_events_on_data_available_at"
+  add_index "menu_live_events", ["event_id"], :name => "index_menu_live_events_on_event_id"
+  add_index "menu_live_events", ["menu_end_date"], :name => "index_menu_live_events_on_menu_end_date"
+  add_index "menu_live_events", ["menu_start_date"], :name => "index_menu_live_events_on_menu_start_date"
 
   create_table "news", :force => true do |t|
     t.string   "news_type"
@@ -321,9 +359,11 @@ ActiveRecord::Schema.define(:version => 20120827055115) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "ancestry"
+    t.boolean  "is_precinct", :default => false
   end
 
   add_index "shape_types", ["ancestry"], :name => "index_shape_types_on_ancestry"
+  add_index "shape_types", ["is_precinct"], :name => "index_shape_types_on_is_precinct"
 
   create_table "shapes", :force => true do |t|
     t.integer  "shape_type_id"
@@ -331,6 +371,7 @@ ActiveRecord::Schema.define(:version => 20120827055115) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "ancestry"
+    t.integer  "num_precincts"
   end
 
   add_index "shapes", ["ancestry"], :name => "index_shapes_on_ancestry"

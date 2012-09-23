@@ -1,28 +1,46 @@
-<% if @event_menu && !@event_menu.empty? %>
+<% if @event_menu && !@event_menu.empty? && !@event_menu.select{|x| x["events"].length > 0}.empty? %>
 	<div id="events_menu_tabs">
 		<ul>
 			<% @event_menu.each do |event_type| %>
-				<% is_active = event_type["id"].to_s == params[:event_type_id].to_s ? "ui-tabs-selected ui-state-active" : "" %>
-				<li class="<%=is_active%>"><%= link_to event_type["name"], "#event_type_#{event_type["id"]}" %></li>
+			  <% if !event_type["events"].empty? %>
+  				<% is_active = event_type["id"].to_s == params[:event_type_id].to_s ? "ui-tabs-selected ui-state-active" : "" %>
+  				<li class="<%=is_active%>"><%= link_to event_type["name"], "#event_type_#{event_type["id"]}" %></li>
+			  <% end %>
 			<% end %>
 		</ul>
 		<% @event_menu.each do |event_type| %>
-			<div id="<%= "event_type_#{event_type["id"]}"%>">
-				<ul class="menu_list">
-					<% event_type["events"].each do |event| %>
-						<% is_active = event["id"].to_s == params[:event_id].to_s ? "active" : "not_active" %>
-						<li>
-							<%
-								 index = event["url"].index(">")
-									if index
-										url = event["url"].insert(index, "class=\"#{is_active}\" title=\"#{strip_tags(event["description"])}\"")
-									end
-							%>
-							<%= url %>
-						</li>
-					<% end %>
-				</ul>
-			</div>
+		  <% if !event_type["events"].empty? %>
+  			<div id="<%= "event_type_#{event_type["id"]}"%>">
+  				<ul class="menu_list">
+  					<% event_type["events"].each do |event| %>
+  						<% is_active = event["id"].to_s == params[:event_id].to_s ? "active" : "not_active" %>
+  						<li>
+								<ul class="menu_item clear">
+									<li class="live_data">
+				            <% if event["url_live"] && !event["url_live"].empty? %>
+				              <%= link_to(image_tag("menu_live.png"),
+				                  event["url_live"], "title" => t('app.common.live_data'))%>
+										<% else %>
+											&nbsp;
+				            <% end %>
+									</li>
+									<li class="official_data">
+				            <% if event["url_official"] && !event["url_official"].empty? %>
+				              <%= link_to(image_tag("menu_official.png"),
+				                  event["url_official"], "title" => t('app.common.official_data'))%>
+										<% else %>
+											&nbsp;
+				            <% end %>
+									</li>
+									<li class="event_name">
+		  		          <span title="<%= strip_tags(event["description"]) %>"><%= event["name"] %></span>
+									</li>
+								</ul>
+  						</li>
+  					<% end %>
+  				</ul>
+  			</div>
+		  <% end %>
 		<% end %>
 	</div>
 <% end %>

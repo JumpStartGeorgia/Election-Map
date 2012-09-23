@@ -31,7 +31,9 @@
  			<li>
  				<%= link_to t('.pages'), pages_path %>
  			</li>
- 		</ul>
+ 			<li>
+ 				<%= link_to t('.menu_live_events'), menu_live_events_path %>
+ 			</li>
   </div>
    <div class="span4">
  		<h3><%= t('.csv_header')%></h3>
@@ -43,7 +45,7 @@
  			<%= link_to t('.change_indicator_scales'), upload_indicator_scales_path %>
  			</li>
  			<li>
- 			<%= link_to t('.data'), upload_data_path %>
+ 			<%= link_to t('.data'), data_sets_path %>
  			</li>
  			<li>
  			<%= link_to t('.shapes'), upload_shapes_path %>
@@ -77,7 +79,7 @@
  		<h3><%= t('.delete_header')%></h3>
  		<ul class="standard">
  			<li>
- 			<%= link_to t('.delete_data'), delete_data_path %>
+ 			<%= link_to t('.delete_data'), data_sets_path %>
  			</li>
  			<li>
  			<%= link_to t('.delete_shapes'), delete_shapes_path %>

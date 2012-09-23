@@ -1,6 +1,25 @@
 # encoding: utf-8
 ka:
+  activerecord:
+    attributes:
+      data_sets:
+        event_id: Event
+        data_type: Data Type
+        precincts_completed: "Precincts Completed (#)"
+        precincts_total: "Total Precincts (#)"
+        precincts_percentage: "Precincts Completed (%)"
+        timestamp: Time Event Data Reported
+        show_to_public: Make Public?
   models:
+    live_data:
+      msgs:
+        event_hint: "* - event has live data"
+    data_set:
+      msgs:
+        dataset_not_save: The dataset record could not be created for this file.
+        missing_params: Not all parameters were provided to save the record.
+        failed_set_event_flag: The Has Official/Live Data flag could not be set for the event.
+        events_not_match: Row %{row_num} - The Event selected in the web form does not match the Event in the spreadshseet.
     datum:
       header:
         event: არჩევნები
@@ -8,12 +27,14 @@ ka:
         map_level_id: "[Level] საიდენტიფიკაციო ნომერი"
         map_level_name: "[Level] დასახელება"
       msgs:
-        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
-        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
+        no_event_db: The event was not found in the database.
+        indicator_not_found: Indicator %{name} could not be found.
+        no_shape_spreadsheet: Row %{row_num} - The shape type was not found in the spreadsheet.
+        no_shape_db: Row %{row_num} - The shape type was not found in the database.
         missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
-        indicator_not_found: Row %{row_num} - The indicator could not be found.
         not_valid: Row %{row_num} is not valid.
         already_exists: Row %{row_num} already exists in the database.
+        failed_set_event_flag: Row %{row_num} - The Has Official Data flag could not be sent for the event.
     indicator:
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event, shape type, indicator type, and/or indicator name was not found in the spreadsheet.
@@ -92,6 +113,8 @@ ka:
       new_shapes: New Shape
       new_news: New News
       new_data_archives: New Data Archive
+      new_menu_live_events: New Menu Live Events
+      new_data_sets: Upload Event Data
       upload_csv: Process CSV File
       download_xls: ჩამოტვირთეთ XLS რუქა ფაილი
       download_csv: ჩამოტვირთეთ CSV რუქა ფაილი
@@ -123,7 +146,7 @@ ka:
       delete_data_success_2: "The data records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
       delete_data_success_3: "The data records were successfully deleted for Event - '%{event}'."
       delete_data_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
-      missing_parameters: Pleaes select data from all fields before submitting.
+      missing_parameters: Pleaes provide data for all fields before submitting.
       select_event: Select Event First
       select_shape_type: Select Shape Level First
       no_data_download: No data was found to download.
@@ -181,6 +204,15 @@ ka:
       date_posted: Date Posted
       data_archive_folder: Data Archive Folder
       page: Page
+      menu_start_date: Live Menu Start Date
+      menu_end_date: Live Menu End Date
+      menu_live_event: Live Event Menu
+      menu_live_events: Menu Live Events
+      live_events: მიმდინარე არჩევნები
+      data_set: Dataset
+      is_precinct: Is Precinct
+      live_data: მიმდინარე მონაცემები
+      official_data: ოფიციალური მონაცემები
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -201,6 +233,7 @@ ka:
       header: არჩევნები
       news: სიახლეები
       data_archives: მონაცემთა არქივი
+      live_event_status: " ( %{completed} / %{total} უბნები (%{percentage}) - %{timestamp} )"
     ajax_data_table:
       links: რუკის სანახავად დააჭირეთ მონაცემების ღილაკს.
       sorting: "ერთდროულად რამდენიმე სვეტის სორტირებისთვის გეჭიროთ ღილაკი \"SHIFT\" და აირჩიეთ შესაბამისი სვეტების სათაურები"
@@ -256,9 +289,6 @@ ka:
       signed_in: Signed in as
       admin: Admin
       sign_out: Sign Out
-      about: About Project
-      data_source: Data Source
-      contact: Contact Us
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by
   root:
@@ -294,9 +324,13 @@ ka:
       cache_default_event: Default Custom Event View Cache
       cache_indicators: Custom Event Indicator Cache
       cache_summary_data: Summary Data Cache
+      menu_live_events: Schedule Live Events Menu
+      load_data_data_sets: Manage Datasets
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
       footnote: "შენიშვნა: %{note}"
+      live_event_available: "%{time} გვესტუმრეთ და იხილეთ, ცესკოს  მიმდინარე მონაცებები საარჩევნო ხმების დათვლის პროცესში."
+      live_event_countdown_header: ინფორმაციის განახლებამდე დარჩენილია
     indicator_menu_scales:
       indicator_header: ინდიკატორები
   data:
@@ -517,3 +551,26 @@ ka:
       title: New News
     show:
       title: News Details
+  menu_live_events:
+    edit:
+      title: Editing Live Event Menu
+    index:
+      title: Menu Live Events
+      no_data: I am sorry, but at this time there are no menu live event records.
+    new:
+      title: New Live Event Menu
+    show:
+      title: Live Event Menu Details
+  data_sets:
+    edit:
+      title: Editing Dataset
+    index:
+      title: Datasets
+      no_data: I am sorry, but at this time there are no datasets on file.
+    new:
+      title: New Dataset
+    show:
+      title: Dataset Details
+    load_data:
+      title: Load Event Data
+      no_live_events: Data cannot be loaded until an event is marked as being live.

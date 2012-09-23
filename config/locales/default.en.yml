@@ -98,6 +98,12 @@ en:
       month: Month
       second: Seconds
       year: Year
+      days: Days
+      hours: Hours
+      minutes: Minutes
+      months: Months
+      seconds: Seconds
+      year: Year
   errors: &errors
     format: ! '%{attribute} %{message}'
     messages:

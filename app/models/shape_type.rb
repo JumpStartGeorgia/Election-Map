@@ -7,12 +7,10 @@ class ShapeType < ActiveRecord::Base
   has_many :shape_type_translations, :dependent => :destroy
 	has_many :event_custom_views, :dependent => :destroy
   accepts_nested_attributes_for :shape_type_translations
-  attr_accessible :id, :ancestry, :shape_type_translations_attributes
+  attr_accessible :id, :ancestry, :is_precinct, :shape_type_translations_attributes
   attr_accessor :locale
 
-  scope :l10n , joins(:shape_type_translations).where('locale = ?',I18n.locale)
-  scope :by_name , order('name').l10n
-
+	scope :precincts, where(:is_precinct => true)
 
 	# get all of the shape types assigned to an event, via the event's shape_id
 	def self.by_event(event_id)

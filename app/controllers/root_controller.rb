@@ -13,224 +13,248 @@ class RootController < ApplicationController
 		flag_redirect = false
 
 		# get the event type id
+    if params[:event_type_id].nil? && @event_types.empty?
+logger.debug "////////////// event type id does not exist and no event types with public events exist"
+# TODO - what to do?
+    end
 logger.debug "////////////// getting event type id"
 		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
 
-		# get the events for this event type
-logger.debug "////////////// getting events by type"
-    @events = Event.get_events_by_type(params[:event_type_id])
+		# get the current event
+logger.debug "////////////// getting current event for event type #{params[:event_type_id]}"
+		event = get_current_event(params[:event_type_id], params[:data_type], params[:event_id])
 
-		if @events.nil? || @events.empty?
-			# no events could be found
-			logger.debug "+++++++++ no events could be found"
-			flag_redirect = true
-		else
-  		# get the current event
-logger.debug "////////////// getting current event"
-  		event = get_current_event(params[:event_id])
+		if event.nil? || event.shape_id.nil?
+			# event could not be found or the selected event does not have a shape assigned to it
+			logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
 
-			if event.nil? || event.shape_id.nil?
-				# event could not be found or the selected event does not have a shape assigned to it
-				logger.debug "+++++++++ event could not be found or the selected event does not have a shape assigned to it"
-				flag_redirect = true
-			else
-				# save the event name
-				@event_name = event.name
-				@event_description = event.description
-
-				# get the shape
-logger.debug "////////////// getting shape"
-				params[:shape_id] = event.shape_id if params[:shape_id].nil?
-				logger.debug("+++++++++shape id = #{params[:shape_id]}")
-				@shape = Shape.get_shape_no_geometry(params[:shape_id])
-
-				if @shape.nil?
-					# parent shape could not be found
-					logger.debug "+++++++++ parent shape could not be found"
-					flag_redirect = true
-				else
-					# get the shape type id that was clicked
-					params[:shape_type_id] = @shape.shape_type_id if params[:shape_type_id].nil?
-
-					# now get the child shape type id
-logger.debug "////////////// getting parent shape type"
-					parent_shape_type = get_shape_type(params[:shape_type_id])
-					@child_shape_type_id = nil
-
-					if parent_shape_type.nil?
-						logger.debug("+++++++++ parent shape type could not be found")
-						flag_redirect = true
-					else
-logger.debug "////////////// getting event custom view"
-						# if the event has a custom view for the parent shape type, use it
-						custom_view = event.event_custom_views.where(:shape_type_id => parent_shape_type.id).with_translations(I18n.locale)
-						@is_custom_view = false
-						@has_custom_view = false
-						if !custom_view.nil? && !custom_view.empty? && (params[:parent_shape_clickable].nil? || params[:parent_shape_clickable].to_s != "true")
-logger.debug "////////////// has custom view"
-							@has_custom_view = true
-							# set the param if not set yet
-							params[:custom_view] = custom_view.first.is_default_view.to_s if params[:custom_view].nil?
-
-							if params[:custom_view] == "true"
-								logger.debug("+++++++++ parent shape type has custom view of seeing shape_type #{custom_view.first.descendant_shape_type_id} ")
-								#found custom view, use it to get the child shape type
-								child_shape_type = custom_view.first.descendant_shape_type
-								custom_child_shape_type = get_child_shape_type(@shape)
-								# indicate custom view is being used
-								@is_custom_view = true
-								# save the note for this custom view
-								@custom_view_note = custom_view.first.note
-							else
-								logger.debug("+++++++++ parent shape type has custom view, but not using it")
-								child_shape_type = get_child_shape_type(@shape)
-								custom_child_shape_type = custom_view.first.descendant_shape_type
-							end
-						elsif parent_shape_type.is_root? && !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-				      # if the parent shape is the root and the parent_shape_clickable is set to true,
-				      # make the parent shape also be the child shape
-logger.debug "////////////// child shape type = parent"
-							logger.debug("+++++++++ parent shape type is root and it should be clickable")
-							child_shape_type = parent_shape_type.clone
-						elsif parent_shape_type.has_children?
-logger.debug "////////////// getting child shape type"
-							logger.debug("+++++++++ parent shape type is not root or it should not be clickable")
-							# this is not the root, so reset parent shape clickable
-							params[:parent_shape_clickable] = nil
-	#						child_shape_type = get_child_shape_type(params[:shape_type_id])
-							child_shape_type = get_child_shape_type(@shape)
-						else
-							logger.debug("+++++++++ parent shape type is not root and parent shape type does not have children")
-							flag_redirect = true
-						end
-
-						if !flag_redirect
-logger.debug "////////////// setting @ variables"
-              @parent_shape_type = parent_shape_type.id
-							@parent_shape_type_name_singular = parent_shape_type.name_singular
-							@child_shape_type_id = child_shape_type.id
-							@child_shape_type_name_singular_possessive = child_shape_type.name_singular_possessive
-							@child_shape_type_name_plural = child_shape_type.name_plural
-							if @has_custom_view
-								@custom_child_shape_type_name_singular = custom_child_shape_type.name_singular
-								if I18n.locale == :ka
-									@custom_child_shape_type_name_plural = custom_child_shape_type.name_singular
-								else
-									@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural
-								end
-							end
-							@map_title = nil
-							# set the map title
-							if parent_shape_type.id == child_shape_type.id
-								@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name
-							else
-								@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name + " - " + @child_shape_type_name_plural
-							end
-logger.debug "////////////// done setting @ variables"
-						end
-
-					end
-
-					if @child_shape_type_id.nil? || flag_redirect
-						logger.debug("+++++++++ child shape type could not be found")
-						flag_redirect = true
-					else
-logger.debug "////////////// getting indicators"
-						# get the indicators for the children shape_type
-						@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id], @child_shape_type_id)
-
-						if @indicator_types.nil? || @indicator_types.empty?
-							# no indicators exist for this event and shape type
-							logger.debug "+++++++++ no indicators exist for this event and shape type"
-							flag_redirect = true
-						else
-							# if an indicator is not selected, select the first one in the list
-							# if the first indicator type has a summary, select the summary
-							if params[:indicator_id].nil? && params[:view_type].nil?
-logger.debug "////////////// selecting first indicator"
-								if @indicator_types[0].has_summary
-									params[:view_type] = @summary_view_type_name
-									params[:indicator_type_id] = @indicator_types[0].id
-								elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? ||
-											@indicator_types[0].core_indicators[0].indicators.nil? ||
-											@indicator_types[0].core_indicators[0].indicators.empty?
-									# could not find an indicator
-									logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
-									flag_redirect = true
-								else
-									params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
-									params[:indicator_type_id] = @indicator_types[0].id
-								end
-							end
-
-							# get the indicator
-							# if the shape type changed, update the indicator_id to be valid for the new shape_type
-							# only if this is not the summary view
-		          if params[:view_type] != @summary_view_type_name
-logger.debug "////////////// getting the current indicator"
-								if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
-
-									# we know the old indicator id and the new shape type
-									# - use that to find the new indicator id
-									new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
-									if new_indicator.nil? || new_indicator.empty?
-										# could not find a match, reset the indicator id
-										params[:indicator_id] = nil
-									else
-										# save the new value
-										params[:indicator_id] = new_indicator.first.id.to_s
-										@indicator = new_indicator.first
-									end
-								else
-									# get the selected indicator
-									@indicator = Indicator.find(params[:indicator_id])
-								end
-								# save the indicator type id so the indicator menu works
-								params[:indicator_type_id] = @indicator.core_indicator.indicator_type_id if params[:indicator_type_id].nil?
-logger.debug "////////////// done getting current indicator"
-							end
-
-							# if have custom view, get indicator if user wants to switch between custom view and non-custom view
-							if @has_custom_view
-logger.debug "////////////// is custom view, getting indicator to switch between views"
-								@custom_indicator_id = nil
-
-								custom_indicator = Indicator.find_new_id(params[:indicator_id], custom_child_shape_type.id)
-								if !custom_indicator.nil? && !custom_indicator.empty?
-									@custom_indicator_id = custom_indicator.first.id.to_s
-								end
-							end
-						end
-					end
-				end
-			end
-
-      # create the page title
-      if @map_title && @event_name
-        if params[:view_type] == @summary_view_type_name && @indicator_types && !@indicator_types.empty?
-          @page_title = "#{@event_name} > #{@indicator_types[0].summary_name} > #{@map_title}".html_safe
-        elsif @indicator
-          @page_title = "#{@event_name} > #{@indicator.name_abbrv_w_parent} > #{@map_title}".html_safe
-        end
+			# if this is a live event, mark flag to show user message that data does not exist yet and to come back
+      live_event = @live_event_menu.select{|x| x["id"].to_s == params["event_id"].to_s}
+			if params[:data_type] == Datum::DATA_TYPE[:live] && live_event && !live_event.empty?
+			  logger.debug "+++++++++ this is live event but no data has been loaded yet"
+        @live_event_with_no_data = true
+        @live_event_name = live_event.first["name"]
+        @live_event_data_available = live_event.first["data_available_at"]
+        gon.live_event_with_no_data = true
+        gon.live_event_time_to_data = countdown_duration(Time.now, live_event.first["data_available_at"])
+      else
+			  flag_redirect = true
       end
+		else
+			# save the event name
+			@event_name = event.name
+			@event_description = event.description
 
-  		# reset the parameter that indicates if the shape type changed
-  		params[:change_shape_type] = nil
+  		# get data set info
+			dataset = DataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
+			# if the data set id was not passed in or the dataset for the provided id could not be found,
+			# use the current public dataset
+      dataset = DataSet.current_dataset(event.id, params[:data_type]) if !dataset
+			dataset = dataset.first if dataset.class == ActiveRecord::Relation
+      if dataset
+        params[:data_set_id] = dataset.id.to_s
+		    @live_event_precincts_percentage = dataset.precincts_percentage
+		    @live_event_precincts_completed = dataset.precincts_completed
+		    @live_event_precincts_total = dataset.precincts_total
+		    @live_event_timestamp = dataset.timestamp
+		  else
+  			# dataset could not be found for event
+  			logger.debug "+++++++++ an public data set could not be found for event"
+  			flag_redirect = true
+	    end
 
-  		# set js variables
+      if !flag_redirect
+  			# get the shape
+  logger.debug "////////////// getting shape"
+  			params[:shape_id] = event.shape_id if params[:shape_id].nil?
+  			logger.debug("+++++++++shape id = #{params[:shape_id]}")
+  			@shape = Shape.get_shape_no_geometry(params[:shape_id])
+
+  			if @shape.nil?
+  				# parent shape could not be found
+  				logger.debug "+++++++++ parent shape could not be found"
+  				flag_redirect = true
+  			else
+  				# get the shape type id that was clicked
+  				params[:shape_type_id] = @shape.shape_type_id if params[:shape_type_id].nil?
+
+  				# now get the child shape type id
+  logger.debug "////////////// getting parent shape type"
+  				parent_shape_type = get_shape_type(params[:shape_type_id])
+  				@child_shape_type_id = nil
+
+  				if parent_shape_type.nil?
+  					logger.debug("+++++++++ parent shape type could not be found")
+  					flag_redirect = true
+  				else
+  logger.debug "////////////// getting event custom view"
+  					# if the event has a custom view for the parent shape type, use it
+  					custom_view = event.event_custom_views.where(:shape_type_id => parent_shape_type.id).with_translations(I18n.locale)
+  					@is_custom_view = false
+  					@has_custom_view = false
+  					if !custom_view.nil? && !custom_view.empty? && (params[:parent_shape_clickable].nil? || params[:parent_shape_clickable].to_s != "true")
+  logger.debug "////////////// has custom view"
+  						@has_custom_view = true
+  						# set the param if not set yet
+  						params[:custom_view] = custom_view.first.is_default_view.to_s if params[:custom_view].nil?
+
+  						if params[:custom_view] == "true"
+  							logger.debug("+++++++++ parent shape type has custom view of seeing shape_type #{custom_view.first.descendant_shape_type_id} ")
+  							#found custom view, use it to get the child shape type
+  							child_shape_type = custom_view.first.descendant_shape_type
+  							custom_child_shape_type = get_child_shape_type(@shape)
+  							# indicate custom view is being used
+  							@is_custom_view = true
+  							# save the note for this custom view
+  							@custom_view_note = custom_view.first.note
+  						else
+  							logger.debug("+++++++++ parent shape type has custom view, but not using it")
+  							child_shape_type = get_child_shape_type(@shape)
+  							custom_child_shape_type = custom_view.first.descendant_shape_type
+  						end
+  					elsif parent_shape_type.is_root? && !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+  			      # if the parent shape is the root and the parent_shape_clickable is set to true,
+  			      # make the parent shape also be the child shape
+  logger.debug "////////////// child shape type = parent"
+  						logger.debug("+++++++++ parent shape type is root and it should be clickable")
+  						child_shape_type = parent_shape_type.clone
+  					elsif parent_shape_type.has_children?
+  logger.debug "////////////// getting child shape type"
+  						logger.debug("+++++++++ parent shape type is not root or it should not be clickable")
+  						# this is not the root, so reset parent shape clickable
+  						params[:parent_shape_clickable] = nil
+  #						child_shape_type = get_child_shape_type(params[:shape_type_id])
+  						child_shape_type = get_child_shape_type(@shape)
+  					else
+  						logger.debug("+++++++++ parent shape type is not root and parent shape type does not have children")
+  						flag_redirect = true
+  					end
+
+  					if !flag_redirect
+  logger.debug "////////////// setting @ variables"
+              @parent_shape_type = parent_shape_type.id
+  						@parent_shape_type_name_singular = parent_shape_type.name_singular
+  						@child_shape_type_id = child_shape_type.id
+  						@child_shape_type_name_singular_possessive = child_shape_type.name_singular_possessive
+  						@child_shape_type_name_plural = child_shape_type.name_plural
+  						if @has_custom_view
+  							@custom_child_shape_type_name_singular = custom_child_shape_type.name_singular
+  							if I18n.locale == :ka
+  								@custom_child_shape_type_name_plural = custom_child_shape_type.name_singular
+  							else
+  								@custom_child_shape_type_name_plural = custom_child_shape_type.name_plural
+  							end
+  						end
+  						@map_title = nil
+  						# set the map title
+  						if parent_shape_type.id == child_shape_type.id
+  							@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name
+  						else
+  							@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name + " - " + @child_shape_type_name_plural
+  						end
+  logger.debug "////////////// done setting @ variables"
+  					end
+
+  				end
+
+  				if @child_shape_type_id.nil? || flag_redirect
+  					logger.debug("+++++++++ child shape type could not be found")
+  					flag_redirect = true
+  				else
+  logger.debug "////////////// getting indicators"
+  					# get the indicators for the children shape_type
+  					@indicator_types = IndicatorType.find_by_event_shape_type(params[:event_id], @child_shape_type_id)
+
+  					if @indicator_types.nil? || @indicator_types.empty?
+  						# no indicators exist for this event and shape type
+  						logger.debug "+++++++++ no indicators exist for this event and shape type"
+  						flag_redirect = true
+  					else
+  						# if an indicator is not selected, select the first one in the list
+  						# if the first indicator type has a summary, select the summary
+  						if params[:indicator_id].nil? && params[:view_type].nil?
+  logger.debug "////////////// selecting first indicator"
+  							if @indicator_types[0].has_summary
+  								params[:view_type] = @summary_view_type_name
+  								params[:indicator_type_id] = @indicator_types[0].id
+  							elsif @indicator_types[0].core_indicators.nil? || @indicator_types[0].core_indicators.empty? ||
+  										@indicator_types[0].core_indicators[0].indicators.nil? ||
+  										@indicator_types[0].core_indicators[0].indicators.empty?
+  								# could not find an indicator
+  								logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
+  								flag_redirect = true
+  							else
+  								params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
+  								params[:indicator_type_id] = @indicator_types[0].id
+  							end
+  						end
+
+  						# get the indicator
+  						# if the shape type changed, update the indicator_id to be valid for the new shape_type
+  						# only if this is not the summary view
+  	          if params[:view_type] != @summary_view_type_name
+  logger.debug "////////////// getting the current indicator"
+  							if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
+
+  								# we know the old indicator id and the new shape type
+  								# - use that to find the new indicator id
+  								new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
+  								if new_indicator.nil? || new_indicator.empty?
+  									# could not find a match, reset the indicator id
+  									params[:indicator_id] = nil
+  								else
+  									# save the new value
+  									params[:indicator_id] = new_indicator.first.id.to_s
+  									@indicator = new_indicator.first
+  								end
+  							else
+  								# get the selected indicator
+  								@indicator = Indicator.find(params[:indicator_id])
+  							end
+  							# save the indicator type id so the indicator menu works
+  							params[:indicator_type_id] = @indicator.core_indicator.indicator_type_id if params[:indicator_type_id].nil?
+  logger.debug "////////////// done getting current indicator"
+  						end
+
+  						# if have custom view, get indicator if user wants to switch between custom view and non-custom view
+  						if @has_custom_view
+  logger.debug "////////////// is custom view, getting indicator to switch between views"
+  							@custom_indicator_id = nil
+
+  							custom_indicator = Indicator.find_new_id(params[:indicator_id], custom_child_shape_type.id)
+  							if !custom_indicator.nil? && !custom_indicator.empty?
+  								@custom_indicator_id = custom_indicator.first.id.to_s
+  							end
+  						end
+  					end
+  				end
+  			end
+
+      end
+		end
+
+    # create the page title
+    if @map_title && @event_name
+      if params[:view_type] == @summary_view_type_name && @indicator_types && !@indicator_types.empty?
+        @page_title = "#{@event_name} > #{@indicator_types[0].summary_name} > #{@map_title}".html_safe
+      elsif @indicator
+        @page_title = "#{@event_name} > #{@indicator.name_abbrv_w_parent} > #{@map_title}".html_safe
+      end
+    end
+
+		# reset the parameter that indicates if the shape type changed
+		params[:change_shape_type] = nil
+
+		# set js variables
 logger.debug "////////////// setting gon variables"
-      set_gon_variables
+    set_gon_variables if !flag_redirect && !@live_event_with_no_data
 
 logger.debug "//////////////////////////////////////////////////////// done with index action"
-    end
 
     if flag_redirect
 			# either data could not be found or param is missing and page could not be loaded
 			logger.debug "+++++++++ either data could not be found or param is missing and page could not be loaded, redirecting to home page"
 			redirect_to root_path
-		else
-			#render :layout => 'map'
-			render :layout => "application-bootstrap"
 		end
 	end
 
@@ -239,52 +263,60 @@ logger.debug "//////////////////////////////////////////////////////// done with
     summary_view_type_name = params[:summary_view_type_name]
     params[:custom_view] = params[:custom_view].nil? ? false : params[:custom_view]
 
-#    get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id], nil, true, true)
-    get_data = Datum.get_table_data(params[:event_id], child_shape_type_id, params[:shape_id])
-		if !get_data.nil? && !get_data.empty? && get_data[:data] && !get_data[:data].empty?
-		  dt = OpenStruct.new(
-		    'cols_p'             => 7, #data columns count per turn
-		    'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
-		    'static_cols'        => 1, #data static columns count, e.g. "District name"
+		# if data type is live, the dataset must also be provided
+		params_ok = true
+		if params[:data_type] == Datum::DATA_TYPE[:live] && !(params[:data_set_id] && !params[:data_set_id].empty?)
+			params_ok = false
+		end
 
-		    'data'               => get_data[:data],
-		    'indicator_ids'      => get_data[:indicator_ids],
-		    'indicator_type_ids' => get_data[:indicator_type_ids],
-		    'dd_titles'          => []
-		  )
-		  s = dt.skip_cols + dt.static_cols
-		  dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
-		  dt.data.each_with_index do |val, i|
-		    dt.data[i] = dt.data[i][dt.skip_cols..- 1]
-		  end
+		if params_ok
+			# get the data
+		  get_data = Datum.get_table_data(params[:event_id], params[:data_set_id], child_shape_type_id, params[:shape_id])
 
-		  # selected indicator id
-		  if params[:indicator_id].nil? || params[:indicator_id] == 'null'
-		    if params[:view_type] == summary_view_type_name
-		      dt.sid = 'winner_ind'
-		    else
-		      dt.sid = ''
-		    end
-		  else
-		    dt.sid = params[:indicator_id]
-		  end
-		  dt.sid = dt.sid.to_s
+			if !get_data.nil? && !get_data.empty? && get_data[:data] && !get_data[:data].empty?
+				dt = OpenStruct.new(
+				  'cols_p'             => 7, #data columns count per turn
+				  'skip_cols'          => 3, #data columns skip count, e.g. ["Event", " Map Level", " District ID"]
+				  'static_cols'        => 1, #data static columns count, e.g. "District name"
 
-		  dt_count = dt.data[0].count
-		  # column groups count
-		  #dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-		  #c = dt.cols_p - dt.static_cols
-		  # dropdown titles
-		  #dt.groups.times do |i|
-		  #  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
-		  #end
-		  dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
-		  dt.dd_titles = dt.data[0][dt.static_cols..-1]
-		  dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
-		  dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
+				  'data'               => get_data[:data],
+				  'indicator_ids'      => get_data[:indicator_ids],
+				  'indicator_type_ids' => get_data[:indicator_type_ids],
+				  'dd_titles'          => []
+				)
+				s = dt.skip_cols + dt.static_cols
+				dt.indicator_ids = [0] * dt.static_cols + dt.indicator_ids[s..- 1]
+				dt.data.each_with_index do |val, i|
+				  dt.data[i] = dt.data[i][dt.skip_cols..- 1]
+				end
 
-		  @dt = dt
+				# selected indicator id
+				if params[:indicator_id].nil? || params[:indicator_id] == 'null'
+				  if params[:view_type] == summary_view_type_name
+				    dt.sid = 'winner_ind'
+				  else
+				    dt.sid = ''
+				  end
+				else
+				  dt.sid = params[:indicator_id]
+				end
+				dt.sid = dt.sid.to_s
 
+				dt_count = dt.data[0].count
+				# column groups count
+				#dt.groups = ((dt_count - dt.skip_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+				#c = dt.cols_p - dt.static_cols
+				# dropdown titles
+				#dt.groups.times do |i|
+				#  dt.dd_titles << dt.data[0][dt.static_cols..- 1][(c * i)..(c * (i + 1) - 1)]
+				#end
+				dt.groups = ((dt_count - dt.static_cols).to_f / (dt.cols_p - dt.static_cols)).ceil
+				dt.dd_titles = dt.data[0][dt.static_cols..-1]
+				dt.gon = {:dt => {:g => dt.groups, :p => dt.cols_p, :all => dt.data[0].count}}
+				dt.gon[:dt][:common_name] = params[:highlight_shape].nil? ? false : params[:highlight_shape]
+				@dt = dt
+
+			end
 		end
 
     render :layout => 'ajax_data_table'
@@ -309,9 +341,9 @@ logger.debug "//////////////////////////////////////////////////////// done with
   # GET /download.json
   def download
     send_data = false
-		if !params[:event_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
+		if !params[:event_id].nil? && !params[:data_set_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
       #get the data
-      dt = Datum.get_table_data(params[:event_id], params[:shape_type_id], params[:shape_id])
+      dt = Datum.get_table_data(params[:event_id], params[:data_set_id], params[:shape_type_id], params[:shape_id])
 			@data = dt[:data]
 
 			if !@data.nil?
@@ -349,57 +381,9 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
 
   end
 
-  def archive
-    send_data = false
-    params[:event_id] = 2
-    params[:shape_type_id] = 3
-    params[:shape_id] = 26282
-  	if !params[:event_id].nil? && !params[:shape_type_id].nil? && !params[:shape_id].nil?
-      #get the data
-      dt = Datum.get_table_data(params[:event_id], params[:shape_type_id], params[:shape_id], params[:indicator_id])
-  		@data = dt[:data]
-
-  		if !@data.nil?
-  	    filename = "zip_test"
-  			filename << "-#{l Time.now, :format => :file}"
-  			filename = clean_filename(filename) + ".zip"
-
-        path = "/Users/addie/Projects/Election-Map/public/json/event_2/summary_data/en/indicator_type_2/shape_type_3"
-        zip_path = "/Users/addie/Projects/Election-Map/public/json/" + filename
-        #t = Tempfile.new(filename)
-        #Zip::ZipOutputStream.open(t.path) do |z|
-        Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |z|
-          # csv
-          csv_filename = "csv_test.csv"
-          t2 = Tempfile.new(csv_filename)
-					spreadsheet = CSV.generate(:col_sep => ",", :force_quotes => true) do |csv|
-						# add the rows
-						@data.each do |r|
-						  csv << r
-						end
-					end
-					t2.write(spreadsheet)
-					z.add(csv_filename, t2.path)
-
-          # xls
-          xls_filename = "xls_test.xls"
-          t2 = Tempfile.new(xls_filename)
-					spreadsheet = render_to_string(:action => "download.xls.erb", :layout => false)
-					t2.write(spreadsheet)
-					z.add(xls_filename, t2.path)
-        end
-  		end
-  	end
-
-  	# if get here, then an error occurred
-#  	redirect_to :back, :notice => t("app.msgs.no_data_download") if !send_data
-  end
-
   # GET /admin
   # GET /admin.json
   def admin
-logger.debug "env to email: #{ENV['APPLICATION_ERROR_FROM_EMAIL']}"
-logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @event }
@@ -415,31 +399,34 @@ logger.debug "env from email: #{ENV['APPLICATION_ERROR_TO_EMAIL']}"
 private
 
 	# get the the current event
-	def get_current_event(event_id)
-logger.debug "getting current event for id #{event_id}"
-		if @events.nil? || @events.empty?
-logger.debug " - no events on record"
-      return nil
-    elsif event_id.nil?
-logger.debug " - event id not provided, looking for first event"
-      # no event selected yet, find first with a shape id
-      @events.each do |e|
-        if !e.shape_id.nil?
-logger.debug " - found event, saving id"
-        	# - save event_id
-          params[:event_id] = e.id
-          return e
+	def get_current_event(event_type_id, data_type, event_id=nil)
+	  if event_type_id && data_type
+	    event_type = @event_types.select{|x| x.id.to_s == event_type_id.to_s}
+	    if event_type && !event_type.empty? && !event_type.first.events.empty?
+	      if event_id
+          # find the event that matches the passed in id
+	        event = event_type.first.events.select{|x| x.id.to_s == event_id.to_s}
+	        if event && !event.empty?
+	          # check if have correct data type
+	          return event.first if (event.first.has_official_data && data_type == Datum::DATA_TYPE[:official]) ||
+	                                (event.first.has_live_data && data_type == Datum::DATA_TYPE[:live])
+          end
+        else
+          # no id provided, so get first one with correct data type
+          event_type.first.events.each do |event|
+            if event.shape_id && (event.has_official_data && data_type == Datum::DATA_TYPE[:official]) ||
+	                                (event.has_live_data && data_type == Datum::DATA_TYPE[:live])
+            	# - save event_id
+              params[:event_id] = event.id
+              return event
+            end
+          end
         end
       end
-    else
-logger.debug " - event id provided"
-			index = @events.index {|event| event.id.to_s == event_id.to_s}
-			return @events[index] if !index.nil?
-
-			# if get to here then no matching event was found
+    end
+		# if get to here then no matching event was found
 logger.debug " - no matching event found!"
-			return nil
-		end
+		return nil
 	end
 
 	# get the shape type
@@ -478,22 +465,25 @@ logger.debug " - no matching event found!"
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
   			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
-  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s
-  			  )
+  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
 			elsif params[:view_type] == @summary_view_type_name
   			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
-  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
       elsif @is_custom_view
 				gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
 				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
-				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s)
+				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
   		else
   			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
   			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
   			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
-  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
       end
 		end
 
@@ -531,7 +521,13 @@ logger.debug " - no matching event found!"
 		# data table
     iid = (params[:indicator_id].nil? ? 'null' : params[:indicator_id])
     vt = (params[:view_type].nil? ? 'null' : params[:view_type])
-		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id], :event_id => params[:event_id], :shape_id => params[:shape_id], :shape_type_id => params[:shape_type_id], :indicator_id => iid, :custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id, :view_type => vt, :summary_view_type_name => @summary_view_type_name)
+		gon.data_table_path = data_table_path(:event_type_id => params[:event_type_id],
+			:event_id => params[:event_id], :shape_id => params[:shape_id],
+			:shape_type_id => params[:shape_type_id], :indicator_id => iid,
+			:custom_view => params[:custom_view], :child_shape_type_id => @child_shape_type_id,
+			:view_type => vt, :summary_view_type_name => @summary_view_type_name,
+			:data_type => params[:data_type], :data_set_id => params[:data_set_id]
+		)
 
 		gon.dt_highlight_shape = (params[:highlight_shape].nil? ? false : params[:highlight_shape])
 

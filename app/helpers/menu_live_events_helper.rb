@@ -1,0 +1,2 @@
+module MenuLiveEventsHelper
+end

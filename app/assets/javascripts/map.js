@@ -18,11 +18,13 @@
 //= require event_menu
 //= require events
 //= require indicator_menu_scale
+//= require data_sets
+//= require menu_live_events
 //= require map_popup_svg
 //= require messages
 //= require news
 //= require shapes
-
+//= require countdown
 //= require map.export
 
 
@@ -637,11 +639,15 @@ if (gon.openlayers){
 			}
 		}else if (index2 > 0) {
 			// found '/name/', now need to replace the value
-			var name_length = name2.length+2; // use +1 to account for the '/' at the beginning and end
+			var name_length = name2.length+2; // use +2 to account for the '/' at the beginning and end
 			var indexAfter = url.indexOf("/", index2+name_length);
+			var indexAfter2 = url.indexOf("?", index2+name_length);
 			if (indexAfter > 0){
 				// there is another paramter after this one
 				url = url.slice(0, index2+name_length) + value + url.slice(indexAfter);
+			} else if (indexAfter2 > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index2+name_length) + value + url.slice(indexAfter2);
 			}else {
 				// no more parameters after this one
 				url = url.slice(0, index2+name_length) + value;

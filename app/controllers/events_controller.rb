@@ -5,7 +5,7 @@ class EventsController < ApplicationController
   # GET /events
   # GET /events.json
   def index
-    @events = Event.get_all_events.includes(:event_type)
+    @events = Event.get_all_events_by_date.includes(:event_type)
 
     respond_to do |format|
       format.html # index.html.erb

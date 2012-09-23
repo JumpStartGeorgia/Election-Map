@@ -9,4 +9,9 @@ class EventType < ActiveRecord::Base
 
 	default_scope lambda {with_translations(I18n.locale).order('sort_order')}
 
+
+  def self.with_public_events
+    joins(:events)
+    .where("events.has_official_data = 1 or events.has_live_data = 1")
+  end
 end

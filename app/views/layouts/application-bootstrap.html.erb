@@ -53,6 +53,30 @@
             <%= link_to(image_tag("header-text.png"), root_path(:locale => I18n.locale),
   								:title=> t('.title'), :class=>"brand")%>
 
+            <% if @live_event_menu && !@live_event_menu.empty? %>
+              <ul id="live_event_menu" class="nav">
+  	            <li class="dropdown">
+  	              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+  	                    <%= t('app.common.live_events')%>
+  	                    <b class="caret"></b>
+  	              </a>
+  	              <ul class="dropdown-menu">
+  	                <% @live_event_menu.each do |event| %>
+  	                <li>
+          						<%
+          							 index = event["url"].index(">")
+          								if index
+          									url = event["url"].insert(index, "title=\"#{strip_tags(event["description"])}\"")
+          								end
+          						%>
+          						<%= url %>
+  	                </li>
+  	                <% end %>
+  	              </ul>
+  	            </li>
+              </ul>
+            <% end %>
+
 		        <div class="header-nav-collapse nav-collapse">
 		          <ul class="nav pull-right">
 								<li><%= link_to t(".news"), news_index_path %></li>
@@ -77,9 +101,28 @@
                  </p>
               </div>
               <div class="navmenu-select">
-                 <p>
-                    <%= @event_name %>
-                 </p>
+                 <% if params[:controller] == "root" && params[:action] == "index" %>
+                    <% if @live_event_with_no_data %>
+                      <p><%= @live_event_name %></p>
+                    <% else %>
+                      <% if params[:data_type] == Datum::DATA_TYPE[:live] %>
+												<div id="live_event_name_date_header">
+		                      <%= @event_name %>
+													<span>
+														<%= t('.live_event_status', :completed => @live_event_precincts_completed,
+	                                :total => @live_event_precincts_total,
+	                                :percentage => @live_event_precincts_percentage,
+	                                :timestamp => l(@live_event_timestamp, :format => :long))%>
+													</span>
+												</div>
+												<div id="progress_bar" class="progress progress-striped">
+													<div class="bar" style="width: <%=@live_event_precincts_percentage%>;"><%= @live_event_precincts_percentage%></div>
+												</div>
+											<% else %>
+                        <p><%= @event_name %></p>
+											<% end %>
+                    <% end %>
+                  <% end %>
               </div>
               <% if user_signed_in? %>
 		          <div class="pull-right">

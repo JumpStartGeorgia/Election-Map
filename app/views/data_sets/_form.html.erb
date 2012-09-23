@@ -1,0 +1,20 @@
+<%= semantic_form_for(@data_set) do |f| %>
+	<%= f.error_messages %>
+
+	<%= f.inputs do %>
+    <h2><%= @data_set.event.name %></h2>
+		<%= f.input :data_type, :as => :radio, :collection => Datum::DATA_TYPE %>
+		<div id="live_fields" style="display:none;">
+		<%= f.input :precincts_completed, :as => :string, :input_html => { :size => 20 } %>
+		<%= f.input :precincts_total, :as => :string, :input_html => { :size => 20 } %>
+		</div>
+		<%= f.input :timestamp, :as => :string, :input_html => { :size => 20 } %>
+		<%= f.input :show_to_public, :as => :radio %>
+	<% end %>
+
+	<div class="form-actions">
+	  <%= f.submit nil, :class => 'btn btn-success' %>
+	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
+	  <%= link_to t('app.buttons.cancel'), data_sets_path, :class => 'btn btn-mini btn-warning' %>
+	</div>
+<% end %>

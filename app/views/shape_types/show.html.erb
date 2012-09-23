@@ -13,6 +13,10 @@
   <%= @shape_type.name_plural %>
 </p>
 <p>
+  <strong><%= t('app.common.is_precinct')%>:</strong>
+  <%= @shape_type.is_precinct %>
+</p>
+<p>
   <strong><%= t('app.common.parent_shape')%>:</strong>
   <%= @shape_type.parent.name_singular if !@shape_type.parent.nil? %>
 </p>
