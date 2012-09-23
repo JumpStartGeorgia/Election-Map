@@ -392,21 +392,35 @@ span#hidden_span_width{
 }
 
 /* live event menu in layout */
-#live_event_menu  {
-  font-size: 25px;
+#live_event_menu .dropdown {
   margin-left: 3em;
-  background-color: #3692d1;
-  border: solid 2px #fff;
-  line-height: 25px;
-  padding: 5px 10px;
+  background-color: #e26561;
+	height: 30px;
+	padding: 3px 0;
+}
+#live_event_menu .dropdown a {
+  font-size: 25px;
+  line-height: 30px;
+  padding: 5px;
   font-weight: bold;
+	text-transform: uppercase;
 }
-#live_event_menu ul.dropdown-menu  {
-  margin-top: 1em;
+#live_event_menu ul.dropdown-menu li {
+	padding: 0 5px;
 }
-#live_event_menu ul.dropdown-menu a  {
+#live_event_menu ul.dropdown-menu a {
+	display: block;
   color: #000 !important;
-  font-size: 20px;
+  font-size: 18px;
+	text-transform: none;
+	padding: 0 5px !important;
+	font-weight: normal;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+#live_event_menu ul.dropdown-menu a:hover {
+  color: #fff !important;
 }
 
 /* countdown timer for live event data */
@@ -426,4 +440,3 @@ span#hidden_span_width{
   color: #000;
   text-align: center;
 }
-      
