@@ -18,6 +18,9 @@ ElectionMap::Application.routes.draw do
 	      get :load_data
 	      post :load_data
 			end
+			member do
+				get :create_cache
+			end
 		end
 	  resources :data do
 			collection do

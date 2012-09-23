@@ -1,5 +1,22 @@
 class DataSetsController < ApplicationController
   before_filter :authenticate_user!
+	require 'json_cache'
+
+	def create_cache
+    start = Time.now
+		dataset = DataSet.find(params[:id])
+		if dataset
+			JsonCache.build_data_set_json_cache(dataset.event_id, dataset.id)
+			msg = I18n.t('app.msgs.dataset_cache_files_created')
+			flash[:success] = msg
+			send_status_update(msg, Time.now-start)
+			redirect_to data_sets_path
+		else
+			msg = I18n.t('app.msgs.dataset_cache_files_failed')
+			flash[:error] = msg
+			redirect_to data_sets_path
+		end
+	end
 
   def load_data
 		@events = Event.get_all_events_by_date

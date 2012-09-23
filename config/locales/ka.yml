@@ -122,6 +122,7 @@ ka:
       download_map: ჩამოტვირთეთ მონაცემები
       download_help: დახმარება
       custom_view: იხილეთ ყველა %{children_shapes} %{parent_shape}ში
+      create_cache: Create Cache
     msgs:
       no_data: არ არის მონაცემი
       delete_confirm: "Are you sure?"
@@ -154,6 +155,8 @@ ka:
       success_updated: "%{obj} was successfully updated."
       success_deleted: "%{obj} was successfully deleted."
       cache_cleared: "The memory and file cache were cleared because of the following: %{action}"
+      dataset_cache_files_created: The default cache files for the dataset were successfully created.
+      dataset_cache_files_failed: An error occurred while creating the default cache files for the dataset.
     common:
       app_name: საქართველოს საარჩევნო მონაცემები
       important: Important

@@ -28,6 +28,8 @@
           <td><%= data_set.precincts_total %></td>
           <td><%= data_set.show_to_public %></td>
           <td>
+            <%= link_to t('app.buttons.create_cache'),
+                        create_cache_data_set_path(data_set), :class => 'btn btn-mini btn-primary' %>
             <%= link_to t('app.buttons.edit'),
                         edit_data_set_path(data_set), :class => 'btn btn-mini' %>
             <%= link_to t('app.buttons.delete'),
