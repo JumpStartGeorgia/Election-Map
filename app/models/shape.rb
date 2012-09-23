@@ -43,7 +43,7 @@ class Shape < ActiveRecord::Base
   end
 
 	# create the properly formatted json string
-	def self.build_json(shape_id, shape_type_id, indicator_id=nil)
+	def self.build_json(shape_id, shape_type_id, data_set_id=nil, indicator_id=nil)
     json = Hash.new()
 		start = Time.now
 		if !shape_id.nil? && !shape_type_id.nil?
@@ -57,7 +57,7 @@ class Shape < ActiveRecord::Base
 				# have to parse it for the geo is already in json format and
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id, data_set_id)
 			end
 		end
 		if indicator_id.nil?
@@ -69,7 +69,7 @@ class Shape < ActiveRecord::Base
 	end
 
 	# create the properly formatted json string
-	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id)
+	def self.build_summary_json(shape_id, shape_type_id, event_id, data_set_id, indicator_type_id)
 		start = Time.now
     json = Hash.new()
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
@@ -86,7 +86,7 @@ class Shape < ActiveRecord::Base
 				# transforming it to json again escapes the "" and breaks openlayers
 
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) if shape.geometry
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, true)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, data_set_id, event_id, true)
 
 			end
 		end
@@ -94,7 +94,7 @@ class Shape < ActiveRecord::Base
 		return json
 	end
 
-  def self.build_json_properties_for_shape(shape, ind_id, event_id=nil, isSummary = false)
+  def self.build_json_properties_for_shape(shape, ind_id, data_set_id, event_id=nil, isSummary = false)
     start = Time.now
     properties = Hash.new
     if !shape.nil?
@@ -117,14 +117,14 @@ class Shape < ActiveRecord::Base
 			title["title"] = I18n.t('app.msgs.no_data')
 			title["title_abbrv"] = ""
 
-      if !ind_id.nil?
+      if !ind_id.nil? && !data_set_id.nil?
         # get the data for the provided base shape and using the ancestry path to this shape
         if isSummary
   			  #data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id)
-  			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id, 23)
+  			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id, data_set_id)
         else
     			#data = Datum.get_related_indicator_data(shape.id, ind_id)
-    			data = Datum.get_related_indicator_data(shape.id, ind_id, 23)
+    			data = Datum.get_related_indicator_data(shape.id, ind_id, data_set_id)
         end
 
   			# look for data

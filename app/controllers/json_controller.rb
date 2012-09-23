@@ -33,8 +33,9 @@ class JsonController < ApplicationController
   			custom_children_cache = nil
   			if !parent_shape.nil?
   				key = key_custom_children_shapes.gsub("[parent_shape_id]", parent_shape.first.id.to_s)
-  				  .gsub("[indicator_id]", params[:indicator_id])
-  				  .gsub("[shape_type_id]", params[:shape_type_id])
+      				  .gsub("[indicator_id]", params[:indicator_id])
+      				  .gsub("[shape_type_id]", params[:shape_type_id])
+    		        .gsub("[data_set_id]", params[:data_set_id])
   				logger.debug "++++++++++custom children key = #{key}"
   				custom_children_cache = JsonCache.read(params[:event_id], key)
   			end
@@ -58,15 +59,15 @@ class JsonController < ApplicationController
       if geometries.nil?
 				logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
-				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}_shape_type_#{params[:shape_type_id]}") {
+				geometries = Rails.cache.fetch("children_shapes_json_#{I18n.locale}_shape_#{params[:parent_id]}_parent_clickable_#{params[:parent_shape_clickable]}_indicator_#{params[:indicator_id]}_shape_type_#{params[:shape_type_id]}_data_set_#{params[:data_set_id]}") {
 					geo = ''
 
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:indicator_id]).to_json
+						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:data_set_id], params[:indicator_id]).to_json
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:indicator_id]).to_json
+						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:data_set_id], params[:indicator_id]).to_json
 					end
 				}
 			end
@@ -82,10 +83,11 @@ class JsonController < ApplicationController
   def custom_children_shapes
     start = Time.now
 		key = key_custom_children_shapes.gsub("[parent_shape_id]", params[:parent_id])
-		  .gsub("[indicator_id]", params[:indicator_id])
-		  .gsub("[shape_type_id]", params[:shape_type_id])
+    		  .gsub("[indicator_id]", params[:indicator_id])
+    		  .gsub("[shape_type_id]", params[:shape_type_id])
+          .gsub("[data_set_id]", params[:data_set_id])
 		geometries = JsonCache.fetch(params[:event_id], key) {
-  		Shape.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id]).to_json
+  		Shape.build_json(params[:parent_id], params[:shape_type_id], params[:data_set_id], params[:indicator_id]).to_json
 		}
 
 		logger.debug "++++++++++custom children key = #{key}"
@@ -118,6 +120,7 @@ class JsonController < ApplicationController
   			  .gsub("[event_id]", params[:event_id])
   			  .gsub("[indicator_type_id]", params[:indicator_type_id])
   			  .gsub("[shape_type_id]", params[:shape_type_id])
+		      .gsub("[data_set_id]", params[:data_set_id])
   				logger.debug "++++++++++custom children key = #{key}"
   				custom_children_cache = JsonCache.read(params[:event_id], key)
   			end
@@ -141,14 +144,14 @@ class JsonController < ApplicationController
       if geometries.nil?
 				logger.debug "++++++++++custom children cache does NOT exist"
 				# no cache exists
-				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}_shape_type_#{params[:shape_type_id]}") {
+				geometries = Rails.cache.fetch("summary_children_shapes_json_#{I18n.locale}_#{params[:parent_id]}_event_#{params[:event_id]}_ind_type_#{params[:indicator_type_id]}_parent_clickable_#{params[:parent_shape_clickable]}_shape_type_#{params[:shape_type_id]}_data_set_#{params[:data_set_id]}") {
 					geo = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id]).to_json
+						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:data_set_id], params[:indicator_type_id]).to_json
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
+						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_type_id]).to_json
 					end
 				}
 			end
@@ -168,9 +171,10 @@ class JsonController < ApplicationController
 		      .gsub("[event_id]", params[:event_id])
 		      .gsub("[indicator_type_id]", params[:indicator_type_id])
 		      .gsub("[shape_type_id]", params[:shape_type_id])
+		      .gsub("[data_set_id]", params[:data_set_id])
 		geometries = JsonCache.fetch(params[:event_id], key) {
 			#shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
+			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_type_id]).to_json
 		}
 
     respond_to do |format|
@@ -204,10 +208,10 @@ class JsonController < ApplicationController
 protected
 
 	def key_custom_children_shapes
-		"custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]"
+		"custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]_data_set_[data_set_id]"
 	end
 
 	def key_summary_custom_children_shapes
-		"summary_custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]"
+		"summary_custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]_data_set_[data_set_id]"
 	end
 end
