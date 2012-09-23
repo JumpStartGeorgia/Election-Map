@@ -213,6 +213,8 @@ ka:
       is_precinct: Is Precinct
       live_data: მიმდინარე მონაცემები
       official_data: ოფიციალური მონაცემები
+      live_event_status: " ( %{completed} / %{total} უბნები (%{percentage}) )"
+      live_event_status_timestamp: " ( %{completed} / %{total} უბნები (%{percentage}) - %{timestamp} )"
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -233,7 +235,6 @@ ka:
       header: არჩევნები
       news: სიახლეები
       data_archives: მონაცემთა არქივი
-      live_event_status: " ( %{completed} / %{total} უბნები (%{percentage}) - %{timestamp} )"
     ajax_data_table:
       links: რუკის სანახავად დააჭირეთ მონაცემების ღილაკს.
       sorting: "ერთდროულად რამდენიმე სვეტის სორტირებისთვის გეჭიროთ ღილაკი \"SHIFT\" და აირჩიეთ შესაბამისი სვეტების სათაურები"

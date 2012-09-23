@@ -152,6 +152,17 @@ logger.debug "////////////// getting current event for event type #{params[:even
   						else
   							@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name + " - " + @child_shape_type_name_plural
   						end
+							# if this is live data, add the precincts reported numbers
+							if params[:data_type] == Datum::DATA_TYPE[:live]
+								precincts_reporting = Datum.get_precincts_reported(params[:shape_id], params[:event_id], params[:data_set_id])
+								if precincts_reporting && !precincts_reporting.empty?
+									@map_title << '<span style="font-size: 10px;">'
+									@map_title << I18n.t('app.common.live_event_status', :completed => precincts_reporting[:completed_number],
+	                                :total => precincts_reporting[:num_precincts],
+	                                :percentage => precincts_reporting[:completed_percent])
+									@map_title << '</span>'
+								end
+							end
   logger.debug "////////////// done setting @ variables"
   					end
 
@@ -515,7 +526,7 @@ logger.debug " - no matching event found!"
 		if !params[:event_id].nil?
 		  gon.event_id = params[:event_id]
 		  gon.event_name = @event_name
-		  gon.map_title = @map_title
+		  gon.map_title = ActionController::Base.helpers.strip_tags(@map_title)
 	  end
 
 		# data table

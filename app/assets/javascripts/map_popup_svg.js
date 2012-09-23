@@ -47,9 +47,11 @@ function MapPopup() {
           json[i].title.title_abbrv.length > 0 ? json[i].title.title_abbrv : json[i].title.title;
 				var title_title_width = get_text_width(title, "15px");
 				var title_loc_width = get_text_width(json[i].title.location, "15px");
+				var title_precincts_width = get_text_width(json[i].precincts_completed, "13px");
 // console.log("title title width = " + title_title_width);
 // console.log("title location width = " + title_loc_width);
-				var title_width = self.item_spacing*6+(title_title_width>title_loc_width ? title_title_width : title_loc_width);
+				var max_width = Math.max(title_title_width, title_loc_width, title_precincts_width)
+				var title_width = self.item_spacing*6+(max_width);
 // console.log("title width = " + title_width);
         if (title_width > max_width)
           max_width = title_width;
@@ -130,12 +132,27 @@ function MapPopup() {
         "y": 40,
         "style": "font-size:15px;text-anchor:middle;"
       }).text(title);
+
+			if (json.precincts_completed !== null){
+		    this.SVGElement("text", {
+		      "x": (window.maxSVGWidth/2),
+		      "y": 60,
+		      "style": "font-size:13px;text-anchor:middle;"
+		    }).text(json.precincts_completed);
+			}
     }
 
-    // make height at least 50 so title will show
-    window.maxSVGHeight = 50;
-    // make y padding equal to min height
-    self.y_s = 50;
+		if (json.precincts_completed === null){
+		  // make height at least 50 so title will show
+		  window.maxSVGHeight = 50;
+		  // make y padding equal to min height
+		  self.y_s = 50;
+		} else {
+		  // make height at least 70 so title will show
+		  window.maxSVGHeight = 70;
+		  // make y padding equal to min height
+		  self.y_s = 70;
+		}
   }
 
   this.processSummaryData = function(id_el, json, options)

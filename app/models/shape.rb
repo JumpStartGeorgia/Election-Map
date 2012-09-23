@@ -37,13 +37,8 @@ class Shape < ActiveRecord::Base
 		end
 	end
 
-	# need this to access the number_format value in build_json
-  def number_format
-    attributes['number_format']
-  end
-
 	# create the properly formatted json string
-	def self.build_json(shape_id, shape_type_id, data_set_id=nil, indicator_id=nil)
+	def self.build_json(shape_id, shape_type_id, event_id=nil, data_set_id=nil, indicator_id=nil, data_type=nil)
     json = Hash.new()
 		start = Time.now
 		if !shape_id.nil? && !shape_type_id.nil?
@@ -57,7 +52,7 @@ class Shape < ActiveRecord::Base
 				# have to parse it for the geo is already in json format and
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id, data_set_id)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id, event_id, data_set_id, data_type)
 			end
 		end
 		if indicator_id.nil?
@@ -69,10 +64,10 @@ class Shape < ActiveRecord::Base
 	end
 
 	# create the properly formatted json string
-	def self.build_summary_json(shape_id, shape_type_id, event_id, data_set_id, indicator_type_id)
+	def self.build_summary_json(shape_id, shape_type_id, event_id, data_set_id, indicator_type_id, data_type)
 		start = Time.now
     json = Hash.new()
-		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil?
+		if shape_id && shape_type_id && event_id && indicator_type_id && data_type
 		  shapes = get_shapes_by_type(shape_id, shape_type_id, true)
 
       json["type"] = "FeatureCollection"
@@ -86,7 +81,7 @@ class Shape < ActiveRecord::Base
 				# transforming it to json again escapes the "" and breaks openlayers
 
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry) if shape.geometry
-				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, data_set_id, event_id, true)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_type_id, event_id, data_set_id, data_type, true)
 
 			end
 		end
@@ -94,7 +89,7 @@ class Shape < ActiveRecord::Base
 		return json
 	end
 
-  def self.build_json_properties_for_shape(shape, ind_id, data_set_id, event_id=nil, isSummary = false)
+  def self.build_json_properties_for_shape(shape, ind_id, event_id, data_set_id, data_type, isSummary = false)
     start = Time.now
     properties = Hash.new
     if !shape.nil?
@@ -116,14 +111,13 @@ class Shape < ActiveRecord::Base
 			title["location"] = "#{shape.shape_type.name_singular}: #{shape.common_name}"
 			title["title"] = I18n.t('app.msgs.no_data')
 			title["title_abbrv"] = ""
+			title["precincts_completed"] = nil
 
-      if !ind_id.nil? && !data_set_id.nil?
+      if ind_id && data_set_id
         # get the data for the provided base shape and using the ancestry path to this shape
         if isSummary
-  			  #data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id)
   			  data = Datum.get_related_indicator_type_data(shape.id, shape.shape_type_id, event_id, ind_id, data_set_id)
         else
-    			#data = Datum.get_related_indicator_data(shape.id, ind_id)
     			data = Datum.get_related_indicator_data(shape.id, ind_id, data_set_id)
         end
 
@@ -165,6 +159,19 @@ class Shape < ActiveRecord::Base
   		        results[i]["footnote"] = d["footnote"]
     	      end
     		  end
+
+					# if this is live data, add the precincts reported numbers
+					if data_type == Datum::DATA_TYPE[:live]
+						precincts_reporting = Datum.get_precincts_reported(shape.id, event_id, data_set_id)
+						if precincts_reporting && !precincts_reporting.empty?
+							title["precincts_completed"] =
+										I18n.t('app.common.live_event_status', :completed => precincts_reporting[:completed_number],
+                        :total => precincts_reporting[:num_precincts],
+                        :percentage => precincts_reporting[:completed_percent])
+						end
+					end
+
+
 					# add title to the results
 					results.insert(0, Hash.new)
 					results[0]["title"] = title

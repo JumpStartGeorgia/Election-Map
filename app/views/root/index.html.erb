@@ -148,7 +148,7 @@
 
   		<div id="map-loading"></div>
 
-  		<div id="map-title"><%= @map_title%></div>
+  		<div id="map-title"><%= @map_title.html_safe %></div>
 
   		<% if @custom_view_note %>
   			<div id="footnote">

@@ -109,7 +109,7 @@
 												<div id="live_event_name_date_header">
 		                      <%= @event_name %>
 													<span>
-														<%= t('.live_event_status', :completed => @live_event_precincts_completed,
+														<%= t('app.common.live_event_status_timestamp', :completed => @live_event_precincts_completed,
 	                                :total => @live_event_precincts_total,
 	                                :percentage => @live_event_precincts_percentage,
 	                                :timestamp => l(@live_event_timestamp, :format => :long))%>

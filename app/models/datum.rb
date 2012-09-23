@@ -11,9 +11,10 @@ class Datum < ActiveRecord::Base
 
   attr_accessor :number_format, :shape_id, :shape_type_name, :color,
 		:indicator_name, :indicator_name_abbrv, :indicator_description,
-		:indicator_type_id, :indicator_type_name, :core_indicator_id
+		:indicator_type_id, :indicator_type_name, :core_indicator_id, :num_precincts
 
   DATA_TYPE = {:official => "official", :live => "live"}
+	PRECINCTS_REPORTED = {:number => 'Precincts Reported (#)', :percent => 'Precincts Reported (%)'}
 
 	###################################
 	## special gets for attributes
@@ -88,6 +89,31 @@ class Datum < ActiveRecord::Base
 	###################################
 	## data queries
 	###################################
+	# get precincts reported for shape
+	def self.get_precincts_reported_value(shape_id, event_id, data_set_id, indicator_name)
+    x = nil
+		if shape_id && event_id && data_set_id && indicator_name
+			sql = "select d.value,ci.number_format,s.num_precincts "
+			sql << "FROM data as d "
+			sql << "inner join indicators as i on d.indicator_id = i.id  "
+			sql << "inner join core_indicators as ci on i.core_indicator_id = ci.id  "
+			sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
+			sql << "inner join shapes as s on i.shape_type_id = s.shape_type_id  "
+			sql << "inner join shape_translations as st on s.id = st.shape_id and d.#{I18n.locale}_common_id = st.common_id and d.#{I18n.locale}_common_name = st.common_name "
+			sql << "where "
+			sql << "s.id = :shape_id "
+			sql << "and i.event_id = :event_id "
+			sql << "and d.data_set_id = :data_set_id "
+			sql << "and cit.name = :indicator_name "
+			sql << "and cit.locale = 'en' "
+			sql << "and st.locale = :locale "
+
+			x = find_by_sql([sql, :shape_id => shape_id, :event_id => event_id, :data_set_id => data_set_id,
+					:indicator_name => indicator_name, :locale => I18n.locale])
+		end
+		return x
+	end
+
 	# get the data value for a shape and core indicator
 	def self.get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, core_indicator_id, data_set_id)
     start = Time.now
@@ -161,6 +187,22 @@ class Datum < ActiveRecord::Base
 	###################################
 	## get data
 	###################################
+	def self.get_precincts_reported(shape_id, event_id, data_set_id)
+		hash = nil
+		if shape_id && event_id && data_set_id
+			num = get_precincts_reported_value(shape_id, event_id, data_set_id, Datum::PRECINCTS_REPORTED[:number])
+			perc = get_precincts_reported_value(shape_id, event_id, data_set_id, Datum::PRECINCTS_REPORTED[:percent])
+
+			if num && !num.empty? && perc && !perc.empty?
+				hash = Hash.new
+				hash[:num_precincts] = num.first["num_precincts"]
+				hash[:completed_number] = num.first.formatted_value
+				hash[:completed_percent] = ActionController::Base.helpers.number_to_percentage(perc.first.formatted_value)
+			end
+		end
+		return hash
+	end
+
 	def self.get_related_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
 		start = Time.now
     results = nil

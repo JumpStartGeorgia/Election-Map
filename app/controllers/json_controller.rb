@@ -64,10 +64,10 @@ class JsonController < ApplicationController
 
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:data_set_id], params[:indicator_id]).to_json
+						geo = Shape.build_json(shape.id, shape.shape_type_id, params[:event_id], params[:data_set_id], params[:indicator_id], params[:data_type]).to_json
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:data_set_id], params[:indicator_id]).to_json
+						geo = Shape.build_json(shape.id, params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_id], params[:data_type]).to_json
 					end
 				}
 			end
@@ -87,7 +87,7 @@ class JsonController < ApplicationController
     		  .gsub("[shape_type_id]", params[:shape_type_id])
           .gsub("[data_set_id]", params[:data_set_id])
 		geometries = JsonCache.fetch(params[:event_id], key) {
-  		Shape.build_json(params[:parent_id], params[:shape_type_id], params[:data_set_id], params[:indicator_id]).to_json
+  		Shape.build_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_id], params[:data_type]).to_json
 		}
 
 		logger.debug "++++++++++custom children key = #{key}"
@@ -148,10 +148,10 @@ class JsonController < ApplicationController
 					geo = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 						# get the parent shape and format for json
-						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:data_set_id], params[:indicator_type_id]).to_json
+						geo = Shape.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:data_set_id], params[:indicator_type_id], params[:data_type]).to_json
 					elsif shape.has_children?
 						# get all of the children of the parent and format for json
-						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_type_id]).to_json
+						geo = Shape.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_type_id], params[:data_type]).to_json
 					end
 				}
 			end
@@ -174,7 +174,7 @@ class JsonController < ApplicationController
 		      .gsub("[data_set_id]", params[:data_set_id])
 		geometries = JsonCache.fetch(params[:event_id], key) {
 			#shapes = shape.subtree.where(:shape_type_id => params[:shape_type_id])
-			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_type_id]).to_json
+			geo = Shape.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:data_set_id], params[:indicator_type_id], params[:data_type]).to_json
 		}
 
     respond_to do |format|

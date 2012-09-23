@@ -213,6 +213,8 @@ en:
       is_precinct: Is Precinct
       live_data: Live Data
       official_data: Official Data
+      live_event_status: " ( %{completed} / %{total} Precincts (%{percentage}) )"
+      live_event_status_timestamp: " ( %{completed} / %{total} Precincts (%{percentage}) - %{timestamp} )"
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -233,7 +235,6 @@ en:
       header: Elections
       news: News
       data_archives: Data Archives
-      live_event_status: " ( %{completed} / %{total} Precincts (%{percentage}) - %{timestamp} )"
     ajax_data_table:
       links: Click on a data point to view it on the map.
       sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.
