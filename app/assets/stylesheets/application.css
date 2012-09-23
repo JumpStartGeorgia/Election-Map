@@ -405,6 +405,9 @@ span#hidden_span_width{
   font-weight: bold;
 	text-transform: uppercase;
 }
+#live_event_menu .dropdown .caret {
+	margin-top: 14px;
+}
 #live_event_menu ul.dropdown-menu li {
 	padding: 0 5px;
 }
