@@ -16,7 +16,7 @@ class DataSet < ActiveRecord::Base
 
   def self.ordered
     joins(:event)
-    .order("events.event_date desc")
+    .order("events.event_date desc, data_sets.timestamp desc")
   end
 
   # - if show to pulic is true, turn on the has_xxx_data for this event

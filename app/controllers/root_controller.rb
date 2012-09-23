@@ -47,10 +47,16 @@ logger.debug "////////////// getting current event for event type #{params[:even
 
   		# get data set info
 			dataset = DataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
-			# if the data set id was not passed in or the dataset for the provided id could not be found,
-			# use the current public dataset
-      dataset = DataSet.current_dataset(event.id, params[:data_type]) if !dataset
-			dataset = dataset.first if dataset.class == ActiveRecord::Relation
+
+			# get the most recent dataset for this event
+      most_recent_dataset = DataSet.current_dataset(event.id, params[:data_type])
+			@most_recent_dataset = most_recent_dataset.first
+			dataset = @most_recent_dataset if !dataset
+
+			# if the most_recent_datset > passed in dataset,
+			# tell user that newer data is available
+			@newer_data_available = @most_recent_dataset.id > dataset.id ? true : false
+
       if dataset
         params[:data_set_id] = dataset.id.to_s
 		    @live_event_precincts_percentage = dataset.precincts_percentage

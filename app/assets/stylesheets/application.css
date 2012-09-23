@@ -440,3 +440,22 @@ span#hidden_span_width{
   color: #000;
   text-align: center;
 }
+
+/* if new data available */
+#new_data_available{
+	padding: 10px;
+	text-align: center;
+	background-color: #e26561;
+	color: #fff;
+	font-size: 15px;
+}
+
+#new_data_available a {
+	color: #fff;
+	text-decoration: underline;
+}
+
+#new_data_available a:hover {
+	color: #000;
+	background-color: transparent;
+}

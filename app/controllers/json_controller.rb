@@ -208,10 +208,10 @@ class JsonController < ApplicationController
 protected
 
 	def key_custom_children_shapes
-		"custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]_data_set_[data_set_id]"
+		"custom_children_shapes/data_set_[data_set_id]/#{I18n.locale}/shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]"
 	end
 
 	def key_summary_custom_children_shapes
-		"summary_custom_children_shapes/#{I18n.locale}/shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]_data_set_[data_set_id]"
+		"summary_custom_children_shapes/data_set_[data_set_id]/#{I18n.locale}/shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]"
 	end
 end

@@ -356,7 +356,7 @@ class Datum < ActiveRecord::Base
 		results["summary_data"] = []
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !data_set_id.nil?
 			json = []
-  		key = "summary_data/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
+  		key = "summary_data/data_set_#{data_set_id}/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
   		json = JsonCache.fetch(event_id, key) {
   			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id)
 				x = []

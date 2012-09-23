@@ -101,6 +101,13 @@
   	</div>
   </div>
 
+	<% if @newer_data_available %>
+		<div id="new_data_available">
+			<%= t('.new_data_available_message') %>
+			<%= link_to t('.new_data_available_link'), params.merge(:data_set_id => @most_recent_dataset.id) %>
+		</div>
+	<% end %>
+
   <div class="clear row-fluid">
 
   	<section id="map-container" class="group span12">

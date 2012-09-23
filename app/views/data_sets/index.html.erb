@@ -1,5 +1,13 @@
 <% title t('.title') %>
 
+<div class="form-actions">
+<%= link_to t('app.buttons.new_data_sets'),
+            load_data_data_sets_path,
+            :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
 <% if !@data_sets || @data_sets.empty? %>
   <p><%= t('.no_data')%></p>
 <% else %>
@@ -44,11 +52,3 @@
   </table>
 
 <% end %>
-
-<div class="form-actions">
-<%= link_to t('app.buttons.new_data_sets'),
-            load_data_data_sets_path,
-            :class => 'btn btn-primary' %>
-	<%= link_to t('app.buttons.admin'), admin_path,
-  :class => 'btn' %>
-</div>
