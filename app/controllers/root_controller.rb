@@ -584,7 +584,6 @@ logger.debug " - no matching event found!"
 
 		# view type
 		gon.view_type = params[:view_type]
-
 		gon.summary_view_type_name = @summary_view_type_name
 
 		# indicator name
@@ -611,6 +610,14 @@ logger.debug " - no matching event found!"
 		  gon.event_id = params[:event_id]
 		  gon.event_name = @event_name
 		  gon.map_title = ActionController::Base.helpers.strip_tags(@map_title)
+
+			# data type
+			gon.data_type = params[:data_type]
+			gon.data_type_live = Datum::DATA_TYPE[:live]
+
+			# data set id
+			gon.data_set_id = params[:data_set_id]
+			gon.data_set_id_most_recent = @most_recent_dataset.id if @most_recent_dataset
 	  end
 
 		# data table

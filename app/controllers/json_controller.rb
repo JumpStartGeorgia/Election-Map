@@ -204,6 +204,23 @@ class JsonController < ApplicationController
   end
 
 
+	#################################################
+	##### get most recent dataset id for event
+	#################################################
+  # GET /:locale/json/current_data_set_id/:event_id/:data_type
+  def current_data_set
+		data_set_id = nil
+		dataset = DataSet.current_dataset(params[:event_id], params[:data_type])
+
+		if dataset && !dataset.empty?
+			data_set_id = dataset.first.id
+		end
+
+    respond_to do |format|
+      format.json { render json: data_set_id.to_json }
+    end
+  end
+
 
 protected
 

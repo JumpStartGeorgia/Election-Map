@@ -893,4 +893,38 @@ if (gon.openlayers){
 			return numFormat.toFormatted();
 		}
 	}
+
+
+	// check for live data updates every 1 minute
+	if (gon.data_type == gon.data_type_live){
+		// on page load if there is a dataset that is newer than this one, show message
+		if (gon.data_set_id_most_recent !== null &&
+				parseInt(gon.data_set_id_most_recent) > parseInt(gon.data_set_id)) {
+
+			// update the url
+			$("#new_data_available a:first").attr('href',update_query_parameter($("#new_data_available a:first").attr('href'), "data_set_id", "data_set", gon.data_set_id_most_recent));
+			// show the message
+			$('#new_data_available').slideDown(500);
+		}
+
+		setInterval(function() {
+			$.getJSON(
+				'/' + I18n.locale + '/json/current_data_set/event/' + gon.event_id + '/data_type/' + gon.data_type + '.json',
+				function(response) {
+					// if the response value is > current data set id,
+					// show msg that new data is available
+					if (response !== null && response > parseInt(gon.data_set_id)){
+						// update the url
+						$("#new_data_available a:first").attr('href',update_query_parameter($("#new_data_available a:first").attr('href'), "data_set_id", "data_set", response));
+						// show the message
+						$('#new_data_available').slideDown(500);
+					} else {
+						$('#new_data_available').slideUp(500);
+					}
+				}
+			);
+		}, 1000 * 60 * 1);
+	}
+
+
 }

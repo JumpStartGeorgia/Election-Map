@@ -335,6 +335,8 @@ ka:
       footnote: "შენიშვნა: %{note}"
       live_event_available: "%{time} გვესტუმრეთ და იხილეთ, ცესკოს  მიმდინარე მონაცებები საარჩევნო ხმების დათვლის პროცესში."
       live_event_countdown_header: ინფორმაციის განახლებამდე დარჩენილია
+      new_data_available_message: The election data has recently been updated.
+      new_data_available_link: View the new data.
     indicator_menu_scales:
       indicator_header: ინდიკატორები
       new_data_available_message: The election data has recently been updated.
