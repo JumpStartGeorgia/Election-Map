@@ -191,6 +191,26 @@ logger.debug "////////////// getting current event for event type #{params[:even
   						# if the first indicator type has a summary, select the summary
   						if params[:indicator_id].nil? && params[:view_type].nil?
   logger.debug "////////////// selecting first indicator"
+								x = get_current_indicator(@indicator_types)
+								if x[:error]
+  								logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
+									flag_redirect = true
+								elsif x[:view_type] == @summary_view_type_name
+logger.debug "////////////// - default is summary"
+									# first indicator is summary
+									params[:view_type] = x[:view_type]
+									params[:indicator_type_id] = x[:indicator_type_id]
+								elsif x[:indicator_id]
+logger.debug "////////////// - default is indicator, getting record"
+									params[:indicator_type_id] = x[:indicator_type_id]
+									params[:indicator_id] = x[:indicator_id]
+								else
+logger.debug "////////////// - no default found"
+  								logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
+									flag_redirect = true
+								end
+
+=begin
   							if @indicator_types[0].has_summary
   								params[:view_type] = @summary_view_type_name
   								params[:indicator_type_id] = @indicator_types[0].id
@@ -204,34 +224,58 @@ logger.debug "////////////// getting current event for event type #{params[:even
   								params[:indicator_id] = @indicator_types[0].core_indicators[0].indicators[0].id
   								params[:indicator_type_id] = @indicator_types[0].id
   							end
+=end
   						end
-
   						# get the indicator
   						# if the shape type changed, update the indicator_id to be valid for the new shape_type
   						# only if this is not the summary view
   	          if params[:view_type] != @summary_view_type_name
   logger.debug "////////////// getting the current indicator"
   							if !params[:change_shape_type].nil? && params[:change_shape_type] == "true"
-
+  logger.debug "////////////// this is shape change - getting indicator at new shape level"
   								# we know the old indicator id and the new shape type
   								# - use that to find the new indicator id
   								new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
   								if new_indicator.nil? || new_indicator.empty?
-  									# could not find a match, reset the indicator id
-  									params[:indicator_id] = nil
+  logger.debug "////////////// - could not find new indicator, looking for default"
+										# could not find matching indicator at new level
+										# - so now use first indicator in list
+										x = get_current_indicator(@indicator_types)
+										if x[:error]
+											logger.debug "+++++++++ cound not find matching indicator at new shape level and could not find default indicator"
+											flag_redirect = true
+										elsif x[:view_type] == @summary_view_type_name
+  logger.debug "////////////// - default is summary"
+											# first indicator is summary
+											params[:view_type] = x[:view_type]
+											params[:indicator_type_id] = x[:indicator_type_id]
+											no_match_indicator_using_summary = true
+										elsif x[:indicator_id]
+  logger.debug "////////////// - default is indicator, getting record"
+											params[:indicator_type_id] = x[:indicator_type_id]
+											params[:indicator_id] = x[:indicator_id]
+		  								@indicator = Indicator.find(params[:indicator_id])
+										else
+  logger.debug "////////////// - no default found"
+											# could not find a match, reset the indicator id
+											params[:indicator_id] = nil
+										end
   								else
+  logger.debug "////////////// - found new indicator, saving"
   									# save the new value
   									params[:indicator_id] = new_indicator.first.id.to_s
   									@indicator = new_indicator.first
   								end
   							else
+  logger.debug "////////////// - getting indicator using id passed in"
   								# get the selected indicator
   								@indicator = Indicator.find(params[:indicator_id])
+  logger.debug "////////////// -- indicator = #{@indicator.inspect}"
   							end
   							if @indicator
     							# save the indicator type id so the indicator menu works
     							params[:indicator_type_id] = @indicator.core_indicator.indicator_type_id if params[:indicator_type_id].nil?
-							  else
+							  elsif !no_match_indicator_using_summary
   								# could not find an indicator
   								logger.debug "+++++++++ cound not find the desired indicator"
   								flag_redirect = true
@@ -478,6 +522,34 @@ logger.debug " - no matching event found!"
         return nil
       end
 		end
+	end
+
+	# get current indicator
+	# returns:
+	# {error, indicator_id, indicator_type_id, view_type}
+	def get_current_indicator(indicator_types)
+		hash = Hash.new()
+		hash[:error] = false
+		hash[:indicator_id] = nil
+		hash[:indicator_type_id] = nil
+		hash[:view_type] = nil
+
+		if indicator_types && !indicator_types.empty?
+			if indicator_types[0].has_summary
+				hash[:view_type] = @summary_view_type_name
+				hash[:indicator_type_id] = indicator_types[0].id
+			elsif indicator_types[0].core_indicators.nil? || indicator_types[0].core_indicators.empty? ||
+						indicator_types[0].core_indicators[0].indicators.nil? ||
+						indicator_types[0].core_indicators[0].indicators.empty?
+				# could not find an indicator
+				logger.debug "+++++++++ cound not find an indicator to set as the value for params[:indicator_id]"
+				hash[:error] = true
+			else
+				hash[:indicator_id] = indicator_types[0].core_indicators[0].indicators[0].id
+				hash[:indicator_type_id] = indicator_types[0].id
+			end
+		end
+		return hash
 	end
 
   def set_gon_variables
