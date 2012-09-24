@@ -59,7 +59,7 @@ class DataSetsController < ApplicationController
   		        # no errors, success!
   						msg = I18n.t('app.msgs.upload.success', :file_name => params[:file].original_filename)
   						flash[:success] = msg
-  						send_status_update(I18n.t('app.msgs.cache_cleared', :action => msg), Time.now-start)
+  						send_status_update(msg, Time.now-start)
   		      else
   		        # errors
   						flash[:error] = I18n.t('app.msgs.upload.error', :file_name => params[:file].original_filename, :msg => msg)
