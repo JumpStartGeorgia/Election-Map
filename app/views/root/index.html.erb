@@ -60,23 +60,23 @@
   	   <% if @has_custom_view %>
   			<li class="switch_view">
   				<% if @summary_view_type_name == params[:view_type] %>
-  					<%= link_to(image_tag("refresh.png",
-  						:alt => t('app.buttons.custom_view',
+  					<%= link_to t('app.buttons.custom_view',
   							:children_shapes => @custom_child_shape_type_name_plural,
-  							:parent_shape => @parent_shape_type_name_singular)),
+  							:parent_shape => @parent_shape_type_name_singular),
   						summary_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
   						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
   							:children_shapes => @custom_child_shape_type_name_plural,
-  							:parent_shape => @parent_shape_type_name_singular)) %>
+  							:parent_shape => @parent_shape_type_name_singular),
+							:class => 'btn btn-mini'%>
   				<% else %>
-  					<%= link_to(image_tag("refresh.png",
-  						:alt => t('app.buttons.custom_view',
+  					<%= link_to t('app.buttons.custom_view',
   							:children_shapes => @custom_child_shape_type_name_plural,
-  							:parent_shape => @parent_shape_type_name_singular)),
+  							:parent_shape => @parent_shape_type_name_singular),
   						indicator_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
   						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
   							:children_shapes => @custom_child_shape_type_name_plural,
-  							:parent_shape => @parent_shape_type_name_singular)) %>
+  							:parent_shape => @parent_shape_type_name_singular),
+							:class => 'btn btn-mini'%>
   				<% end %>
   			</li>
   		<% end %>
