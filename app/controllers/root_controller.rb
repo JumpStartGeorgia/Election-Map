@@ -50,12 +50,8 @@ logger.debug "////////////// getting current event for event type #{params[:even
 
 			# get the most recent dataset for this event
       most_recent_dataset = DataSet.current_dataset(event.id, params[:data_type])
-			@most_recent_dataset = most_recent_dataset.first
+			@most_recent_dataset = most_recent_dataset.first if most_recent_dataset
 			dataset = @most_recent_dataset if !dataset
-
-			# if the most_recent_datset > passed in dataset,
-			# tell user that newer data is available
-			@newer_data_available = @most_recent_dataset.id > dataset.id ? true : false
 
       if dataset
         params[:data_set_id] = dataset.id.to_s
@@ -63,6 +59,10 @@ logger.debug "////////////// getting current event for event type #{params[:even
 		    @live_event_precincts_completed = dataset.precincts_completed
 		    @live_event_precincts_total = dataset.precincts_total
 		    @live_event_timestamp = dataset.timestamp
+
+				# if the most_recent_datset > passed in dataset,
+				# tell user that newer data is available
+				@newer_data_available = @most_recent_dataset.id > dataset.id ? true : false if @most_recent_dataset
 		  else
   			# dataset could not be found for event
   			logger.debug "+++++++++ an public data set could not be found for event"
