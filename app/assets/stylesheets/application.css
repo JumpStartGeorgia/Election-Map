@@ -460,7 +460,14 @@ span#hidden_span_width{
 	text-align: center;
 	width: 50%;
 }
-
+/* the countdown graphics get messed up under this width */
+@media (max-width: 1150px) {
+	#live_event_no_data {
+		margin: 0 auto;
+		text-align: center;
+		width: 100%;
+	}
+}
 #live_event_no_data p{
 	margin: 1em 0;
 	font-size: 15px;
