@@ -134,10 +134,17 @@ function MapPopup() {
       }).text(title);
 
 			if (json.precincts_completed !== null){
+		    this.SVGElement("rect", {
+		      "x": 10,
+		      "y": 45,
+		      "width": window.maxSVGWidth-10,
+		      "height": 20,
+		      "style": "fill: rgba(51, 51, 51, 0.8);"
+		    }).text(json.precincts_completed);
 		    this.SVGElement("text", {
 		      "x": (window.maxSVGWidth/2),
 		      "y": 60,
-		      "style": "font-size:13px;text-anchor:middle;"
+		      "style": "fill: #fff; font-size:15px;text-anchor:middle;"
 		    }).text(json.precincts_completed);
 			}
     }
