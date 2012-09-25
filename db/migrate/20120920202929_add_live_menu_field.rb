@@ -5,8 +5,7 @@ class AddLiveMenuField < ActiveRecord::Migration
 
 		# add value to each exist live menu record
 		MenuLiveEvent.all.each do |menu|
-			# time is in utc -> geo is +4
-			menu.data_available_at = '2012-10-01 21:00:00'
+			menu.data_available_at = '2012-10-02 00:00:00'
 			menu.save
 		end
   end

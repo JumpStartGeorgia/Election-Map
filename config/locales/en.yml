@@ -333,7 +333,7 @@ en:
     index:
       export_link_text: Export Map
       footnote: "Note: %{note}"
-      live_event_available: "Please come back at %{time} to see the latest election results as the CEC releases them to the public."
+      live_event_available: "Please come back at %{tbilisi_time} (%{est_time} EST) to see the latest election results as the CEC releases them to the public."
       live_event_countdown_header: Time to Live Updates
       new_data_available_message: The election data has recently been updated.
       new_data_available_link: View the new data.
