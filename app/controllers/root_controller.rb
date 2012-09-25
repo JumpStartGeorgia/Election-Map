@@ -163,7 +163,7 @@ logger.debug "////////////// getting current event for event type #{params[:even
 							if params[:data_type] == Datum::DATA_TYPE[:live]
 								precincts_reporting = Datum.get_precincts_reported(params[:shape_id], params[:event_id], params[:data_set_id])
 								if precincts_reporting && !precincts_reporting.empty?
-									@map_title << '<span style="font-size: 10px;">'
+									@map_title << '<span id="live_data">'
 									@map_title << I18n.t('app.common.live_event_status', :completed => precincts_reporting[:completed_number],
 	                                :total => precincts_reporting[:num_precincts],
 	                                :percentage => precincts_reporting[:completed_percent])

@@ -216,8 +216,8 @@ ka:
       is_precinct: Is Precinct
       live_data: მიმდინარე მონაცემები
       official_data: ოფიციალური მონაცემები
-      live_event_status: " ( %{completed} / %{total} უბნები (%{percentage}) )"
-      live_event_status_timestamp: " ( %{completed} / %{total} უბნები (%{percentage}) - %{timestamp} )"
+      live_event_status: "Precincts Reporting: %{completed} of %{total} - %{percentage}"
+      live_event_status_timestamp: " (Precincts Reporting: %{completed} of %{total} - %{percentage} - %{timestamp})"
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
