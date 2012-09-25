@@ -165,11 +165,18 @@
 
   		<div id="map-title"><%= @map_title.html_safe %></div>
 
-  		<% if @custom_view_note %>
   			<div id="footnote">
-  				<%= t('.footnote', :note => @custom_view_note) %>
+		  		<% if params[:data_type] == Datum::DATA_TYPE[:live] %>
+						<p>
+							<%= t('.footnote_live_data', :date => l(@live_event_timestamp, :format => :long)) %>
+						</p>
+		  		<% end %>
+		  		<% if @custom_view_note %>
+						<p>
+							<%= t('.footnote', :note => @custom_view_note) %>
+						</p>
+		  		<% end %>
   			</div>
-  		<% end %>
 
   		<% if @event_description %>
   			<div id='event_description'>
