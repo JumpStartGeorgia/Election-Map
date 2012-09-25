@@ -1,7 +1,7 @@
 <% title @page_title %>
 
 <% if @live_event_with_no_data %>
-  <div id="live_event_no_data" class="row-fluid">
+  <div id="live_event_no_data">
     <h2>
       <%= @live_event_name %>
     </h2>
@@ -16,13 +16,14 @@
     </p>
 
 		<h3><%= t('.live_event_countdown_header') %>
-    <div id="counter"></div>
-      <div id="counter_labels" class="clear">
-        <div><%= t('datetime.prompts.days')%></div>
-        <div><%= t('datetime.prompts.hours')%></div>
-        <div><%= t('datetime.prompts.minutes')%></div>
-        <div><%= t('datetime.prompts.seconds')%></div>
-      </div>
+		<div id="counter_container">
+		  <div id="counter"></div>
+		  <div id="counter_labels" class="clear">
+		    <div><%= t('datetime.prompts.days')%></div>
+		    <div><%= t('datetime.prompts.hours')%></div>
+		    <div><%= t('datetime.prompts.minutes')%></div>
+		    <div><%= t('datetime.prompts.seconds')%></div>
+		  </div>
     </div>
   </div>
 <% else %>

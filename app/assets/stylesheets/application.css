@@ -426,23 +426,6 @@ span#hidden_span_width{
   color: #fff !important;
 }
 
-/* countdown timer for live event data */
-#counter .cntSeparator {
-  font-size: 54px;
-  margin: 10px 7px;
-  color: #000;
-}
-#counter_labels { margin: 7px 3px; }
-#counter_labels div {
-  float: left;
-  font-family: Arial;
-  width: 105px;
-  margin-right: 30px;
-  font-size: 13px;
-  font-weight: bold;
-  color: #000;
-  text-align: center;
-}
 
 /* if new data available */
 #new_data_available{
@@ -461,4 +444,36 @@ span#hidden_span_width{
 #new_data_available a:hover {
 	color: #000;
 	background-color: transparent;
+}
+
+/* countdown */
+#live_event_no_data {
+	margin: 0 auto;
+	text-align: center;
+	width: 50%;
+}
+
+#live_event_no_data p{
+	margin: 1em 0;
+	font-size: 15px;
+}
+#live_event_no_data #counter{
+	margin-top: 1em;
+}
+
+#live_event_no_data #counter .cntSeparator {
+  font-size: 54px;
+  margin: 25px 7px 10px;
+  color: #000;
+}
+#live_event_no_data #counter_labels { margin: 7px 3px; }
+#live_event_no_data #counter_labels div {
+  float: left;
+  font-family: Arial;
+  width: 105px;
+  margin-right: 30px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
 }
