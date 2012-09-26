@@ -134,7 +134,7 @@ if (gon.openlayers){
 
 
 	// Define global variables which can be used in all functions
-	var map, vector_parent, vector_child;
+	var map, vector_parent, vector_child, vector_live_data;
 	var vector_parent_loaded = false;
 	var vector_child_loaded = false;
 	var scale_nodata = [];
@@ -240,8 +240,17 @@ if (gon.openlayers){
 
 		vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
-		map.addLayers([map_layer, vector_parent, vector_child]);
+		vector_live_data = new OpenLayers.Layer.Vector("Live Data Layer", {styleMap: build_live_data_shape_completed_styles()});
 
+		map.addLayers([map_layer, vector_parent, vector_child, vector_live_data]);
+
+/*
+		// set the z-index of the layers
+		map_layer.setZIndex(100);
+		vector_parent.setZIndex(200);
+		vector_child.setZIndex(300);
+		vector_live_data.setZIndex(800);
+*/
 
 		// load the base layer
 		var prot = new OpenLayers.Protocol.HTTP({
@@ -314,25 +323,6 @@ if (gon.openlayers){
 		    }
 		    vector_parent.addFeatures(features);
 
-     /*
-		    var shapeWidth = bounds.right - bounds.left;
-		    var worldWidth = map.maxExtent.right - map.maxExtent.left;
-		    console.log(map.maxExtent.right, map.maxExtent.left);
-		    console.log(bounds.right, bounds.left);
-		    var increaseK = 1 + shapeWidth / worldWidth * 50;
-		    console.log(increaseK);
-		    if (increaseK > 1.1)
-		    {
-		      increaseK = 1.1;
-		    }
-		    else if (increaseK < 1.03)
-		    {
-		      increaseK = 1.03;
-		    }
-		    console.log(increaseK);
-		    bounds.right = bounds.right * increaseK;
-		  //map.restrictedExtent.right = map.restrictedExtent.right * increaseK;
-		 */
 		    map.zoomToExtent(bounds);
 		    winW = window_width();
 				if (winW > map_width_indicators_fall){
@@ -355,6 +345,12 @@ if (gon.openlayers){
 	function load_vector_child(resp){
 		if (resp.success()){
 		  vector_child.addFeatures(resp.features);
+
+			// if this is live data, highlight the shapes that are not complete
+			if (gon.data_type == gon.data_type_live) {
+//				vector_live_data.addFeatures(resp.features);
+			}
+
 		  // if this is summary view, populate gon.indicator_scales and colors with names from json file
 		  populate_summary_data();
 			// now that the child vector is loaded, lets show the legend
@@ -492,6 +488,31 @@ if (gon.openlayers){
 		});
 		if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 
+/*
+			// if this is live data apply rule to highlihgt shapes that are not comlete
+			if (gon.data_type == gon.data_type_live) {
+				rules.push(new OpenLayers.Rule({
+				name: "precincts not completed",
+				filter: new OpenLayers.Filter.Logical({
+							type: OpenLayers.Filter.Logical.AND,
+							filters: [
+							    new OpenLayers.Filter.Comparison({
+							        type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
+							        property: "precincts_completed_precent",
+							        value: 100
+							    }),
+							    new OpenLayers.Filter.Comparison({
+											// using > instead of >= because >= will include null values and don't want
+											type: OpenLayers.Filter.Comparison.GREATER_THAN,
+							        property: "precincts_completed_precent",
+							        value: 0
+							    })
+							]
+							}),
+						symbolizer: {strokeWidth: 4, strokeColor: "#fff"}
+				}));
+			}
+*/
 			// look at each scale and create the builder
 			for (var i=0; i<gon.indicator_scales.length; i++){
 				var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
@@ -588,7 +609,41 @@ if (gon.openlayers){
 		}
 	}
 
+	// build the styles and rules for live data
+	// that will highlight the shapes that have incomplete precincts
+	function build_live_data_shape_completed_styles() {
+		var rule;
+		var theme = new OpenLayers.Style({
+        fillOpacity: 0.1,
+		    strokeWidth: 2
+		});
+//		var style = {strokeColor: "#fff", strokeDashstyle: "dot"};
+		var style = {strokeColor: "#fff"};
 
+	  rule = new OpenLayers.Rule({
+		name: "precincts not completed",
+		filter: new OpenLayers.Filter.Logical({
+		      type: OpenLayers.Filter.Logical.AND,
+		      filters: [
+		          new OpenLayers.Filter.Comparison({
+		              type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
+		              property: "precincts_completed_precent",
+		              value: 100
+		          }),
+		          new OpenLayers.Filter.Comparison({
+									// using > instead of >= because >= will include null values and don't want
+									type: OpenLayers.Filter.Comparison.GREATER_THAN,
+		              property: "precincts_completed_precent",
+		              value: 0
+		          })
+		      ]
+		      }),
+					symbolizer: style
+	  });
+
+		theme.addRules([rule]);
+	  return new OpenLayers.StyleMap({'default':theme, 'select':style});
+	}
 
 
 	function click_handler (feature)

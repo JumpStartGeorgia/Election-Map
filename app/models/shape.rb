@@ -106,6 +106,7 @@ class Shape < ActiveRecord::Base
 		  properties["formatted_value"] = I18n.t('app.msgs.no_data')
 		  properties["color"] = nil
 		  properties["number_format"] = nil
+			properties["precincts_completed_precent"] = nil
 			properties["results"] = Array.new
 			title = Hash.new
 			title["location"] = "#{shape.shape_type.name_singular}: #{shape.common_name}"
@@ -164,6 +165,9 @@ class Shape < ActiveRecord::Base
 					if data_type == Datum::DATA_TYPE[:live] && !shape.shape_type.is_precinct?
 						precincts_reporting = Datum.get_precincts_reported(shape.id, event_id, data_set_id)
 						if precincts_reporting && !precincts_reporting.empty?
+							# save the value so the shapes can be marked different if not complete
+							properties["precincts_completed_precent"] = precincts_reporting[:completed_percent].gsub("%","").to_f
+							# create the title for the popup
 							title["precincts_completed"] =
 										I18n.t('app.common.live_event_status', :completed => precincts_reporting[:completed_number],
                         :total => precincts_reporting[:num_precincts],
