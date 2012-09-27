@@ -41,23 +41,13 @@ class Indicator < ActiveRecord::Base
 
 	# the shape_type has changed, get the indicator that
   # matches the indicator from the last shape type
-	def self.find_new_id(old_indicator, new_shape_type)
-		if (old_indicator.nil? || new_shape_type.nil?)
-			return nil
-		else
-#			Rails.cache.fetch("indicators_new_id_#{old_indicator}_#{new_shape_type}") {
-				sql = "select inew.* "
-				sql << "from indicators as iold "
-				sql << "inner join indicators as inew on iold.event_id = inew.event_id "
-        sql << "inner join core_indicators as ciold on iold.core_indicator_id = ciold.id "
-        sql << "inner join core_indicators as cinew on inew.core_indicator_id = cinew.id "
-        sql << "inner join core_indicator_translations as citold on ciold.id = citold.core_indicator_id "
-        sql << "inner join core_indicator_translations as citnew on cinew.id = citnew.core_indicator_id and citold.name_abbrv = citnew.name_abbrv and citold.locale = citnew.locale "
-				sql << "where iold.id = :old_indicator and inew.shape_type_id = :new_shape_type and citold.locale = :locale"
-
-				find_by_sql([sql, :old_indicator => old_indicator, :new_shape_type => new_shape_type, :locale => I18n.locale])
-#			}
-		end
+	def self.find_new_id(old_indicator_id, new_shape_type_id)
+		if old_indicator_id && new_shape_type_id
+      new_indicator = Indicator.find(old_indicator_id).root.subtree.where(:shape_type_id => new_shape_type_id)
+      if new_indicator && !new_indicator.empty?
+        return new_indicator.first
+      end
+    end
 	end
 
 	def self.find_by_event_shape_type(event_id, shape_type_id)

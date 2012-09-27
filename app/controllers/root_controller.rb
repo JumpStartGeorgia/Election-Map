@@ -237,7 +237,7 @@ logger.debug "////////////// - no default found"
   								# we know the old indicator id and the new shape type
   								# - use that to find the new indicator id
   								new_indicator = Indicator.find_new_id(params[:indicator_id], @child_shape_type_id)
-  								if new_indicator.nil? || new_indicator.empty?
+  								if new_indicator.nil?
   logger.debug "////////////// - could not find new indicator, looking for default"
 										# could not find matching indicator at new level
 										# - so now use first indicator in list
@@ -264,8 +264,8 @@ logger.debug "////////////// - no default found"
   								else
   logger.debug "////////////// - found new indicator, saving"
   									# save the new value
-  									params[:indicator_id] = new_indicator.first.id.to_s
-  									@indicator = new_indicator.first
+  									params[:indicator_id] = new_indicator.id.to_s
+  									@indicator = new_indicator
   								end
   							else
   logger.debug "////////////// - getting indicator using id passed in"
@@ -290,8 +290,8 @@ logger.debug "////////////// - no default found"
   							@custom_indicator_id = nil
 
   							custom_indicator = Indicator.find_new_id(params[:indicator_id], custom_child_shape_type.id)
-  							if !custom_indicator.nil? && !custom_indicator.empty?
-  								@custom_indicator_id = custom_indicator.first.id.to_s
+  							if !custom_indicator.nil?
+  								@custom_indicator_id = custom_indicator.id.to_s
   							end
   						end
   					end
