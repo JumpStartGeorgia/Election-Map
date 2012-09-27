@@ -502,10 +502,12 @@ if (gon.openlayers){
 	function build_live_data_shape_completed_styles() {
 		var rule;
 		var theme = new OpenLayers.Style({
-        pointRadius: 0
+        pointRadius: 0,
+				strokeWidth: 2,
+				strokeColor: '#000'
 		});
 //		var style = {pointRadius: 8, externalGraphic: "/assets/pattern.png"};
-		var style = {pointRadius: 3};
+		var style = {pointRadius: 3, fill: false};
 
 	  rule = new OpenLayers.Rule({
 		name: "precincts not completed",
@@ -513,9 +515,9 @@ if (gon.openlayers){
 		      type: OpenLayers.Filter.Logical.AND,
 		      filters: [
 		          new OpenLayers.Filter.Comparison({
-		              type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
+		              type: OpenLayers.Filter.Comparison.LESS_THAN,
 		              property: "precincts_completed_precent",
-		              value: 50
+		              value: 100
 		          }),
 		          new OpenLayers.Filter.Comparison({
 									// using > instead of >= because >= will include null values and don't want
@@ -525,10 +527,19 @@ if (gon.openlayers){
 		          })
 		      ]
 		      }),
-					symbolizer: style
+					symbolizer: {pointRadius: 3, fill: false}
 	  });
 
-		theme.addRules([rule]);
+	  rule1 = new OpenLayers.Rule({
+		name: "precincts not completed",
+  	filter: new OpenLayers.Filter.Comparison({
+      type: OpenLayers.Filter.Comparison.EQUAL_TO,
+      property: "precincts_completed_precent",
+      value: 100 }),
+			symbolizer: {pointRadius: 3, fillColor: '#000000'}
+	  });
+
+		theme.addRules([rule, rule1]);
 	  return new OpenLayers.StyleMap({'default':theme});
 	}
 
