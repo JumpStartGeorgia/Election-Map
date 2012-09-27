@@ -5,7 +5,7 @@ class Indicator < ActiveRecord::Base
   has_many :data, :dependent => :destroy
   belongs_to :event
   belongs_to :shape_type
-  attr_accessible :core_indicator_id, :event_id, :shape_type_id
+  attr_accessible :core_indicator_id, :event_id, :shape_type_id, :visible
   attr_accessor :locale
 
   validates :core_indicator_id, :event_id, :shape_type_id, :presence => true

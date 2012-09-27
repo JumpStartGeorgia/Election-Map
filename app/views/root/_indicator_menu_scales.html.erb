@@ -27,12 +27,14 @@
 						  <% end %>
 						  <% indicator_type.core_indicators.each do |core| %>
 							  <% core.indicators.each do |indicator| %>
-								  <% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
-								  <li>
-									  <%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
-										  :view_type => nil, :indicator_type_id => nil, :highlight_shape => nil)),
-										  :title => core.description_w_parent, :class => is_active %>
-								  </li>
+									<% if indicator.visible? %>
+										<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
+										<li>
+											<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
+												:view_type => nil, :indicator_type_id => nil, :highlight_shape => nil)),
+												:title => core.description_w_parent, :class => is_active %>
+										</li>
+								  <% end %>
 							  <% end %>
 						  <% end %>
 					  </ul>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120924074845) do
+ActiveRecord::Schema.define(:version => 20120927133257) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -271,9 +271,11 @@ ActiveRecord::Schema.define(:version => 20120924074845) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "core_indicator_id"
+    t.boolean  "visible",           :default => true
   end
 
   add_index "indicators", ["event_id", "shape_type_id", "core_indicator_id"], :name => "inds_event_shape_type_core_ind"
+  add_index "indicators", ["visible"], :name => "index_indicators_on_visible"
 
   create_table "locales", :force => true do |t|
     t.string   "language"
