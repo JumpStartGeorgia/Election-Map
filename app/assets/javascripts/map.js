@@ -28,110 +28,7 @@
 //= require map.export
 
 
-// set focus to first text box on page
-$(document).ready(function(){
-  $("input:visible:first").focus();
-
-	// to load pop-up window for export help
-  $("a.fancybox").fancybox();
-
-
-  var fade_after = 10,
-  navbar = $('.navbar.navbar-fixed-top');
-  $(window).scroll(function ()
-  {
-    var y = window.scrollY;
-    if (y > fade_after)
-    {
-      navbar.animate({opacity: .93}, 'fast');
-    }
-    else
-    {
-      navbar.animate({opacity: 1}, 'fast');
-    }
-  });
-
-});
-
-
-function full_height (element)
-{
-  if (element.length == 0)
-  {
-    return 0;
-  }
-  var values =
-  [
-    element.height(),
-    element.css('margin-top'),
-    element.css('margin-bottom'),
-    element.css('padding-top'),
-    element.css('padding-bottom'),
-    element.css('border-top-width'),
-    element.css('border-bottom-width')
-  ],
-  h = 0;
-  for (i in values)
-  {
-    h += parseInt(values[i]);
-  }
-  return h;
-}
-
-function window_width ()
-{
-  var winW;
-  if (document.body && document.body.offsetWidth)
-  {
-    winW = document.body.offsetWidth;
-  }
-  else if (document.compatMode == 'CSS1Compat' && document.documentElement && document.documentElement.offsetWidth)
-  {
-    winW = document.documentElement.offsetWidth;
-  }
-  else if (window.innerWidth)
-  {
-    winW = window.innerWidth;
-  }
-  return winW;
-}
-
-
 if (gon.openlayers){
-
-  function pan_click_handler ()
-  {
-    var d,
-    math = Math;
-    switch (this.className)
-    {
-      case 'north':
-        d = [0, -1];
-        break;
-      case 'west':
-        d = [-1, 0];
-        break;
-      case 'east':
-        d = [1, 0];
-        break;
-      case 'south':
-        d = [0, 1];
-        break;
-    }
-    for (i = 1; i <= 50; i ++)
-    {
-      setTimeout(function (k)
-      {
-        k1 = math.pow(51 - k, 5) / .5e+8;
-        map.moveByPx(d[0] * k1, d[1] * k1);
-        if (k == 50)
-        {
-          map.layers[2].redraw();
-        }
-      }, i * 20, i);
-    }
-  }
-
 
 	// Define global variables which can be used in all functions
 	var map, vector_parent, vector_child, vector_live_data;
@@ -666,49 +563,9 @@ if (gon.openlayers){
 
 	}
 
-	// add/update the query paramter with the provided name and value
-	function update_query_parameter(url, name, name2, value){
-		// get the current url
-		var index = url.indexOf(name + "=");
-		var index2 = url.indexOf("/" + name2 + "/");
-		if (index > 0){
-			// found 'name=', now need to replace the value
-			var name_length = name.length+1; // use +1 to account for the '='
-			var indexAfter = url.indexOf("&", index+name_length);
-			if (indexAfter > 0){
-				// there is another paramter after this one
-				url = url.slice(0, index+name_length) + value + url.slice(indexAfter);
-			}else {
-				// no more parameters after this one
-				url = url.slice(0, index+name_length) + value;
-			}
-		}else if (index2 > 0) {
-			// found '/name/', now need to replace the value
-			var name_length = name2.length+2; // use +2 to account for the '/' at the beginning and end
-			var indexAfter = url.indexOf("/", index2+name_length);
-			var indexAfter2 = url.indexOf("?", index2+name_length);
-			if (indexAfter > 0){
-				// there is another paramter after this one
-				url = url.slice(0, index2+name_length) + value + url.slice(indexAfter);
-			} else if (indexAfter2 > 0){
-				// there is another paramter after this one
-				url = url.slice(0, index2+name_length) + value + url.slice(indexAfter2);
-			}else {
-				// no more parameters after this one
-				url = url.slice(0, index2+name_length) + value;
-			}
-		}else {
-			// not in query string yet, add it
-			// if this is the first query string, add the ?, otherwise add &
-			url += url.indexOf("?") > 0 ? "&" : "?"
-			url += name + "=" + value;
-		}
-		return url;
-	}
 
 	/*  Feature popup functions  */
-
-	// Rmove feature popups
+	// Remove feature popups
 	function removeFeaturePopups()
 	{
 		$(".olPopup").each(function(){
@@ -755,12 +612,8 @@ if (gon.openlayers){
 
 	// Create the popup for the feature
 	var popup;
-	var qwer;
-
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
 	{
-
-
 		if (typeof(stright) === "undefined")
 		  stright = false;
 		if (stright && $(".olPopupCloseBox:first").length !== 0)
@@ -769,9 +622,7 @@ if (gon.openlayers){
       // remove all popups
 			removeFeaturePopups();
 
-
       // create popup
-
       var feature = feature_data,
           feature_vertices = feature.geometry.getVertices(),
           feature_center = feature_data.geometry.bounds.getCenterLonLat();
@@ -939,6 +790,38 @@ if (gon.openlayers){
 		}
 	}
 
+  function pan_click_handler ()
+  {
+    var d,
+    math = Math;
+    switch (this.className)
+    {
+      case 'north':
+        d = [0, -1];
+        break;
+      case 'west':
+        d = [-1, 0];
+        break;
+      case 'east':
+        d = [1, 0];
+        break;
+      case 'south':
+        d = [0, 1];
+        break;
+    }
+    for (i = 1; i <= 50; i ++)
+    {
+      setTimeout(function (k)
+      {
+        k1 = math.pow(51 - k, 5) / .5e+8;
+        map.moveByPx(d[0] * k1, d[1] * k1);
+        if (k == 50)
+        {
+          map.layers[2].redraw();
+        }
+      }, i * 20, i);
+    }
+  }
 
 	// check for live data updates every 1 minute
 	if (gon.data_type == gon.data_type_live){
