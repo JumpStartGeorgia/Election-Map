@@ -242,7 +242,7 @@ if (gon.openlayers){
 
 		vector_live_data = new OpenLayers.Layer.Vector("Live Data Layer", {styleMap: build_live_data_shape_completed_styles()});
 
-		map.addLayers([map_layer, vector_parent, vector_child, vector_live_data]);
+		map.addLayers([map_layer, vector_parent, vector_live_data, vector_child]);
 
 /*
 		// set the z-index of the layers
@@ -348,7 +348,7 @@ if (gon.openlayers){
 
 			// if this is live data, highlight the shapes that are not complete
 			if (gon.data_type == gon.data_type_live) {
-//				vector_live_data.addFeatures(resp.features);
+				build_live_data_points(resp.features);
 			}
 
 		  // if this is summary view, populate gon.indicator_scales and colors with names from json file
@@ -405,6 +405,23 @@ if (gon.openlayers){
 		}
 	}
 
+	// create a point at the center of each shape
+	// that will be filled with the pattern external graphic if the rules
+	// are satisfied
+	function build_live_data_points(features) {
+		var point_features = [];
+
+		for (var i=0;i<features.length;i++){
+			point_features.push(new OpenLayers.Feature.Vector(
+				features[i].geometry.getCentroid(),
+				{precincts_completed_precent: features[i].attributes.precincts_completed_precent}
+			));
+		}
+		if (point_features.length > 0){
+			vector_live_data.addFeatures(point_features);
+		}
+	}
+
 	// go through each feature and get unique indicator names and their colors
 	function populate_summary_data(){
 		if (gon.view_type == gon.summary_view_type_name) {
@@ -430,7 +447,6 @@ if (gon.openlayers){
 		  }
 
 		  // add style map
-	//    vector_child.styleMap = null;
 		  vector_child.styleMap = build_indicator_scale_styles();
 			vector_child.redraw();
 		}
@@ -488,31 +504,6 @@ if (gon.openlayers){
 		});
 		if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 
-/*
-			// if this is live data apply rule to highlihgt shapes that are not comlete
-			if (gon.data_type == gon.data_type_live) {
-				rules.push(new OpenLayers.Rule({
-				name: "precincts not completed",
-				filter: new OpenLayers.Filter.Logical({
-							type: OpenLayers.Filter.Logical.AND,
-							filters: [
-							    new OpenLayers.Filter.Comparison({
-							        type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
-							        property: "precincts_completed_precent",
-							        value: 100
-							    }),
-							    new OpenLayers.Filter.Comparison({
-											// using > instead of >= because >= will include null values and don't want
-											type: OpenLayers.Filter.Comparison.GREATER_THAN,
-							        property: "precincts_completed_precent",
-							        value: 0
-							    })
-							]
-							}),
-						symbolizer: {strokeWidth: 4, strokeColor: "#fff"}
-				}));
-			}
-*/
 			// look at each scale and create the builder
 			for (var i=0; i<gon.indicator_scales.length; i++){
 				var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
@@ -614,11 +605,10 @@ if (gon.openlayers){
 	function build_live_data_shape_completed_styles() {
 		var rule;
 		var theme = new OpenLayers.Style({
-        fillOpacity: 0.1,
-		    strokeWidth: 2
+        pointRadius: 0
 		});
-//		var style = {strokeColor: "#fff", strokeDashstyle: "dot"};
-		var style = {strokeColor: "#fff"};
+//		var style = {pointRadius: 8, externalGraphic: "/assets/pattern.png"};
+		var style = {pointRadius: 3};
 
 	  rule = new OpenLayers.Rule({
 		name: "precincts not completed",
@@ -628,7 +618,7 @@ if (gon.openlayers){
 		          new OpenLayers.Filter.Comparison({
 		              type: OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO,
 		              property: "precincts_completed_precent",
-		              value: 100
+		              value: 50
 		          }),
 		          new OpenLayers.Filter.Comparison({
 									// using > instead of >= because >= will include null values and don't want
@@ -642,7 +632,7 @@ if (gon.openlayers){
 	  });
 
 		theme.addRules([rule]);
-	  return new OpenLayers.StyleMap({'default':theme, 'select':style});
+	  return new OpenLayers.StyleMap({'default':theme});
 	}
 
 
