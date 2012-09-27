@@ -706,6 +706,7 @@ logger.debug "++++**missing data in row"
 				sql << "where "
 				sql << "e.id = :event_id "
 				sql << "and i.shape_type_id = :shape_type_id "
+				sql << "and d.data_set_id = :data_set_id "
 				sql << "and d.#{I18n.locale}_common_id in (:common_ids) "
 				sql << "and d.#{I18n.locale}_common_name in (:common_names) "
 				sql << "and et.locale = :locale "
@@ -714,7 +715,7 @@ logger.debug "++++**missing data in row"
 				sql << "group by et.name, stt.name_singular, d.#{I18n.locale}_common_name, d.#{I18n.locale}_common_name "
 				sql << "order by et.name, stt.name_singular, d.#{I18n.locale}_common_name "
 
-				data = Datum.find_by_sql([sql, :event_id => event_id,
+				data = Datum.find_by_sql([sql, :event_id => event_id, :data_set_id => data_set_id,
 					:shape_type_id => shape_type_id, :locale => I18n.locale,
 					:common_ids => shapes.collect(&:shape_common_id),
 					:common_names => shapes.collect(&:shape_common_name)])
