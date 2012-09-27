@@ -1,12 +1,13 @@
 class Indicator < ActiveRecord::Base
+  has_ancestry
+
   belongs_to :core_indicator
   has_one :indicator_type, :through => :core_indicator
   has_many :indicator_scales, :dependent => :destroy
   has_many :data, :dependent => :destroy
   belongs_to :event
   belongs_to :shape_type
-  attr_accessible :core_indicator_id, :event_id, :shape_type_id, :visible
-  attr_accessor :locale
+  attr_accessible :core_indicator_id, :event_id, :shape_type_id, :visible, :ancestry
 
   validates :core_indicator_id, :event_id, :shape_type_id, :presence => true
 
