@@ -6,28 +6,28 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
     vpm_id_parents = vpm_id_mapping.map{|x| x[0]}
     vpm_id_children = vpm_id_mapping.map{|x| x[1]}
     shape_types = ShapeType.all
-    
+
     # create core indicator
-    puts "creating core ind"      
+    puts "creating core ind"
     core = CoreIndicator.create(:indicator_type_id => 1)
-    core.core_indicator_translations.create(:locale => 'en', :name => 'Number of Precincts with votes per minute > 3', 
+    core.core_indicator_translations.create(:locale => 'en', :name => 'Number of Precincts with votes per minute > 3',
       :name_abbrv => 'VPM > 3', :description => 'Number of Precincts with votes per minute > 3')
-    core.core_indicator_translations.create(:locale => 'ka', :name => 'უბნების რაოდენობა, სადაც ხმის მიცემა წუთში > 3', 
+    core.core_indicator_translations.create(:locale => 'ka', :name => 'უბნების რაოდენობა, სადაც ხმის მიცემა წუთში > 3',
       :name_abbrv => 'ხმის მიცემა წუთში > 3', :description => 'უბნების რაოდენობა, სადაც ხმის მიცემა წუთში > 3')
-    puts "- core ind id = #{core.id}"      
+    puts "- core ind id = #{core.id}"
 
     # create new indicator for each event
     Event.all.each do |event|
-      puts "event #{event.id}"      
+      puts "event #{event.id}"
 
       # continue if this event has the vpm indicators
       test = Indicator.where(["event_id = ? and core_indicator_id in (?)", event.id, vpm_id_parents])
       if test && !test.empty?
-        puts "**** this event has vpm indicators"      
+        puts "**** this event has vpm indicators"
 
         # create indicator relationships for popup
         # - vpm 8-12, vpm 12-17, vpm 17-20, total turn out
-        puts "- creating ind relationships"      
+        puts "- creating ind relationships"
         EventIndicatorRelationship.create(:event_id => event.id,
           :core_indicator_id => core.id,
           :related_core_indicator_id => 7,
@@ -46,7 +46,7 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
           :sort_order => 4)
 
         # create indicators
-        puts "- creating event inds"      
+        puts "- creating event inds"
         indicators = Indicator.select('id, shape_type_id, core_indicator_id').where(:event_id => event.id).order('shape_type_id')
         ind_shape_types = indicators.map{|x| x.shape_type_id}.uniq
         ind_shape_types.each do |ind_shape_type|
@@ -54,16 +54,16 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
           shape_type = shape_types.select{|x| x.id == ind_shape_type}.first
           # only create records for non-precinct levels
           if shape_type && !shape_type.is_precinct?
-            puts " -- shape type #{shape_type.id}"      
+            puts " -- shape type #{shape_type.id}"
             # get scales to copy
             # - copying first parent ind's scales for all parent ind scales in a shape type are the same
             scales = Indicator.where(:event_id => event.id, :core_indicator_id => vpm_id_parents.first, :shape_type_id => shape_type.id)
             if scales && !scales.empty?
-              puts " --- creating ind"      
+              puts " --- creating ind"
               new_indicator = Indicator.create(:event_id => event.id, :core_indicator_id => core.id, :shape_type_id => shape_type.id)
               # if this is not root, add ancestry value
               if new_indicator.shape_type_id != 1
-                parent_indicator = indicators.select{|x| x.shape_type_id == shape_type.parent_id && 
+                parent_indicator = indicators.select{|x| x.shape_type_id == shape_type.parent_id &&
                     x.core_indicator_id == new_indicator.core_indicator_id}.first
 
                 if parent_indicator
@@ -71,9 +71,9 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
                   new_indicator.save
                 end
               end
-        
+
               # create scales for new indicator by copying from previous vpm indicator
-              puts " --- creating ind scales"      
+              puts " --- creating ind scales"
               scales.first.indicator_scales.each do |ind_scale|
                 scale = IndicatorScale.create(:indicator_id => new_indicator.id)
                 ind_scale.indicator_scale_translations.each do |ind_scale_trans|
@@ -81,12 +81,12 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
                     :name => ind_scale_trans.name)
                 end
               end
-        
+
               # create data records for new indicator
               # - sum up all vpm values at this shape level for each uniq common name and save
-              puts " --- adding data"      
+              puts " --- adding data"
               vpm_indicators = Indicator.where(["event_id = ? and shape_type_id = ? and core_indicator_id in (?)", event.id, shape_type.id, vpm_id_parents])
-              DataSet.where(:event_id => event.id).each do |dataset|          
+              DataSet.where(:event_id => event.id).each do |dataset|
                 # get all data records in this dataset for these indicators
                 data = Datum.where(["data_set_id = ? and indicator_id in (?)", dataset.id, vpm_indicators.collect(&:id)])
                 # for each unique common_name (shape)
@@ -106,13 +106,25 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
             end
           end
         end
+
+				# update old vpm indicators at non-precinct levels to be not visible
+				Indicator.where(["event_id = ? and core_indicator_id in (?)", event.id, vpm_id_parents]).each do |indicator|
+					indicator.visible = false
+					indicator.save
+				end
       end
     end
-      
+
   end
 
   def down
     trans = CoreIndicatorTranslation.where(:name => 'Number of Precincts with votes per minute > 3')
     CoreIndicator.find(trans.first.core_indicator_id).destroy
+
+		# update old vpm indicators at non-precinct levels to be visible
+		Indicator.where(["event_id = ? and core_indicator_id in (?)", event.id, vpm_id_parents]).each do |indicator|
+			indicator.visible = true
+			indicator.save
+		end
   end
 end

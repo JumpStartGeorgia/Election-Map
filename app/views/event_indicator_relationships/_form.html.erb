@@ -62,8 +62,44 @@
 									:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
 						</div>
 					</div>
+					<div class="control-group optional" id="event_indicator_relationship_has_openlayers_rule_value">
+						<%= label_tag "event_indicator_relationship_has_openlayers_rule_value",
+									t('app.common.has_openlayers_rule_value'), :class => "control-label" %>
+             <div class="controls">
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_has_openlayers_rule_value", true,
+										relationship.has_openlayers_rule_value == true,
+										:name => "event_indicator_relationship[#{i}][has_openlayers_rule_value]" %>
+									<%= t('app.common.yes') %>
+								</label>
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_has_openlayers_rule_value", false,
+										relationship.has_openlayers_rule_value == false,
+										:name => "event_indicator_relationship[#{i}][has_openlayers_rule_value]" %>
+									<%= t('app.common.no') %>
+								</label>
+             </div>
+					</div>
+					<div class="control-group optional" id="event_indicator_relationship_visible">
+						<%= label_tag "event_indicator_relationship_visible",
+									t('app.common.visible'), :class => "control-label" %>
+             <div class="controls">
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_visible", true,
+										relationship.visible == true,
+										:name => "event_indicator_relationship[#{i}][visible]" %>
+									<%= t('app.common.yes') %>
+								</label>
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_visible", false,
+										relationship.visible == false,
+										:name => "event_indicator_relationship[#{i}][visible]" %>
+									<%= t('app.common.no') %>
+								</label>
+             </div>
+					</div>
 					<p>
-						<%= button_tag t('app.buttons.remove'), :type => 'button', :class => "remove", :id => "event_indicator_relationship_#{relationship.id}" %>
+						<%= button_tag t('app.buttons.remove'), :type => 'button', :id => "event_indicator_relationship_#{relationship.id}", :confirm => t('app.msgs.delete_confirm'), :class => 'btn remove btn-danger btn-mini' %>
 					</p>
 					<hr />
 				<% elsif relationship.related_core_indicator_id %>
@@ -76,12 +112,48 @@
 								:name => "event_indicator_relationship[#{i}][related_core_indicator_id]" %>
 						</div>
 					</div>
-					<div class="select control-group optional" id="event_indicator_relationship_sort_order_input">
+					<div class="control-group optional" id="event_indicator_relationship_sort_order_input">
 						<%= label_tag "event_indicator_relationship_sort_order", t('app.common.sort_order'), :class => "control-label" %>
 						<div class="controls">
 							<%= text_field_tag 'event_indicator_relationship_sort_order', relationship.sort_order,
 									:name => "event_indicator_relationship[#{i}][sort_order]", :maxlength => 5, :size => 3 %>
 						</div>
+					</div>
+					<div class="control-group optional" id="event_indicator_relationship_has_openlayers_rule_value">
+						<%= label_tag "event_indicator_relationship_has_openlayers_rule_value",
+									t('app.common.has_openlayers_rule_value'), :class => "control-label" %>
+             <div class="controls">
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_has_openlayers_rule_value", true,
+										relationship.has_openlayers_rule_value == true,
+										:name => "event_indicator_relationship[#{i}][has_openlayers_rule_value]" %>
+									<%= t('app.common.yes') %>
+								</label>
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_has_openlayers_rule_value", false,
+										relationship.has_openlayers_rule_value == false,
+										:name => "event_indicator_relationship[#{i}][has_openlayers_rule_value]" %>
+									<%= t('app.common.no') %>
+								</label>
+             </div>
+					</div>
+					<div class="control-group optional" id="event_indicator_relationship_visible">
+						<%= label_tag "event_indicator_relationship_visible",
+									t('app.common.visible'), :class => "control-label" %>
+             <div class="controls">
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_visible", true,
+										relationship.visible == true,
+										:name => "event_indicator_relationship[#{i}][visible]" %>
+									<%= t('app.common.yes') %>
+								</label>
+								<label class="radio inline">
+									<%= radio_button_tag "event_indicator_relationship_visible", false,
+										relationship.visible == false,
+										:name => "event_indicator_relationship[#{i}][visible]" %>
+									<%= t('app.common.no') %>
+								</label>
+             </div>
 					</div>
 					<p>
 						<%= button_tag t('app.buttons.remove'), :type => 'button', :id => "event_indicator_relationship_#{relationship.id}", :confirm => t('app.msgs.delete_confirm'), :class => 'btn remove btn-danger btn-mini' %>

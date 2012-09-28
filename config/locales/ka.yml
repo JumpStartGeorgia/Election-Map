@@ -159,6 +159,8 @@ ka:
       dataset_cache_files_failed: An error occurred while creating the default cache files for the dataset.
     common:
       app_name: საქართველოს საარჩევნო მონაცემები
+      yes: დიახ
+      no: არა
       important: Important
       indicator: Indicator
       core_indicator: Core Indicator
@@ -218,6 +220,9 @@ ka:
       official_data: ოფიციალური მონაცემები
       live_event_status: "Precincts Reporting: %{completed} of %{total} - %{percentage}"
       live_event_status_timestamp: " (Precincts Reporting: %{completed} of %{total} - %{percentage} - %{timestamp})"
+      openlayers_rule_value_hint: "( * - has OpenLayers rule value )"
+      visible: Is Visible
+      not_visible_hint: "( * - not visible)"
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"

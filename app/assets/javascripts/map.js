@@ -1,33 +1,3 @@
-//= require i18n
-//= require i18n/translations
-//= require jquery
-//= require jquery_ujs
-//= require jquery-ui
-//= require twitter/bootstrap
-//= require fancybox
-
-//= require vendor_map
-//= require jquery.tablesorter.min
-//= require data_table_loader
-//= require d3.v2.min
-//= require jquery.slimscroll
-
-//= require data
-//= require event_custom_views
-//= require event_indicator_relationships
-//= require event_menu
-//= require events
-//= require indicator_menu_scale
-//= require data_sets
-//= require menu_live_events
-//= require map_popup_svg
-//= require messages
-//= require news
-//= require shapes
-//= require countdown
-//= require map.export
-
-
 if (gon.openlayers){
 
 	// Define global variables which can be used in all functions

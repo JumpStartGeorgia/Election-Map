@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120927195413) do
+ActiveRecord::Schema.define(:version => 20120928113731) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -105,14 +105,16 @@ ActiveRecord::Schema.define(:version => 20120927195413) do
   add_index "event_custom_views", ["event_id", "shape_type_id"], :name => "index_event_custom_views_on_event_id_and_shape_type_id"
 
   create_table "event_indicator_relationships", :force => true do |t|
-    t.integer  "event_id",                  :null => false
+    t.integer  "event_id",                                     :null => false
     t.integer  "indicator_type_id"
     t.integer  "core_indicator_id"
     t.integer  "related_indicator_type_id"
     t.integer  "related_core_indicator_id"
-    t.integer  "sort_order",                :null => false
+    t.integer  "sort_order",                                   :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "has_openlayers_rule_value", :default => false
+    t.boolean  "visible",                   :default => true
   end
 
   add_index "event_indicator_relationships", ["event_id", "core_indicator_id"], :name => "indicator_rltnshps_event_core_ind"

@@ -31,9 +31,17 @@
 		<ul class="standard">
 	<% end %>
 	<% if relationship.related_indicator_type_id %>
-		<li><%= relationship.related_indicator_type.name %></li>
+		<li>
+			<%= relationship.related_indicator_type.name %>
+			<%= t('app.common.openlayers_rule_value_hint') if relationship.has_openlayers_rule_value? %>
+			<%= t('app.common.not_visible_hint') if !relationship.visible? %>
+		</li>
 	<% elsif relationship.related_core_indicator_id %>
-		<li><%= relationship.related_core_indicator.name %></li>
+		<li>
+			<%= relationship.related_core_indicator.name %>
+			<%= t('app.common.openlayers_rule_value_hint') if relationship.has_openlayers_rule_value? %>
+			<%= t('app.common.not_visible_hint') if !relationship.visible? %>
+		</li>
 	<% end %>
 	<% if i == count-1 %>
 		</ul>
@@ -61,9 +69,17 @@
 		<ul class="standard">
 	<% end %>
 	<% if relationship.related_indicator_type_id %>
-		<li><%= relationship.related_indicator_type.name %></li>
+		<li>
+			<%= relationship.related_indicator_type.name %>
+			<%= t('app.common.openlayers_rule_value_hint') if relationship.has_openlayers_rule_value? %>
+			<%= t('app.common.not_visible_hint') if !relationship.visible? %>
+		</li>
 	<% elsif relationship.related_core_indicator_id %>
-		<li><%= relationship.related_core_indicator.name %></li>
+		<li>
+			<%= relationship.related_core_indicator.name %>
+			<%= t('app.common.openlayers_rule_value_hint') if relationship.has_openlayers_rule_value? %>
+			<%= t('app.common.not_visible_hint') if !relationship.visible? %>
+		</li>
 	<% end %>
 	<% if i == count-1 %>
 		</ul>
