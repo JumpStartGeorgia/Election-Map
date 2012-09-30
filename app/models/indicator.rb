@@ -63,7 +63,7 @@ class Indicator < ActiveRecord::Base
 	end
 
   def self.csv_all_header
-    "Event, Shape Type, en: Indicator Type, en: Indicator Name, ka: Indicator Name, Visible, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
+    "Event, Shape Type, en: Indicator Type, en: Parent Indicator Name, en: Indicator Name, ka: Indicator Name, Visible, en: Scale Name, ka: Scale Name, Scale Color, en: Scale Name, ka: Scale Name, Scale Color".split(",")
   end
 
   def self.csv_scale_header
@@ -71,7 +71,7 @@ class Indicator < ActiveRecord::Base
   end
 
   def self.csv_name_header
-    "Event, Shape Type, Indicator Type, en: Indicator Name, ka: Indicator Name, Visible".split(",")
+    "Event, Shape Type, en: Indicator Type, en: Parent Indicator Name, en: Indicator Name, ka: Indicator Name, Visible".split(",")
   end
 
   def self.csv_change_name_header
@@ -89,7 +89,7 @@ class Indicator < ActiveRecord::Base
     idx_ka_ind_name = 5
     idx_visible = 6
     index_first_scale = 7
-    columns_per_scale = 8
+    columns_per_scale = 3
 
 		Indicator.transaction do
 		  CSV.parse(infile) do |row|
@@ -126,22 +126,26 @@ class Indicator < ActiveRecord::Base
   				else
 		logger.debug "++++found event, shape type, indicator type and core indicator - now looking for parent indicator"
 						# get the parent indicator
-						parent_core_indicator = CoreIndicator.find_by_name(row[idx_en_parent_ind_name].strip)
-						if !parent_core_indicator || parent_core_indicator.empty?
-			logger.debug "++++core parent indicator could not be found"
-						  msg = I18n.t('models.indicator.msgs.no_core_parent', :row_num => n)
-				      raise ActiveRecord::Rollback
-		    		  return msg
+						# if this is root and no name given, that is ok
+						if shape_type.is_root? && row[idx_en_parent_ind_name].empty?
+							parent_indicator = nil
+						else
+							parent_core_indicator = CoreIndicator.find_by_name(row[idx_en_parent_ind_name].strip)
+							if !parent_core_indicator
+				logger.debug "++++core parent indicator could not be found"
+								msg = I18n.t('models.indicator.msgs.no_core_parent', :row_num => n)
+						    raise ActiveRecord::Rollback
+				  		  return msg
+							end
+							parent_indicator = Indicator.where(:event_id => event.id,
+								:shape_type_id => shape_type.parent_id, :core_indicator_id => parent_core_indicator.id)
+							if !parent_indicator || parent_indicator.empty?
+				logger.debug "++++parent indicator could not be found"
+								msg = I18n.t('models.indicator.msgs.no_core_parent', :row_num => n)
+						    raise ActiveRecord::Rollback
+				  		  return msg
+							end
 						end
-						parent_indicator = Indicator.where(:event_id => event.id,
-							:shape_type => shape_type.id, :core_indicator_id => parent_core_indicator.first.id)
-						if !parent_indicator || parent_indicator.empty?
-			logger.debug "++++parent indicator could not be found"
-						  msg = I18n.t('models.indicator.msgs.no_core_parent', :row_num => n)
-				      raise ActiveRecord::Rollback
-		    		  return msg
-						end
-
 
 		logger.debug "++++found parent indicator, seeing if record already exists"
 						# see if indicator already exists for the provided event and shape_type
@@ -166,7 +170,7 @@ class Indicator < ActiveRecord::Base
 							ind.shape_type_id = shape_type.id
 							ind.core_indicator_id = core_indicator.id
 							ind.visible = row[idx_visible]
-							ind.parent_id = parent_indicator.first.id
+							ind.parent_id = parent_indicator.nil? ? nil : parent_indicator.first.id
 
 						  # scales
 						  finishedScales = false # keep looping until find empty cell
@@ -288,6 +292,18 @@ logger.debug "no indicator type translation found"
           else
             row << ind.indicator_type.indicator_type_translations[0].name
           end
+
+					# parent name
+					if ind.parent && ind.parent.core_indicator
+						parent = ind.parent.core_indicator.core_indicator_translations.where(:locale => 'en')
+						if parent && !parent.empty?
+							row << parent.first.name
+						else
+							row << ""
+						end
+					else
+						row << ""
+					end
 
           # get en
           ind.core_indicator.core_indicator_translations.each do |trans|
