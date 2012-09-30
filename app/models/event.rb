@@ -86,7 +86,7 @@ class Event < ActiveRecord::Base
   end
 
 	def self.get_events_with_summary_indicators
-		select("distinct events.id, events.shape_id, core_indicators.indicator_type_id")
+		select("distinct events.id, events.shape_id, core_indicators.indicator_type_id, events.has_official_data, events.has_live_data")
 		.joins(:indicators => {:core_indicator => :indicator_type})
 		.where(:indicator_types => {:has_summary => true})
 		.order("events.id")

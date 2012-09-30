@@ -228,11 +228,35 @@ module JsonCache
 				# - have to call root for the default event shape may not be the root shape
 				shapes = event.shape.root.subtree
 #				shapes = event.shape.root.subtree.where("shape_type_id in (1,2,3)")
-				# get the summary data for each shape
-				shapes.each do |shape|
-					I18n.available_locales.each do |locale|
-						I18n.locale = locale
-						Datum.get_indicator_type_data(shape.id, shape.shape_type_id, event.id, event.indicator_type_id)
+				# if have offical data, get the most current dataset
+				if event.has_official_data?
+Rails.logger.debug "------------------ has official data"
+					dataset = DataSet.current_dataset(event.id, Datum::DATA_TYPE[:official])
+
+					if dataset && !dataset.empty?
+						# get the summary data for each shape
+						shapes.each do |shape|
+							I18n.available_locales.each do |locale|
+								I18n.locale = locale
+								Datum.get_indicator_type_data(shape.id, shape.shape_type_id, event.id, event.indicator_type_id, dataset.first.id)
+							end
+						end
+					end
+				end
+
+				# if have live data, get the most current dataset
+				if event.has_live_data?
+Rails.logger.debug "------------------ has live data"
+					dataset = DataSet.current_dataset(event.id, Datum::DATA_TYPE[:live])
+
+					if dataset && !dataset.empty?
+						# get the summary data for each shape
+						shapes.each do |shape|
+							I18n.available_locales.each do |locale|
+								I18n.locale = locale
+								Datum.get_indicator_type_data(shape.id, shape.shape_type_id, event.id, event.indicator_type_id, dataset.first.id)
+							end
+						end
 					end
 				end
 
