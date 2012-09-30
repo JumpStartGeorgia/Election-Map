@@ -127,27 +127,28 @@ class Shape < ActiveRecord::Base
   			if !data.nil? && !data.empty?
     			results = Array.new(data.length) {Hash.new}
     			data.each_with_index do |d,i|
-    			  if d.has_key?("summary_data") && !d["summary_data"].nil? && !d["summary_data"].empty?
-  			      results[i]["summary_data"] = d["summary_data"]
+    			  if d.has_key?("summary_data") && !d["summary_data"].nil? && !d["summary_data"].empty? && !d["summary_data"]["data"].empty?
+  			      results[i]["summary_data"] = d["summary_data"]["data"] if d["summary_data"]["visible"]
   			      # if getting summary data, use the first record for the shape value
 							# unless the first value is 'no data'
   			      # if ind_id = indicator_type_id
-  			      if isSummary && d["summary_data"][0][:indicator_type_id].to_s == ind_id.to_s &&
-									d["summary_data"][0][:formatted_value] != I18n.t('app.msgs.no_data')
+  			      if isSummary && d["summary_data"]["has_openlayers_rule_value"] &&
+									d["summary_data"]["data"][0][:indicator_type_id].to_s == ind_id.to_s &&
+									d["summary_data"]["data"][0][:formatted_value] != I18n.t('app.msgs.no_data')
 
-      				  properties["data_value"] = d["summary_data"][0][:formatted_value] if !d["summary_data"][0][:formatted_value].nil?
-      					properties["value"] = d["summary_data"][0][:indicator_name_abbrv]
-      					properties["formatted_value"] = d["summary_data"][0][:indicator_name]
-      				  properties["number_format"] = d["summary_data"][0][:number_format]
-      				  properties["color"] = d["summary_data"][0][:color]
+      				  properties["data_value"] = d["summary_data"]["data"][0][:formatted_value] if !d["summary_data"]["data"][0][:formatted_value].nil?
+      					properties["value"] = d["summary_data"]["data"][0][:indicator_name_abbrv]
+      					properties["formatted_value"] = d["summary_data"]["data"][0][:indicator_name]
+      				  properties["number_format"] = d["summary_data"]["data"][0][:number_format]
+      				  properties["color"] = d["summary_data"]["data"][0][:color]
 								# set the title hash
-								title["title"] = d["summary_data"][0][:indicator_type_name]
+								title["title"] = d["summary_data"]["data"][0][:indicator_type_name]
   		        end
     		    elsif d.has_key?("data_item") && !d["data_item"].nil? && !d["data_item"].empty?
-  		        results[i]["data_item"] = d["data_item"]
+  		        results[i]["data_item"] = d["data_item"] if d["data_item"][:visible]
   			      # if not getting summary data, use this record
   			      # if ind_id = indicator_id
-  			      if !isSummary && d["data_item"][:indicator_id].to_s == ind_id.to_s
+  			      if !isSummary && d["data_item"][:has_openlayers_rule_value] && d["data_item"][:indicator_id].to_s == ind_id.to_s
       				  properties["data_value"] = nil
       					properties["value"] = d["data_item"][:value] if !d["data_item"][:value].nil?
       					properties["formatted_value"] = d["data_item"][:formatted_value] if !d["data_item"][:formatted_value].nil?

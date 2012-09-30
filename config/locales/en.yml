@@ -49,6 +49,7 @@ en:
         no_event_trans: No translation records for the Event name were found.
         no_shape_type_trans: No translations records for the Shape Types were found.
         no_shape_type_trans: No translations records for the Indicator Groups were found.
+        no_core_parent: Row %{row_num} parent indicator could not be found.
     indicator_scale:
       msgs:
         no_event_shape_spreadsheet: Row %{row_num} - The event or shape type or indicator type was not found in the spreadsheet.

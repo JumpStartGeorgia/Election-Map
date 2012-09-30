@@ -1,11 +1,12 @@
 # encoding: utf-8
 class CreateNewVpmIndicator < ActiveRecord::Migration
+
   def up
-    total_turnout = 15
-    vpm_id_mapping = [[7,2], [8,3], [9,4], [10,5], [11,6]]
-    vpm_id_parents = vpm_id_mapping.map{|x| x[0]}
-    vpm_id_children = vpm_id_mapping.map{|x| x[1]}
-    shape_types = ShapeType.all
+		total_turnout = 15
+		vpm_id_mapping = [[7,2], [8,3], [9,4], [10,5], [11,6]]
+		vpm_id_parents = vpm_id_mapping.map{|x| x[0]}
+		vpm_id_children = vpm_id_mapping.map{|x| x[1]}
+	  shape_types = ShapeType.all
 
     # create core indicator
     puts "creating core ind"
@@ -72,6 +73,9 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
                 end
               end
 
+							# add the new indicator to the list of indicators
+							indicators << new_indicator
+
               # create scales for new indicator by copying from previous vpm indicator
               puts " --- creating ind scales"
               scales.first.indicator_scales.each do |ind_scale|
@@ -104,7 +108,20 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
                 end
               end
             end
-          end
+					elsif shape_type.is_precinct?
+            puts " --- found precinct, updating precinct vpm indicator to be child of new vpm"
+						# update old vpm indicators to be child of new vpm ind
+						parent_indicator = Indicator.where(:event_id => event.id,
+							:core_indicator_id => core.id, :shape_type_id => shape_type.parent_id)
+						if parent_indicator && !parent_indicator.empty?
+							Indicator.where(:event_id => event.id, :core_indicator_id => vpm_id_children,
+									:shape_type_id => shape_type.id).each do |indicator_child|
+
+								indicator_child.parent_id = parent_indicator.first.id
+								indicator_child.save
+							end
+						end
+					end
         end
 
 				# update old vpm indicators at non-precinct levels to be not visible
@@ -119,12 +136,18 @@ class CreateNewVpmIndicator < ActiveRecord::Migration
 
   def down
     trans = CoreIndicatorTranslation.where(:name => 'Number of Precincts with votes per minute > 3')
-    CoreIndicator.find(trans.first.core_indicator_id).destroy
+		if trans && !trans.empty?
+	    CoreIndicator.find(trans.first.core_indicator_id).destroy
+		end
 
 		# update old vpm indicators at non-precinct levels to be visible
-		Indicator.where(["event_id = ? and core_indicator_id in (?)", event.id, vpm_id_parents]).each do |indicator|
-			indicator.visible = true
-			indicator.save
+		vpm_id_mapping = [[7,2], [8,3], [9,4], [10,5], [11,6]]
+		vpm_id_parents = vpm_id_mapping.map{|x| x[0]}
+    Event.all.each do |event|
+			Indicator.where(["event_id = ? and core_indicator_id in (?)", event.id, vpm_id_parents]).each do |indicator|
+				indicator.visible = true
+				indicator.save
+			end
 		end
   end
 end

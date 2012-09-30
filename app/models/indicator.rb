@@ -84,11 +84,12 @@ class Indicator < ActiveRecord::Base
     idx_event = 0
     idx_shape_type = 1
     idx_indicator_type = 2
-    idx_en_ind_name = 3
-    idx_ka_ind_name = 4
-    idx_visible = 5
-    index_first_scale = 6
-    columns_per_scale = 7
+    idx_en_parent_ind_name = 3
+    idx_en_ind_name = 4
+    idx_ka_ind_name = 5
+    idx_visible = 6
+    index_first_scale = 7
+    columns_per_scale = 8
 
 		Indicator.transaction do
 		  CSV.parse(infile) do |row|
@@ -123,7 +124,26 @@ class Indicator < ActiveRecord::Base
   		      raise ActiveRecord::Rollback
       		  return msg
   				else
-		logger.debug "++++found event, shape type, indicator type and core indicator, seeing if record already exists"
+		logger.debug "++++found event, shape type, indicator type and core indicator - now looking for parent indicator"
+						# get the parent indicator
+						parent_core_indicator = CoreIndicator.find_by_name(row[idx_en_parent_ind_name].strip)
+						if !parent_core_indicator || parent_core_indicator.empty?
+			logger.debug "++++core parent indicator could not be found"
+						  msg = I18n.t('models.indicator.msgs.no_core_parent', :row_num => n)
+				      raise ActiveRecord::Rollback
+		    		  return msg
+						end
+						parent_indicator = Indicator.where(:event_id => event.id,
+							:shape_type => shape_type.id, :core_indicator_id => parent_core_indicator.first.id)
+						if !parent_indicator || parent_indicator.empty?
+			logger.debug "++++parent indicator could not be found"
+						  msg = I18n.t('models.indicator.msgs.no_core_parent', :row_num => n)
+				      raise ActiveRecord::Rollback
+		    		  return msg
+						end
+
+
+		logger.debug "++++found parent indicator, seeing if record already exists"
 						# see if indicator already exists for the provided event and shape_type
 						alreadyExists = Indicator.select("indicators.id").includes(:core_indicator)
 						  .where('indicators.event_id = ? and indicators.shape_type_id = ? and indicators.core_indicator_id = ? and core_indicators.indicator_type_id = ? ',
@@ -146,6 +166,7 @@ class Indicator < ActiveRecord::Base
 							ind.shape_type_id = shape_type.id
 							ind.core_indicator_id = core_indicator.id
 							ind.visible = row[idx_visible]
+							ind.parent_id = parent_indicator.first.id
 
 						  # scales
 						  finishedScales = false # keep looping until find empty cell

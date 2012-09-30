@@ -11,7 +11,8 @@ class Datum < ActiveRecord::Base
 
   attr_accessor :number_format, :shape_id, :shape_type_name, :color,
 		:indicator_name, :indicator_name_abbrv, :indicator_description,
-		:indicator_type_id, :indicator_type_name, :core_indicator_id, :num_precincts
+		:indicator_type_id, :indicator_type_name, :core_indicator_id, :num_precincts,
+		:visible
 
   DATA_TYPE = {:official => "official", :live => "live"}
 	PRECINCTS_REPORTED = {:number => 'Precincts Reported (#)', :percent => 'Precincts Reported (%)'}
@@ -74,7 +75,9 @@ class Datum < ActiveRecord::Base
 			:core_indicator_id => self[:core_indicator_id],
 			:indicator_id => self[:indicator_id],
 			:indicator_name => self[:indicator_name],
-			:indicator_name_abbrv => self[:indicator_name_abbrv]
+			:indicator_name_abbrv => self[:indicator_name_abbrv],
+			:has_openlayers_rule_value => false,
+			:visible => true
 		}
 	end
 
@@ -259,7 +262,7 @@ class Datum < ActiveRecord::Base
 	      if !rel.related_indicator_type_id.nil?
 	        # get the summary for this indciator type
 					data = get_indicator_type_data(shape_id, shape_type_id, event_id, rel.related_indicator_type_id, data_set_id)
-					if data && !data["summary_data"].empty?
+					if data && !data["summary_data"].empty? && !data["summary_data"]["data"].empty?
 	        	results << data
 					end
         elsif !rel.related_core_indicator_id.nil?
@@ -269,29 +272,31 @@ class Datum < ActiveRecord::Base
           if core
             # get summary data
   					data = get_indicator_type_data(shape_id, shape_type_id, event_id, core.indicator_type_id, data_set_id)
-  					if data && !data["summary_data"].empty?
+  					if data && !data["summary_data"].empty? && !data["summary_data"]["data"].empty?
               # add the data item for the provided indicator
-              index = data["summary_data"].index{|x| x[:core_indicator_id] == rel.related_core_indicator_id}
+              index = data["summary_data"]["data"].index{|x| x[:core_indicator_id] == rel.related_core_indicator_id}
               if index
     						data_hash = Hash.new
-    						data_hash["data_item"] = data["summary_data"][index]
+    						data_hash["data_item"] = data["summary_data"]["data"][index]
+								data_hash["data_item"][:visible] = rel.visible
+								data_hash["data_item"][:has_openlayers_rule_value] = rel.has_openlayers_rule_value
     	        	results << data_hash
 
                 # add the placement of this indicator
 								# if value != no data
 								# if there are duplicate values (e.g., a tie) fix the rank accordingly
-								if data["summary_data"][index][:value] != I18n.t('app.msgs.no_data')
+								if data["summary_data"]["data"][index][:value] != I18n.t('app.msgs.no_data')
 								  #&& data["summary_data"][index][:value] != "0"
 
                   # returns {:rank, :total, :has_duplicates}
-                  h = compute_placement(data["summary_data"], data["summary_data"][index][:value])
+                  h = compute_placement(data["summary_data"]["data"], data["summary_data"]["data"][index][:value])
                   has_duplicates = h[:has_duplicates]
                   if !h.nil? && !h.empty?
   		              rank = Datum.new
   		              rank.value = h[:rank].to_s
   		              rank["number_format"] = " / #{h[:total]}"
   		              rank["number_format"] += " *" if h[:has_duplicates]
-  		              rank["indicator_type_name"] = data["summary_data"][index][:indicator_type_name]
+  		              rank["indicator_type_name"] = data["summary_data"]["data"][index][:indicator_type_name]
   		              rank["indicator_name"] = I18n.t('app.common.overall_placement')
   		              rank["indicator_name_abbrv"] = I18n.t('app.common.overall_placement')
   		  						data_hash = Hash.new
@@ -302,8 +307,8 @@ class Datum < ActiveRecord::Base
 
 	              # add total # of indicators in the summary
 	              rank = Datum.new
-	              rank.value = data["summary_data"].length
-	              rank["indicator_type_name"] = data["summary_data"][index]["indicator_type_name"]
+	              rank.value = data["summary_data"]["data"].length
+	              rank["indicator_type_name"] = data["summary_data"]["data"][index]["indicator_type_name"]
 	              rank["indicator_name"] = I18n.t('app.common.total_participants')
 	              rank["indicator_name_abbrv"] = I18n.t('app.common.total_participants')
 	  						data_hash = Hash.new
@@ -313,13 +318,13 @@ class Datum < ActiveRecord::Base
 
               # add the winner if this record is not it and if value != no data or 0
 							if index > 0 &&
-									data["summary_data"][0][:value] != "0" &&
-									data["summary_data"][0][:value] != I18n.t('app.msgs.no_data')
+									data["summary_data"]["data"][0][:value] != "0" &&
+									data["summary_data"]["data"][0][:value] != I18n.t('app.msgs.no_data')
 
-                data["summary_data"][0][:indicator_name].insert(0, "#{I18n.t('app.common.winner')}: ")
-                data["summary_data"][0][:indicator_name_abbrv].insert(0, "#{I18n.t('app.common.winner')}: ")
+                data["summary_data"]["data"][0][:indicator_name].insert(0, "#{I18n.t('app.common.winner')}: ")
+                data["summary_data"]["data"][0][:indicator_name_abbrv].insert(0, "#{I18n.t('app.common.winner')}: ")
     						data_hash = Hash.new
-    						data_hash["data_item"] = data["summary_data"][0]
+    						data_hash["data_item"] = data["summary_data"]["data"][0]
     	        	results << data_hash
               end
   					end
@@ -330,6 +335,8 @@ class Datum < ActiveRecord::Base
   					if data && !data.empty?
   						data_hash = Hash.new
   						data_hash["data_item"] = data.first.to_hash
+							data_hash["data_item"][:visible] = rel.visible
+							data_hash["data_item"][:has_openlayers_rule_value] = rel.has_openlayers_rule_value
   	        	results << data_hash
   					end
           end
@@ -353,19 +360,31 @@ class Datum < ActiveRecord::Base
 	def self.get_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
 		start = Time.now
 		results = Hash.new
-		results["summary_data"] = []
+		results["summary_data"] = Hash.new
+		results["summary_data"]["data"] = []
+		results["summary_data"]["visible"] = true
+		results["summary_data"]["has_openlayers_rule_value"] = false
+
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !data_set_id.nil?
 			json = []
   		key = "summary_data/data_set_#{data_set_id}/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
   		json = JsonCache.fetch(event_id, key) {
+				relationship = EventIndicatorRelationship.where(:event_id => event_id,
+					:indicator_type_id => indicator_type_id,
+					:related_indicator_type_id => indicator_type_id)
   			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id)
-				x = []
+				data_array = []
   			if data && !data.empty?
-  				x = data.collect{|x| x.to_hash}
+					if relationship && !relationship.empty?
+						results["summary_data"]["visible"] = relationship.first.visible
+						results["summary_data"]["has_openlayers_rule_value"] = relationship.first.has_openlayers_rule_value
+					end
+
+  				data_array = data.collect{|x|	x.to_hash}
   			end
-				x.to_json
+				data_array.to_json
   		}
-			results["summary_data"] = JSON.parse(json,:symbolize_names => true)
+			results["summary_data"]["data"] = JSON.parse(json,:symbolize_names => true)
     end
 #		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
