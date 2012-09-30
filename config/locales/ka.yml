@@ -219,8 +219,8 @@ ka:
       is_precinct: Is Precinct
       live_data: მიმდინარე მონაცემები
       official_data: ოფიციალური მონაცემები
-      live_event_status: "Precincts Reporting: %{completed} of %{total} - %{percentage}"
-      live_event_status_timestamp: " (Precincts Reporting: %{completed} of %{total} - %{percentage} - %{timestamp})"
+      live_event_status: "უბნის მონაცემება მიღებულია: %{completed} / %{total} - %{percentage}"
+      live_event_status_timestamp: " (უბნის მონაცემება მიღებულია: %{completed} / %{total} - %{percentage} - %{timestamp})"
       openlayers_rule_value_hint: "( * - has OpenLayers rule value )"
       visible: Is Visible
       not_visible_hint: "( * - not visible)"
@@ -339,15 +339,13 @@ ka:
     index:
       export_link_text: ჩამოტვირთეთ მონაცემები
       footnote: "შენიშვნა: %{note}"
-      footnote_live_data: "Note: This is preliminary data from the CEC, most recently updated on %{date}"
+      footnote_live_data: "შენიშვნა: ეს წინასწარი მონაცემებია ცესკო-დან, ბოლოს განახლდა %{date}"
       live_event_available: "%{tbilisi_time} (%{est_time} EST) გვესტუმრეთ და იხილეთ, ცესკოს  მიმდინარე მონაცებები საარჩევნო ხმების დათვლის პროცესში."
       live_event_countdown_header: ინფორმაციის განახლებამდე დარჩენილია
-      new_data_available_message: The election data has recently been updated.
-      new_data_available_link: View the new data.
+      new_data_available_message: საარჩევნო ინფორმაცია ახლახანს განახლდა.
+      new_data_available_link: ახალი ინფორმაციის ნახვა.
     indicator_menu_scales:
       indicator_header: ინდიკატორები
-      new_data_available_message: The election data has recently been updated.
-      new_data_available_link: View the new data.
   data:
     export:
       title: Export Data CSV Template File
