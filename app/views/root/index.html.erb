@@ -5,15 +5,22 @@
     <h2>
       <%= @live_event_name %>
     </h2>
-    <p>
+		<p>
+			<%= t('.delay') %>
+		</p>
+		<p>
+			<%= t('.follow') %>
+		</p>
+		<% if false %>
+	  <p>
 			<% if @live_event_data_available %>
-      <%= t('.live_event_available',
-					:tbilisi_time => l(@live_event_data_available, :format => :default_no_tz),
-					:est_time => l(@live_event_data_available_est, :format => :default_no_tz),
-					)
-			%>
+		    <%= t('.live_event_available',
+						:tbilisi_time => l(@live_event_data_available, :format => :default_no_tz),
+						:est_time => l(@live_event_data_available_est, :format => :default_no_tz),
+						)
+				%>
 			<% end %>
-    </p>
+	  </p>
 
 		<h3><%= t('.live_event_countdown_header') %>
 		<div id="counter_container">
@@ -25,6 +32,7 @@
 		    <div><%= t('datetime.prompts.seconds')%></div>
 		  </div>
     </div>
+		<% end %>
   </div>
 <% else %>
   <div id="shape_nav_social_links" class="row-fluid">
