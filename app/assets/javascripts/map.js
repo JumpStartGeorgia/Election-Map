@@ -107,9 +107,9 @@ if (gon.openlayers){
 
 		vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
 
-		vector_live_data = new OpenLayers.Layer.Vector("Live Data Layer", {styleMap: build_live_data_shape_completed_styles()});
-
-		map.addLayers([map_layer, vector_parent, vector_live_data, vector_child]);
+		map.addLayers([map_layer, vector_parent, vector_child]);
+//		vector_live_data = new OpenLayers.Layer.Vector("Live Data Layer", {styleMap: build_live_data_shape_completed_styles()});
+//		map.addLayers([map_layer, vector_parent, vector_live_data, vector_child]);
 
 /*
 		// set the z-index of the layers
@@ -213,11 +213,11 @@ if (gon.openlayers){
 		if (resp.success()){
 		  vector_child.addFeatures(resp.features);
 
-			// if this is live data, highlight the shapes that are not complete
+/*			// if this is live data, highlight the shapes that are not complete
 			if (gon.data_type == gon.data_type_live) {
 				build_live_data_points(resp.features);
 			}
-
+*/
 		  // if this is summary view, populate gon.indicator_scales and colors with names from json file
 		  populate_summary_data();
 			// now that the child vector is loaded, lets show the legend
