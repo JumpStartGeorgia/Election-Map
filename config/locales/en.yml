@@ -29,6 +29,7 @@ en:
       msgs:
         no_event_db: The event was not found in the database.
         indicator_not_found: Indicator %{name} could not be found.
+        indicator_not_found_with_data: Row %{row_num} - Indicator %{name} could not be found and data was provided for it.
         no_shape_spreadsheet: Row %{row_num} - The shape type was not found in the spreadsheet.
         no_shape_db: Row %{row_num} - The shape type was not found in the database.
         missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.

@@ -574,34 +574,41 @@ logger.debug "++++**missing data in row"
             # get the indicator
             indicator = indicators[ind_index-index_first_ind].select{|x| x.shape_type_id == shape_type.id}
 
-						if indicator.nil? && !indicator.empty?
-		logger.debug "++++indicator was not found"
-							msg = I18n.t('models.datum.msgs.indicator_not_found', :row_num => n)
-							raise ActiveRecord::Rollback
-							return msg
-						end
+						has_no_data_value = row[ind_index].empty? || row[ind_index].downcase.strip == "null" ||
+							row[ind_index].downcase.strip == I18n.t('app.msgs.no_data') ||
+							row[ind_index].strip == "\\N"
 
-            # save the data record
-						datum = Datum.new
-						datum.data_set_id = dataset.id
-						datum.indicator_id = indicator.first.id
-            if row[ind_index].empty? || row[ind_index].downcase.strip == "null" || row[ind_index].downcase.strip == I18n.t('app.msgs.no_data')
-						  datum.value = nil
+						if (indicator.nil? || indicator.empty?)
+							if !has_no_data_value
+			logger.debug "++++indicator was not found"
+								msg = I18n.t('models.datum.msgs.indicator_not_found_with_data',
+									:row_num => n, :name => indicators[ind_index-index_first_ind].first.name)
+								raise ActiveRecord::Rollback
+								return msg
+							end
 						else
-						  datum.value = row[ind_index].strip
-						end
-            datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
-            datum.en_common_name = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
-            datum.ka_common_id = datum.en_common_id
-            datum.ka_common_name = datum.en_common_name
+		          # save the data record
+							datum = Datum.new
+							datum.data_set_id = dataset.id
+							datum.indicator_id = indicator.first.id
+		          if has_no_data_value
+								datum.value = nil
+							else
+								datum.value = row[ind_index].strip
+							end
+		          datum.en_common_id = row[idx_common_id].nil? ? row[idx_common_id] : row[idx_common_id].strip
+		          datum.en_common_name = row[idx_common_name].nil? ? row[idx_common_name] : row[idx_common_name].strip
+		          datum.ka_common_id = datum.en_common_id
+		          datum.ka_common_name = datum.en_common_name
 
-						if datum.valid?
-							datum.save
-						else
-							# an error occurred, stop
-					    msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)
-					    raise ActiveRecord::Rollback
-					    return msg
+							if datum.valid?
+								datum.save
+							else
+								# an error occurred, stop
+							  msg = I18n.t('models.datum.msgs.not_valid', :row_num => n)
+							  raise ActiveRecord::Rollback
+							  return msg
+							end
 						end
           end
         end

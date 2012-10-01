@@ -127,7 +127,7 @@ class Indicator < ActiveRecord::Base
 		logger.debug "++++found event, shape type, indicator type and core indicator - now looking for parent indicator"
 						# get the parent indicator
 						# if this is root and no name given, that is ok
-						if shape_type.is_root? && row[idx_en_parent_ind_name].empty?
+						if shape_type.is_root? && (row[idx_en_parent_ind_name].nil? || row[idx_en_parent_ind_name].empty?)
 							parent_indicator = nil
 						else
 							parent_core_indicator = CoreIndicator.find_by_name(row[idx_en_parent_ind_name].strip)
