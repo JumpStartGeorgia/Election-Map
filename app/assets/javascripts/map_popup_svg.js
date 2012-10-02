@@ -47,12 +47,13 @@ function MapPopup() {
           json[i].title.title_abbrv.length > 0 ? json[i].title.title_abbrv : json[i].title.title;
 				var title_title_width = get_text_width(title, "15px");
 				var title_loc_width = get_text_width(json[i].title.location, "15px");
-				var title_precincts_width = get_text_width(json[i].precincts_completed, "15px");
-// console.log("title title width = " + title_title_width);
-// console.log("title location width = " + title_loc_width);
+				var title_precincts_width = get_text_width(json[i].title.precincts_completed, "15px");
+ console.log("title title width = " + title_title_width);
+ console.log("title location width = " + title_loc_width);
+ console.log("title precinct width = " + title_precincts_width);
 				var max_width = Math.max(title_title_width, title_loc_width, title_precincts_width)
-				var title_width = self.item_spacing*7+(max_width);
-// console.log("title width = " + title_width);
+				var title_width = self.item_spacing*6+(max_width);
+ console.log("title width = " + title_width);
         if (title_width > max_width)
           max_width = title_width;
       }
@@ -70,13 +71,13 @@ function MapPopup() {
           if( value_width > max_value_width)
             max_value_width = value_width;
         }
-// console.log("summary max text width = " + max_text_width +	"; max value width = " + max_value_width + "; first data value = " + json[i].summary_data[0].value);
+ console.log("summary max text width = " + max_text_width +	"; max value width = " + max_value_width + "; first data value = " + json[i].summary_data[0].value);
 				if (isNaN(json[i].summary_data[0].value))
 					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing*3;
 				else
 					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing+self.max/100*json[i].summary_data[0].value+self.item_spacing*2;
 
-        // console.log("summary width = " + summary_width);
+         console.log("summary width = " + summary_width);
         if (summary_width > max_width)
           max_width = summary_width;
         if (max_text_width > self.max_ind_width)
@@ -90,7 +91,7 @@ function MapPopup() {
         var max_value_width = get_text_width(json[i].data_item.number_format === null ?
 					json[i].data_item.formatted_value : json[i].data_item.formatted_value + " " + json[i].data_item.number_format);
         var item_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing*3;
-        // console.log("item width = " + item_width);
+         console.log("item width = " + item_width);
         if (item_width > max_width)
           max_width = item_width;
         if (max_text_width > self.max_ind_width)
@@ -102,11 +103,12 @@ function MapPopup() {
       {
         var max_text_width = get_text_width(json[i].footnote.indicator_name, "10px");
         var footnote_width = self.item_spacing*3+max_text_width+self.item_spacing*3;
-        // console.log("footnote width = " + footnote_width);
+         console.log("footnote width = " + footnote_width);
         if (footnote_width > max_width)
           max_width = footnote_width;
       }
     };
+ console.log("---------max width being set to = " + max_width);
     window.maxSVGWidth = max_width;
     // console.log("self.max_ind_width = " + self.max_ind_width + "; self.max_value_width = " + self.max_value_width);
   }
