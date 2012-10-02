@@ -171,7 +171,12 @@
 
   		<div id="map-loading"></div>
 
-  		<div id="map-title"><%= @map_title.html_safe %></div>
+  		<div id="map-title">
+				<%= @map_title.html_safe %>
+				<% if @map_title_precincts %>
+					<span id="live_data"><%= @map_title_precincts %></span>
+				<% end %>
+			</div>
 
   			<div id="footnote">
 		  		<% if params[:data_type] == Datum::DATA_TYPE[:live] %>
