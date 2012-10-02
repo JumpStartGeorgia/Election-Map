@@ -446,10 +446,10 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
 		end
 
 		# if get here, then an error occurred
-		if request.env["HTTP_REFERER"]
-			redirect_to :back, :notice => t("app.msgs.no_data_download") if !send_data
-		else
-			redirect_to root_path, :notice => t("app.msgs.no_data_download") if !send_data
+		if request.env["HTTP_REFERER"] && !send_data
+			redirect_to :back, :notice => t("app.msgs.no_data_download")
+		elsif !send_data
+			redirect_to root_path, :notice => t("app.msgs.no_data_download")
 		end
 
   end
