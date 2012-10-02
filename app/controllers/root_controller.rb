@@ -154,12 +154,14 @@ logger.debug "////////////// getting current event for event type #{params[:even
   							end
   						end
   						@map_title = nil
+							@gon_map_tile = nil
   						# set the map title
   						if parent_shape_type.id == child_shape_type.id
   							@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name
   						else
   							@map_title = @parent_shape_type_name_singular + ": " + @shape.common_name + " - " + @child_shape_type_name_plural
   						end
+							@gon_map_tile = String.new(@map_title)
 							# if this is live data, add the precincts reported numbers
 							if params[:data_type] == Datum::DATA_TYPE[:live]
 								precincts_reporting = Datum.get_precincts_reported(params[:shape_id], params[:event_id], params[:data_set_id])
@@ -615,7 +617,7 @@ logger.debug " - no matching event found!"
 		if !params[:event_id].nil?
 		  gon.event_id = params[:event_id]
 		  gon.event_name = @event_name
-		  gon.map_title = ActionController::Base.helpers.strip_tags(@map_title)
+		  gon.map_title = @gon_map_tile
 
 			# data type
 			gon.data_type = params[:data_type]
