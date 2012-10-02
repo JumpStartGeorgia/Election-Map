@@ -220,8 +220,8 @@ ka:
       is_precinct: Is Precinct
       live_data: მიმდინარე მონაცემები
       official_data: ოფიციალური მონაცემები
-      live_event_status: "უბნის მონაცემება მიღებულია: %{completed} / %{total} - %{percentage}"
-      live_event_status_timestamp: " (უბნის მონაცემება მიღებულია: %{completed} / %{total} - %{percentage} - %{timestamp})"
+      live_event_status: "უბნის მონაცემები მიღებულია: %{completed} / %{total} - %{percentage}"
+      live_event_status_timestamp: " (უბნის მონაცემები მიღებულია: %{completed} / %{total} - %{percentage} - %{timestamp})"
       openlayers_rule_value_hint: "( * - has OpenLayers rule value )"
       visible: Is Visible
       not_visible_hint: "( * - not visible)"
