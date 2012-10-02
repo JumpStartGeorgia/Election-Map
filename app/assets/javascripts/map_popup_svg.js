@@ -47,7 +47,7 @@ function MapPopup() {
           json[i].title.title_abbrv.length > 0 ? json[i].title.title_abbrv : json[i].title.title;
 				var title_title_width = get_text_width(title, "15px");
 				var title_loc_width = get_text_width(json[i].title.location, "15px");
-				var title_precincts_width = get_text_width(json[i].precincts_completed, "13px");
+				var title_precincts_width = get_text_width(json[i].precincts_completed, "15px");
 // console.log("title title width = " + title_title_width);
 // console.log("title location width = " + title_loc_width);
 				var max_width = Math.max(title_title_width, title_loc_width, title_precincts_width)
