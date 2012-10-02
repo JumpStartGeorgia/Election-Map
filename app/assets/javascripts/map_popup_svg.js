@@ -51,7 +51,7 @@ function MapPopup() {
 // console.log("title title width = " + title_title_width);
 // console.log("title location width = " + title_loc_width);
 				var max_width = Math.max(title_title_width, title_loc_width, title_precincts_width)
-				var title_width = self.item_spacing*6+(max_width);
+				var title_width = self.item_spacing*7+(max_width);
 // console.log("title width = " + title_width);
         if (title_width > max_width)
           max_width = title_width;
