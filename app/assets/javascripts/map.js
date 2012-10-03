@@ -27,6 +27,32 @@
 //= require map.export
 
 //= require ajax_map
+/*
+(function(window,undefined){
+
+    // Prepare
+    var History = window.History; // Note: We are using a capital H instead of a lower h
+
+    if ( !History.enabled ) {
+         // History.js is disabled for this browser.
+         // This is because we can optionally choose to support HTML4 browsers or not.
+        return false;
+    }
+
+    var State = History.getState();
+
+    // Log Initial State
+		History.log('initial:', State.data, State.title, State.url);
+
+    // Bind to StateChange Event
+    History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
+        var State = History.getState(); // Note: We are using History.getState() instead of event.state
+        console.log("state type = " + State.data.type);
+        History.log(State.data, State.title, State.url);
+    });
+
+})(window);
+*/
 
 // set focus to first text box on page
 $(document).ready(function(){
@@ -271,7 +297,7 @@ if (gon.openlayers){
 		    'externalProjection': WGS84_google_mercator
 			})
 		});
-		
+
 
 		vector_child.protocol = prot2;
 		vector_child.strategies = strat;
@@ -299,53 +325,40 @@ if (gon.openlayers){
 
 	}
 
+	function set_map_extent() {
+		if (vecotr_parent_bounds !== undefined){
+		  map.zoomToExtent(vecotr_parent_bounds);
+		  winW = window_width();
+			if (winW > map_width_indicators_fall){
+				// the indicator window is on top of the map if width > 600
+				// so adjust the map to account for the indicator window
+				//180 for 1345 screen width
+				map.moveByPx(winW / 7.472, 0);
+			}
+		}
+	}
+
 	// load the features and set the bound
 	// after protocol has read in json
+  var vecotr_parent_bounds;
 	function load_vector_parent(resp){
 		if (resp.success()){
 			var features = resp.features;
-		  var bounds;
 			if(features) {
 		    if(features.constructor != Array) {
 		        features = [features];
 		    }
 		    for(var i=0; i<features.length; ++i) {
-		      if (!bounds) {
-		          bounds = features[i].geometry.getBounds();
+		      if (!vecotr_parent_bounds) {
+		          vecotr_parent_bounds = features[i].geometry.getBounds();
 		      } else {
-		          bounds.extend(features[i].geometry.getBounds());
+		          vecotr_parent_bounds.extend(features[i].geometry.getBounds());
 		      }
 		    }
 		    vector_parent.addFeatures(features);
 
-     /*
-		    var shapeWidth = bounds.right - bounds.left;
-		    var worldWidth = map.maxExtent.right - map.maxExtent.left;
-		    console.log(map.maxExtent.right, map.maxExtent.left);
-		    console.log(bounds.right, bounds.left);
-		    var increaseK = 1 + shapeWidth / worldWidth * 50;
-		    console.log(increaseK);
-		    if (increaseK > 1.1)
-		    {
-		      increaseK = 1.1;
-		    }
-		    else if (increaseK < 1.03)
-		    {
-		      increaseK = 1.03;
-		    }
-		    console.log(increaseK);
-		    bounds.right = bounds.right * increaseK;
-		  //map.restrictedExtent.right = map.restrictedExtent.right * increaseK;
-		 */
-		    map.zoomToExtent(bounds);
-		    winW = window_width();
-				if (winW > map_width_indicators_fall){
-					// the indicator window is on top of the map if width > 600
-					// so adjust the map to account for the indicator window
-				  //180 for 1345 screen width
-				  map.moveByPx(winW / 7.472, 0);
-				}
-
+				// set the map extent based on the vector parent bounds
+				set_map_extent();
 
 				// indicate that the parent layer has loaded
 				$("div#map").trigger("parent_layer_loaded");
@@ -400,7 +413,7 @@ if (gon.openlayers){
 
 					// move the title_location into the data json
 					json_shape_data.title_location = feature.attributes.title_location;
-					
+
 					// if this is summary set indicator description from gon variable
       		if (json_data["view_type"] == gon.summary_view_type_name) {
       		  json_data["indicator"]["description"] = gon.summary_indicator_description
@@ -411,12 +424,12 @@ if (gon.openlayers){
 		return features;
 	}
 
-  // create the scales and legend 
+  // create the scales and legend
   function create_scales_legend(){
     // empty existing legend content
     $("#indicator_description").empty();
     $("#legend").empty();
-          
+
 		// if this is summary view, create the scales
 		create_summary_scales();
 	  // add style map
@@ -433,19 +446,19 @@ if (gon.openlayers){
 		if (resp.success()){
 			// get the event data for these shapes
 			$.get(gon.data_path, function(data) {
-      // save the data to a global variable for later user
-  		json_data = data;
-  		// add the features to the vector layer
-  		vector_child.addFeatures(bindDataToShapes(resp.features));
+		    // save the data to a global variable for later user
+				json_data = data;
+				// add the features to the vector layer
+				vector_child.addFeatures(bindDataToShapes(resp.features));
 
-      // create the scales and legend
-      create_scales_legend();
+		    // create the scales and legend
+		    create_scales_legend();
 
-  		// indicate that the child layer has loaded
-  		// - do not wait for the datatable to be loaded
-  		$("div#map").trigger("child_layer_loaded");
+				// indicate that the child layer has loaded
+				// - do not wait for the datatable to be loaded
+				$("div#map").trigger("child_layer_loaded");
 
-  		// load the table of data below the map
+				// load the table of data below the map
         load_data_table();
 			});
 		} else {
@@ -494,7 +507,7 @@ if (gon.openlayers){
 
       // create unique names array, starting with the no_data item which is first
 		  var names = [json_data["indicator"]["scales"][0].name];
-		  
+
 		  for (var i=0; i<vector_child.features.length; i++)
 		  {
 		    // see if name has already been saved
@@ -668,7 +681,7 @@ if (gon.openlayers){
 	function click_handler (feature)
 	{
 		// if the feature has children, continue
-		if (feature.attributes.has_children == true){		  
+		if (feature.attributes.has_children == true){
 			// add/update the shape_id parameter
 			var url = update_query_parameter(window.location.href, "shape_id", "shape", feature.attributes.id);
 
@@ -693,6 +706,43 @@ if (gon.openlayers){
 		}
 	}
 
+	// get the query paramter with the provided name
+	// - name is the long name of the parameter (e.g., event_id)
+	// - name2 is the abbreviated name that shows in the pretty url (e.g., event)
+	function get_query_parameter(url, name, name2){
+		var value;
+		var index = url.indexOf(name + "=");
+		var index2 = url.indexOf("/" + name2 + "/");
+		if (index > 0){
+			// found 'name=', now need to replace the value
+			var name_length = name.length+1; // use +1 to account for the '='
+			var indexAfter = url.indexOf("&", index+name_length);
+			if (indexAfter > 0){
+				// there is another paramter after this one
+				value = url.slice(index+name_length, indexAfter);
+			}else {
+				// no more parameters after this one
+				value = url.slice(index+name_length, url.length);
+			}
+		}else if (index2 > 0) {
+			// found '/name/', now need to replace the value
+			var name_length = name2.length+2; // use +2 to account for the '/' at the beginning and end
+			var indexAfter = url.indexOf("/", index2+name_length);
+			var indexAfter2 = url.indexOf("?", index2+name_length);
+			if (indexAfter > 0){
+				// there is another paramter after this one
+				value = url.slice(index2+name_length, indexAfter);
+			} else if (indexAfter2 > 0){
+				// there is another paramter after this one
+				value = url.slice(index2+name_length, indexAfter2);
+			}else {
+				// no more parameters after this one
+				value = url.slice(index2+name_length, url.length);
+			}
+		}
+		return value;
+	}
+
 	// add/update the query paramter with the provided name and value
 	// - name is the long name of the parameter (e.g., event_id)
 	// - name2 is the abbreviated name that shows in the pretty url (e.g., event)
@@ -713,11 +763,15 @@ if (gon.openlayers){
 			}
 		}else if (index2 > 0) {
 			// found '/name/', now need to replace the value
-			var name_length = name2.length+2; // use +1 to account for the '/' at the beginning and end
+			var name_length = name2.length+2; // use +2 to account for the '/' at the beginning and end
 			var indexAfter = url.indexOf("/", index2+name_length);
+			var indexAfter2 = url.indexOf("?", index2+name_length);
 			if (indexAfter > 0){
 				// there is another paramter after this one
 				url = url.slice(0, index2+name_length) + value + url.slice(indexAfter);
+			} else if (indexAfter2 > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index2+name_length) + value + url.slice(indexAfter2);
 			}else {
 				// no more parameters after this one
 				url = url.slice(0, index2+name_length) + value;
@@ -731,9 +785,88 @@ if (gon.openlayers){
 		return url;
 	}
 
+	// replace the query paramter with the new one that is provided
+	// - name is the long name of the parameter (e.g., event_id)
+	// - name2 is the abbreviated name that shows in the pretty url (e.g., event)
+	function replace_query_parameter(url, old_name, old_name2, new_name, new_name2, value, value2){
+		// get the current url
+		var index = url.indexOf(old_name + "=");
+		var index2 = url.indexOf("/" + old_name2 + "/");
+		if (index > 0){
+			// found 'name=', now need to replace the value
+			var name_length = old_name.length+1; // use +1 to account for the '='
+			var indexAfter = url.indexOf("&", index+name_length);
+			if (indexAfter > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index) + new_name + "=" + value + url.slice(indexAfter);
+			}else {
+				// no more parameters after this one
+				url = url.slice(0, index) + new_name + "=" + value;
+			}
+		}else if (index2 > 0) {
+			// found '/name/', now need to replace the value
+			var name_length = old_name2.length+2; // use +2 to account for the '/' at the beginning and end
+			var indexAfter = url.indexOf("/", index2+name_length);
+			var indexAfter2 = url.indexOf("?", index2+name_length);
+			if (indexAfter > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index2+1) + new_name2 + "/" + value2 + url.slice(indexAfter);
+			} else if (indexAfter2 > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index2+1) + new_name2 + "/" + value2 + url.slice(indexAfter2);
+			}else {
+				// no more parameters after this one
+				url = url.slice(0, index2+1) + new_name2 + "/" + value2;
+			}
+		}else {
+			// not in query string yet, add it
+			// if this is the first query string, add the ?, otherwise add &
+			url += url.indexOf("?") > 0 ? "&" : "?"
+			url += new_name + "=" + value;
+		}
+		return url;
+	}
+
+	// remove the query paramter with the provided name and value
+	// - name is the long name of the parameter (e.g., event_id)
+	// - name2 is the abbreviated name that shows in the pretty url (e.g., event)
+	function remove_query_parameter(url, name, name2){
+		// get the current url
+		var index = url.indexOf(name + "=");
+		var index2 = url.indexOf("/" + name2 + "/");
+		if (index > 0){
+			// found 'name=', now need to remove the parameter and its value
+			var name_length = name.length+1; // use +1 to account for the '='
+			var indexAfter = url.indexOf("&", index+name_length);
+			if (indexAfter > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index) + url.slice(indexAfter);
+			}else {
+				// no more parameters after this one
+				url = url.slice(0, index);
+			}
+		}else if (index2 > 0) {
+			// found '/name/', now need to remove the parameter and its value
+			var name_length = name2.length+2; // use +2 to account for the '/' at the beginning and end
+			var indexAfter = url.indexOf("/", index2+name_length);
+			var indexAfter2 = url.indexOf("?", index2+name_length);
+			if (indexAfter > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index2) + url.slice(indexAfter);
+			} else if (indexAfter2 > 0){
+				// there is another paramter after this one
+				url = url.slice(0, index2) + url.slice(indexAfter2);
+			}else {
+				// no more parameters after this one
+				url = url.slice(0, index2);
+			}
+		}
+		return url;
+	}
+
 	/*  Feature popup functions  */
 
-	// Rmove feature popups
+	// Remove feature popups
 	function removeFeaturePopups()
 	{
 		$(".olPopup").each(function(){
