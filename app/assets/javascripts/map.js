@@ -20,6 +20,7 @@
 //= require events
 //= require indicator_menu_scale
 //= require map_popup_svg
+//= require map_pan
 //= require messages
 //= require news
 //= require shapes
@@ -127,8 +128,7 @@ if (gon.openlayers){
 
   function pan_click_handler ()
   {
-    var d,
-    math = Math;
+    var d;
     switch (this.className)
     {
       case 'north':
@@ -144,18 +144,8 @@ if (gon.openlayers){
         d = [0, 1];
         break;
     }
-    for (i = 1; i <= 50; i ++)
-    {
-      setTimeout(function (k)
-      {
-        k1 = math.pow(51 - k, 5) / .5e+8;
-        map.moveByPx(d[0] * k1, d[1] * k1);
-        if (k == 50)
-        {
-          map.layers[2].redraw();
-        }
-      }, i * 20, i);
-    }
+
+    movemap(map, 900, d);
   }
 
 
