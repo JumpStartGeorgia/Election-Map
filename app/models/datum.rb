@@ -621,9 +621,9 @@ class Datum < ActiveRecord::Base
 			# ka translation is hardcoded as en in the code above
 			# update all ka records with the apropriate ka translation
 			# update common ids
-			ActiveRecord::Base.connection.execute("update data as dt, shape_names as sn set dt.ka_common_id = sn.ka where dt.ka_common_id = sn.en")
+			ActiveRecord::Base.connection.execute("update data as dt, shape_names as sn set dt.ka_common_id = sn.ka where dt.ka_common_id = sn.en and dt.data_set_id = #{dataset.id}")
 			# update common names
-			ActiveRecord::Base.connection.execute("update data as dt, shape_names as sn set dt.ka_common_name = sn.ka where dt.ka_common_name = sn.en")
+			ActiveRecord::Base.connection.execute("update data as dt, shape_names as sn set dt.ka_common_name = sn.ka where dt.ka_common_name = sn.en and dt.data_set_id = #{dataset.id}")
       puts "************ time to update 'ka' common id and common name: #{Time.now-startPhase} seconds"
 
 		end
