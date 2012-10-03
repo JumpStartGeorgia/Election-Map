@@ -618,7 +618,7 @@ if (gon.openlayers){
 		  theme.addRules(rules);
 		}
 
-		  return new OpenLayers.StyleMap({'default':theme, 'select': {'fillOpacity': 0.9, 'strokeColor': '#000','strokeWidth': 2}});
+		  return new OpenLayers.StyleMap({'default': theme, 'select': {'fillOpacity': 0.9, 'strokeColor': '#000','strokeWidth': 2}});
 	}
 
 	function build_rule(color, type, value1, value2, isFirst){
