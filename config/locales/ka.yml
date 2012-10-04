@@ -224,6 +224,8 @@ ka:
       official_data: ოფიციალური მონაცემები
       live_event_status: "უბნის მონაცემები მიღებულია: %{completed} / %{total} - %{percentage}"
       live_event_status_timestamp: " (უბნის მონაცემები მიღებულია: %{completed} / %{total} - %{percentage} - %{timestamp})"
+      live_event_status_no_percent: "უბნის მონაცემები მიღებულია: %{completed}"
+      live_event_status_timestamp_no_percent: " (უბნის მონაცემები მიღებულია: %{completed} - %{timestamp})"
       openlayers_rule_value_hint: "( * - has OpenLayers rule value )"
       visible: Is Visible
       not_visible_hint: "( * - not visible)"

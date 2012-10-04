@@ -168,10 +168,15 @@ logger.debug "////////////// getting current event for event type #{params[:even
 							if params[:data_type] == Datum::DATA_TYPE[:live]
 								precincts_reporting = Datum.get_precincts_reported(params[:shape_id], params[:event_id], params[:data_set_id])
 								if precincts_reporting && !precincts_reporting.empty?
-									@map_title_precincts = I18n.t('app.common.live_event_status',
-																	:completed => precincts_reporting[:completed_number],
-	                                :total => precincts_reporting[:num_precincts],
-	                                :percentage => precincts_reporting[:completed_percent])
+									if @show_precinct_percentages
+										@map_title_precincts = I18n.t('app.common.live_event_status',
+																		:completed => precincts_reporting[:completed_number],
+			                              :total => precincts_reporting[:num_precincts],
+			                              :percentage => precincts_reporting[:completed_percent])
+									else
+										@map_title_precincts = I18n.t('app.common.live_event_status_no_percent',
+																		:completed => precincts_reporting[:completed_number])
+									end
 								end
 							end
   logger.debug "////////////// done setting @ variables"

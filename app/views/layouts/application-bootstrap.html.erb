@@ -106,18 +106,29 @@
                       <p><%= @live_event_name %></p>
                     <% else %>
                       <% if params[:data_type] == Datum::DATA_TYPE[:live] %>
-												<div id="live_event_name_date_header">
-		                      <%= @event_name %>
-													<span>
-														<%= t('app.common.live_event_status_timestamp', :completed => @live_event_precincts_completed,
-	                                :total => @live_event_precincts_total,
-	                                :percentage => @live_event_precincts_percentage,
-	                                :timestamp => l(@live_event_timestamp, :format => :long))%>
-													</span>
-												</div>
-												<div id="progress_bar" class="progress progress-striped">
-													<div class="bar" style="width: <%=@live_event_precincts_percentage%>;"><%= @live_event_precincts_percentage%></div>
-												</div>
+												<% if @show_precinct_percentages %>
+													<div id="live_event_name_date_header">
+				                    <%= @event_name %>
+														<span>
+															<%= t('app.common.live_event_status_timestamp', :completed => @live_event_precincts_completed,
+			                              :total => @live_event_precincts_total,
+			                              :percentage => @live_event_precincts_percentage,
+			                              :timestamp => l(@live_event_timestamp, :format => :long))%>
+														</span>
+													</div>
+													<div id="progress_bar" class="progress progress-striped">
+														<div class="bar" style="width: <%=@live_event_precincts_percentage%>;"><%= @live_event_precincts_percentage%></div>
+													</div>
+												<% else %>
+														<p>
+						                  <%= @event_name %>
+															<span>
+															<%= t('app.common.live_event_status_timestamp_no_percent',
+																		:completed => @live_event_precincts_completed,
+				                            :timestamp => l(@live_event_timestamp, :format => :long))%>
+															</span>
+														</p>
+												<% end %>
 											<% else %>
                         <p><%= @event_name %></p>
 											<% end %>

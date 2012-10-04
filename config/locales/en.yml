@@ -224,6 +224,8 @@ en:
       official_data: Official Data
       live_event_status: "Precincts Reporting: %{completed} of %{total} - %{percentage}"
       live_event_status_timestamp: " (Precincts Reporting: %{completed} of %{total} - %{percentage} - %{timestamp})"
+      live_event_status_no_percent: "Precincts Reporting: %{completed}"
+      live_event_status_timestamp_no_percent: " (Precincts Reporting: %{completed} - %{timestamp})"
       openlayers_rule_value_hint: "( * - has OpenLayers rule value )"
       visible: Is Visible
       not_visible_hint: "( * - not visible)"

@@ -169,10 +169,14 @@ class Shape < ActiveRecord::Base
 							# save the value so the shapes can be marked different if not complete
 							properties["precincts_completed_precent"] = precincts_reporting[:completed_percent].gsub("%","").to_f
 							# create the title for the popup
+#							title["precincts_completed"] =
+#										I18n.t('app.common.live_event_status', :completed => precincts_reporting[:completed_number],
+#                        :total => precincts_reporting[:num_precincts],
+#                        :percentage => precincts_reporting[:completed_percent])
+
 							title["precincts_completed"] =
-										I18n.t('app.common.live_event_status', :completed => precincts_reporting[:completed_number],
-                        :total => precincts_reporting[:num_precincts],
-                        :percentage => precincts_reporting[:completed_percent])
+										I18n.t('app.common.live_event_status_no_percent', :completed => precincts_reporting[:completed_number])
+
 						end
 					end
 
