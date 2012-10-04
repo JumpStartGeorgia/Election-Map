@@ -65,7 +65,9 @@ module JsonCache
 			FileUtils.rm_rf(json_file_path.gsub("[event_id]", event_id.to_s))
 		else
 			# don't delete the json folder - delete everything inside it
-			FileUtils.rm_rf(Dir.glob(json_file_path.gsub("event_[event_id]", "*")))
+#			FileUtils.rm_rf(Dir.glob(json_file_path.gsub("event_[event_id]", "*")))
+			# delete the json folder and everything inside of it
+			FileUtils.rm_rf(Dir.glob(json_file_path.gsub("event_[event_id]", "")))
 		end
 	end
 
