@@ -39,8 +39,8 @@ class FixIndTranslation < ActiveRecord::Migration
 		ranges = ['0-1','1-3','3-5']
 		trans.select{|x| ranges.index{|y| !x.name.index(y).nil? }}.each do |x|
 			x.name_abbrv = x.name_abbrv.gsub('ბათილი ბიულეტენები', 'გაუქმებული საარჩევნო ბიულეტინი')
-			x.name = x.name.gsub('უბნების რაოდენობა, სადაც ბათილი ბიულეტინები', 'გაუქმებული საარჩევნო ბიულეტინი')
-			x.description = x.description.gsub('უბნების რაოდენობა, სადაც ბათილი ბიულეტინები', 'გაუქმებული საარჩევნო ბიულეტინი')
+			x.name = x.name.gsub('უბნების რაოდენობა, სადაც ბათილი ბიულეტინები შეადგენს', 'გაუქმებული საარჩევნო ბიულეტინი')
+			x.description = x.description.gsub('უბნების რაოდენობა, სადაც ბათილი ბიულეტინები შეადგენს', 'გაუქმებული საარჩევნო ბიულეტინი')
 			x.save
 		end
 
