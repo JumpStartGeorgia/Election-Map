@@ -18,7 +18,11 @@ logger.debug "////////////// event type id does not exist and no event types wit
 # TODO - what to do?
     end
 logger.debug "////////////// getting event type id"
-		params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
+		if params[:event_type_id].nil?
+			set_default_event_params
+			# if no default event exists, just resort to first event type in list
+			params[:event_type_id] = @event_types.first.id.to_s if params[:event_type_id].nil?
+		end
 
 		# get the current event
 logger.debug "////////////// getting current event for event type #{params[:event_type_id]}"
@@ -469,6 +473,21 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
 
 
 private
+	# get the default event to show when the site loads
+	def set_default_event_params
+		events = @event_types.map{|x| x.events.select{|y| y.is_default_view?}}.flatten
+		if events && !events.empty?
+			params[:event_type_id] = events.first.event_type_id.to_s
+			params[:event_id] = events.first.id.to_s
+			# if have live data and not official -> set to live
+			# else -> set to official
+			if !events.first.has_official_data? && events.first.has_live_data?
+				params[:data_type] = Datum::DATA_TYPE[:live]
+			else
+				params[:data_type] = Datum::DATA_TYPE[:official]
+			end
+		end
+	end
 
 	# get the the current event
 	def get_current_event(event_type_id, data_type, event_id=nil)
