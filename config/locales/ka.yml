@@ -10,6 +10,8 @@ ka:
         precincts_percentage: "Precincts Completed (%)"
         timestamp: Time Event Data Reported
         show_to_public: Make Public?
+      events:
+        is_default_view: Default Event to Show on Site Load?
   models:
     live_data:
       msgs:
@@ -225,6 +227,7 @@ ka:
       openlayers_rule_value_hint: "( * - has OpenLayers rule value )"
       visible: Is Visible
       not_visible_hint: "( * - not visible)"
+      is_default_view: Default Event to Show on Site Load?
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
