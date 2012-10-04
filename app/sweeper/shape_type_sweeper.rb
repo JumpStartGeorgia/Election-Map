@@ -18,6 +18,7 @@ class ShapeTypeSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(shape_type)
+Rails.logger.debug "............... clearing all cache because of change to shape types"
 		JsonCache.clear_all
   end
 end

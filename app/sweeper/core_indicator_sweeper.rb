@@ -18,6 +18,7 @@ class CoreIndicatorSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(core_indicator)
+Rails.logger.debug "............... clearing all cache because of change to core indicator"
 		JsonCache.clear_all
   end
 end

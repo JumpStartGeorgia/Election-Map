@@ -1,6 +1,6 @@
 class DataController < ApplicationController
   before_filter :authenticate_user!
-	cache_sweeper :datum_sweeper, :only => [:upload]
+#	cache_sweeper :datum_sweeper, :only => [:upload]
 
   # GET /data/upload
   # GET /data/upload.json

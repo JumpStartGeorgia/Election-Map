@@ -27,12 +27,22 @@ class DataSet < ActiveRecord::Base
     end
   end
 
+  def self.current_dataset(event_id, data_type)
+    where(:event_id => event_id, :show_to_public => true, :data_type => data_type)
+    .order("timestamp desc")
+    .limit(1)
+  end
+
 
   def self.ordered
     joins(:event)
     .order("events.event_date desc, data_sets.timestamp desc")
   end
 
+
+	################################
+	## before/after filter functions
+	################################
   # - if show to pulic is true, turn on the has_xxx_data for this event
   # - if show public is false, and no other datasets for this event are true, turn off flag
   def update_data_flag
@@ -88,10 +98,14 @@ class DataSet < ActiveRecord::Base
     end
   end
 
-  def self.current_dataset(event_id, data_type)
-    where(:event_id => event_id, :show_to_public => true, :data_type => data_type)
-    .order("timestamp desc")
-    .limit(1)
-  end
+	################################
+	## override destroy fn so it uses delete and is faster
+	################################
+  def destroy
+Rails.logger.debug "************** data set overriden destroy method, deleting all data records"
+		Datum.delete_all(:data_set_id => self.id)
+Rails.logger.debug "************** data set overriden destroy method, deleting dataset"
+		DataSet.delete(self.id)
+	end
 
 end

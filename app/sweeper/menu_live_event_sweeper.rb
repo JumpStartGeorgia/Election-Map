@@ -18,6 +18,7 @@ class MenuLiveEventSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(menu_live_event)
+Rails.logger.debug "............... clearing live menu cache because of change to live menu"
     # expire the live event menu cache
     I18n.available_locales.each do |locale|
       Rails.cache.delete("live_event_menu_json_#{locale}")

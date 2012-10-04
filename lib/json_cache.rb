@@ -312,10 +312,14 @@ Rails.logger.debug "------------------ has live data"
 
 
 
+	###########################################
+	###########################################
+	###########################################
+	###########################################
 protected
 
 	def self.json_file_path
-		"#{Rails.root}/public/json/event_[event_id]"
+		"#{Rails.root}/public/system/json/event_[event_id]"
 	end
 
 	def self.json_domain

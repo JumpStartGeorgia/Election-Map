@@ -18,6 +18,7 @@ class DatumSweeper < ActionController::Caching::Sweeper
 
   private
   def expire_cache_for(datum)
+Rails.logger.debug "............... clearing all cache because of change to data"
 		JsonCache.clear_all
   end
 end
