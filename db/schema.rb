@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121004075811) do
+ActiveRecord::Schema.define(:version => 20121003065846) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -191,7 +191,6 @@ ActiveRecord::Schema.define(:version => 20121004075811) do
     t.date     "event_date"
     t.boolean  "has_official_data", :default => false
     t.boolean  "has_live_data",     :default => false
-    t.boolean  "is_default_view",   :default => false
   end
 
   add_index "events", ["event_type_id"], :name => "index_events_on_event_type_id"
