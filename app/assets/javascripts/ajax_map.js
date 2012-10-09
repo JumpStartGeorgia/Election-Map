@@ -144,7 +144,7 @@ $(function(){
 	// get the new json data and update the appropriate components
    function indicator_click(ths, link, id, datai)
    {
-console.log("------------------- indicator click");
+//console.log("------------------- indicator click");
 			// update the url to get the data
 		  var query;
 		   if (link.search('summary') !== -1)
@@ -159,11 +159,11 @@ console.log("------------------- indicator click");
 		   }
 
 			// show loading wheel
-console.log("turning on loading wheel");
+//console.log("turning on loading wheel");
 			$("#map-loading").fadeIn(300);
 
 			// scroll to the top
-console.log("scrolling to top");
+//console.log("scrolling to top");
 			$('html,body').animate({
 				scrollTop: 0
 				},
@@ -172,29 +172,29 @@ console.log("scrolling to top");
 
 
 			// reset popups
-console.log("removing popups");
+//console.log("removing popups");
 			map.controls[1].activate();
 			$.each(map.popups, function(index, value){
 				map.removePopup(map.popups[index]);
 			});
 
-console.log("unhighlighting shapes");
+//console.log("unhighlighting shapes");
 			// if shape is highlighted, turn it off
 			unhighlight_shape(current_highlighted_feature, false);
 
 			// reset the map extent based on the vector parent bounds
-console.log("resting map extent");
+//console.log("resting map extent");
 			set_map_extent();
 
 
 			// get the data json and process it
 			$.get(query, function(data){
 				// save the data to a global variable for later use
-console.log("saving data");
+//console.log("saving data");
 				json_data = data;
 
 				// update page title
-console.log("updating page title");
+//console.log("updating page title");
 				var seperator = ' > ';
 				var new_title = '';
 				var old_title_ary = document.title.split(seperator);
@@ -208,33 +208,33 @@ console.log("updating page title");
 						new_title += seperator;
 				}
 				document.title = new_title;
-console.log("updating urls");
+//console.log("updating urls");
 				// update the links
 				new_url = update_link_parameters(link, id);
 
-console.log("updating push state");
+//console.log("updating push state");
 				// update url
 				history.pushState(null, new_title, new_url);
 //        History.pushState({this: ths, link:link, id:id, datai:datai}, new_title, new_url);
 
-console.log("binding data to shapes");
+//console.log("binding data to shapes");
 				// update the shapes with the new values/colors
 				bindDataToShapes(vector_child.features);
 
-console.log("creating scales/legend");
+//console.log("creating scales/legend");
 				// create the scales and legend
 				create_scales_legend();
 
-console.log("highlighting link");
+//console.log("highlighting link");
 				// highlight the link that was clicked on
 				highlight_indicator(link);
 
-console.log("trigger");
+//console.log("trigger");
 				// indicate that the child layer has loaded
 				// - do not wait for the datatable to be loaded
 				$("div#map").trigger("child_layer_loaded");
 
-console.log("highlighting column");
+//console.log("highlighting column");
 				// highlight the correct column in the data table
 				if (datai !== undefined && datai !== null){
 					// get datai of current selected column
@@ -249,7 +249,7 @@ console.log("highlighting column");
 					}
 				}
 
-console.log("---------- finish");
+//console.log("---------- finish");
 			});
    }
 
@@ -320,10 +320,16 @@ console.log("***** data_table_link_click end");
 
 	// add click functions to all links in data table
 	var jq_data_table = $("table#data-table");
+	window.a_clicks_bound = false;
 	jq_data_table.live({
     'DOMNodeInserted': function()
     {
-     $(this).children("tbody:first").find("a").click(data_table_link_click);
+     if (window.a_clicks_bound)
+     {
+       return;
+     }
+     $(this).children("tbody:first").find("a").unbind().click(data_table_link_click);
+     window.a_clicks_bound = true;
     }
    });
 
