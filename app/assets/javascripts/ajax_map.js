@@ -292,10 +292,8 @@ $(function(){
 	// click function for links in data table
 	function data_table_link_click()
 	 {
-console.log("***** data_table_link_click start");
     var ths = $(this);
 		var link = ths.attr('href'),
-				link_arr = link.split('/'),
 				id;
 
 		if (link.search('summary') !== -1) {
@@ -305,7 +303,7 @@ console.log("***** data_table_link_click start");
 		}
 
 		// save the shape to highlight
-		gon.dt_highlight_shape = decodeURIComponent(link_arr[link_arr.length-1]);
+		gon.dt_highlight_shape = decodeURIComponent(get_query_parameter(link, 'highlight_shape', 'highlight_shape'));
 
 		// get the data-i of the td tag that has the link that was just clicked
 		var datai = ths.parent().data('i');
@@ -313,7 +311,6 @@ console.log("***** data_table_link_click start");
 		// load the new data
 		indicator_click(ths, link, id, datai);
 
-console.log("***** data_table_link_click end");
 		return false;
 	}
 
