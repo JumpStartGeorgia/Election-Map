@@ -1,6 +1,35 @@
 $(function(){
-   var highlighted_shape;
 
+    // Prepare
+    var History = window.History; // Note: We are using a capital H instead of a lower h
+
+    if ( !History.enabled ) {
+         // History.js is disabled for this browser.
+         // This is because we can optionally choose to support HTML4 browsers or not.
+        return false;
+    }
+
+    var State = History.getState();
+
+    // Log Initial State
+		History.log('initial:', State.data, State.title, State.url);
+
+    // Bind to StateChange Event
+    History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
+        var State = History.getState(); // Note: We are using History.getState() instead of event.state
+        History.log(State.data, State.title, State.url);
+
+				// save the highlight shape variable
+				gon.dt_highlight_shape = State.data.dt_highlight_shape;
+
+				// load the json and reset the page
+				load_state(State.data.link, State.data.id, State.data.datai);
+    });
+
+
+
+
+   var highlighted_shape;
 
 	// highlight the indicator menu link to match the data that is being loaded
 	function highlight_indicator(link)
@@ -46,12 +75,8 @@ $(function(){
 
 	// update the provided link with the new parameters
 	function update_link_parameters(link, id) {
-		var new_url;
    if (link.search('summary') !== -1)
    {
-			// page url
-      new_url = update_query_parameter(link, 'indicator_type_id', 'indicator_type', id);
-
 			// shape navigation
 			// - add ind type id and view type
 			$('#shape_layer_navigation ul li.lev-ind a').each(function(index){
@@ -94,9 +119,6 @@ $(function(){
    }
    else
    {
-			// page url
-      new_url = update_query_parameter(link, 'indicator_id', 'indicator', id);
-
 			// shape navigation
 			// - add ind type id and view type
 			$('#shape_layer_navigation ul li.lev-ind a').each(function(index){
@@ -138,23 +160,21 @@ $(function(){
 					remove_query_parameter($(this).attr('href'), 'view_type', 'view_type'));
 			});
    }
-		return new_url;
 	}
 
 	// get the new json data and update the appropriate components
-   function indicator_click(ths, link, id, datai)
+   function load_state(link, id, datai)
    {
 //console.log("------------------- indicator click");
 			// update the url to get the data
 		  var query;
+			// json data path
 		   if (link.search('summary') !== -1)
 		   {
-					// json data path
 		      query = update_query_parameter(gon.indicator_menu_data_path_summary, 'indicator_type_id', 'indicator_type', id);
 		   }
 		   else
 		   {
-					// json data path
 		      query = update_query_parameter(gon.indicator_menu_data_path, 'indicator_id', 'indicator', id);
 		   }
 
@@ -193,29 +213,9 @@ $(function(){
 //console.log("saving data");
 				json_data = data;
 
-				// update page title
-//console.log("updating page title");
-				var seperator = ' > ';
-				var new_title = '';
-				var old_title_ary = document.title.split(seperator);
-				for(var i=0; i<old_title_ary.length;i++){
-				 if (i==1)
-					new_title += json_data["indicator"]["name_abbrv"];
-				 else
-					new_title += old_title_ary[i];
-
-					if (i < old_title_ary.length-1)
-						new_title += seperator;
-				}
-				document.title = new_title;
 //console.log("updating urls");
 				// update the links
-				new_url = update_link_parameters(link, id);
-
-//console.log("updating push state");
-				// update url
-				history.pushState(null, new_title, new_url);
-//        History.pushState({this: ths, link:link, id:id, datai:datai}, new_title, new_url);
+				update_link_parameters(link, id);
 
 //console.log("binding data to shapes");
 				// update the shapes with the new values/colors
@@ -253,6 +253,38 @@ $(function(){
 			});
    }
 
+
+	// create the state for the link that was just clicked on
+	function create_push_state(link, id, datai, sub_title, dt_highlight_shape){
+
+		// create new page title
+		var seperator = ' » ';
+		var new_title = '';
+		var old_title_ary = document.title.split(seperator);
+		for(var i=0; i<old_title_ary.length;i++){
+		 if (i==1)
+			new_title += sub_title;
+		 else
+			new_title += old_title_ary[i];
+
+			if (i < old_title_ary.length-1)
+				new_title += seperator;
+		}
+
+
+		var new_url;
+		if (link.search('summary') !== -1)
+		{
+			new_url = update_query_parameter(link, 'indicator_type_id', 'indicator_type', id);
+		} else {
+			new_url = update_query_parameter(link, 'indicator_id', 'indicator', id);
+		}
+
+    History.pushState({link:link, id:id, datai:datai, dt_highlight_shape:dt_highlight_shape},
+			new_title, new_url);
+
+	}
+
 	// add click functions to all indicator menu items
 	var jq_indicators = $("#indicator_menu_scale .indicator_links a")
 	jq_indicators.click(function(){
@@ -284,7 +316,7 @@ $(function(){
 			}
 		}
 		// load the new data
-		indicator_click($(this), link, id, datai);
+		create_push_state(link, id, datai, title, null);
 		return false;
 	});
 
@@ -303,13 +335,16 @@ $(function(){
 		}
 
 		// save the shape to highlight
-		gon.dt_highlight_shape = decodeURIComponent(get_query_parameter(link, 'highlight_shape', 'highlight_shape'));
+		var highlight_shape = decodeURIComponent(get_query_parameter(link, 'highlight_shape', 'highlight_shape'));
 
 		// get the data-i of the td tag that has the link that was just clicked
 		var datai = ths.parent().data('i');
 
+		// create the new title
+		var title = $('#dt_dd_switcher option[data-i=' + datai + ']').text() + ' - ' + highlight_shape
+
 		// load the new data
-		indicator_click(ths, link, id, datai);
+		create_push_state(link, id, datai, title, highlight_shape);
 
 		return false;
 	}
