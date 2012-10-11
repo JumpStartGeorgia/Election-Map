@@ -12,12 +12,12 @@ $(function(){
     var State = History.getState();
 
     // Log Initial State
-		History.log('initial:', State.data, State.title, State.url);
+//		History.log('initial:', State.data, State.title, State.url);
 
     // Bind to StateChange Event
     History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
         var State = History.getState(); // Note: We are using History.getState() instead of event.state
-        History.log(State.data, State.title, State.url);
+//        History.log(State.data, State.title, State.url);
 
 				// save the highlight shape variable
 				gon.dt_highlight_shape = State.data.dt_highlight_shape;
