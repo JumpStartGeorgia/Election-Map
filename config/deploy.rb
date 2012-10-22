@@ -48,6 +48,9 @@ namespace :deploy do
   task :symlink_config, roles: :app do
     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
     run "ln -nfs #{shared_path}/json #{release_path}/public/json"
+		puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>"
+		puts "If this is first time, be sure to run the following so app starts on server bootup: sudo update-rc.d unicorn_#{application} defaults"
+		puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>"
   end
   after "deploy:finalize_update", "deploy:symlink_config"
 
