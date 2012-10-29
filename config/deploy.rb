@@ -24,7 +24,8 @@ set(:repository) {"git@github.com:#{github_account_name}/#{github_repo_name}.git
 default_run_options[:pty] = true
 ssh_options[:forward_agent] = true
 
-after "deploy", "deploy:cleanup" # keep only the last 5 releases
+set :keep_releases, 2
+after "deploy", "deploy:cleanup" # remove the old releases
 
 
 namespace :deploy do
@@ -50,6 +51,14 @@ namespace :deploy do
     run "ln -nfs #{shared_path}/json #{release_path}/public/json"
   end
   after "deploy:finalize_update", "deploy:symlink_config"
+
+  task :folder_cleanup, roles: :app do
+		puts "cleaning up shared/cached-copy"
+		run "rm -rf #{shared_path}/cached-copy/*"
+		puts "cleaning up release/db"
+		run "rm -rf #{release_path}/db/*"
+  end
+  after "deploy:finalize_update", "deploy:folder_cleanup"
 
   desc "Make sure local git is in sync with remote."
   task :check_revision, roles: :web do
