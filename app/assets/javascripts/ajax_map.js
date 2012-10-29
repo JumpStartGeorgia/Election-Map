@@ -14,17 +14,6 @@ $(function(){
     // Log Initial State
 //		History.log('initial:', State.data, State.title, State.url);
 
-    // Bind to StateChange Event
-    History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
-        var State = History.getState(); // Note: We are using History.getState() instead of event.state
-//        History.log(State.data, State.title, State.url);
-
-				// save the highlight shape variable
-				gon.dt_highlight_shape = State.data.dt_highlight_shape;
-
-				// load the json and reset the page
-				load_state(State.data.link, State.data.id, State.data.datai);
-    });
 
 
 
@@ -302,14 +291,16 @@ $(function(){
 		gon.dt_highlight_shape = null;
 
 		// get the data-i of the th tag that has the same text as the link's title
-		var table_headers = $('#data-table tr th')
+		var table_headers = $('#data-table tr th');
 		var datai = null;
 		// if the title does not exist, use the link text
 		if (title == undefined || title == null){
 			title = $(this).text().trim();
 		}
 		for (var i=0;i<table_headers.length;i++){
-			var index = title.trim().indexOf(table_headers[i].innerText.trim());
+			// have to test for header text because ff gets it one way and ie another
+			var header_text = table_headers[i].textContent? table_headers[i].textContent : table_headers[i].innerText;
+			var index = title.trim().indexOf(header_text.trim());
 			if (index != -1) {
 				datai = $(table_headers[i]).attr('data-i');
 				break;
@@ -381,5 +372,16 @@ $(function(){
 	});
 
 
+    // Bind to StateChange Event
+    History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
+        var State = History.getState(); // Note: We are using History.getState() instead of event.state
+//        History.log(State.data, State.title, State.url);
+
+				// save the highlight shape variable
+				gon.dt_highlight_shape = State.data.dt_highlight_shape;
+
+				// load the json and reset the page
+				load_state(State.data.link, State.data.id, State.data.datai);
+    });
 
 });

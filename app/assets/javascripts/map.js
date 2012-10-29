@@ -26,7 +26,7 @@
 //= require shapes
 
 //= require map.export
-
+//= require_self
 //= require ajax_map
 
 // set focus to first text box on page
