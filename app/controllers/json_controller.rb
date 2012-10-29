@@ -5,13 +5,13 @@ class JsonController < ApplicationController
 	MEMORY_CACHE_KEY_SHAPE = "shape/[locale]/shape_[shape_id]/shape_type_[shape_type_id]"
 	MEMORY_CACHE_KEY_CHILDREN_SHAPES =
 		"children_shapes/[locale]/shape_[parent_id]/shape_type_[shape_type_id]/parent_clickable_[parent_shape_clickable]"
+	FILE_CACHE_KEY_CUSTOM_CHILDREN_SHAPES = "custom_chlidren_shapes/[locale]/shape_type_[shape_type_id]/shape_[parent_id]"
 
 	MEMORY_CACHE_KEY_CHILDREN_DATA =
 		"event_[event_id]/[locale]/children_data/shape_[parent_id]/shape_type_[shape_type_id]/indicator_[indicator_id]/parent_clickable_[parent_shape_clickable]"
 	MEMORY_CACHE_KEY_SUMMARY_CHILDREN_DATA =
 		"event_[event_id]/[locale]/summary_children_data/shape_[parent_id]/shape_type_[shape_type_id]/indicator_type[indicator_type_id]/parent_clickable_[parent_shape_clickable]"
 
-	FILE_CACHE_KEY_CUSTOM_CHILDREN_SHAPES = "custom_chlidren_shapes/[locale]/shape_type_[shape_type_id]/shape_[parent_id]"
 	FILE_CACHE_KEY_CUSTOM_CHILDREN_DATA =
 		"event_[event_id]/[locale]/custom_children_data/shape_type_[shape_type_id]/shape_[parent_id]_indicator_[indicator_id]"
 	FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA =
