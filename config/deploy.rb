@@ -55,6 +55,7 @@ namespace :deploy do
   task :folder_cleanup, roles: :app do
 		puts "cleaning up release/db"
 		run "rm -rf #{release_path}/db/*"
+		puts "cleaning up release/.git"
 		run "rm -rf #{release_path}/.git/*"
   end
   after "deploy:finalize_update", "deploy:folder_cleanup"
