@@ -53,10 +53,9 @@ namespace :deploy do
   after "deploy:finalize_update", "deploy:symlink_config"
 
   task :folder_cleanup, roles: :app do
-		puts "cleaning up shared/cached-copy"
-		run "rm -rf #{shared_path}/cached-copy/*"
 		puts "cleaning up release/db"
 		run "rm -rf #{release_path}/db/*"
+		run "rm -rf #{release_path}/.git/*"
   end
   after "deploy:finalize_update", "deploy:folder_cleanup"
 
