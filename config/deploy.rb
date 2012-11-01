@@ -54,6 +54,14 @@ namespace :deploy do
   end
   after "deploy:finalize_update", "deploy:symlink_config"
 
+  task :folder_cleanup, roles: :app do
+#		puts "cleaning up release/db"
+#		run "rm -rf #{release_path}/db/*"
+		puts "cleaning up release/.git"
+		run "rm -rf #{release_path}/.git/*"
+  end
+  after "deploy:finalize_update", "deploy:folder_cleanup"
+
   desc "Make sure local git is in sync with remote."
   task :check_revision, roles: :web do
     unless `git rev-parse HEAD` == `git rev-parse origin/#{git_branch_name}`
