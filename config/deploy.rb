@@ -53,8 +53,8 @@ namespace :deploy do
   after "deploy:finalize_update", "deploy:symlink_config"
 
   task :folder_cleanup, roles: :app do
-		puts "cleaning up release/db"
-		run "rm -rf #{release_path}/db/*"
+#		puts "cleaning up release/db"
+#		run "rm -rf #{release_path}/db/*"
 		puts "cleaning up release/.git"
 		run "rm -rf #{release_path}/.git/*"
   end
