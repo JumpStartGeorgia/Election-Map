@@ -33,11 +33,14 @@ class JsonController < ApplicationController
 	#################################################
   # GET /json/shape/:id/shape_type/:shape_type_id
   def shape
+=begin
 		geometries = Rails.cache.fetch(MEMORY_CACHE_KEY_SHAPE.gsub("[shape_id]", params[:id])
 				.gsub("[locale]", I18n.locale.to_s)
 				.gsub("[shape_type_id]", params[:shape_type_id])) {
 			Shape.build_json(params[:id], params[:shape_type_id]).to_json
 		}
+=end
+geometries = Shape.build_json(params[:id], params[:shape_type_id]).to_json
 
     respond_to do |format|
       format.json { render json: geometries }
@@ -94,7 +97,7 @@ class JsonController < ApplicationController
 				else
 					key.gsub!("[parent_shape_clickable]", "false")
 				end
-
+=begin
 				geometries = Rails.cache.fetch(key) {
 					geo = ''
 
@@ -105,6 +108,13 @@ class JsonController < ApplicationController
 					end
 					geo
 				}
+=end
+if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+	geometries = Shape.build_json(shape.id, shape.shape_type_id).to_json
+elsif shape.has_children?
+	geometries = Shape.build_json(shape.id, params[:shape_type_id]).to_json
+end
+
 			end
 		end
 
@@ -184,7 +194,7 @@ class JsonController < ApplicationController
 				else
 					key.gsub!("[parent_shape_clickable]", "false")
 				end
-
+=begin
 				data = Rails.cache.fetch(key) {
 					d = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
@@ -194,6 +204,13 @@ class JsonController < ApplicationController
 					end
 					d
 				}
+=end
+if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+	data = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id]).to_json
+elsif shape.has_children?
+	data = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id]).to_json
+end
+
 			end
 		end
 
@@ -277,7 +294,7 @@ class JsonController < ApplicationController
 				else
 					key.gsub!("[parent_shape_clickable]", "false")
 				end
-
+=begin
 				data = Rails.cache.fetch(key) {
 					d = ''
 					if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
@@ -289,6 +306,13 @@ logger.debug "++++++++++++++++++++++++++++ getting summary with NO parent shape 
 					end
 					d
 				}
+=end
+if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+	data = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id]).to_json
+elsif shape.has_children?
+	data = Datum.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id]).to_json
+end
+
 			end
 		end
 
