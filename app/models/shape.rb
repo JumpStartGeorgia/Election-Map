@@ -132,10 +132,17 @@ class Shape < ActiveRecord::Base
   			      # if getting summary data, use the first record for the shape value
 							# unless the first value is 'no data'
   			      # if ind_id = indicator_type_id
+logger.debug "************* looking for openlayers rule value from summary data ****************"
+logger.debug "************* - isSummary = #{isSummary}"
+logger.debug "************* - has openlayers rule value = #{d["summary_data"]["has_openlayers_rule_value"]}"
+logger.debug "************* - indicator type id = #{d["summary_data"]["data"][0][:indicator_type_id].to_s}"
+logger.debug "************* - passed in ind_id = #{ind_id.to_s}"
+logger.debug "************* - formatted value = #{d["summary_data"]["data"][0][:formatted_value]}"
   			      if isSummary && d["summary_data"]["has_openlayers_rule_value"] &&
 									d["summary_data"]["data"][0][:indicator_type_id].to_s == ind_id.to_s &&
 									d["summary_data"]["data"][0][:formatted_value] != I18n.t('app.msgs.no_data')
 
+logger.debug "************* --> found match, saving data"
       				  properties["data_value"] = d["summary_data"]["data"][0][:formatted_value] if !d["summary_data"]["data"][0][:formatted_value].nil?
       					properties["value"] = d["summary_data"]["data"][0][:indicator_name_abbrv]
       					properties["formatted_value"] = d["summary_data"]["data"][0][:indicator_name]
@@ -144,6 +151,7 @@ class Shape < ActiveRecord::Base
 								# set the title hash
 								title["title"] = d["summary_data"]["data"][0][:indicator_type_name]
   		        end
+logger.debug "**************************************"
     		    elsif d.has_key?("data_item") && !d["data_item"].nil? && !d["data_item"].empty?
   		        results[i]["data_item"] = d["data_item"] if d["data_item"][:visible]
   			      # if not getting summary data, use this record
