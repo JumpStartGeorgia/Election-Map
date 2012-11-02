@@ -375,10 +375,14 @@ class Datum < ActiveRecord::Base
   			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id)
 				data_array = []
   			if data && !data.empty?
+logger.debug "************* getting summary data relationship params ****************"
 					if relationship && !relationship.empty?
+logger.debug "************* - visible = #{relationship.first.visible}"
+logger.debug "************* - has_openlayers_rule_value = #{relationship.first.has_openlayers_rule_value}"
 						results["summary_data"]["visible"] = relationship.first.visible
 						results["summary_data"]["has_openlayers_rule_value"] = relationship.first.has_openlayers_rule_value
 					end
+logger.debug "*****************************"
 
   				data_array = data.collect{|x|	x.to_hash}
   			end
