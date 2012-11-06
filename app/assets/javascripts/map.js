@@ -9,7 +9,7 @@ if (gon.openlayers){
 	scale_nodata['name'] = gon.no_data_text;
 	scale_nodata['color'] = color_nodata;
 	var opacity = "0.6";
-	var map_opacity = "0.9";
+	var map_opacity = "0.5";
 	var minZoom = 7;
 	var map_width_indicators_fall = 667;
 

@@ -191,8 +191,8 @@ logger.debug "---********----- shape type cache"
     # tile url
     lang = I18n.locale.to_s == 'ka' ? 'ka' : 'en'
 #    gon.tile_url = "http://tile.mapspot.ge/new_#{lang}/${z}/${x}/${y}.png"
-    gon.tile_url = "http://91.212.213.147/new_#{lang}/${z}/${x}/${y}.png"
-#		gon.tile_url = "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
+#    gon.tile_url = "http://91.212.213.147/new_#{lang}/${z}/${x}/${y}.png"
+		gon.tile_url = "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
     gon.openlayers_img_path = "/assets/img/"
 	end
 
