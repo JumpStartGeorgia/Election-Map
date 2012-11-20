@@ -69,6 +69,7 @@ namespace :deploy do
   end
   before "deploy", "deploy:check_revision"
 
+=begin
 	# taken from http://www.rostamizadeh.net/blog/2012/04/14/precompiling-assets-locally-for-capistrano-deployment/
 	before 'deploy:finalize_update', 'deploy:assets:symlink'
 	after 'deploy:update_code', 'deploy:assets:precompile'
@@ -99,8 +100,8 @@ namespace :deploy do
             ln -s #{shared_path}/assets #{latest_release}/public/assets")
     end
   end
+=end
 
-=begin
 	namespace :assets do
     task :precompile, :roles => :web, :except => { :no_release => true } do
       # Check if assets have changed. If not, don't run the precompile task - it takes a long time.
@@ -115,12 +116,21 @@ namespace :deploy do
         force_compile = true
       end
       if changed_asset_count > 0 || force_compile
-        logger.info "#{changed_asset_count} assets have changed. Pre-compiling"
-        run %Q{cd #{latest_release} && #{rake} RAILS_ENV=#{rails_env} #{asset_env} assets:precompile}
+        logger.info "#{changed_asset_count} assets have changed; force_compile = #{force_compile}. Pre-compiling"
+#        run %Q{cd #{latest_release} && #{rake} RAILS_ENV=#{rails_env} #{asset_env} assets:precompile}
+        puts "*****************"
+        puts "Assets have changed, compiling locally and then copying to shared/assets folder on server"
+        puts "*****************"
+        run_locally("rake assets:clean && rake assets:precompile")
+        run_locally "cd public && tar -jcf assets.tar.bz2 assets"
+        top.upload "public/assets.tar.bz2", "#{shared_path}", :via => :scp
+        run "cd #{shared_path} && tar -jxf assets.tar.bz2 && rm assets.tar.bz2"
+        run_locally "rm public/assets.tar.bz2"
+        run_locally("rake assets:clean")
       else
         logger.info "#{changed_asset_count} assets have not changed. Skipping asset pre-compilation"
       end
     end
   end
-=end
+
 end
