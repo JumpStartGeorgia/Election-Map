@@ -54,10 +54,10 @@ namespace :deploy do
   task :folder_cleanup, roles: :app do
 #		logger.info "cleaning up release/db"
 #		run "rm -rf #{release_path}/db/*"
-		logger.info "cleaning up release/.git/objects folder"
-		run "rm -rf #{release_path}/.git/objects/*"
+		logger.info "cleaning up release/.git"
+		run "rm -rf #{release_path}/.git"
   end
-  after "deploy:finalize_update", "deploy:folder_cleanup"
+  after "deploy:cleanup", "deploy:folder_cleanup"
 
   desc "Make sure local git is in sync with remote."
   task :check_revision, roles: :web do
