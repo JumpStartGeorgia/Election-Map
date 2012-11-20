@@ -121,12 +121,12 @@ namespace :deploy do
         puts "*****************"
         puts "Assets have changed, compiling locally and then copying to shared/assets folder on server"
         puts "*****************"
-        run_locally("rake assets:clean && rake assets:precompile")
+        run_locally("rake assets:clean RAILS_ENV=#{rails_env} && rake assets:precompile RAILS_ENV=#{rails_env} ")
         run_locally "cd public && tar -jcf assets.tar.bz2 assets"
         top.upload "public/assets.tar.bz2", "#{shared_path}", :via => :scp
         run "cd #{shared_path} && tar -jxf assets.tar.bz2 && rm assets.tar.bz2"
         run_locally "rm public/assets.tar.bz2"
-        run_locally("rake assets:clean")
+        run_locally("rake assets:clean RAILS_ENV=#{rails_env}")
       else
         logger.info "#{changed_asset_count} assets have not changed. Skipping asset pre-compilation"
       end
