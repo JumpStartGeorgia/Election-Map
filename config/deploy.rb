@@ -52,10 +52,10 @@ namespace :deploy do
   after "deploy:finalize_update", "deploy:symlink_config"
 
   task :folder_cleanup, roles: :app do
-#		puts "cleaning up release/db"
+#		logger.info "cleaning up release/db"
 #		run "rm -rf #{release_path}/db/*"
-		puts "cleaning up release/.git"
-		run "rm -rf #{release_path}/.git/*"
+		logger.info "cleaning up release/.git/objects folder"
+		run "rm -rf #{release_path}/.git/objects/*"
   end
   after "deploy:finalize_update", "deploy:folder_cleanup"
 
@@ -113,14 +113,12 @@ namespace :deploy do
         changed_asset_count = capture("cd #{latest_release} && #{source.local.log(from)} #{asset_locations} | wc -l").to_i
       rescue Exception => e
         logger.info "Error: #{e}, forcing precompile"
+				logger.info "--> If this is the first deploy (deploy:cold), this is normal"
         force_compile = true
       end
       if changed_asset_count > 0 || force_compile
-        logger.info "#{changed_asset_count} assets have changed; force_compile = #{force_compile}. Pre-compiling"
+        logger.info "#{changed_asset_count} assets have changed; force_compile = #{force_compile}. Pre-compiling locally and pushing to shared/assets folder on server"
 #        run %Q{cd #{latest_release} && #{rake} RAILS_ENV=#{rails_env} #{asset_env} assets:precompile}
-        puts "*****************"
-        puts "Assets have changed, compiling locally and then copying to shared/assets folder on server"
-        puts "*****************"
         run_locally("rake assets:clean RAILS_ENV=#{rails_env} && rake assets:precompile RAILS_ENV=#{rails_env} ")
         run_locally "cd public && tar -jcf assets.tar.bz2 assets"
         top.upload "public/assets.tar.bz2", "#{shared_path}", :via => :scp
