@@ -128,7 +128,7 @@ namespace :deploy do
         run_locally "rm public/assets.tar.bz2"
         run_locally("rake assets:clean RAILS_ENV=#{rails_env}")
       else
-        logger.info "#{changed_asset_count} assets have not changed. Skipping asset pre-compilation"
+        logger.info "#{changed_asset_count} assets have changed. Skipping asset pre-compilation"
       end
     end
   end
