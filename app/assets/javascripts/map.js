@@ -1,4 +1,6 @@
 if (gon.openlayers){
+	alert('hello!');
+
 	// Define global variables which can be used in all functions
 	var map, vector_parent, vector_child, vector_live_data;
 	var vector_parent_loaded = false;
