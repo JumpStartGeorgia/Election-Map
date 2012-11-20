@@ -38,8 +38,6 @@ $(document).ready(function(){
 	// to load pop-up window for export help
   $("a.fancybox").fancybox();
 
-	alert('hello!');
-
 	// if scrolling make navbar see through
   var fade_after = 10,
   navbar = $('.navbar.navbar-fixed-top');
