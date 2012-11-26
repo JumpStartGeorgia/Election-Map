@@ -93,6 +93,8 @@ logger.debug "////////////// getting current event for event type #{params[:even
   				# now get the child shape type id
   logger.debug "////////////// getting parent shape type"
   				parent_shape_type = get_shape_type(params[:shape_type_id])
+  logger.debug "////////////// parent shape type = #{parent_shape_type}"
+
   				@child_shape_type_id = nil
 
   				if parent_shape_type.nil?
@@ -481,6 +483,7 @@ private
 	# get the default event to show when the site loads
 	def set_default_event_params
 		events = @event_types.map{|x| x.events.select{|y| y.is_default_view?}}.flatten
+		params[:data_type] = Datum::DATA_TYPE[:official] # default value
 		if events && !events.empty?
 			params[:event_type_id] = events.first.event_type_id.to_s
 			params[:event_id] = events.first.id.to_s
@@ -488,8 +491,6 @@ private
 			# else -> set to official
 			if !events.first.has_official_data? && events.first.has_live_data?
 				params[:data_type] = Datum::DATA_TYPE[:live]
-			else
-				params[:data_type] = Datum::DATA_TYPE[:official]
 			end
 		end
 	end
@@ -537,6 +538,8 @@ logger.debug " - no matching event found!"
 				end
 			end
 		end
+		logger.debug " - no matching shape type found!"
+		return nil
 	end
 
 	# get the child shape type of the current shape
