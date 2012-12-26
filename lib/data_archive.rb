@@ -81,27 +81,31 @@ module DataArchive
 
         events.each do |event|
 					event_start_time = Time.now
-          # get the data for this event
-					data = Datum.get_all_data_for_event(event.id)
+					# get the most recent official data set
+		      most_recent_dataset = DataSet.current_dataset(event.id, 'official')
+					if most_recent_dataset && !most_recent_dataset.empty?
+		        # get the data for this event
+						data = Datum.get_all_data_for_event(event.id, most_recent_dataset.first.id)
 
-					if data && !data.empty?
-			      # csv
-			      csv_filename = spreadsheet_file_name(timestamp, event.name, "CSV")
-						files[locale]["CSV"] << csv_filename
-						# create the csv file
-						File.open(archive_file_path(timestamp) + "/" + csv_filename, 'w') do |f|
-							f.puts create_csv_formatted_string(data)
-						end
+						if data && !data.empty?
+					    # csv
+					    csv_filename = spreadsheet_file_name(timestamp, event.name, "CSV")
+							files[locale]["CSV"] << csv_filename
+							# create the csv file
+							File.open(archive_file_path(timestamp) + "/" + csv_filename, 'w') do |f|
+								f.puts create_csv_formatted_string(data)
+							end
 
-			      # xls
-			      xls_filename = spreadsheet_file_name(timestamp, event.name, "XLS")
-						files[locale]["XLS"] << xls_filename
-						# create the csv file
-						File.open(archive_file_path(timestamp) + "/" + xls_filename, 'w') do |f|
-							f.puts create_excel_formatted_string(data)
+					    # xls
+					    xls_filename = spreadsheet_file_name(timestamp, event.name, "XLS")
+							files[locale]["XLS"] << xls_filename
+							# create the csv file
+							File.open(archive_file_path(timestamp) + "/" + xls_filename, 'w') do |f|
+								f.puts create_excel_formatted_string(data)
+							end
 						end
+						logs << ">>>>>>>>>>> time to create files for event #{event.id} was #{Time.now - event_start_time} seconds"
 					end
-				logs << ">>>>>>>>>>> time to create files for event #{event.id} was #{Time.now - event_start_time} seconds"
         end
 				# csv zip file
 				zip_start = Time.now
