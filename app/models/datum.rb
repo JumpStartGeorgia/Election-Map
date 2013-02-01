@@ -374,9 +374,9 @@ class Datum < ActiveRecord::Base
 					:related_indicator_type_id => indicator_type_id)
   			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id)
 				data_array = []
-  			if data && !data.empty?
+  			if !data.blank?
 logger.debug "************* getting summary data relationship params ****************"
-					if relationship && !relationship.empty?
+					if !relationship.blank?
 logger.debug "************* - visible = #{relationship.first.visible}"
 logger.debug "************* - has_openlayers_rule_value = #{relationship.first.has_openlayers_rule_value}"
 						results["summary_data"]["visible"] = relationship.first.visible
