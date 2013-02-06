@@ -368,27 +368,40 @@ class Datum < ActiveRecord::Base
 		if !shape_id.nil? && !shape_type_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !data_set_id.nil?
 			json = []
   		key = "summary_data/data_set_#{data_set_id}/#{I18n.locale}/indicator_type_#{indicator_type_id}/shape_type_#{shape_type_id}/shape_#{shape_id}"
-  		json = JsonCache.fetch(event_id, key) {
+
+  		json = JSON.parse(JsonCache.fetch(event_id, key) {
 				relationship = EventIndicatorRelationship.where(:event_id => event_id,
 					:indicator_type_id => indicator_type_id,
 					:related_indicator_type_id => indicator_type_id)
   			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id)
-				data_array = []
+        hash = Hash.new()
+        hash["data"] = []
+        hash["visible"] = true
+        hash["has_openlayers_rule_value"] = false
+
   			if !data.blank?
 logger.debug "************* getting summary data relationship params ****************"
 					if !relationship.blank?
 logger.debug "************* - visible = #{relationship.first.visible}"
 logger.debug "************* - has_openlayers_rule_value = #{relationship.first.has_openlayers_rule_value}"
-						results["summary_data"]["visible"] = relationship.first.visible
-						results["summary_data"]["has_openlayers_rule_value"] = relationship.first.has_openlayers_rule_value
+            hash["visible"] = relationship.first.visible
+            hash["has_openlayers_rule_value"] = relationship.first.has_openlayers_rule_value
 					end
-logger.debug "*****************************"
 
-  				data_array = data.collect{|x|	x.to_hash}
+  				hash["data"] = data.collect{|x|	x.to_hash}
   			end
-				data_array.to_json
-  		}
-			results["summary_data"]["data"] = JSON.parse(json,:symbolize_names => true)
+logger.debug "*****************************"
+				hash.to_json
+  		})
+
+      # update summary data flags
+logger.debug "************* json keys = #{json.keys}"
+logger.debug "************* visible flag from cache = #{json['visible']}"
+logger.debug "************* has_openlayers_rule_value flag from cache = #{json['has_openlayers_rule_value']}"
+			results["summary_data"]["visible"] = json['visible']
+			results["summary_data"]["has_openlayers_rule_value"] = json['has_openlayers_rule_value']
+      # add summary data
+			results["summary_data"]["data"] = json['data'].map{|x| x.symbolize_keys}
     end
 #		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
