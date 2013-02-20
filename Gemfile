@@ -34,6 +34,8 @@ group :development do
 #	gem 'slim_scrooge' # looks for queries that get columns that are not used
 #	gem "rails-indexes" # looks for fields in db that need index
 #	gem "lol_dba", "~> 1.3.0" # looks for fields in db that need index
+  gem 'rb-inotify', '~> 0.8.8' # rails dev boost needs this
+  gem 'rails-dev-boost', :git => 'git://github.com/thedarkone/rails-dev-boost.git' # speed up loading page in dev mode
 end
 
 group :assets do
