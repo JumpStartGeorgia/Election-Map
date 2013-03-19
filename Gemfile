@@ -1,7 +1,9 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.3'
+gem 'bundler', '~> 1.2.0'
+gem "rails", "3.1.10"
 gem "mysql2", "~> 0.3.11" # this gem works better with utf-8
+
 gem 'jquery-rails', '1.0.19'
 gem 'devise', '2.0.4' # user authentication
 gem 'formtastic', '2.1.1' # create forms easier
@@ -27,23 +29,24 @@ gem "useragent", :git => "https://github.com/jilion/useragent.git" # browser det
 gem "rubyzip", "~> 0.9.9" # generate zip files
 
 group :development do
-	gem 'mailcatcher', '0.5.5' # small smtp server for dev, http://mailcatcher.me/
+	gem 'mailcatcher', '0.5.10' # small smtp server for dev, http://mailcatcher.me/
 #	gem 'ruby-prof' # analyze code perofrmance
 #	gem "query_reviewer", :git => "git://github.com/nesquena/query_reviewer.git" # query analyzer
 #	gem "bullet" # notifies you when n+1 queries are being called
 #	gem 'slim_scrooge' # looks for queries that get columns that are not used
 #	gem "rails-indexes" # looks for fields in db that need index
 #	gem "lol_dba", "~> 1.3.0" # looks for fields in db that need index
-  gem 'rb-inotify', '~> 0.8.8' # rails dev boost needs this
+  gem 'rb-inotify', '~> 0.9' # rails dev boost needs this
   gem 'rails-dev-boost', :git => 'git://github.com/thedarkone/rails-dev-boost.git' # speed up loading page in dev mode
 end
 
 group :assets do
-  gem 'sass-rails', '3.1.4'
-  gem "twitter-bootstrap-rails", "~> 2.1.0"
-  gem 'therubyracer'
-  gem 'coffee-rails', "~> 3.1.0"
-  gem 'uglifier'
+  gem "sass-rails", "3.1.4"
+  gem "coffee-rails", "~> 3.1.1"
+  gem "uglifier", ">= 1.0.3"
+  gem "therubyracer"
+  gem "less-rails"
+	gem "twitter-bootstrap-rails", "~> 2.1.0"
 end
 
 group :staging do
