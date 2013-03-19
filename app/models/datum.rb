@@ -210,6 +210,269 @@ class Datum < ActiveRecord::Base
 		return hash
 	end
 
+	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
+		start = Time.now
+    results = Hash.new
+		if shape_id.present? && shape_type_id.present? && event_id.present? && indicator_type_id.present? && data_set_id.present?
+      # get the shapes
+		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
+
+  	  # get the event
+  	  event = Event.find(event_id)
+
+  	  # get indicator type
+  	  indicator_type = IndicatorType.find(indicator_type_id)
+
+      # add info about this data
+  	  # add the indicator info
+  	  results["indicator"] = Hash.new
+      results["indicator"]["name"] = nil
+			results["indicator"]["name_abbrv"] = indicator_type.nil? ? nil : indicator_type.summary_name
+			results["indicator"]["description"] = nil
+			results["indicator"]["number_format"] = nil
+      results["indicator"]["scales"] = [{:name => IndicatorScale::NO_DATA_TEXT, :color => IndicatorScale::NO_DATA_COLOR }]
+			results["indicator"]["scale_colors"] = [IndicatorScale::NO_DATA_COLOR]
+			results["indicator"]["switcher_indicator_id"] = nil
+
+      # indicate this is summary data
+      results["view_type"] = "summary"
+
+      # add the data
+      results["shape_data"] = []
+
+      if shapes && !shapes.empty? && event
+        shapes.each do |shape|
+      	  # get all of the related json data for this indicator type
+      	  data = build_related_indicator_json2(shape.id, shape_type_id, event_id, data_set_id,
+      	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
+
+          summary = data.select{|x| x.has_key?("summary_data") && x["summary_data"].present? &&
+                      x["summary_data"][0][:indicator_type_id].to_s == indicator_type_id.to_s &&
+    									x["summary_data"][0][:formatted_value] != I18n.t('app.msgs.no_data')}
+          if summary.present?
+            shape_values = data.select{|x| x.has_key?("shape_values") && x["shape_values"].present?}
+            if shape_values.present?
+Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
+              shape_values.first["shape_values"]["parent_id"] = shape.parent_id
+              shape_values.first["shape_values"]["value"] = summary.first["summary_data"].first[:indicator_name_abbrv]
+              shape_values.first["shape_values"]["color"] = summary.first["summary_data"].first[:color]
+              shape_values.first["shape_values"]["title"] = summary.first["summary_data"].first[:summary_name]
+            end
+          end
+
+          # save the data
+      	  results["shape_data"] << data
+  	    end
+  	  end
+    end
+#		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+    return results
+  end
+
+	def self.build_json(shape_id, shape_type_id, indicator_id, data_set_id)
+		start = Time.new
+    results = Hash.new
+		if shape_id.present? && shape_type_id.present? && indicator_id.present? && data_set_id.present?
+      # get the shapes
+		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
+
+			# get the indicator
+			indicator = Indicator.find(indicator_id)
+
+      # add info about this data
+  	  # add the indicator info
+  	  results["indicator"] = Hash.new
+      results["indicator"]["name"] = indicator.name
+			results["indicator"]["name_abbrv"] = indicator.name_abbrv_w_parent
+			results["indicator"]["description"] = indicator.description_w_parent
+			results["indicator"]["number_format"] = indicator.number_format.nil? ? "" : indicator.number_format
+      results["indicator"]["scales"] = IndicatorScale.for_indicator(indicator.id)
+			results["indicator"]["scale_colors"] = IndicatorScale.get_colors(indicator.id)
+			results["indicator"]["switcher_indicator_id"] = nil
+
+			# if this event has a custom view at this level, get indicator id for other shape live
+			new_indicator = nil
+			custom_view = indicator.event.event_custom_views.where(:shape_type_id => shape_type_id)
+			if custom_view.present?
+				new_indicator = Indicator.find_new_id(indicator_id, custom_view.first.descendant_shape_type_id)
+			else
+				custom_view = indicator.event.event_custom_views.where(:descendant_shape_type_id => shape_type_id)
+  			if custom_view.present?
+					new_indicator = Indicator.find_new_id(indicator_id, custom_view.first.shape_type.child_ids.first)
+				end
+			end
+			if new_indicator
+				# is custom view, update switcher indicator id
+				results["indicator"]["switcher_indicator_id"] = new_indicator.first.id
+			end
+
+      # indicate this is not summary data
+      results["view_type"] = "normal"
+
+      # add the data
+      results["shape_data"] = []
+
+      if shapes.present? && indicator.present?
+  			event = indicator.event
+        shapes.each do |shape|
+      	  # get all of the related json data for this indicator
+      	  data = build_related_indicator_json2(shape.id, shape_type_id, event.id, data_set_id,
+      	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
+
+      	  # find the data item with the indicator_id and use it's values to set the shape_values hash
+          data_item = data.select{|x| x.has_key?("data_item") && x["data_item"].present? &&
+                        x["data_item"][:indicator_id].to_s == indicator_id.to_s}
+          if data_item.present?
+            shape_values = data.select{|x| x.has_key?("shape_values") && x["shape_values"].present?}
+            if shape_values.present?
+Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
+              shape_values.first["shape_values"]["parent_id"] = shape.parent_id
+              shape_values.first["shape_values"]["value"] = data_item.first["data_item"][:value]
+              shape_values.first["shape_values"]["number_format"] = data_item.first["data_item"][:number_format]
+              shape_values.first["shape_values"]["title"] = data_item.first["data_item"][:indicator_name]
+              shape_values.first["shape_values"]["title_abbrv"] = data_item.first["data_item"][:indicator_name_abbrv]
+            end
+          end
+
+          # save the data
+      	  results["shape_data"] << data
+        end
+      end
+    end
+#		puts "******* time to get_related_indicator_data: #{Time.now-start} seconds for indicator #{indicator_id}"
+    return results
+  end
+
+  # build the json string for the provided indicator relationships
+  # [
+  #    {shape_values => {}}
+  #    {"summary_data" => []}
+  #    {"data_item" => {}}
+  #    {"footnote" => {}}
+  # ]
+	def self.build_related_indicator_json2(shape_id, shape_type_id, event_id, data_set_id, relationships)
+    results = []
+
+    # create empty shape_values hash
+    # - these values will be pushed into the shape json file so they
+    #    can be color coded by openlayers
+    # - will be populated with real value by the method that called this method
+    shape_values = Hash.new
+	  shape_values["shape_id"] = shape_id
+	  shape_values["parent_id"] = nil
+	  shape_values["value"] = I18n.t('app.msgs.no_data')
+	  shape_values["color"] = nil
+	  shape_values["number_format"] = nil
+	  shape_values["title"] = I18n.t('app.msgs.no_data')
+	  shape_values["title_abbrv"] = nil
+	  shape_values["title_location"] = nil
+    data_hash = Hash.new
+		data_hash["shape_values"] = shape_values
+	  results << data_hash
+
+	  if shape_id.present? && event_id.present? && shape_type_id.present? && data_set_id.present? && relationships.present?
+      has_duplicates = false
+	    relationships.each do |rel|
+	      if rel.related_indicator_type_id.present?
+	        # get the summary for this indciator type
+					data = build_summary_data_json(shape_id, shape_type_id, event_id, rel.related_indicator_type_id, data_set_id)
+					if data.present? && data["summary_data"].present? && data["summary_data"]["data"].present?
+	        	results << data
+					end
+        elsif rel.related_core_indicator_id.present?
+          # see if indicator is part of indicator type that has summary
+          # if so, get the summary info so can assign the overall placement and overall winner
+          core = CoreIndicator.get_indicator_type_with_summary(rel.related_core_indicator_id)
+          if core.present?
+            # get summary data
+  					data = build_summary_data_json(shape_id, shape_type_id, event_id, core.indicator_type_id, data_set_id)
+  					if data.present? && data["summary_data"].present? && data["summary_data"]["data"].present?
+              # add the data item for the provided indicator
+              index = data["summary_data"]["data"].index{|x| x[:core_indicator_id] == rel.related_core_indicator_id}
+              if index
+    						data_hash = Hash.new
+    						data_hash["data_item"] = data["summary_data"]["data"][index]
+								data_hash["data_item"][:visible] = rel.visible
+								data_hash["data_item"][:has_openlayers_rule_value] = rel.has_openlayers_rule_value
+    	        	results << data_hash
+
+                # add the placement of this indicator
+								# if value != no data
+								# if there are duplicate values (e.g., a tie) fix the rank accordingly
+								if data["summary_data"]["data"][index][:value] != I18n.t('app.msgs.no_data')
+								  #&& data["summary_data"][index][:value] != "0"
+
+                  # returns {:rank, :total, :has_duplicates}
+                  h = compute_placement(data["summary_data"]["data"], data["summary_data"]["data"][index][:value])
+                  has_duplicates = h[:has_duplicates]
+                  if h.present?
+  		              rank = Datum.new
+  		              rank.value = h[:rank].to_s
+  		              rank["number_format"] = " / #{h[:total]}"
+  		              rank["number_format"] += " *" if h[:has_duplicates]
+  		              rank["indicator_type_name"] = data["summary_data"]["data"][index][:indicator_type_name]
+  		              rank["indicator_name"] = I18n.t('app.common.overall_placement')
+  		              rank["indicator_name_abbrv"] = I18n.t('app.common.overall_placement')
+  		  						data_hash = Hash.new
+  		  						data_hash["data_item"] = rank.to_hash
+  		  	        	results << data_hash
+                  end
+								end
+
+	              # add total # of indicators in the summary
+	              rank = Datum.new
+	              rank.value = data["summary_data"]["data"].length
+	              rank["indicator_type_name"] = data["summary_data"]["data"][index]["indicator_type_name"]
+	              rank["indicator_name"] = I18n.t('app.common.total_participants')
+	              rank["indicator_name_abbrv"] = I18n.t('app.common.total_participants')
+	  						data_hash = Hash.new
+	  						data_hash["data_item"] = rank.to_hash
+	  	        	results << data_hash
+              end
+
+              # add the winner if this record is not it and if value != no data or 0
+							if index > 0 &&
+									data["summary_data"]["data"][0][:value] != "0" &&
+									data["summary_data"]["data"][0][:value] != I18n.t('app.msgs.no_data')
+
+                data["summary_data"]["data"][0][:indicator_name].insert(0, "#{I18n.t('app.common.winner')}: ")
+                data["summary_data"]["data"][0][:indicator_name_abbrv].insert(0, "#{I18n.t('app.common.winner')}: ")
+    						data_hash = Hash.new
+    						data_hash["data_item"] = data["summary_data"]["data"][0]
+    	        	results << data_hash
+              end
+  					end
+          else
+            # indicator type does not have summary
+            # get the data item for this indciator
+  					data = get_data_for_shape_core_indicator(shape_id, event_id, shape_type_id, rel.related_core_indicator_id, data_set_id)
+  					if data && !data.empty?
+  						data_hash = Hash.new
+  						data_hash["data_item"] = data.first.to_hash
+							data_hash["data_item"][:visible] = rel.visible
+							data_hash["data_item"][:has_openlayers_rule_value] = rel.has_openlayers_rule_value
+  	        	results << data_hash
+  					end
+          end
+        end
+      end
+
+      # add duplicate footnote if needed
+      if has_duplicates
+        footnote = Datum.new
+        footnote["indicator_name"] = "* #{I18n.t('app.common.footnote_duplicates')}"
+        footnote["indicator_name_abbrv"] = "* #{I18n.t('app.common.footnote_duplicates')}"
+				data_hash = Hash.new
+				data_hash["footnote"] = footnote.to_hash
+      	results << data_hash
+      end
+    end
+	  return results
+  end
+
+##############################
+############################## old start
+##############################
 	def self.get_related_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
 		start = Time.now
     results = nil
@@ -359,6 +622,10 @@ class Datum < ActiveRecord::Base
     end
 	  return results
   end
+
+##############################
+############################## old end
+##############################
 
 
   # get the summary data for an indicator type in an event for a shape
