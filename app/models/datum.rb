@@ -16,6 +16,10 @@ class Datum < ActiveRecord::Base
 
   DATA_TYPE = {:official => "official", :live => "live"}
 	PRECINCTS_REPORTED = {:number => 'Precincts Reported (#)', :percent => 'Precincts Reported (%)'}
+	FILE_CACHE_KEY_SUMMARY_DATA =
+  	"summary_data/data_set_[data_set_id]/[locale]/indicator_type_[indicator_type_id]/shape_type_[shape_type_id]/shape_[shape_id]"
+#		"event_[event_id]/[locale]/summary_data/indicator_type_[indicator_type_id]/shape_type_[shape_type_id]/shape_[shape_id]"
+
 
 	###################################
 	## special gets for attributes
@@ -356,6 +360,66 @@ class Datum < ActiveRecord::Base
 	  return results
   end
 
+
+  # get the summary data for an indicator type in an event for a shape
+	def self.build_summary_data_json(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
+		start = Time.now
+		results = Hash.new
+		results["summary_data"] = Hash.new
+		results["summary_data"]["data"] = []
+		results["summary_data"]["visible"] = true
+		results["summary_data"]["has_openlayers_rule_value"] = false
+
+		if shape_id.present? && shape_type_id.present? && event_id.present? && indicator_type_id.present? && data_set_id.present?
+			json = []
+  		key = FILE_CACHE_KEY_SUMMARY_DATA.gsub("[shape_id]", shape_id.to_s)
+					.gsub("[locale]", I18n.locale.to_s)
+		      .gsub("[event_id]", event_id.to_s)
+		      .gsub("[indicator_type_id]", indicator_type_id.to_s)
+		      .gsub("[shape_type_id]", shape_type_id.to_s)
+		      .gsub("[data_set_id]", data_set_id.to_s)
+
+  		json = JSON.parse(JsonCache.fetch(event_id, key) {
+				relationship = EventIndicatorRelationship.where(:event_id => event_id,
+					:indicator_type_id => indicator_type_id,
+					:related_indicator_type_id => indicator_type_id)
+  			data = get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id)
+        hash = Hash.new()
+        hash["data"] = []
+        hash["visible"] = true
+        hash["has_openlayers_rule_value"] = false
+
+  			if !data.blank?
+logger.debug "************* getting summary data relationship params ****************"
+					if !relationship.blank?
+logger.debug "************* - visible = #{relationship.first.visible}"
+logger.debug "************* - has_openlayers_rule_value = #{relationship.first.has_openlayers_rule_value}"
+            hash["visible"] = relationship.first.visible
+            hash["has_openlayers_rule_value"] = relationship.first.has_openlayers_rule_value
+					end
+
+  				hash["data"] = data.collect{|x|	x.to_hash}
+  			end
+logger.debug "*****************************"
+				hash.to_json
+  		})
+
+      # update summary data flags
+logger.debug "************* json keys = #{json.keys}"
+logger.debug "************* visible flag from cache = #{json['visible']}"
+logger.debug "************* has_openlayers_rule_value flag from cache = #{json['has_openlayers_rule_value']}"
+			results["summary_data"]["visible"] = json['visible']
+			results["summary_data"]["has_openlayers_rule_value"] = json['has_openlayers_rule_value']
+      # add summary data
+			results["summary_data"]["data"] = json['data'].map{|x| x.symbolize_keys}
+    end
+#		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
+    return results
+  end
+
+##############################
+############################## old start
+##############################
   # get the summary data for an indicator type in an event for a shape
 	def self.get_indicator_type_data(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
 		start = Time.now
@@ -406,6 +470,9 @@ logger.debug "************* has_openlayers_rule_value flag from cache = #{json['
 #		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
+##############################
+############################## old end
+##############################
 
 	# determine overall placement of value in array
 	# assume array is already sorted in desired order
