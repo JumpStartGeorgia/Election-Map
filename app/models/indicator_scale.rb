@@ -13,6 +13,9 @@ class IndicatorScale < ActiveRecord::Base
   scope :l10n , joins(:indicator_scale_translations).where('locale = ?',I18n.locale)
   scope :by_name , order('name').l10n
 
+  NO_DATA_COLOR = "#CCCCCC"
+  NO_DATA_TEXT = I18n.t('app.msgs.no_data')
+
   # have to turn this off so csv upload works since adding indicator and scale at same time, no indicator id exists yet
   #validates :indicator_id, :presence => true
 
@@ -23,10 +26,10 @@ class IndicatorScale < ActiveRecord::Base
 
 	# get an array of colors to use with the scales
   def self.get_colors(indicator_id)
-		if !indicator_id.nil?
+		if indicator_id.present?
 			# get the number of scales for the provided indicator_id
 			num_levels = count_by_indicator(indicator_id)
-			if !num_levels.nil?
+			if num_levels.present?
         colors = ScaleColors.get_colors("OrRd", num_levels)
         colors = [] if colors.nil?
 				return colors
@@ -35,9 +38,30 @@ class IndicatorScale < ActiveRecord::Base
 		return nil
 	end
 
+	def to_hash
+	  {
+	    :name => self.name,
+	    :color => self.color
+	  }
+  end
+
+	# get all indicator scales for an indicator
+	def self.for_indicator(indicator_id)
+		if indicator_id.present?
+      scales = with_translations(I18n.locale).where(:indicator_id => indicator_id)
+      if scales && !scales.empty?
+        # insert no data record
+        x = {:name => NO_DATA_TEXT, :color => NO_DATA_COLOR}
+        hash = scales.map{|x| x.to_hash}
+        hash.insert(0,x)
+        return hash
+      end
+		end
+	end
+
 	# get all indicator scales for an indicator
 	def self.find_by_indicator_id(indicator_id)
-		if !indicator_id.nil?
+		if indicator_id.present?
 #			Rails.cache.fetch("indicator_scales_by_indicator_#{indicator_id}") {
 				where(:indicator_id => indicator_id)
 #			}

@@ -247,16 +247,16 @@ class Datum < ActiveRecord::Base
       	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
 
           summary = data.select{|x| x.has_key?("summary_data") && x["summary_data"].present? &&
-                      x["summary_data"][0][:indicator_type_id].to_s == indicator_type_id.to_s &&
-    									x["summary_data"][0][:formatted_value] != I18n.t('app.msgs.no_data')}
+                      x["summary_data"]["data"][0][:indicator_type_id].to_s == indicator_type_id.to_s &&
+    									x["summary_data"]["data"][0][:formatted_value] != I18n.t('app.msgs.no_data')}
           if summary.present?
             shape_values = data.select{|x| x.has_key?("shape_values") && x["shape_values"].present?}
             if shape_values.present?
 Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
               shape_values.first["shape_values"]["parent_id"] = shape.parent_id
-              shape_values.first["shape_values"]["value"] = summary.first["summary_data"].first[:indicator_name_abbrv]
-              shape_values.first["shape_values"]["color"] = summary.first["summary_data"].first[:color]
-              shape_values.first["shape_values"]["title"] = summary.first["summary_data"].first[:summary_name]
+              shape_values.first["shape_values"]["value"] = summary.first["summary_data"]["data"].first[:indicator_name_abbrv]
+              shape_values.first["shape_values"]["color"] = summary.first["summary_data"]["data"].first[:color]
+              shape_values.first["shape_values"]["title"] = summary.first["summary_data"]["data"].first[:summary_name]
             end
           end
 
@@ -303,7 +303,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 			end
 			if new_indicator
 				# is custom view, update switcher indicator id
-				results["indicator"]["switcher_indicator_id"] = new_indicator.first.id
+				results["indicator"]["switcher_indicator_id"] = new_indicator.id
 			end
 
       # indicate this is not summary data
