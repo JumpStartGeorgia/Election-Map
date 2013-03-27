@@ -118,6 +118,25 @@ ElectionMap::Application.routes.draw do
 		match '/event_type/:event_type_id/event/:event_id/shape_type/:shape_type_id/shape/:shape_id/indicator_type/:indicator_type_id/view_type/:view_type(/custom_view/:custom_view(/highlight_shape/:highlight_shape))' => 'root#index', :as => 'summary_map', :via => :get
 		match '/event_type/:event_type_id/event/:event_id/indicator_type/:indicator_type_id/view_type/:view_type/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id(/custom_view/:custom_view)))' => 'root#index', :as => 'summary_shape_level_map', :via => :get
 
+
+    # json routes
+		# menu
+		match '/json/event_menu', :to => 'json#event_menu', :as => :json_event_menu, :via => :get, :defaults => {:format => 'json'}
+		match '/json/live_event_menu', :to => 'json#live_event_menu', :as => :json_live_event_menu, :via => :get, :defaults => {:format => 'json'}
+		# current data set id
+		match '/json/current_data_set/event/:event_id/data_type/:data_type', :to => 'json#current_data_set', :as => :json_current_data_set, :via => :get, :defaults => {:format => 'json'}
+		# shape
+		match '/json/shape/:id/shape_type/:shape_type_id', :to => 'json#shape', :as => :json_shape, :via => :get, :defaults => {:format => 'json'}
+		match '/json/children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id(/parent_clickable/:parent_shape_clickable)', :to => 'json#children_shapes', :as => :json_children_shapes, :via => :get, :defaults => {:format => 'json'}
+		match '/json/custom_children_shapes/:parent_id/shape_type/:shape_type_id', :to => 'json#custom_children_shapes', :as => :json_custom_children_shapes, :via => :get, :defaults => {:format => 'json'}
+		# data
+		match '/json/children_data/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator/:indicator_id(/parent_clickable/:parent_shape_clickable)', :to => 'json#children_data', :as => :json_children_data, :via => :get, :defaults => {:format => 'json'}
+		match '/json/custom_children_data/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator/:indicator_id', :to => 'json#custom_children_data', :as => :json_custom_children_data, :via => :get, :defaults => {:format => 'json'}
+		match '/json/summary_children_data/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id(/parent_clickable/:parent_shape_clickable)', :to => 'json#summary_children_data', :as => :json_summary_children_data, :via => :get, :defaults => {:format => 'json'}
+		match '/json/summary_custom_children_data/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id', :to => 'json#summary_custom_children_data', :as => :json_summary_custom_children_data, :via => :get, :defaults => {:format => 'json'}
+
+
+=begin old routes
     # json routes
 		match '/json/shape/:id/shape_type/:shape_type_id', :to => 'json#shape', :as => :json_shape, :via => :get, :defaults => {:format => 'json'}
 		match '/json/children_shapes/:parent_id/shape_type/:shape_type_id/event/:event_id(/parent_clickable/:parent_shape_clickable(/indicator/:indicator_id(/custom_view/:custom_view)))', :to => 'json#children_shapes', :as => :json_children_shapes, :via => :get, :defaults => {:format => 'json'}
@@ -128,7 +147,7 @@ ElectionMap::Application.routes.draw do
 		match '/json/event_menu', :to => 'json#event_menu', :as => :json_event_menu, :via => :get, :defaults => {:format => 'json'}
 		match '/json/live_event_menu', :to => 'json#live_event_menu', :as => :json_live_event_menu, :via => :get, :defaults => {:format => 'json'}
 		match '/json/current_data_set/event/:event_id/data_type/:data_type', :to => 'json#current_data_set', :as => :json_current_data_set, :via => :get, :defaults => {:format => 'json'}
-
+=end
 
 		match '/data_table/event_type/:event_type_id/event/:event_id/shape/:shape_id/shape_type/:shape_type_id/child_shape_type/:child_shape_type_id/indicator/:indicator_id/view_type/:view_type/summary_view_type/:summary_view_type_name(/custom_view/:custom_view)', :to => 'root#data_table', :as => :data_table, :via => :get
 
