@@ -593,34 +593,71 @@ logger.debug " - no matching event found!"
 		if !params[:shape_id].nil?
 			gon.shape_path = json_shape_path(:id => params[:shape_id], :shape_type_id => @parent_shape_type)
 			if params[:view_type] == @summary_view_type_name && @is_custom_view
-  			gon.children_shapes_path = json_summary_custom_children_shapes_path(:parent_id => params[:shape_id],
+  			gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
+				  :shape_type_id => @child_shape_type_id)
+				gon.data_path = json_summary_custom_children_data_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
   			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
 					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
 			elsif params[:view_type] == @summary_view_type_name
-  			gon.children_shapes_path = json_summary_children_shapes_path(:parent_id => params[:shape_id],
+  			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
+  			  :shape_type_id => @child_shape_type_id,
+  			  :event_id => params[:event_id],
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+				gon.data_path = json_summary_children_data_path(:parent_id => params[:shape_id],
   			  :event_id => params[:event_id], :indicator_type_id => params[:indicator_type_id],
-  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
+  			  :shape_type_id => @child_shape_type_id,
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
 					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
       elsif @is_custom_view
 				gon.children_shapes_path = json_custom_children_shapes_path(:parent_id => params[:shape_id],
+				  :shape_type_id => @child_shape_type_id)
+				gon.data_path = json_custom_children_data_path(:parent_id => params[:shape_id],
 				  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
 				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
 					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
   		else
   			gon.children_shapes_path = json_children_shapes_path(:parent_id => params[:shape_id],
+  			  :shape_type_id => @child_shape_type_id,
+  			  :event_id => params[:event_id],
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s)
+				gon.data_path = json_children_data_path(:parent_id => params[:shape_id],
   			  :indicator_id => params[:indicator_id], :shape_type_id => @child_shape_type_id,
-  			  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
+  			  :event_id => params[:event_id],
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
+      end
+
+
+      # set json paths for indicator menu ajax calls
+			# - 'xxx' are placeholders that will be replaced with the id from the link the user clicks on
+      if @is_custom_view
+				gon.indicator_menu_data_path_summary = json_summary_custom_children_data_path(:parent_id => params[:shape_id],
+  			  :event_id => params[:event_id], :indicator_type_id => 'xxx',
+  			  :shape_type_id => @child_shape_type_id, :custom_view => @is_custom_view.to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
+				gon.indicator_menu_data_path = json_custom_children_data_path(:parent_id => params[:shape_id],
+				  :indicator_id => 'xxx', :shape_type_id => @child_shape_type_id,
+				  :event_id => params[:event_id], :custom_view => @is_custom_view.to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
+      else
+				gon.indicator_menu_data_path_summary = json_summary_children_data_path(:parent_id => params[:shape_id],
+  			  :event_id => params[:event_id], :indicator_type_id => 'xxx',
+  			  :shape_type_id => @child_shape_type_id,
+  			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
+					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
+				gon.indicator_menu_data_path = json_children_data_path(:parent_id => params[:shape_id],
+  			  :indicator_id => 'xxx', :shape_type_id => @child_shape_type_id,
+  			  :event_id => params[:event_id],
   			  :parent_shape_clickable => params[:parent_shape_clickable].to_s,
 					:data_type => params[:data_type], :data_set_id => params[:data_set_id])
       end
 		end
 
 		# view type
-		gon.view_type = params[:view_type]
+#		gon.view_type = params[:view_type]
 		gon.summary_view_type_name = @summary_view_type_name
-
+=begin
 		# indicator name
 		if !@indicator.nil?
 			gon.indicator_name = @indicator.name
@@ -629,17 +666,17 @@ logger.debug " - no matching event found!"
 			gon.indicator_number_format = @indicator.number_format.nil? ? "" : @indicator.number_format
 			gon.indicator_scale_colors = IndicatorScale.get_colors(@indicator.id)
 		end
-
+=end
 		# if summary view type, set indicator_description for legend title
 		if params[:view_type] == @summary_view_type_name
 			gon.indicator_description = I18n.t("app.msgs.map_summary_legend_title", :shape_type => @child_shape_type_name_singular_possessive)
 		end
-
+=begin
 		# indicator scales
 		if !params[:indicator_id].nil? && params[:view_type] != @summary_view_type_name
 			build_indicator_scale_array
 		end
-
+=end
     # save the map title for export
 		if !params[:event_id].nil?
 		  gon.event_id = params[:event_id]
