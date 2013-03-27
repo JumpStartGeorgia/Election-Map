@@ -85,24 +85,15 @@ ElectionMap::Application.routes.draw do
 		match '/event_indicator_relationships/render_js_blocks/:id/:type/:counter', :to => 'event_indicator_relationships#render_js_blocks', :via => :get, :defaults => {:format => 'json'}
 
 		# cache
-		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => :get
-		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => :post
-		match '/cache/clear_memory', :to => 'cache#clear_memory', :as => :cache_clear_memory, :via => :get
-		match '/cache/clear_memory', :to => 'cache#clear_memory', :as => :cache_clear_memory, :via => :post
-		match '/cache/clear_files', :to => 'cache#clear_files', :as => :cache_clear_files, :via => :get
-		match '/cache/clear_files', :to => 'cache#clear_files', :as => :cache_clear_files, :via => :post
+		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => [:get, :post]
+		match '/cache/clear_memory', :to => 'cache#clear_memory', :as => :cache_clear_memory, :via => [:get, :post]
+		match '/cache/clear_files', :to => 'cache#clear_files', :as => :cache_clear_files, :via => [:get, :post]
 		match '/cache/custom_event_indicators', :to => 'cache#custom_event_indicators',
-			:as => :cache_custom_event_indicators, :via => :get
-		match '/cache/custom_event_indicators', :to => 'cache#custom_event_indicators',
-			:as => :cache_custom_event_indicators, :via => :post
+			:as => :cache_custom_event_indicators, :via => [:get, :post]
 		match '/cache/default_custom_event', :to => 'cache#default_custom_event',
-			:as => :cache_default_custom_event, :via => :get
-		match '/cache/default_custom_event', :to => 'cache#default_custom_event',
-			:as => :cache_default_custom_event, :via => :post
+			:as => :cache_default_custom_event, :via => [:get, :post]
 		match '/cache/summary_data', :to => 'cache#summary_data',
-			:as => :cache_summary_data, :via => :get
-		match '/cache/summary_data', :to => 'cache#summary_data',
-			:as => :cache_summary_data, :via => :post
+			:as => :cache_summary_data, :via => [:get, :post]
 
 		# data archives
 		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :get

@@ -2,43 +2,37 @@ module JsonCache
 	require 'fileutils'
 	require 'net/http'
 
+	JSON_ROOT_PATH = "#{Rails.root}/public/system/json"
+	JSON_SHAPE_PATH = "#{JSON_ROOT_PATH}/shapes"
+	JSON_DATA_PATH = "#{JSON_ROOT_PATH}/data"
+
 	###########################################
 	### manage files
 	###########################################
-	def self.create_directory(event_id, subpath=nil)
-		if !subpath.nil? && subpath != "."
-			FileUtils.mkpath(json_file_path.gsub("[event_id]", event_id.to_s) + "/" + subpath)
-		else
-			FileUtils.mkpath(json_file_path.gsub("[event_id]", event_id.to_s))
-		end
+	def self.read_shape(filename)
+		json = nil
+		json = read(JSON_SHAPE_PATH + "/#{filename}.json") if filename
+		return json
 	end
 
-	def self.read(event_id, filename)
+	def self.read_data(filename)
 		json = nil
-		if event_id && filename
-			file_path = json_file_path.gsub("[event_id]", event_id.to_s) << "/#{filename}.json"
-			if File.exists?(file_path)
-				json = File.open(file_path, "r") {|f| f.read()}
-			end
+		json = read(JSON_DATA_PATH + "/#{filename}.json") if filename
+		return json
+	end
+
+	def self.fetch_shape(filename, &block)
+		json = nil
+		if filename
+			json = fetch(JSON_SHAPE_PATH + "/#{filename}.json") {yield if block_given?}
 		end
 		return json
 	end
 
-	def self.fetch(event_id, filename, &block)
+	def self.fetch_data(filename, &block)
 		json = nil
-		if event_id && filename
-			file_path = json_file_path.gsub("[event_id]", event_id.to_s) << "/#{filename}.json"
-			if File.exists?(file_path)
-				json = File.open(file_path, "r") {|f| f.read()}
-			else
-				# get the json data
-				json = yield if block_given?
-
-				# create the directory tree if it does not exist
-				create_directory(event_id, File.dirname(filename))
-
-				File.open(file_path, 'w') {|f| f.write(json)}
-			end
+		if filename
+			json = fetch(JSON_DATA_PATH + "/#{filename}.json") {yield if block_given?}
 		end
 		return json
 	end
@@ -46,30 +40,51 @@ module JsonCache
 	###########################################
 	### clear cache
 	###########################################
-	# remove the files for the provided event_id
-	# if no id provided, remove all files
-	def self.clear_all(event_id=nil)
-		Rails.logger.debug "################## - clearing all cache"
-		clear_cache
-		clear_files(event_id)
+	def self.clear_all
+		Rails.logger.debug "################## - clearing all file and memory cache"
+		clear_memory_cache
+		clear_all_files
 	end
 
-	def self.clear_cache
+	def self.clear_all_shapes
+		Rails.logger.debug "################## - clearing all shape and memory cache"
+		clear_memory_cache
+		clear_shape_files
+	end
+
+	def self.clear_all_data(event_id = nil)
+		Rails.logger.debug "################## - clearing all data and memory cache"
+		clear_memory_cache
+		clear_data_files(event_id)
+	end
+
+	def self.clear_memory_cache
 		Rails.logger.debug "################## - clearing memory cache"
 		Rails.cache.clear
 	end
 
-	def self.clear_files(event_id=nil)
+	def self.clear_all_files
 		Rails.logger.debug "################## - clearing cache files"
+		# don't delete the json folder - delete everything inside it
+		FileUtils.rm_rf(Dir.glob(JSON_ROOT_PATH + "/*"))
+	end
+
+	def self.clear_shape_files
+		Rails.logger.debug "################## - clearing shape cache files"
+		FileUtils.rm_rf(JSON_SHAPE_PATH)
+	end
+
+	def self.clear_data_files(event_id=nil)
+		Rails.logger.debug "################## - clearing data cache files"
 		if event_id
-			FileUtils.rm_rf(json_file_path.gsub("[event_id]", event_id.to_s))
+			FileUtils.rm_rf(JSON_DATA_PATH.gsub("[event_id]", event_id.to_s))
 		else
-			# don't delete the json folder - delete everything inside it
-#			FileUtils.rm_rf(Dir.glob(json_file_path.gsub("event_[event_id]", "*")))
-			# delete the json folder and everything inside of it
-			FileUtils.rm_rf(Dir.glob(json_file_path.gsub("event_[event_id]", "")))
+			FileUtils.rm_rf(JSON_DATA_PATH)
 		end
 	end
+
+
+
 
 	###########################################
 	### create custom view event json cache
@@ -320,13 +335,49 @@ Rails.logger.debug "------------------ has live data"
 	###########################################
 protected
 
+	###########################################
+	### manage files
+	###########################################
+	def self.create_directory(file_path)
+		if file_path.present? && file_path != "."
+			FileUtils.mkpath(file_path)
+		end
+	end
+
+	def self.read(file_path)
+		json = nil
+		if file_path && File.exists?(file_path)
+			json = File.open(file_path, "r") {|f| f.read()}
+		end
+		return json
+	end
+
+	def self.fetch(file_path, &block)
+		json = nil
+		if file_path.present?
+			if File.exists?(file_path)
+				json = File.open(file_path, "r") {|f| f.read()}
+			else
+				# get the json data
+				json = yield if block_given?
+
+				# create the directory tree if it does not exist
+				create_directory(File.dirname(file_path))
+
+				File.open(file_path, 'w') {|f| f.write(json)}
+			end
+		end
+		return json
+	end
+
+
 	def self.json_file_path
 		"#{Rails.root}/public/system/json/event_[event_id]"
 	end
 
 	def self.json_domain
 		# domain
-		domain = "http://emap.local"
+		domain = "http://localhost:3000"
 		if Rails.env.staging?
 			domain = "http://dev-electiondata.jumpstart.ge"
 		elsif Rails.env.production?
