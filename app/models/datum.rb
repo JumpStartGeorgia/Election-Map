@@ -17,8 +17,8 @@ class Datum < ActiveRecord::Base
   DATA_TYPE = {:official => "official", :live => "live"}
 	PRECINCTS_REPORTED = {:number => 'Precincts Reported (#)', :percent => 'Precincts Reported (%)'}
 	FILE_CACHE_KEY_SUMMARY_DATA =
-  	"summary_data/data_set_[data_set_id]/[locale]/indicator_type_[indicator_type_id]/shape_type_[shape_type_id]/shape_[shape_id]"
-#		"event_[event_id]/[locale]/summary_data/indicator_type_[indicator_type_id]/shape_type_[shape_type_id]/shape_[shape_id]"
+		"event_[event_id]/data_set_[data_set_id]/[locale]/summary_data/indicator_type_[indicator_type_id]/shape_type_[shape_type_id]/shape_[shape_id]"
+#  	"summary_data/data_set_[data_set_id]/[locale]/indicator_type_[indicator_type_id]/shape_type_[shape_type_id]/shape_[shape_id]"
 
 
 	###################################
@@ -646,7 +646,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 		      .gsub("[shape_type_id]", shape_type_id.to_s)
 		      .gsub("[data_set_id]", data_set_id.to_s)
 
-  		json = JSON.parse(JsonCache.fetch(event_id, key) {
+  		json = JSON.parse(JsonCache.fetch_data(key) {
 				relationship = EventIndicatorRelationship.where(:event_id => event_id,
 					:indicator_type_id => indicator_type_id,
 					:related_indicator_type_id => indicator_type_id)

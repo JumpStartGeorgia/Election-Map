@@ -224,17 +224,17 @@ class JsonController < ApplicationController
 				  else
 					  key.gsub!("[parent_shape_clickable]", "false")
 				  end
-  =begin
-				  data = Rails.cache.fetch(key) {
-					  d = ''
-					  if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-						  d = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id]).to_json
-					  elsif shape.has_children?
-						  d = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id]).to_json
-					  end
-					  d
-				  }
-  =end
+=begin
+			    data = Rails.cache.fetch(key) {
+				    d = ''
+				    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
+					    d = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id]).to_json
+				    elsif shape.has_children?
+					    d = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id]).to_json
+				    end
+				    d
+			    }
+=end
           if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 	          data = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id]).to_json
           elsif shape.has_children?
@@ -343,7 +343,7 @@ class JsonController < ApplicationController
 				  else
 					  key.gsub!("[parent_shape_clickable]", "false")
 				  end
-  =begin
+=begin
 				  data = Rails.cache.fetch(key) {
 					  d = ''
 					  if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
@@ -355,7 +355,7 @@ class JsonController < ApplicationController
 					  end
 					  d
 				  }
-  =end
+=end
           if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 	          data = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], params[:data_set_id]).to_json
           elsif shape.has_children?

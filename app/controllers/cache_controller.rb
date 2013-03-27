@@ -40,7 +40,7 @@ class CacheController < ApplicationController
   def clear_memory
 		if request.post?
 			start = Time.now
-			JsonCache.clear_cache
+			JsonCache.clear_memory_cache
 			flash[:notice] = I18n.t('cache.clear_memory.cleared')
 			send_status_update(I18n.t('cache.clear_memory.cleared'), Time.now-start)
 		end
@@ -49,7 +49,7 @@ class CacheController < ApplicationController
   def clear_files
 		if request.post?
 			start = Time.now
-			JsonCache.clear_files
+			JsonCache.clear_all_files
 			flash[:notice] = I18n.t('cache.clear_files.cleared')
 			send_status_update(I18n.t('cache.clear_files.cleared'), Time.now-start)
 		end
