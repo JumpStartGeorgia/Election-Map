@@ -1,6 +1,6 @@
 if (gon.openlayers){
 	// Define global variables which can be used in all functions
-	var map, vector_parent, vector_child, vector_live_data;
+	var map, vector_parent, vector_child, vector_live_data, json_data;
 	var vector_parent_loaded = false;
 	var vector_child_loaded = false;
 	var scale_nodata = [];
@@ -207,16 +207,91 @@ if (gon.openlayers){
 		}
 	}
 
+
+	// pull the data value and color from the data json and put into the feature
+	// - also take the feature title_location and push into the data json
+	function bindDataToShapes(features)
+	{
+		for (var i in features)
+		{
+			var feature = features[i];
+			for (var j in json_data["shape_data"])
+			{
+				var json_shape_data = json_data["shape_data"][j][0].shape_values;
+				if (feature.data.id === json_shape_data.shape_id)
+				{
+					// put the color and value into the feature
+					feature.data.color = json_shape_data.color;
+					feature.attributes.color = json_shape_data.color;
+					feature.data.value = json_shape_data.value;
+					feature.attributes.value = json_shape_data.value;
+
+					// move the title_location into the data json
+					json_shape_data.title_location = feature.attributes.title_location;
+
+					// if this is summary set indicator description from gon variable
+      		if (json_data["view_type"] == gon.summary_view_type_name) {
+      		  json_data["indicator"]["description"] = gon.summary_indicator_description
+    		  }
+				}
+			}
+		}
+		return features;
+	}
+
+  // create the scales and legend
+  function create_scales_legend(){
+    // empty existing legend content
+    $("#indicator_description").empty();
+    $("#legend").empty();
+
+		// if this is summary view, create the scales
+		create_summary_scales();
+	  // add style map
+	  vector_child.styleMap = build_indicator_scale_styles();
+		vector_child.redraw();
+		// now that the child vector is loaded, lets show the legend
+		draw_legend();
+		// now load the values for the hidden form
+		load_hidden_form();
+  }
+
+	// load the features for the children into the vector_child layer
+	function load_vector_child(resp){
+		if (resp.success()){
+			// get the event data for these shapes
+			$.get(gon.data_path, function(data) {
+		    // save the data to a global variable for later user
+				json_data = data;
+				// add the features to the vector layer
+				vector_child.addFeatures(bindDataToShapes(resp.features));
+
+		    // create the scales and legend
+		    create_scales_legend();
+
+				// indicate that the child layer has loaded
+				// - do not wait for the datatable to be loaded
+				$("div#map").trigger("child_layer_loaded");
+
+				// load the table of data below the map
+        load_data_table();
+			});
+		} else {
+		  console.log('vector_child - no features found');
+		}
+	}
+
+/* old
 	// load the features for the children into the vector_child layer
 	function load_vector_child(resp){
 		if (resp.success()){
 		  vector_child.addFeatures(resp.features);
 
-/*			// if this is live data, highlight the shapes that are not complete
-			if (gon.data_type == gon.data_type_live) {
-				build_live_data_points(resp.features);
-			}
-*/
+//			// if this is live data, highlight the shapes that are not complete
+//			if (gon.data_type == gon.data_type_live) {
+//				build_live_data_points(resp.features);
+//			}
+
 		  // if this is summary view, populate gon.indicator_scales and colors with names from json file
 		  populate_summary_data();
 			// now that the child vector is loaded, lets show the legend
@@ -235,7 +310,7 @@ if (gon.openlayers){
 		  console.log('vector_child - no features found');
 		}
 	}
-
+*/
 	// record that the parent vector layer was loaded
 	$("div#map").bind("parent_layer_loaded", function(event){
 		vector_parent_loaded = true;
