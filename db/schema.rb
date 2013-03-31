@@ -53,8 +53,9 @@ ActiveRecord::Schema.define(:version => 20130330074020) do
   create_table "custom_shape_navigations", :force => true do |t|
     t.integer  "event_id"
     t.integer  "shape_type_id"
-    t.integer  "sort_order",     :default => 1
-    t.boolean  "always_visible", :default => true
+    t.integer  "sort_order",            :default => 1
+    t.boolean  "always_visible",        :default => true
+    t.integer  "show_at_shape_type_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

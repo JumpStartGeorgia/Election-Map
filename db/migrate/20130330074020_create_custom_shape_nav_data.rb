@@ -29,6 +29,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
           custom = CustomShapeNavigation.create(
             :event_id => custom_view.event_id,
             :shape_type_id => 3,
+            :show_at_shape_type_id => 5,
             :sort_order => 2,
             :always_visible => false
           )  
@@ -46,6 +47,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
           custom = CustomShapeNavigation.create(
             :event_id => custom_view.event_id,
             :shape_type_id => 3,
+            :show_at_shape_type_id => 7,
             :sort_order => 2,
             :always_visible => false
           )  
@@ -63,6 +65,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
           custom = CustomShapeNavigation.create(
             :event_id => custom_view.event_id,
             :shape_type_id => 7,
+            :show_at_shape_type_id => 9,
             :sort_order => 3,
             :always_visible => false
           )  

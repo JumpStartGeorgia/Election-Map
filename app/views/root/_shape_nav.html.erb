@@ -11,8 +11,12 @@
       <% else %>
         <% index = @shape_types.map{|x| x.id}.index(nav.shape_type_id) 
             type = @shape_types[index] if index.present?
+            index2 = @shape_types.map{|x| x.id}.index(nav.show_at_shape_type_id) 
+            type2 = @shape_types[index2] if index2.present?
         %>
-        <% if index.present? && type.descendant_ids.index(@parent_shape_type).present? %>
+        <% if index.present? && type.descendant_ids.index(@parent_shape_type).present? && 
+              (nav.show_at_shape_type_id.nil? || nav.show_at_shape_type_id == @parent_shape_type || 
+              (index2.present? && type2.descendant_ids.index(@parent_shape_type).present?))  %>
           <li class="active_shape_nav">
             <% if @summary_view_type_name == params[:view_type] %>
              <%= link_to(image_tag("shape_arrow_active.png") + nav.link_text, summary_shape_level_map_path(params.merge({:shape_type_id => nav.shape_type_id, :shape_id => get_shape_id(nav.shape_type_id, true), :change_shape_type => "true", :parent_shape_clickable => "false"})), :title => nav.link_text) %>

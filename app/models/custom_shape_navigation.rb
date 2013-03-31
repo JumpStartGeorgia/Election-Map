@@ -6,7 +6,8 @@ class CustomShapeNavigation < ActiveRecord::Base
 
   has_many :custom_shape_navigation_translations, :dependent => :destroy
   accepts_nested_attributes_for :custom_shape_navigation_translations
-  attr_accessible :event_id, :shape_type_id, :sort_order, :always_visible, :custom_shape_navigation_translations_attributes
+  attr_accessible :event_id, :shape_type_id, :sort_order, :always_visible, 
+    :show_at_shape_type_id, :custom_shape_navigation_translations_attributes
 
   validates :event_id, :shape_type_id, :presence => true
 

@@ -5,6 +5,8 @@ class CreateCustomShapeNavigations < ActiveRecord::Migration
       t.integer :shape_type_id
       t.integer :sort_order, :default => 1
       t.boolean :always_visible, :default => true
+      t.integer :show_at_shape_type_id
+
 
       t.timestamps
     end
