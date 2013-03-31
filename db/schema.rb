@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130131073637) do
+ActiveRecord::Schema.define(:version => 20130330074020) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -38,6 +38,28 @@ ActiveRecord::Schema.define(:version => 20130131073637) do
 
   add_index "core_indicators", ["ancestry"], :name => "index_core_indicators_on_ancestry"
   add_index "core_indicators", ["indicator_type_id"], :name => "index_core_indicators_on_indicator_type_id"
+
+  create_table "custom_shape_navigation_translations", :force => true do |t|
+    t.integer  "custom_shape_navigation_id"
+    t.string   "locale"
+    t.string   "link_text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "custom_shape_navigation_translations", ["custom_shape_navigation_id"], :name => "index_ca51db8fb74c66fcedf45cc4f25b8b2e3f3d40ad"
+  add_index "custom_shape_navigation_translations", ["locale"], :name => "index_custom_shape_navigation_translations_on_locale"
+
+  create_table "custom_shape_navigations", :force => true do |t|
+    t.integer  "event_id"
+    t.integer  "shape_type_id"
+    t.integer  "sort_order",     :default => 1
+    t.boolean  "always_visible", :default => true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "custom_shape_navigations", ["event_id", "sort_order"], :name => "idx_custom_shapes_event"
 
   create_table "data", :force => true do |t|
     t.integer  "indicator_id"

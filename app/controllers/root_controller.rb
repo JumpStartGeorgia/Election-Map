@@ -51,6 +51,9 @@ logger.debug "////////////// getting current event for event type #{params[:even
 			@event_name = event.name
 			@event_description = event.description
 
+      # save event custom shape nav
+      @event_custom_shape_nav = event.custom_shape_navigations
+
   		# get data set info
 			dataset = DataSet.find(params[:data_set_id]) if params[:data_set_id] && !params[:data_set_id].empty?
 

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  event_id: 1
+  shape_type_id: 1
+  sort_order: 1
+  always_visible: false
+  link_text: MyString
+
+two:
+  event_id: 1
+  shape_type_id: 1
+  sort_order: 1
+  always_visible: false
+  link_text: MyString

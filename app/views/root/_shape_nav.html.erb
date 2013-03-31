@@ -1,0 +1,88 @@
+<% if @event_custom_shape_nav.present? %>
+  <ul id="custom_shape_nav" class="clear">
+    <% @event_custom_shape_nav.each do |nav| %>
+      <% if @parent_shape_type == nav.shape_type_id && nav.always_visible %>
+        <li class="inactive_shape_nav">
+          <span>
+            <%= image_tag("shape_arrow.png") %>
+            <%= nav.link_text %>
+          </span>
+        </li>
+      <% else %>
+        <% index = @shape_types.map{|x| x.id}.index(nav.shape_type_id) 
+            type = @shape_types[index] if index.present?
+        %>
+        <% if index.present? && type.descendant_ids.index(@parent_shape_type).present? %>
+          <li class="active_shape_nav">
+            <% if @summary_view_type_name == params[:view_type] %>
+             <%= link_to(image_tag("shape_arrow_active.png") + nav.link_text, summary_shape_level_map_path(params.merge({:shape_type_id => nav.shape_type_id, :shape_id => get_shape_id(nav.shape_type_id, true), :change_shape_type => "true", :parent_shape_clickable => "false"})), :title => nav.link_text) %>
+            <% else %>
+             <%= link_to(image_tag("shape_arrow_active.png") + nav.link_text, shape_level_map_path(params.merge({:shape_type_id => nav.shape_type_id, :shape_id => get_shape_id(nav.shape_type_id, true), :change_shape_type => "true", :parent_shape_clickable => "false"})), :title => nav.link_text) %>
+            <% end %>
+          </li>
+        <% end %>
+      <% end %>
+
+    <% end %>
+  </ul>
+<% else %>
+     <ul id="standard_shape_nav" class="clear">
+  	   <% if @shape_types.length > 0 %>
+  	      <%
+  	         i = 0
+  					 j = 0
+  	         @shape_types.each do |type|
+  	            if type.id == @child_shape_type_id || type.descendant_ids.index(@child_shape_type_id).present?
+  	               i += 1
+  	            end
+  	         end
+  	      %>
+  		   <% @shape_types.each do |type| %>
+  			   <% if type.id == @child_shape_type_id || type.descendant_ids.index(@child_shape_type_id).present? %>
+  						<% j+=1 %>
+  		         <li class="lev-ind">
+  					   <% if type.has_children? %>
+  					     <% if @summary_view_type_name == params[:view_type] %>
+  				         <%= link_to type.name_singular, summary_shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+                 <% else %>
+  				         <%= link_to type.name_singular, shape_level_map_path(params.merge({:shape_type_id => type.parent_id, :shape_id => get_shape_id(type.id), :change_shape_type => "true", :parent_shape_clickable => type.is_root?.to_s})), :title => type.name_singular %>
+                 <% end %>
+  					   <% else %>
+  						   <%= type.name_singular %>
+  					   <% end %>
+
+  				   </li>
+             <% if j < i %>
+  			      <li class="level-arrow">
+  			         >
+  			      </li>
+  				   <% end %>
+
+  			   <% end %>
+  		   <% end %>
+  	   <% end %>
+  	   <% if @has_custom_view %>
+  			<li class="switch_view">
+  				<% if @summary_view_type_name == params[:view_type] %>
+  					<%= link_to t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular),
+  						summary_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
+  						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular),
+							:class => 'btn btn-mini'%>
+  				<% else %>
+  					<%= link_to t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular),
+  						indicator_map_path(params.merge(:custom_view => (!@is_custom_view).to_s, :indicator_id => @custom_indicator_id)),
+  						:id => "switch-custom-view", :title => t('app.buttons.custom_view',
+  							:children_shapes => @custom_child_shape_type_name_plural,
+  							:parent_shape => @parent_shape_type_name_singular),
+							:class => 'btn btn-mini'%>
+  				<% end %>
+  			</li>
+  		<% end %>
+     </ul>
+<% end %>
