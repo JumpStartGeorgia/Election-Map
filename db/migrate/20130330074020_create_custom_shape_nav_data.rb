@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class CreateCustomShapeNavData < ActiveRecord::Migration
   def up
 
@@ -19,7 +20,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
         )
         custom.custom_shape_navigation_translations.create(
           :locale => 'ka',
-          :link_text => 'Country View'
+          :link_text => 'ქვეყნის ხედი'
         )
 
 
@@ -40,7 +41,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
           )
           custom.custom_shape_navigation_translations.create(
             :locale => 'ka',
-            :link_text => 'Majoritarian District View'
+            :link_text => 'მაჟორიტარული ოლქის ხედი'
           )
 
           # tbilisi
@@ -58,7 +59,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
           )
           custom.custom_shape_navigation_translations.create(
             :locale => 'ka',
-            :link_text => 'Tbilisi View'
+            :link_text => 'თბილისის ხედი'
           )
 
           # major tbilisi 
@@ -76,7 +77,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
           )
           custom.custom_shape_navigation_translations.create(
             :locale => 'ka',
-            :link_text => 'Majoritarian Tbilisi District View'
+            :link_text => 'თბილისის მაჟორიტარული ოლქის ხედი'
           )
 
 
@@ -95,7 +96,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
           )
           custom.custom_shape_navigation_translations.create(
             :locale => 'ka',
-            :link_text => 'Tbilisi View'
+            :link_text => 'თბილისის ხედი'
           )
 
         end
@@ -119,7 +120,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
         )
         custom.custom_shape_navigation_translations.create(
           :locale => 'ka',
-          :link_text => 'Adjara View'
+          :link_text => 'აჭარის ხედი'
         )
       end
 
@@ -138,7 +139,7 @@ class CreateCustomShapeNavData < ActiveRecord::Migration
       )
       custom.custom_shape_navigation_translations.create(
         :locale => 'ka',
-        :link_text => 'Tbilisi View'
+        :link_text => 'თბილისის ხედი'
       )
       
 
