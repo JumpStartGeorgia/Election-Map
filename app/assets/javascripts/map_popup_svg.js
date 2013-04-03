@@ -48,7 +48,7 @@ function MapPopup() {
           json[i].shape_values.title_abbrv.length > 0 ? json[i].shape_values.title_abbrv : json[i].shape_values.title;
 				var title_title_width = get_text_width(title, "15px");
 				var title_loc_width = get_text_width(json[i].shape_values.title_location, "15px");
-				var title_precincts_width = get_text_width(json[i].title.precincts_completed, "15px");
+				var title_precincts_width = get_text_width(json[i].title_precincts_completed, "15px");
 // console.log("title title width = " + title_title_width);
 // console.log("title location width = " + title_loc_width);
 // console.log("title precinct width = " + title_precincts_width);
@@ -204,7 +204,7 @@ function MapPopup() {
         "x": (window.maxSVGWidth/2),
         "y": 20,
         "style": "font-size:15px;text-anchor:middle;"
-      }).text(json.location);
+      }).text(json.title_location);
 
       this.SVGElement("text", {
         "x": (window.maxSVGWidth/2),
@@ -212,23 +212,23 @@ function MapPopup() {
         "style": "font-size:15px;text-anchor:middle;"
       }).text(title);
 
-			if (json.precincts_completed !== null){
+			if (json.title_precincts_completed !== null){
 		    this.SVGElement("rect", {
 		      "x": 10,
 		      "y": 45,
 		      "width": window.maxSVGWidth-10,
 		      "height": 20,
 		      "style": "fill: rgba(51, 51, 51, 0.8);"
-		    }).text(json.precincts_completed);
+		    }).text(json.title_precincts_completed);
 		    this.SVGElement("text", {
 		      "x": (window.maxSVGWidth/2),
 		      "y": 60,
 		      "style": "fill: #fff; font-size:15px;text-anchor:middle;"
-		    }).text(json.precincts_completed);
+		    }).text(json.title_precincts_completed);
 			}
     }
 
-		if (json.precincts_completed === null){
+		if (json.title_precincts_completed === null){
 		  // make height at least 50 so title will show
 		  window.maxSVGHeight = 50;
 		  // make y padding equal to min height

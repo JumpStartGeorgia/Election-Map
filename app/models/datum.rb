@@ -210,12 +210,16 @@ class Datum < ActiveRecord::Base
 		return hash
 	end
 
-	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
+	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id, data_type)
 		start = Time.now
     results = Hash.new
-		if shape_id.present? && shape_type_id.present? && event_id.present? && indicator_type_id.present? && data_set_id.present?
+		if shape_id.present? && shape_type_id.present? && event_id.present? && indicator_type_id.present? 
+		      && data_set_id.present? && data_type.present?
       # get the shapes
 		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
+		  
+		  # get the shape type
+		  shape_type = ShapeType.find_by_id(shape_type_id)
 
   	  # get the event
   	  event = Event.find(event_id)
@@ -240,10 +244,10 @@ class Datum < ActiveRecord::Base
       # add the data
       results["shape_data"] = []
 
-      if shapes && !shapes.empty? && event
+      if shapes.present? && event.present? && shape_type.present?
         shapes.each do |shape|
       	  # get all of the related json data for this indicator type
-      	  data = build_related_indicator_json2(shape.id, shape_type_id, event_id, data_set_id,
+      	  data = build_related_indicator_json(shape.id, shape_type_id, shape_type.is_precinct, event_id, data_set_id, data_type
       	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
 
           summary = data.select{|x| x.has_key?("summary_data") && x["summary_data"].present? &&
@@ -269,12 +273,15 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
     return results
   end
 
-	def self.build_json(shape_id, shape_type_id, indicator_id, data_set_id)
+	def self.build_json(shape_id, shape_type_id, indicator_id, data_set_id, data_type)
 		start = Time.new
     results = Hash.new
-		if shape_id.present? && shape_type_id.present? && indicator_id.present? && data_set_id.present?
+		if shape_id.present? && shape_type_id.present? && indicator_id.present? && data_set_id.present? && data_type.present?
       # get the shapes
 		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
+
+		  # get the shape type
+		  shape_type = ShapeType.find_by_id(shape_type_id)
 
 			# get the indicator
 			indicator = Indicator.find(indicator_id)
@@ -312,11 +319,11 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
       # add the data
       results["shape_data"] = []
 
-      if shapes.present? && indicator.present?
+      if shapes.present? && indicator.present? && shape_type.present?
   			event = indicator.event
         shapes.each do |shape|
       	  # get all of the related json data for this indicator
-      	  data = build_related_indicator_json2(shape.id, shape_type_id, event.id, data_set_id,
+      	  data = build_related_indicator_json(shape.id, shape_type_id, shape_type.is_precinct, event.id, data_set_id, data_type,
       	    event.event_indicator_relationships.where(:core_indicator_id => indicator.core_indicator_id))
 
       	  # find the data item with the indicator_id and use it's values to set the shape_values hash
@@ -350,7 +357,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
   #    {"data_item" => {}}
   #    {"footnote" => {}}
   # ]
-	def self.build_related_indicator_json2(shape_id, shape_type_id, event_id, data_set_id, relationships)
+	def self.build_related_indicator_json(shape_id, shape_type_id, is_precinct, event_id, data_set_id, data_type, relationships)
     results = []
 
     # create empty shape_values hash
@@ -363,14 +370,17 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 	  shape_values["value"] = I18n.t('app.msgs.no_data')
 	  shape_values["color"] = nil
 	  shape_values["number_format"] = nil
+	  shape_values["precincts_completed_precent"] = nil
 	  shape_values["title"] = I18n.t('app.msgs.no_data')
 	  shape_values["title_abbrv"] = nil
 	  shape_values["title_location"] = nil
+	  shape_values["title_precincts_completed"] = nil
     data_hash = Hash.new
 		data_hash["shape_values"] = shape_values
 	  results << data_hash
 
-	  if shape_id.present? && event_id.present? && shape_type_id.present? && data_set_id.present? && relationships.present?
+	  if shape_id.present? && event_id.present? && shape_type_id.present? && data_set_id.present? && 
+	        data_type.present? && relationships.present? && is_precinct.present?
       has_duplicates = false
 	    relationships.each do |rel|
 	      if rel.related_indicator_type_id.present?
@@ -457,6 +467,24 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
         end
       end
 
+			# if this is live data and not a precinct, add the precincts reported numbers
+			if data_type == Datum::DATA_TYPE[:live] && !is_precinct?
+				precincts_reporting = Datum.get_precincts_reported(shape_id, event_id, data_set_id)
+				if precincts_reporting.present?
+					# save the value so the shapes can be marked different if not complete
+					shape_values["precincts_completed_precent"] = precincts_reporting[:completed_percent].gsub("%","").to_f
+					# create the title for the popup
+#							title["precincts_completed"] =
+#										I18n.t('app.common.live_event_status', :completed => precincts_reporting[:completed_number],
+#                        :total => precincts_reporting[:num_precincts],
+#                        :percentage => precincts_reporting[:completed_percent])
+
+					shape_values["title_precincts_completed"] =
+								I18n.t('app.common.live_event_status_no_percent', :completed => precincts_reporting[:completed_number])
+
+				end
+			end
+
       # add duplicate footnote if needed
       if has_duplicates
         footnote = Datum.new
@@ -469,7 +497,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
     end
 	  return results
   end
-
+=begin
 ##############################
 ############################## old start
 ##############################
@@ -626,7 +654,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 ##############################
 ############################## old end
 ##############################
-
+=end
 
   # get the summary data for an indicator type in an event for a shape
 	def self.build_summary_data_json(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id)
@@ -683,7 +711,7 @@ logger.debug "************* has_openlayers_rule_value flag from cache = #{json['
 #		puts "******* time to get_related_indicator_type_data: #{Time.now-start} seconds for event #{event_id}"
     return results
   end
-
+=begin
 ##############################
 ############################## old start
 ##############################
@@ -740,7 +768,7 @@ logger.debug "************* has_openlayers_rule_value flag from cache = #{json['
 ##############################
 ############################## old end
 ##############################
-
+=end
 	# determine overall placement of value in array
 	# assume array is already sorted in desired order
 	# if tie, the rank will be adjusted:

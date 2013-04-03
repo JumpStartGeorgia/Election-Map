@@ -228,17 +228,17 @@ class JsonController < ApplicationController
 			    data = Rails.cache.fetch(key) {
 				    d = ''
 				    if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-					    d = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id]).to_json
+					    d = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id], params[:data_type], params[:data_type]).to_json
 				    elsif shape.has_children?
-					    d = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id]).to_json
+					    d = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id], params[:data_type], params[:data_type]).to_json
 				    end
 				    d
 			    }
 =end
           if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-	          data = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id]).to_json
+	          data = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id], params[:data_type], params[:data_type]).to_json
           elsif shape.has_children?
-	          data = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id]).to_json
+	          data = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id], params[:data_type], params[:data_type]).to_json
           end
 
 			  end
@@ -270,7 +270,7 @@ class JsonController < ApplicationController
         .gsub("[data_set_id]", params[:data_set_id])
   		logger.debug "++++++++++custom children key = #{key}"
 		  data = JsonCache.fetch_data(key) {
-			  Datum.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id], params[:data_set_id]).to_json
+			  Datum.build_json(params[:parent_id], params[:shape_type_id], params[:indicator_id], params[:data_set_id], params[:data_type]).to_json
 		  }
     end
 
@@ -348,18 +348,18 @@ class JsonController < ApplicationController
 					  d = ''
 					  if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
   logger.debug "++++++++++++++++++++++++++++ getting summary with parent shape clickable"
-						  d = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], params[:data_set_id]).to_json
+						  d = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], params[:data_set_id], params[:data_type]).to_json
 					  elsif shape.has_children?
   logger.debug "++++++++++++++++++++++++++++ getting summary with NO parent shape clickable"
-						  d = Datum.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:data_set_id]).to_json
+						  d = Datum.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:data_set_id], params[:data_type]).to_json
 					  end
 					  d
 				  }
 =end
           if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-	          data = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], params[:data_set_id]).to_json
+	          data = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], params[:data_set_id], params[:data_type]).to_json
           elsif shape.has_children?
-	          data = Datum.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:data_set_id]).to_json
+	          data = Datum.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:data_set_id], params[:data_type]).to_json
           end
 
 			  end
@@ -389,7 +389,7 @@ class JsonController < ApplicationController
 		        .gsub("[shape_type_id]", params[:shape_type_id])
 				    .gsub("[data_set_id]", params[:data_set_id])
 		  data = JsonCache.fetch_data(key) {
-			  Datum.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:data_set_id]).to_json
+			  Datum.build_summary_json(params[:parent_id], params[:shape_type_id], params[:event_id], params[:indicator_type_id], params[:data_set_id], params[:data_type]).to_json
 		  }
     end
 
