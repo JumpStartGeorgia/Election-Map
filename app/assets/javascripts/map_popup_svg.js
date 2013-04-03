@@ -39,6 +39,82 @@ function MapPopup() {
     window.maxSVGWidth = 30+ths.max_ind_width*7+10+gon.no_data_text.length*7+50;
 
   */
+
+    for(i=0;i<json.length;i++){
+      if (json[i].hasOwnProperty("shape_values"))
+      {
+        var title = typeof json[i].shape_values.title_abbrv !== "undefined" &&
+          json[i].shape_values.title_abbrv instanceof String &&
+          json[i].shape_values.title_abbrv.length > 0 ? json[i].shape_values.title_abbrv : json[i].shape_values.title;
+				var title_title_width = get_text_width(title, "15px");
+				var title_loc_width = get_text_width(json[i].shape_values.title_location, "15px");
+				var title_precincts_width = get_text_width(json[i].title.precincts_completed, "15px");
+// console.log("title title width = " + title_title_width);
+// console.log("title location width = " + title_loc_width);
+// console.log("title precinct width = " + title_precincts_width);
+				var max_width = Math.max(title_title_width, title_loc_width, title_precincts_width)
+				var title_width = self.item_spacing*6+(max_width);
+// console.log("title title width = " + title_title_width);
+// console.log("title location width = " + title_loc_width);
+				var title_width = self.item_spacing*6+(title_title_width>title_loc_width ? title_title_width : title_loc_width);
+// console.log("title width = " + title_width);
+        if (title_width > max_width)
+          max_width = title_width;
+      }
+      else if (json[i].hasOwnProperty("summary_data"))
+      {
+        var max_text_width = 0;
+        var max_value_width = 0;
+				for(var j=0;j<json[i].summary_data.length;j++) {
+					var value = json[i].summary_data[j];
+					var text_width = get_text_width(value.indicator_name);
+          if( text_width > max_text_width)
+            max_text_width = text_width;
+					var value_width = get_text_width(value.number_format === null ?
+							value.formatted_value : value.formatted_value + value.number_format)
+          if( value_width > max_value_width)
+            max_value_width = value_width;
+        }
+// console.log("summary max text width = " + max_text_width +	"; max value width = " + max_value_width + "; first data value = " + json[i].summary_data[0].value);
+				if (isNaN(json[i].summary_data[0].value))
+					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing*3;
+				else
+					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing+self.max/100*json[i].summary_data[0].value+self.item_spacing*2;
+
+        // console.log("summary width = " + summary_width);
+        if (summary_width > max_width)
+          max_width = summary_width;
+        if (max_text_width > self.max_ind_width)
+          self.max_ind_width = max_text_width;
+        if (max_value_width > self.max_value_width)
+          self.max_value_width = max_value_width;
+      }
+      else if (json[i].hasOwnProperty("data_item"))
+      {
+        var max_text_width = get_text_width(json[i].data_item.indicator_name);
+        var max_value_width = get_text_width(json[i].data_item.number_format === null ?
+					json[i].data_item.formatted_value : json[i].data_item.formatted_value + " " + json[i].data_item.number_format);
+        var item_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing*3;
+        // console.log("item width = " + item_width);
+        if (item_width > max_width)
+          max_width = item_width;
+        if (max_text_width > self.max_ind_width)
+          self.max_ind_width = max_text_width;
+        if (max_value_width > self.max_value_width)
+          self.max_value_width = max_value_width;
+      }
+      else if (json[i].hasOwnProperty("footnote"))
+      {
+        var max_text_width = get_text_width(json[i].footnote.indicator_name, "10px");
+        var footnote_width = self.item_spacing*3+max_text_width+self.item_spacing*3;
+        // console.log("footnote width = " + footnote_width);
+        if (footnote_width > max_width)
+          max_width = footnote_width;
+      }
+    };
+
+
+/* old
     for(i=0;i<json.length;i++){
       if (json[i].hasOwnProperty("title"))
       {
@@ -108,6 +184,7 @@ function MapPopup() {
           max_width = footnote_width;
       }
     };
+*/
 // console.log("---------max width being set to = " + max_width);
     window.maxSVGWidth = max_width;
     // console.log("self.max_ind_width = " + self.max_ind_width + "; self.max_value_width = " + self.max_value_width);

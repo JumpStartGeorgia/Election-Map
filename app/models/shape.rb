@@ -40,7 +40,7 @@ class Shape < ActiveRecord::Base
 
 
 	# create the properly formatted json string
-	def self.build_json2(shape_id, shape_type_id)
+	def self.build_json(shape_id, shape_type_id)
     json = Hash.new()
 		start = Time.now
 		if shape_id.present? && shape_type_id.present?
@@ -54,14 +54,14 @@ class Shape < ActiveRecord::Base
 				# have to parse it for the geo is already in json format and
 				# transforming it to json again escapes the "" and breaks openlayers
 				json["features"][i]["geometry"] = JSON.parse(shape.geometry)
-				json["features"][i]["properties"] = build_json_properties_for_shape2(shape)
+				json["features"][i]["properties"] = build_json_properties_for_shape(shape)
 				#json["features"][i]["properties"] = build_json_properties_for_shape(shape, indicator_id)
 			end
 		end
 		return json
 	end
 
-  def self.build_json_properties_for_shape2(shape)
+  def self.build_json_properties_for_shape(shape)
     start = Time.now
     properties = Hash.new
     if !shape.nil?
@@ -73,16 +73,21 @@ class Shape < ActiveRecord::Base
 			properties["shape_type_id"] = shape.shape_type_id
 			properties["shape_type_name"] = shape.shape_type.name_singular
       # pre-load data properties as if no data found
+		  properties["data_value"] = I18n.t('app.msgs.no_data')
 		  properties["value"] = I18n.t('app.msgs.no_data')
+		  properties["formatted_value"] = I18n.t('app.msgs.no_data')
 		  properties["color"] = nil
+		  properties["number_format"] = nil
+			properties["precincts_completed_precent"] = nil
       # save pop-up title locattion
 			properties["title_location"] = "#{shape.shape_type.name_singular}: #{shape.common_name}"
 
     end
 		return properties
   end
+=begin
 ##############################
-############################## old
+############################## old start
 ##############################
 	# create the properly formatted json string
 	def self.build_json(shape_id, shape_type_id, event_id=nil, data_set_id=nil, indicator_id=nil, data_type=nil)
@@ -252,9 +257,9 @@ logger.debug "**************************************"
 		return properties
   end
 ##############################
-############################## old
+############################## old end
 ##############################
-
+=end
   def self.csv_header
     "Event, Shape Type, Parent ID, Parent Name, Common ID, Common Name, Geometry".split(",")
   end

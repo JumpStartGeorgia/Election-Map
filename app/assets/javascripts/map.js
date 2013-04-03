@@ -104,7 +104,7 @@ if (gon.openlayers){
 
 		vector_parent = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
-		vector_child = new OpenLayers.Layer.Vector("Child Layer", {styleMap: build_indicator_scale_styles()});
+		vector_child = new OpenLayers.Layer.Vector("Child Layer");
 
 		map.addLayers([map_layer, vector_parent, vector_child]);
 //		vector_live_data = new OpenLayers.Layer.Vector("Live Data Layer", {styleMap: build_live_data_shape_completed_styles()});
@@ -237,6 +237,32 @@ if (gon.openlayers){
 			}
 		}
 		return features;
+	}
+
+	// go through each feature and get unique indicator names and their colors
+	function create_summary_scales(){
+		if (json_data["view_type"] == gon.summary_view_type_name) {
+
+      // create unique names array, starting with the no_data item which is first
+		  var names = [json_data["indicator"]["scales"][0].name];
+
+		  for (var i=0; i<vector_child.features.length; i++)
+		  {
+		    // see if name has already been saved
+		    if (names.indexOf(vector_child.features[i].attributes.value) == -1){
+		      // save name and color
+		      json_data["indicator"]["scale_colors"][json_data["indicator"]["scales"].length] = vector_child.features[i].attributes.color;
+		      json_data["indicator"]["scales"][json_data["indicator"]["scales"].length] = {"name":vector_child.features[i].attributes.value};
+		      // record the name so can easily test for new unique name in if statement above
+		      names[json_data["indicator"]["scales"].length] = vector_child.features[i].attributes.value;
+		    }
+
+				// see if the number format has already been saved
+				if (json_data["indicator"]["number_format"] != null && vector_child.features[i].attributes.number_format != null){
+					json_data["indicator"]["number_format"] = vector_child.features[i].attributes.number_format;
+				}
+		  }
+		}
 	}
 
   // create the scales and legend
@@ -398,6 +424,46 @@ if (gon.openlayers){
 	{
 		var legend = $('#legend');
 
+		if (json_data["view_type"] == gon.summary_view_type_name) {
+		  // create legend
+		  for (var i=0; i<json_data["indicator"]["scales"].length; i++)
+		  {
+		    legend.append('<li><span style="background-color: ' + json_data["indicator"]["scale_colors"][i] + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + json_data["indicator"]["scales"][i].name + '</li>');
+			}
+		} else  if (json_data["indicator"]["scales"] && json_data["indicator"]["scales"].length > 0 && json_data["indicator"]["scale_colors"] && json_data["indicator"]["scale_colors"].length > 0){
+			var color = "";
+			for (var i=0; i<json_data["indicator"]["scales"].length; i++){
+				// if the scale has a color, use it, otherwise use app color
+				if (json_data["indicator"]["scales"][i].color && json_data["indicator"]["scales"][i].color.length > 0){
+					color = json_data["indicator"]["scales"][i].color;
+				} else {
+					color = json_data["indicator"]["scale_colors"][i];
+				}
+
+		    legend.append('<li><span style="background-color: ' + color + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + format_number(json_data["indicator"]["scales"][i].name) + '</li>');
+			}
+		} else {
+			// no legend
+			legend.innerHTML = "";
+		}
+
+    // show the indicator descritpion if provided
+		if (json_data["indicator"]["description"]) {
+			$('#indicator_description').append(json_data["indicator"]["description"]);
+			$('#indicator_description').slideDown(500);
+		} else {
+			$('#indicator_description').innerHTML = "";
+			$('#indicator_description').hide(0);
+		}
+
+		$('#legend_container').slideDown(500);
+	}
+
+/* old
+	function draw_legend()
+	{
+		var legend = $('#legend');
+
 		if (gon.view_type == gon.summary_view_type_name) {
 		  // create legend
 		  for (var i=0; i<gon.indicator_scales.length; i++)
@@ -432,8 +498,74 @@ if (gon.openlayers){
 
 		$('#legend_container').slideDown(500);
 	}
-
+*/
 	// build the color mapping for the indicators
+	function build_indicator_scale_styles() {
+		var rules = [];
+		var theme = new OpenLayers.Style({
+		    fillColor: "#cfce9d",
+		    strokeColor: "#444444",
+		    strokeWidth: 1,
+		    cursor: "pointer",
+		    fillOpacity: opacity
+		});
+		if (json_data["indicator"]["scales"] && json_data["indicator"]["scales"].length > 0 && json_data["indicator"]["scale_colors"] && json_data["indicator"]["scale_colors"].length > 0){
+
+			// look at each scale and create the builder
+			for (var i=0; i<json_data["indicator"]["scales"].length; i++){
+				var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
+				var name = json_data["indicator"]["scales"][i].name;
+				var color = "";
+				// if the scale has a color, use it, otherwise use app color
+				if (json_data["indicator"]["scales"][i].color && json_data["indicator"]["scales"][i].color.length > 0){
+					color = json_data["indicator"]["scales"][i].color;
+				} else {
+					color = json_data["indicator"]["scale_colors"][i];
+				}
+
+				// look in the name for >, <, or -
+				// - if find => create appropriate comparison filter
+				// - else use ==
+				var indexG = name.indexOf(">");
+				var indexL = name.indexOf("<");
+				var indexB = name.indexOf("-");
+				if (indexG >= 0) {
+					// set to >
+					if (indexG == 0){
+						rules.push(build_rule(color, OpenLayers.Filter.Comparison.GREATER_THAN, name.slice(1)));
+					}
+					else if (indexG == name.length-1) {
+						rules.push(build_rule(color, OpenLayers.Filter.Comparison.GREATER_THAN, name.slice(0, indexG-1)));
+					}
+					else {
+						// > is in middle of string.  can not handle
+					}
+				} else if (indexL >= 0) {
+					// set to <
+					if (indexL == 0){
+						rules.push(build_rule(color, OpenLayers.Filter.Comparison.LESS_THAN, name.slice(1)));
+					}
+					else if (indexL == name.length-1) {
+						rules.push(build_rule(color, OpenLayers.Filter.Comparison.LESS_THAN, name.slice(0, indexL-1)));
+					}
+					else {
+						// > is in middle of string.  can not handle
+					}
+				} else if (indexB >= 0) {
+					// set to between
+					rules.push(build_rule(color, OpenLayers.Filter.Comparison.BETWEEN, name.slice(0, indexB), name.slice(indexB+1), isFirst));
+				} else {
+					// set to '='
+					rules.push(build_rule(color, OpenLayers.Filter.Comparison.EQUAL_TO, name));
+				}
+			}
+
+		  theme.addRules(rules);
+		}
+
+		  return new OpenLayers.StyleMap({'default': theme, 'select': {'fillOpacity': 0.9, 'strokeColor': '#000','strokeWidth': 2}});
+	}
+/* old
 	function build_indicator_scale_styles() {
 		var rules = [];
 		var theme = new OpenLayers.Style({
@@ -499,6 +631,7 @@ if (gon.openlayers){
 
 		  return new OpenLayers.StyleMap({'default':theme, 'select': {'fillOpacity': 0.9, 'strokeColor': '#000','strokeWidth': 2}});
 	}
+*/
 
 	function build_rule(color, type, value1, value2, isFirst){
 		if (value1 && parseInt(value1)) {
@@ -665,6 +798,17 @@ if (gon.openlayers){
       }
    }
 
+   function getShapeData(feature_data)
+   {
+      for(var i in json_data["shape_data"])
+      {
+         if (feature_data.data.id === json_data["shape_data"][i][0].shape_values.shape_id)
+         {
+            return json_data["shape_data"][i];
+         }
+      }
+   }
+
 	// Create the popup for the feature
 	var popup;
 	function makeFeaturePopup(feature_data, stright, close_button, close_button_func)
@@ -690,7 +834,10 @@ if (gon.openlayers){
 
 
 	   $("#popup_svg").empty();
-      new MapPopup().processJSON(document.getElementById("popup_svg"), feature_data.attributes.results, {
+	   var data = getShapeData(feature_data);
+console.log("get shape data");
+console.log(data);
+      new MapPopup().processJSON(document.getElementById("popup_svg"), data, {
                 limit: 5
       });
       popup = new OpenLayers.Popup.FramedCloud("Feature Popup",

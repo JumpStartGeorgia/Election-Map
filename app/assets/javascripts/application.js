@@ -11,6 +11,7 @@
 //= require vendor_map
 //= require jquery.tablesorter.min
 //= require data_table_loader
+//= require data_table
 //= require d3.v2.min
 //= require jquery.slimscroll
 
@@ -29,6 +30,8 @@
 //= require countdown
 //= require map.export
 //= require map
+//= require_self
+//= require ajax_map
 
 
 $(document).ready(function(){
