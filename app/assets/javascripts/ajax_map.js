@@ -80,6 +80,22 @@ $(function(){
 						update_query_parameter($(this).attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
 				}
 			});
+			// - custom navigation
+			$('#shape_layer_navigation ul#custom_shape_nav li.active_shape_nav a').each(function(index){
+				// if the link does not have the indicator type param, switch it in for the indidcator id
+				if (get_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type') == undefined){
+					$(this).attr('href',
+						replace_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', 'indicator_type_id', 'indicator_type', id, id));
+
+//					$(this).attr('href',
+//						replace_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', 'indicator_type_id', 'indicator_type', id + '&view_type=' + gon.summary_view_type_name, id + '/view_type/' + gon.summary_view_type_name));
+				} else {
+					$(this).attr('href',
+						update_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type', id));
+				}
+				$(this).attr('href',
+					update_query_parameter($(this).attr('href'), 'view_type', 'view_type', gon.summary_view_type_name));
+			});
 
 			// custom shape view switcher
 			// - add ind type id and view type
@@ -122,6 +138,22 @@ $(function(){
 				$(this).attr('href',
 					remove_query_parameter($(this).attr('href'), 'view_type', 'view_type'));
 			});
+
+			// - custom navigation
+			$('#shape_layer_navigation ul#custom_shape_nav li.active_shape_nav a').each(function(index){
+				// if the link does not have the indicator param, switch it in for the indidcator type
+				if (get_query_parameter($(this).attr('href'), 'indicator_id', 'indicator') == undefined){
+					$(this).attr('href',
+						replace_query_parameter($(this).attr('href'), 'indicator_type_id', 'indicator_type', 'indicator_id', 'indicator', id, id));
+				} else {
+					$(this).attr('href',
+						update_query_parameter($(this).attr('href'), 'indicator_id', 'indicator', id));
+				}
+				$(this).attr('href',
+					remove_query_parameter($(this).attr('href'), 'view_type', 'view_type'));
+			});
+
+
 
 			// custom shape view switcher
 			// - add ind id and view type
