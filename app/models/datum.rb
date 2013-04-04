@@ -471,7 +471,7 @@ Rails.logger.debug("*********************** - found data, adding it to results")
       end
 
 			# if this is live data and not a precinct, add the precincts reported numbers
-			if data_type == Datum::DATA_TYPE[:live] && !is_precinct?
+			if data_type == Datum::DATA_TYPE[:live] && !is_precinct
 				precincts_reporting = Datum.get_precincts_reported(shape_id, event_id, data_set_id)
 				if precincts_reporting.present?
 					# save the value so the shapes can be marked different if not complete
