@@ -245,7 +245,6 @@ $(function(){
 
 	// create the state for the link that was just clicked on
 	function create_push_state(link, id, datai, sub_title, dt_highlight_shape){
-
 		// create new page title
 		var seperator = ' » ';
 		var new_title = '';
@@ -275,7 +274,7 @@ $(function(){
 	}
 
 	// add click functions to all indicator menu items
-	var jq_indicators = $("#indicator_menu_scale .indicator_links a")
+	var jq_indicators = $("#indicator_menu_scale .menu_list a")
 	jq_indicators.click(function(){
 		var link = $(this).attr('href'),
 				title = $(this).attr('title'),

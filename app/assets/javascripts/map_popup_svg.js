@@ -458,8 +458,12 @@ if (typeof(popup) !== "undefined" && popup.visible()) {
 
 function unhighlight_shape(feature)
 {
-  feature.style = f_style_backup;
-  feature.layer.redraw();
+	if (feature !== undefined && f_style_backup !== undefined){
+		feature.style = f_style_backup;
+		if (redraw_layer !== undefined && redraw_layer) {
+			feature.layer.redraw();
+		}
+	}
 }
 
 function mapFreeze(feature)
