@@ -152,9 +152,7 @@ class Datum < ActiveRecord::Base
 
 	# get the max data value for all indicators that belong to the
 	# indicator type and event for a specific shape
-
 	def self.get_summary_data_for_shape(shape_id, event_id, shape_type_id, indicator_type_id, data_set_id, limit=nil)
-
     start = Time.now
     x = nil
 		if !shape_id.nil? && !event_id.nil? && !indicator_type_id.nil? && !shape_type_id.nil? && !data_set_id.nil?
@@ -213,13 +211,14 @@ class Datum < ActiveRecord::Base
 	def self.build_summary_json(shape_id, shape_type_id, event_id, indicator_type_id, data_set_id, data_type)
 		start = Time.now
     results = Hash.new
-		if shape_id.present? && shape_type_id.present? && event_id.present? && indicator_type_id.present? 
-		      && data_set_id.present? && data_type.present?
+		if shape_id.present? && shape_type_id.present? && event_id.present? && indicator_type_id.present? &&
+		      data_set_id.present? && data_type.present?
       # get the shapes
 		  shapes = Shape.get_shapes_by_type(shape_id, shape_type_id, false)
 		  
 		  # get the shape type
 		  shape_type = ShapeType.find_by_id(shape_type_id)
+Rails.logger.debug("************* shape type is precinct = '#{shape_type.is_precinct}'")
 
   	  # get the event
   	  event = Event.find(event_id)
@@ -247,7 +246,7 @@ class Datum < ActiveRecord::Base
       if shapes.present? && event.present? && shape_type.present?
         shapes.each do |shape|
       	  # get all of the related json data for this indicator type
-      	  data = build_related_indicator_json(shape.id, shape_type_id, shape_type.is_precinct, event_id, data_set_id, data_type
+      	  data = build_related_indicator_json(shape.id, shape_type_id, shape_type.is_precinct, event_id, data_set_id, data_type,
       	    event.event_indicator_relationships.where(:indicator_type_id => indicator_type_id))
 
           summary = data.select{|x| x.has_key?("summary_data") && x["summary_data"].present? &&
@@ -260,7 +259,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
               shape_values.first["shape_values"]["parent_id"] = shape.parent_id
               shape_values.first["shape_values"]["value"] = summary.first["summary_data"]["data"].first[:indicator_name_abbrv]
               shape_values.first["shape_values"]["color"] = summary.first["summary_data"]["data"].first[:color]
-              shape_values.first["shape_values"]["title"] = summary.first["summary_data"]["data"].first[:summary_name]
+              shape_values.first["shape_values"]["title"] = summary.first["summary_data"]["data"].first[:indicator_type_name]
             end
           end
 
@@ -379,14 +378,18 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 		data_hash["shape_values"] = shape_values
 	  results << data_hash
 
+Rails.logger.debug("*********************** building related indicator")
 	  if shape_id.present? && event_id.present? && shape_type_id.present? && data_set_id.present? && 
-	        data_type.present? && relationships.present? && is_precinct.present?
+	        data_type.present? && relationships.present?
+Rails.logger.debug("*********************** all data provided!")
       has_duplicates = false
 	    relationships.each do |rel|
 	      if rel.related_indicator_type_id.present?
+Rails.logger.debug("*********************** getting summary data for ind type #{rel.related_indicator_type_id}")
 	        # get the summary for this indciator type
 					data = build_summary_data_json(shape_id, shape_type_id, event_id, rel.related_indicator_type_id, data_set_id)
 					if data.present? && data["summary_data"].present? && data["summary_data"]["data"].present?
+Rails.logger.debug("*********************** - found data, adding it to results")
 	        	results << data
 					end
         elsif rel.related_core_indicator_id.present?

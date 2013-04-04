@@ -65,8 +65,8 @@ function MapPopup() {
       {
         var max_text_width = 0;
         var max_value_width = 0;
-				for(var j=0;j<json[i].summary_data.length;j++) {
-					var value = json[i].summary_data[j];
+				for(var j=0;j<json[i].summary_data.data.length;j++) {
+					var value = json[i].summary_data.data[j];
 					var text_width = get_text_width(value.indicator_name);
           if( text_width > max_text_width)
             max_text_width = text_width;
@@ -75,11 +75,11 @@ function MapPopup() {
           if( value_width > max_value_width)
             max_value_width = value_width;
         }
-// console.log("summary max text width = " + max_text_width +	"; max value width = " + max_value_width + "; first data value = " + json[i].summary_data[0].value);
-				if (isNaN(json[i].summary_data[0].value))
+// console.log("summary max text width = " + max_text_width +	"; max value width = " + max_value_width + "; first data value = " + json[i].summary_data.data[0].value);
+				if (isNaN(json[i].summary_data.data[0].value))
 					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing*3;
 				else
-					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing+self.max/100*json[i].summary_data[0].value+self.item_spacing*2;
+					var summary_width = self.item_spacing*3+max_text_width+self.item_spacing+max_value_width+self.item_spacing+self.max/100*json[i].summary_data.data[0].value+self.item_spacing*2;
 
         // console.log("summary width = " + summary_width);
         if (summary_width > max_width)
@@ -366,15 +366,15 @@ MapPopup.prototype.processJSON = function(id_el, json, options)
 
     // process each data type in json
     for(var index=0;index<json.length;index++){
-      if (json[index].hasOwnProperty("title"))
+      if (json[index].hasOwnProperty("shape_values"))
       {
 // console.log("loading title");
-        this.processTitle(id_el, json[index].title, options);
+        this.processTitle(id_el, json[index].shape_values, options);
       }
       else if (json[index].hasOwnProperty("summary_data"))
       {
 // console.log("loading summary data");
-        this.processSummaryData(id_el, json[index].summary_data, options);
+        this.processSummaryData(id_el, json[index].summary_data.data, options);
       }
       else if (json[index].hasOwnProperty("data_item"))
       {

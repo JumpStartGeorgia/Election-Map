@@ -236,9 +236,9 @@ class JsonController < ApplicationController
 			    }
 =end
           if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
-	          data = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id], params[:data_type], params[:data_type]).to_json
+	          data = Datum.build_json(shape.id, shape.shape_type_id, params[:indicator_id], params[:data_set_id], params[:data_type]).to_json
           elsif shape.has_children?
-	          data = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id], params[:data_type], params[:data_type]).to_json
+	          data = Datum.build_json(shape.id, params[:shape_type_id], params[:indicator_id], params[:data_set_id], params[:data_type]).to_json
           end
 
 			  end
