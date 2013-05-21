@@ -161,6 +161,7 @@ en:
       cache_cleared: "The memory and file cache were cleared because of the following: %{action}"
       dataset_cache_files_created: The default cache files for the dataset were successfully created.
       dataset_cache_files_failed: An error occurred while creating the default cache files for the dataset.
+      event_indicator_relationships_missing_params: Please provide all parameters to edit a record.
     common:
       app_name: Georgia Election Data
       yes: Yes
@@ -308,40 +309,6 @@ en:
       js_link_title: "Visit JumpStart Georgia's website"
       js_link_text: Built by
   root:
-    admin:
-      title: Administration Section
-      basic_header: Basic
-      events: Event Names
-      shape_types: Shape Types
-      event_types: Event Groups
-      custom_views: Create Custom Event Views
-      indicator_relationships: Customize Popup Data
-      core_indicators: Unique Indicators
-      core_indicator_colors: Indicator Colors
-      indicator_types: Indicator Groups
-      pages: Basic Pages
-      csv_header: Upload CSV Files
-      indicators: Indicators
-      change_indicator_names: Change Indicator Names
-      change_indicator_scales: Change Indicator Scales
-      data: Data
-      shapes: Map Shapes
-      download_header: Download Files
-      download_indicators: Indicators
-      data_archives: Create Data Archive Set
-      delete_header: Delete Records
-      delete_shapes: Map Shapes
-      delete_data: Data
-      cache_clear_header: Clear Cache
-      cache_clear_all: Clear All Cache
-      cache_clear_memory: Clear Memory Cache
-      cache_clear_files: Clear File Cache
-      cache_create_header: Create File Cache
-      cache_default_event: Default Custom Event View Cache
-      cache_indicators: Custom Event Indicator Cache
-      cache_summary_data: Summary Data Cache
-      menu_live_events: Schedule Live Events Menu
-      load_data_data_sets: Manage Datasets
     index:
       export_link_text: Export Map
       footnote: "Note: %{note}"
@@ -354,124 +321,6 @@ en:
       follow: "You can follow future updates on Twitter at #gvote or @jsgeorgia or on Facebook at http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: Indicators
-  data:
-    export:
-      title: Export Data CSV Template File
-    upload:
-      title: Upload a CSV File of Data
-      download_link_text: Download the CSV template file for Data
-      instructions: Please note that you can add as many 'Indicator/Value' columns as you need.
-      help_1: Data must be provided in every column or no records will be saved.
-      delete_records: Delete existing data on file for the provided Event, Shape Type, and Indicator
-    delete:
-      title: Delete Data
-      instructions: "To delete Data records, please select the Event, Shape Level, and Indicator."
-      help_1: "To delete all Data for an Event, leave the Shape Level and Indicator fields empty."
-      help_2: "To delete all Data for an Event and Shape Level, leave the Indicator field empty."
-  core_indicators:
-    edit:
-      title: Editing Indicator
-    index:
-      title: Indicators
-    colors:
-      title: Indicator Colors
-    new:
-      title: New Indicator
-    show:
-      title: Indicator Details
-  event_types:
-    edit:
-      title: Editing Event Group
-    index:
-      title: Event Groups
-    new:
-      title: New Event Group
-    show:
-      title: Event Group Details
-  events:
-    edit:
-      title: Editing Event
-    index:
-      title: Events
-    new:
-      title: New Event
-    show:
-      title: Event Details
-  event_custom_views:
-    edit:
-      title: Editing Event Custom View
-    index:
-      title: Events with Custom Views
-    new:
-      title: New Event Custom View
-  event_indicator_relationships:
-    edit:
-      title: Editing Event Indicator Relationship
-    index:
-      title: Events with Indicator Relationships
-    new:
-      title: New Event Indicator Relationship
-    show:
-      title: Event Indicator Relationship
-  indicator_scales:
-    export:
-      title: Export Indicator Scales CSV Template File
-    upload:
-      title: Upload a CSV File of Indicator Scales
-      download_link_text: Download the CSV template file for Indicator Scales
-      instructions: Please note that you can add as many 'Scale Name' columns as you need.
-      help_1: You can provide your own colors or use the application colors.
-      help_1_1: "If you provide your own colors, each indicator scale must have a color."
-      help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
-      help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
-      help_2: Scales must be entered in order from smallest to biggest.
-      help_3: "If the scale includes a large number, do not include a comma in the number (e.g., 250,000  should be entered as 250000)"
-      help_4: "If the scale covers a range (e.g., 100-200, 200-300, etc)"
-      help_4_1: "The application will apply the following rule: for a scale of x-y, x < number <= y."
-      help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
-      help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
-      delete_records: Delete existing scales on file for the provided Indicator(s)
-  indicator_types:
-    edit:
-      title: Editing Indicator Group
-    index:
-      title: Indicator Groups
-    new:
-      title: New Indicator Group
-    show:
-      title: Indicator Group Details
-  indicators:
-    change_name:
-      title: Upload a CSV File to Change Indicator Names
-      download_link_text: Download the CSV template file for changing Indicator names
-      help_1: "You must provide the new Indicator name and Indicator Abbreviated name for both Georgian and English languages, even if you are only changing one of the four names."
-      delete_records: Delete existing indicators and their data records on file for the provided Event and Shape Type(s)
-    download:
-      title: Download a CSV File of Indicators
-      which_download: Which indicator data do you want to download?
-      name_label: Names Only
-      scale_label: Scales Only
-      both_label: Names and Scales
-    export:
-      title: Export Indicator CSV Template File
-    export_name_change:
-      title: Export Indicator Name Change CSV Template File
-    upload:
-      title: Upload a CSV File of Indicators
-      download_link_text: Download the CSV template file for Indicators
-      instructions: Please note that you can add as many 'Scale Name' columns as you need.
-      important: Important if you are including scales
-      help_1: You can provide your own colors or use the application colors.
-      help_1_1: "If you provide your own colors, each indicator scale must have a color."
-      help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
-      help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
-      help_2: Scales must be entered in order from smallest to biggest.
-      help_3: "If the scale includes a large number, do not include a comma in the number (e.g., 250,000  should be entered as 250000)"
-      help_4: "If the scale covers a range (e.g., 100-200, 200-300, etc)"
-      help_4_1: "The application will apply the following rule: for a scale of x-y, x < number <= y."
-      help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
-      help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
-      delete_records: Delete existing indicators and their data records on file for the provided Event and Shape Type(s)
   pages:
     edit:
       title: Editing Page
@@ -483,28 +332,6 @@ en:
       title: Page Details
     view:
       title:
-  shape_types:
-    edit:
-      title: Editing Shape Type
-    index:
-      title: Shape Types
-    new:
-      title: New Shape Type
-    show:
-      title: Shape Type Details
-  shapes:
-    export:
-      title: Export Shapes CSV Template File
-    upload:
-      title: Upload a CSV File of Shapes
-      download_link_text: Download the CSV template file for Shapes
-      delete_records: Delete existing shapes on file for the provided Event and Shape Type(s)
-    delete:
-      title: Delete Shapes
-      instructions: To delete Shape records, please select the event the shapes belong to and what level of shapes you wish to delete.
-      important: Important
-      help_1: "The same set of shape records can be shared with multiple events. When you delete shapes for the selected Event, you will also be deleting shapes for other Events that use the same set of shape records. "
-      help_2: "For the selected shape level, all shapes at that level and subsequent shape levels that are under the selected level will be deleted.  For instance, if you select 'District', all 'District' shapes will be deleted as well as all 'Precinct' shapes that are under those 'District' shapes."
   messages:
     new:
       title: Contact Us
@@ -516,34 +343,6 @@ en:
       message: Message
     success:
       title: Contact Us
-  cache:
-    clear_all:
-      title: Clear All Cache
-      explanation: Clear both the Memory and File cache.
-      cleared: All memory and file cache have been cleared.
-    clear_memory:
-      title: Clear Memory Cache
-      explanation: Memory Cache holds items like the event menu and non-custom event json shape files.
-      cleared: The memory cache has been cleared.
-    clear_files:
-      title: Clear File Cache
-      explanation: File Cache holds custom event json shape files for all indicators.
-      cleared: The cache files have been deleted.
-    custom_event_indicators:
-      title: Create Cache for All Custom Event Indicators
-      explanation: Create cache files for each indicator in an event that has a custom view (e.g., all indicators at the District level of the 2008 Presidential Election).
-      time: This will take about 30 minutes.
-      created: The custom event indicator cache files have been created.
-    default_custom_event:
-      title: Create Cache for Default Custom Event Views
-      explanation: Create cache files for the default view of events that have custom views (e.g., viewing distrcits at country level).
-      time: This will take about 5 minutes.
-      created: The default event cache files have been created.
-    summary_data:
-      title: Create Cache for Summary Data
-      explanation: Create cache files for the data that builds the Overall Results bar charts in the map popup.
-      time: This will take about 30 minutes.
-      created: The summary data cache files have been created.
   data_archives:
     new:
       title: Create a new Data Archive set of files
@@ -578,16 +377,220 @@ en:
       title: New Live Event Menu
     show:
       title: Live Event Menu Details
-  data_sets:
-    edit:
-      title: Editing Dataset
+  admin:
     index:
-      title: Datasets
-      no_data: I am sorry, but at this time there are no datasets on file.
-    new:
-      title: New Dataset
-    show:
-      title: Dataset Details
-    load_data:
-      title: Load Event Data
-      no_live_events: Data cannot be loaded until an event is marked as being live.
+      title: Administration Section
+      basic_header: Basic
+      events: Event Names
+      shape_types: Shape Types
+      event_types: Event Groups
+      custom_views: Create Custom Event Views
+      indicator_relationships: Customize Popup Data
+      core_indicators: Unique Indicators
+      core_indicator_colors: Indicator Colors
+      indicator_types: Indicator Groups
+      pages: Basic Pages
+      csv_header: Upload CSV Files
+      indicators: Indicators
+      change_indicator_names: Change Indicator Names
+      change_indicator_scales: Change Indicator Scales
+      data: Data
+      shapes: Map Shapes
+      download_header: Download Files
+      download_indicators: Indicators
+      data_archives: Create Data Archive Set
+      delete_header: Delete Records
+      delete_shapes: Map Shapes
+      delete_data: Data
+      cache_clear_header: Clear Cache
+      cache_clear_all: Clear All Cache
+      cache_clear_memory: Clear Memory Cache
+      cache_clear_files: Clear File Cache
+      cache_create_header: Create File Cache
+      cache_default_event: Default Custom Event View Cache
+      cache_indicators: Custom Event Indicator Cache
+      cache_summary_data: Summary Data Cache
+      menu_live_events: Schedule Live Events Menu
+      load_data_data_sets: Manage Datasets
+    cache:
+      clear_all:
+        title: Clear All Cache
+        explanation: Clear both the Memory and File cache.
+        cleared: All memory and file cache have been cleared.
+      clear_memory:
+        title: Clear Memory Cache
+        explanation: Memory Cache holds items like the event menu and non-custom event json shape files.
+        cleared: The memory cache has been cleared.
+      clear_files:
+        title: Clear File Cache
+        explanation: File Cache holds custom event json shape files for all indicators.
+        cleared: The cache files have been deleted.
+      custom_event_indicators:
+        title: Create Cache for All Custom Event Indicators
+        explanation: Create cache files for each indicator in an event that has a custom view (e.g., all indicators at the District level of the 2008 Presidential Election).
+        time: This will take about 30 minutes.
+        created: The custom event indicator cache files have been created.
+      default_custom_event:
+        title: Create Cache for Default Custom Event Views
+        explanation: Create cache files for the default view of events that have custom views (e.g., viewing distrcits at country level).
+        time: This will take about 5 minutes.
+        created: The default event cache files have been created.
+      summary_data:
+        title: Create Cache for Summary Data
+        explanation: Create cache files for the data that builds the Overall Results bar charts in the map popup.
+        time: This will take about 30 minutes.
+        created: The summary data cache files have been created.
+    shape_types:
+      edit:
+        title: Editing Shape Type
+      index:
+        title: Shape Types
+      new:
+        title: New Shape Type
+      show:
+        title: Shape Type Details
+    data:
+      export:
+        title: Export Data CSV Template File
+      upload:
+        title: Upload a CSV File of Data
+        download_link_text: Download the CSV template file for Data
+        instructions: Please note that you can add as many 'Indicator/Value' columns as you need.
+        help_1: Data must be provided in every column or no records will be saved.
+        delete_records: Delete existing data on file for the provided Event, Shape Type, and Indicator
+      delete:
+        title: Delete Data
+        instructions: "To delete Data records, please select the Event, Shape Level, and Indicator."
+        help_1: "To delete all Data for an Event, leave the Shape Level and Indicator fields empty."
+        help_2: "To delete all Data for an Event and Shape Level, leave the Indicator field empty."
+    shapes:
+      export:
+        title: Export Shapes CSV Template File
+      upload:
+        title: Upload a CSV File of Shapes
+        download_link_text: Download the CSV template file for Shapes
+        delete_records: Delete existing shapes on file for the provided Event and Shape Type(s)
+      delete:
+        title: Delete Shapes
+        instructions: To delete Shape records, please select the event the shapes belong to and what level of shapes you wish to delete.
+        important: Important
+        help_1: "The same set of shape records can be shared with multiple events. When you delete shapes for the selected Event, you will also be deleting shapes for other Events that use the same set of shape records. "
+        help_2: "For the selected shape level, all shapes at that level and subsequent shape levels that are under the selected level will be deleted.  For instance, if you select 'District', all 'District' shapes will be deleted as well as all 'Precinct' shapes that are under those 'District' shapes."
+    core_indicators:
+      edit:
+        title: Editing Indicator
+      index:
+        title: Indicators
+      colors:
+        title: Indicator Colors
+      new:
+        title: New Indicator
+      show:
+        title: Indicator Details
+    data_sets:
+      edit:
+        title: Editing Dataset
+      index:
+        title: Datasets
+        no_data: I am sorry, but at this time there are no datasets on file.
+      new:
+        title: New Dataset
+      show:
+        title: Dataset Details
+      load_data:
+        title: Load Event Data
+        no_live_events: Data cannot be loaded until an event is marked as being live.
+    event_custom_views:
+      edit:
+        title: Editing Event Custom View
+      index:
+        title: Events with Custom Views
+      new:
+        title: New Event Custom View
+    event_indicator_relationships:
+      edit:
+        title: Editing Event Indicator Relationship
+      index:
+        title: Events with Indicator Relationships
+      new:
+        title: New Event Indicator Relationship
+      show:
+        title: Event Indicator Relationship
+    events:
+      edit:
+        title: Editing Event
+      index:
+        title: Events
+      new:
+        title: New Event
+      show:
+        title: Event Details
+    event_types:
+      edit:
+        title: Editing Event Group
+      index:
+        title: Event Groups
+      new:
+        title: New Event Group
+      show:
+        title: Event Group Details
+    indicators:
+      change_name:
+        title: Upload a CSV File to Change Indicator Names
+        download_link_text: Download the CSV template file for changing Indicator names
+        help_1: "You must provide the new Indicator name and Indicator Abbreviated name for both Georgian and English languages, even if you are only changing one of the four names."
+        delete_records: Delete existing indicators and their data records on file for the provided Event and Shape Type(s)
+      download:
+        title: Download a CSV File of Indicators
+        which_download: Which indicator data do you want to download?
+        name_label: Names Only
+        scale_label: Scales Only
+        both_label: Names and Scales
+      export:
+        title: Export Indicator CSV Template File
+      export_name_change:
+        title: Export Indicator Name Change CSV Template File
+      upload:
+        title: Upload a CSV File of Indicators
+        download_link_text: Download the CSV template file for Indicators
+        instructions: Please note that you can add as many 'Scale Name' columns as you need.
+        important: Important if you are including scales
+        help_1: You can provide your own colors or use the application colors.
+        help_1_1: "If you provide your own colors, each indicator scale must have a color."
+        help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
+        help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
+        help_2: Scales must be entered in order from smallest to biggest.
+        help_3: "If the scale includes a large number, do not include a comma in the number (e.g., 250,000  should be entered as 250000)"
+        help_4: "If the scale covers a range (e.g., 100-200, 200-300, etc)"
+        help_4_1: "The application will apply the following rule: for a scale of x-y, x < number <= y."
+        help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
+        help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
+        delete_records: Delete existing indicators and their data records on file for the provided Event and Shape Type(s)
+    indicator_scales:
+      export:
+        title: Export Indicator Scales CSV Template File
+      upload:
+        title: Upload a CSV File of Indicator Scales
+        download_link_text: Download the CSV template file for Indicator Scales
+        instructions: Please note that you can add as many 'Scale Name' columns as you need.
+        help_1: You can provide your own colors or use the application colors.
+        help_1_1: "If you provide your own colors, each indicator scale must have a color."
+        help_1_2: "If you are using the application colors, leave the Scale Color columns empty."
+        help_1_3: "If you are using the application colors, you must have between 3 and 13 scales for an indicator."
+        help_2: Scales must be entered in order from smallest to biggest.
+        help_3: "If the scale includes a large number, do not include a comma in the number (e.g., 250,000  should be entered as 250000)"
+        help_4: "If the scale covers a range (e.g., 100-200, 200-300, etc)"
+        help_4_1: "The application will apply the following rule: for a scale of x-y, x < number <= y."
+        help_4_2: "Sequential ranges (e.g., 100-200, 200-300, etc) must start with the same number that the previous range ended with. If you use the following scale of 1-100, 101-200, 201-300, etc,  a value of 200.2 will not match with the 101-200 scale or the 201-300 scale, and, therefore, will not appear in the application."
+        help_5: "You do not need to include a scale item for 'No Data'.  That is automatically added for you."
+        delete_records: Delete existing scales on file for the provided Indicator(s)
+    indicator_types:
+      edit:
+        title: Editing Indicator Group
+      index:
+        title: Indicator Groups
+      new:
+        title: New Indicator Group
+      show:
+        title: Indicator Group Details
+

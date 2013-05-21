@@ -1,0 +1,43 @@
+<% title t('.title') %>
+
+<%= form_tag delete_admin_data_path do %>
+	<div>
+		<p>
+			<%= t('.instructions')%>
+		</p>
+		<ul class="standard">
+			<li>
+				<%= t('.help_1')%>
+			</li>
+			<li>
+				<%= t('.help_2')%>
+			</li>
+		</ul>
+	</div>
+
+	<div>
+		<p>
+			<%= t('app.common.event') %>
+			<%= select_tag "event_id", options_from_collection_for_select(@events, "id", "name", params[:event_id]), :include_blank => true %>
+		</p>
+		<p>
+			<%= t('app.common.shape_type') %>
+			<%= select_tag "shape_type_id", "<option value=\"0\">#{t('app.msgs.select_event')}</option>".html_safe %>
+		</p>
+		<p>
+			<%= t('app.common.indicator') %>
+			<%= select_tag "indicator_id", "<option value=\"0\">#{t('app.msgs.select_shape_type')}</option>".html_safe %>
+		</p>
+	</div>
+	<div>
+	  <%= submit_tag t("app.buttons.delete"), :confirm => t('app.msgs.delete_confirm'), :id => "submit" %>
+	  <%= hidden_field_tag 'event_name' %>
+	  <%= hidden_field_tag 'shape_type_name' %>
+	  <%= hidden_field_tag 'indicator_name' %>
+	</div>
+<% end %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

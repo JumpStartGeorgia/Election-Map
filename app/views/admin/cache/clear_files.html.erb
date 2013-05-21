@@ -1,0 +1,15 @@
+<% title t('.title') %>
+
+<%= form_tag admin_cache_clear_files_path do %>
+	<p>
+		<%= t('.explanation') %>
+	</p>
+	<p>
+		<%= submit_tag t("app.buttons.delete"), :confirm => t('app.msgs.delete_confirm'), :id => "submit" %>
+	</p>
+<% end %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

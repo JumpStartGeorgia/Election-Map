@@ -1,0 +1,33 @@
+<% title t('.title') %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
+<%= form_tag change_name_admin_indicators_path, :multipart => true do %>
+	<div>
+		<p>
+			<%= link_to t('.download_link_text'), export_name_change_indicators_path %>.
+		</p>
+		<p>
+			<%= t('.important')%>:
+		</p>
+		<ul class="standard">
+			<li>
+				<%= t('.help_1')%>
+		</ul>
+	</div>
+
+	<div>
+		<p>
+			<%= t('app.common.file_upload')%>
+			<%= file_field_tag 'file', :accept => 'text/csv,text/plain' %>
+		</p>
+	</div>
+	<div>
+	  <%= submit_tag t("app.buttons.upload_csv") %>
+	</div>
+<% end %>
+
+

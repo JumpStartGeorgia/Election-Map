@@ -1,7 +1,5 @@
 # encoding: utf-8
 class RootController < ApplicationController
-  before_filter :authenticate_user!,
-    :except => [:index, :export, :download, :data_table]
 	require 'ostruct'
   require 'data_archive'
 
@@ -465,15 +463,6 @@ logger.debug ">>>>>>>>>>>>>>>> format = xls"
 			redirect_to root_path, :notice => t("app.msgs.no_data_download")
 		end
 
-  end
-
-  # GET /admin
-  # GET /admin.json
-  def admin
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @event }
-    end
   end
 
 	# any mis-match routing errors are directed here

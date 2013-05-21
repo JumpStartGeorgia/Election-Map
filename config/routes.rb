@@ -5,74 +5,91 @@ ElectionMap::Application.routes.draw do
 	#--------------------------------
 	scope ":locale", locale: /#{I18n.available_locales.join("|")}/ do
 
-		devise_for :users
+		match '/admin', :to => 'admin#index', :as => :admin, :via => :get
+		devise_for :users, :path_names => {:sign_in => 'login', :sign_out => 'logout'}
 
+		namespace :admin do
+	    match '/cache/clear_all' => 'cache#clear_all', :via => [:get, :post]
+  		match '/cache/clear_memory' => 'cache#clear_memory', :via => [:get, :post]
+	    match '/cache/clear_files', :to => 'cache#clear_files', :via => [:get, :post]
+	    match '/cache/custom_event_indicators', :to => 'cache#custom_event_indicators', :via => [:get, :post]
+	    match '/cache/default_custom_event', :to => 'cache#default_custom_event', :via => [:get, :post]
+	    match '/cache/summary_data', :to => 'cache#summary_data', :via => [:get, :post]
 
-	  resources :core_indicators do
-	    collection do
-	      get :colors
+	    resources :core_indicators do
+	      collection do
+	        get :colors
+        end
       end
-    end
-    resources :data_sets do
-			collection do
-	      get :load_data
-	      post :load_data
-			end
-			member do
-				get :create_cache
-			end
+	    resources :data do
+			  collection do
+	        get :upload
+	        post :upload
+	        get :export
+	        get :delete
+	        post :delete
+			  end
+		  end
+      resources :data_sets do
+			  collection do
+	        get :load_data
+	        post :load_data
+			  end
+			  member do
+				  get :create_cache
+			  end
+		  end
+  	  resources :event_custom_views
+  	  resources :event_indicator_relationships
+  	  resources :event_types
+  	  resources :events
+	    resources :indicator_scales do
+			  collection do
+	        get :upload
+	        post :upload
+	        get :export
+			  end
+	    end
+      resources :indicator_types
+	    resources :indicators do
+			  collection do
+	        get :upload
+	        post :upload
+	        get :export
+	        get :download
+	        post :download
+	        get :change_name
+	        post :change_name
+	        get :export_name_change
+			  end
+		  end
+
+  	  resources :shape_types
+	    resources :shapes do
+			  collection do
+	        get :upload
+	        post :upload
+	        get :export
+	        get :delete
+	        post :delete
+			  end
+		  end
+			resources :users
+
 		end
-	  resources :data do
-			collection do
-	      get :upload
-	      post :upload
-	      get :export
-	      get :delete
-	      post :delete
-			end
-		end
-	  resources :indicator_scales do
-			collection do
-	      get :upload
-	      post :upload
-	      get :export
-			end
-	  end
-    resources :indicator_types
-	  resources :indicators do
-			collection do
-	      get :upload
-	      post :upload
-	      get :export
-	      get :download
-	      post :download
-	      get :change_name
-	      post :change_name
-	      get :export_name_change
-			end
-		end
-	  resources :events
-	  resources :event_custom_views
-	  resources :event_indicator_relationships
-	  resources :event_types
+
+
+
     resources :menu_live_events
     resources :news
 	  resources :pages
-	  resources :shapes do
-			collection do
-	      get :upload
-	      post :upload
-	      get :export
-	      get :delete
-	      post :delete
-			end
-		end
-	  resources :shape_types
 
 
+
+
+    # root
 		match '/export', :to => 'root#export', :as => :export, :via => :post, :defaults => {:format => 'svg'}
 		match '/routing_error', :to => 'root#routing_error'
-		match '/admin', :to => 'root#admin', :as => :admin, :via => :get
 		match '/download/csv/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data_csv, :via => :get, :defaults => {:format => 'csv'}
 		match '/download/xls/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data_xls, :via => :get, :defaults => {:format => 'xls'}
 		match '/archive', :to => 'root#archive', :as => :archive, :via => :get
@@ -83,17 +100,6 @@ ElectionMap::Application.routes.draw do
 		match '/shape_types/event/:event_id', :to => 'shape_types#by_event', :as => :shape_types_by_event, :via => :get, :defaults => {:format => 'json'}
 		match '/indicators/event/:event_id/shape_type/:shape_type_id', :to => 'indicators#by_event_shape_type', :as => :indicators_by_event_shape_type, :via => :get, :defaults => {:format => 'json'}
 		match '/event_indicator_relationships/render_js_blocks/:id/:type/:counter', :to => 'event_indicator_relationships#render_js_blocks', :via => :get, :defaults => {:format => 'json'}
-
-		# cache
-		match '/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => [:get, :post]
-		match '/cache/clear_memory', :to => 'cache#clear_memory', :as => :cache_clear_memory, :via => [:get, :post]
-		match '/cache/clear_files', :to => 'cache#clear_files', :as => :cache_clear_files, :via => [:get, :post]
-		match '/cache/custom_event_indicators', :to => 'cache#custom_event_indicators',
-			:as => :cache_custom_event_indicators, :via => [:get, :post]
-		match '/cache/default_custom_event', :to => 'cache#default_custom_event',
-			:as => :cache_default_custom_event, :via => [:get, :post]
-		match '/cache/summary_data', :to => 'cache#summary_data',
-			:as => :cache_summary_data, :via => [:get, :post]
 
 		# data archives
 		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :get
@@ -142,6 +148,18 @@ ElectionMap::Application.routes.draw do
 		match '/json/event_menu', :to => 'json#event_menu', :as => :json_event_menu, :via => :get, :defaults => {:format => 'json'}
 		match '/json/live_event_menu', :to => 'json#live_event_menu', :as => :json_live_event_menu, :via => :get, :defaults => {:format => 'json'}
 		match '/json/current_data_set/event/:event_id/data_type/:data_type', :to => 'json#current_data_set', :as => :json_current_data_set, :via => :get, :defaults => {:format => 'json'}
+
+
+		# cache
+		match '/admin/cache/clear_all', :to => 'cache#clear_all', :as => :cache_clear_all, :via => [:get, :post]
+		match '/admin/cache/clear_memory', :to => 'admin::cache#clear_memory', :as => :cache_clear_memory, :via => [:get, :post]
+		match '/admin/cache/clear_files', :to => 'cache#clear_files', :as => :cache_clear_files, :via => [:get, :post]
+		match '/admin/cache/custom_event_indicators', :to => 'cache#custom_event_indicators',
+			:as => :cache_custom_event_indicators, :via => [:get, :post]
+		match '/admin/cache/default_custom_event', :to => 'cache#default_custom_event',
+			:as => :cache_default_custom_event, :via => [:get, :post]
+		match '/admin/cache/summary_data', :to => 'cache#summary_data',
+			:as => :cache_summary_data, :via => [:get, :post]
 =end
 
 		match '/data_table/event_type/:event_type_id/event/:event_id/shape/:shape_id/shape_type/:shape_type_id/child_shape_type/:child_shape_type_id/indicator/:indicator_id/view_type/:view_type/summary_view_type/:summary_view_type_name(/custom_view/:custom_view)', :to => 'root#data_table', :as => :data_table, :via => :get

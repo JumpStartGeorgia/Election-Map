@@ -1,0 +1,102 @@
+<% title t('.title') %>
+
+<div class="admin_panel row-fluid">
+   <div class="span4">
+ 		<h3><%= t('.basic_header')%></h3>
+ 		<ul class="standard">
+ 			<li>
+ 				<%= link_to t('.events'), admin_events_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.event_types'), admin_event_types_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.custom_views'), admin_event_custom_views_path %>
+ 			</li>
+			<li>
+				<%= link_to t('.indicator_relationships'), admin_event_indicator_relationships_path %>
+			</li>
+ 			<li>
+ 				<%= link_to t('.indicator_types'), admin_indicator_types_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.core_indicators'), admin_core_indicators_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.core_indicator_colors'), colors_admin_core_indicators_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.shape_types'), admin_shape_types_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.pages'), pages_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.menu_live_events'), menu_live_events_path %>
+ 			</li>
+  </div>
+   <div class="span4">
+ 		<h3><%= t('.csv_header')%></h3>
+ 		<ul class="standard">
+ 			<li>
+       <%= link_to t('.indicators'), upload_admin_indicators_path %>
+       </li>
+ 			<li>
+ 			<%= link_to t('.change_indicator_scales'), upload_admin_indicator_scales_path %>
+ 			</li>
+ 			<li>
+ 			<%= link_to t('.data'), admin_data_sets_path %>
+ 			</li>
+ 			<li>
+ 			<%= link_to t('.shapes'), upload_admin_shapes_path %>
+ 			</li>
+ 		</ul>
+
+ 		<h3><%= t('.cache_create_header')%></h3>
+ 		<ul class="standard">
+ 			<li>
+ 				<%= link_to t('.cache_default_event'), admin_cache_default_custom_event_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.cache_indicators'), admin_cache_custom_event_indicators_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.cache_summary_data'), admin_cache_summary_data_path %>
+ 			</li>
+ 		</ul>
+
+ 		<h3><%= t('.download_header')%></h3>
+ 		<ul class="standard">
+ 			<li>
+ 			<%= link_to t('.download_indicators'), download_admin_indicators_path %>
+ 			</li>
+ 			<li>
+ 			<%= link_to t('.data_archives'), data_archives_new_path %>
+ 			</li>
+ 		</ul>
+  </div>
+   <div class="span4">
+ 		<h3><%= t('.delete_header')%></h3>
+ 		<ul class="standard">
+ 			<li>
+ 			<%= link_to t('.delete_data'), admin_data_sets_path %>
+ 			</li>
+ 			<li>
+ 			<%= link_to t('.delete_shapes'), delete_admin_shapes_path %>
+ 			</li>
+ 		</ul>
+
+ 		<h3><%= t('.cache_clear_header')%></h3>
+ 		<ul class="standard">
+ 			<li>
+ 				<%= link_to t('.cache_clear_memory'), admin_cache_clear_memory_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.cache_clear_files'), admin_cache_clear_files_path %>
+ 			</li>
+ 			<li>
+ 				<%= link_to t('.cache_clear_all'), admin_cache_clear_all_path %>
+ 			</li>
+ 		</ul>
+  </div>
+</div>

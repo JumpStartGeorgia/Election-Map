@@ -1,0 +1,36 @@
+<% title t('.title') %>
+
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th><%= t('app.common.name_singular')%></th>
+    <th><%= t('app.common.name_singular_possessive')%></th>
+    <th><%= t('app.common.name_plural')%></th>
+    <th><%= t('app.common.is_precinct')%></th>
+    <th><%= t('app.common.parent_shape')%></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+<% @shape_types.each do |shape_type| %>
+  <tr>
+    <td><%= link_to shape_type.name_singular, admin_shape_type_path(shape_type) %></td>
+    <td><%= shape_type.name_singular_possessive %></td>
+    <td><%= shape_type.name_plural %></td>
+    <td><%= shape_type.is_precinct %></td>
+    <td><%= shape_type.parent.name_singular if !shape_type.parent.nil? %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_admin_shape_type_path(shape_type), :class => 'btn btn-mini' %></td>
+    <td><%= link_to t('app.buttons.delete'), admin_shape_type_path(shape_type), :confirm => t('app.msgs.delete_confirm'), :method => :delete,
+    :class => 'btn btn-mini btn-danger' %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.new_shape_types'), new_admin_shape_type_path,
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

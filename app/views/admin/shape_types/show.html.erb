@@ -1,0 +1,31 @@
+<% title t('.title') %>
+
+<p>
+  <strong><%= t('app.common.name_singular')%>:</strong>
+  <%= @shape_type.name_singular %>
+</p>
+<p>
+  <strong><%= t('app.common.name_singular_possessive')%>:</strong>
+  <%= @shape_type.name_singular_possessive %>
+</p>
+<p>
+  <strong><%= t('app.common.name_plural')%>:</strong>
+  <%= @shape_type.name_plural %>
+</p>
+<p>
+  <strong><%= t('app.common.is_precinct')%>:</strong>
+  <%= @shape_type.is_precinct %>
+</p>
+<p>
+  <strong><%= t('app.common.parent_shape')%>:</strong>
+  <%= @shape_type.parent.name_singular if !@shape_type.parent.nil? %>
+</p>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.edit'), edit_admin_shape_type_path(@shape_type),
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.list'), admin_shape_types_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

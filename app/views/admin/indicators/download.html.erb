@@ -1,0 +1,35 @@
+<% title t('.title') %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
+<%= form_tag download_admin_indicators_path do %>
+	<div>
+		<p>
+			<%= t('app.common.event') %>
+			<%= select_tag "event_id", options_from_collection_for_select(@events, "id", "name") %>
+		</p>
+		<p>
+			<%= t('.which_download') %>
+			<br />
+			<label class="radio">
+			<%= radio_button_tag 'download_option', 'names' %>
+			<%= t('.name_label') %>
+			</label>
+			<label class="radio">
+			<%= radio_button_tag 'download_option', 'scales' %>
+			<%= t('.scale_label')%>
+			</label>
+			<label class="radio">
+			<%= radio_button_tag 'download_option', 'both', true %>
+			<%= t('.both_label')%>
+			</label>
+		</p>
+	</div>
+	<div>
+	  <%= submit_tag t("app.buttons.download_csv") %>
+	</div>
+<% end %>
+

@@ -1,0 +1,31 @@
+<% title t('.title') %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.new_event_types'), new_admin_event_type_path,
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
+<table class="table table-striped">
+<thead>
+  <tr>
+    <th><%= t('app.common.name') %></th>
+    <th><%= t('app.common.sort_order') %></th>
+    <th></th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+<% @event_types.each do |event_type| %>
+<tr>
+    <td><%= link_to event_type.name, admin_event_type_path(event_type) %></td>
+    <td><%= event_type.sort_order %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_admin_event_type_path(event_type), :class => 'btn btn-mini' %></td>
+    <td><%= link_to t('app.buttons.delete'), admin_event_type_path(event_type), :confirm => t('app.msgs.delete_confirm'), :method => :delete,
+    :class => 'btn btn-mini btn-danger' %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+

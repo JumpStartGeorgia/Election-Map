@@ -1,0 +1,47 @@
+<% title t('.title') %>
+
+<p>
+  <strong><%= t("app.common.name") %>:</strong>
+  <%= @core_indicator.name %>
+</p>
+
+<p>
+  <strong><%= t("app.common.name_abbrv") %>:</strong>
+  <%= @core_indicator.name_abbrv %>
+</p>
+
+<p>
+  <strong><%= t("app.common.description") %>:</strong>
+  <%= @core_indicator.description %>
+</p>
+
+<p>
+  <strong><%= t("app.common.indicator_type") %>:</strong>
+  <%= @core_indicator.indicator_type.name %>
+</p>
+
+<p>
+  <strong><%= t("app.common.number_format") %>:</strong>
+  <%= @core_indicator.number_format %>
+</p>
+
+<p>
+  <strong><%= t("app.common.color") %>:</strong>
+  <% if !@core_indicator.indicator_color.nil? && !@core_indicator.indicator_color.empty? %>
+	  <span style="background-color: <%= "#{@core_indicator.indicator_color}" %>;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	<% end %>
+</p>
+
+<p>
+  <strong><%= t("app.common.indicator_ancestry") %>:</strong>
+  <%= @core_indicator.parent.name if !@core_indicator.ancestry.nil? %>
+</p>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.edit'), edit_admin_core_indicator_path(@core_indicator),
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.list'), admin_core_indicators_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>

@@ -153,16 +153,21 @@
               <% if user_signed_in? %>
 		          <div class="pull-right">
 		            <ul>
-		              <li>
-		   		         <%= current_user.email %>
-									</li>
-		              <li>
-		   		         <%= link_to t('.admin'), admin_path %>
-									</li>
-		              <li>
-		   		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
-									</li>
-		            </ul>
+	                <li class="dropdown">
+	                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	                        <%= current_user.email %>
+	                        <b class="caret"></b>
+	                  </a>
+	                  <ul class="dropdown-menu">
+		                  <li>
+		       		         <%= link_to t('.admin'), admin_path %>
+									    </li>
+		                  <li>
+		       		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
+									    </li>
+    		            </ul>
+                  </li>
+                </ul>
 		          </div>
               <% end %>
            </div>

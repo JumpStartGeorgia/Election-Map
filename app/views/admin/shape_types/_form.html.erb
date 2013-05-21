@@ -1,0 +1,37 @@
+<%= semantic_form_for([:admin, @shape_type]) do |f| %>
+	<%= f.error_messages %>
+
+  <% @shape_type.shape_type_translations.sort{|x,y| x.locale <=> y.locale}.each do |trans| %>
+		<%= f.fields_for :shape_type_translations, trans do |translation| %>
+
+			<div id="form-<%= trans.locale %>" class="multilanguage">
+				<h3><%= t("app.language.#{trans.locale}") %></h3>
+
+				<%= translation.input :name_singular %>
+				<%= translation.input :name_singular_possessive %>
+				<%= translation.input :name_plural %>
+				<%= translation.hidden_field :locale , :value => trans.locale %>
+			</div>
+
+		<% end %>
+	<% end %>
+
+	<div class="select control-group required stringish">
+		<%= label_tag "parent_shape", t("app.common.parent_shape"), :class => "control-label" %>
+		<div class="controls">
+			<%= select_tag "parent_shape", options_from_collection_for_select(@shape_types, "id", "name_singular", @shape_type.parent_id) %>
+		</div>
+	</div>
+
+	<%= f.inputs do %>
+		<%= f.input :is_precinct, :as => :radio %>
+		<%= f.hidden_field :ancestry %>
+	<% end %>
+
+	<div class="form-actions">
+	  <%= f.submit nil, :class => 'btn btn-success' %>
+	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
+	  <%= link_to t('app.buttons.cancel'), admin_shape_types_path, :class => 'btn btn-mini btn-warning' %>
+	</div>
+
+<% end %>
