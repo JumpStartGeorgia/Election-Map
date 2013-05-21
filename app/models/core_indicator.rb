@@ -100,6 +100,15 @@ class CoreIndicator < ActiveRecord::Base
             event_type[:events] << e
             e[:id] = event.id
             e[:name] = event.name
+            e[:shape_id] = event.shape_id
+            e[:shape_type_id] = event.shape.shape_type_id
+            e[:data_type] = Datum::DATA_TYPE[:official]
+		        dataset = DataSet.current_dataset(event.id, e[:data_type])
+		        if dataset && !dataset.empty?
+			        e[:data_set_id] =  dataset.first.id
+		        else
+			        e[:data_set_id] =  nil
+		        end
           end
         end
       end

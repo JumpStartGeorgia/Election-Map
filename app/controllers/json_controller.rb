@@ -30,10 +30,8 @@ class JsonController < ApplicationController
   # GET /json/core_indicator_events
   def core_indicator_events
     start = Time.now
-		key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS
-		json = JsonCache.fetch_data(key) {
-      CoreIndicator.build_event_json.to_json
-		}
+
+		json = get_core_indicator_events
 
     respond_to do |format|
       format.json { render json: json}
@@ -463,6 +461,47 @@ class JsonController < ApplicationController
     logger.debug "@ time to render summary_custom_children_data json: #{Time.now-start} seconds"
   end
 
+
+	#################################################
+	##### for the core indicator and event type, get each event summary data 
+  ##### format: [{event, data}, {event, data}, ...]
+	#################################################
+  def indicator_event_type_summary_data
+    data = nil
+    indicators = JSON.parse(get_core_indicator_events)
+    indicator = indicators.select{|x| x["id"].to_s == params[:core_indicator_id]}.first
+    if indicator.present?
+      event_type = indicator["event_types"].select{|x| x["id"].to_s == params[:event_type_id]}.first
+      if event_type.present? && event_type["events"].present?
+        data = []
+        event_type["events"].each do |event|
+		      key = FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA.gsub("[parent_id]", event["shape_id"].to_s)
+					      .gsub("[locale]", I18n.locale.to_s)
+		            .gsub("[event_id]", event["id"].to_s)
+		            .gsub("[indicator_type_id]", indicator["type_id"].to_s)
+		            .gsub("[shape_type_id]", event["shape_type_id"].to_s)
+				        .gsub("[data_set_id]", event["data_set_id"].to_s)
+		      x = JSON.parse(JsonCache.fetch_data(key) {
+			      Datum.build_summary_json(event["shape_id"], event["shape_type_id"], event["id"], 
+                  indicator["type_id"], event["data_set_id"], event["data_type"]).to_json
+		      })
+          # add event info
+          y = Hash.new
+          y[:event] = Hash.new
+          y[:event][:id] = event["id"]
+          y[:event][:name] = event["name"]
+          z = x["shape_data"][0].select{|z| z.has_key?("summary_data")}
+          y[:data] = z.present? ? z.first["summary_data"]["data"] : nil
+          data << y
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.json { render json: data.to_json}
+    end
+  end
+
 protected
 	# if a data set id is not passed in, use the current dataset
 	def get_data_set_id(event_id, data_type)
@@ -475,6 +514,15 @@ protected
 		end
 	end
 
+  def get_core_indicator_events
+		key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS
+		json = JsonCache.fetch_data(key) {
+      CoreIndicator.build_event_json.to_json
+		}
+    return json
+  end
+
+=begin
 	def key_custom_children_shapes
 		"custom_children_shapes/data_set_[data_set_id]/#{I18n.locale}/shape_[parent_shape_id]_indicator_[indicator_id]_shape_type_[shape_type_id]"
 	end
@@ -482,4 +530,5 @@ protected
 	def key_summary_custom_children_shapes
 		"summary_custom_children_shapes/data_set_[data_set_id]/#{I18n.locale}/shape_[parent_shape_id]_event_[event_id]_ind_type_[indicator_type_id]_shape_type_[shape_type_id]"
 	end
+=end
 end
