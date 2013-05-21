@@ -5,6 +5,8 @@ class CoreIndicator < ActiveRecord::Base
   has_many :core_indicator_translations, :dependent => :destroy
   belongs_to :indicator_type
   has_many :indicators, :dependent => :destroy
+  has_many :events, :through => :indicators, :uniq => true
+  has_many :event_types, :through => :events, :uniq => true
   has_many :event_indicator_relationships, :dependent => :destroy
   accepts_nested_attributes_for :core_indicator_translations
   attr_accessible :indicator_type_id, :number_format, :color, :ancestry, :core_indicator_translations_attributes
@@ -69,6 +71,40 @@ class CoreIndicator < ActiveRecord::Base
         return core
       end
     end
+  end
+
+  def self.build_event_json
+    json = []
+
+    types = EventType.all
+    CoreIndicator.order_by_type_name.each do |core|
+      ind = Hash.new
+      json << ind
+      ind[:id] = core.id
+      ind[:name] = core.name  
+      ind[:type_id] = core.indicator_type_id    
+      event_types = []
+      ind[:event_types] = event_types
+      types.each do |type|
+        # get events ordered by most recent being first
+        events = core.events.select{|x| x.event_type_id == type.id}.sort_by{|x| x[:event_date]}.reverse
+        if events.present?
+          event_type = Hash.new
+          event_types << event_type
+          event_type[:id] = type.id
+          event_type[:name] = type.name
+          event_type[:sort_order] = type.sort_order
+          event_type[:events] = []
+          events.each do |event|
+            e = Hash.new
+            event_type[:events] << e
+            e[:id] = event.id
+            e[:name] = event.name
+          end
+        end
+      end
+    end
+    return json
   end
 
 end

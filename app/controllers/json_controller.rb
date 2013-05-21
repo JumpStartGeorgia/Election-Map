@@ -17,7 +17,29 @@ class JsonController < ApplicationController
 	FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA =
 		"event_[event_id]/data_set_[data_set_id]/[locale]/summary_custom_children_data/shape_type_[shape_type_id]/shape_[parent_id]_indicator_type_[indicator_type_id]"
 
+
+  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS = "core_indicator_events"
+
   SUMMARY_LIMIT = 5
+
+
+
+	#################################################
+	##### core indicator events
+	#################################################
+  # GET /json/core_indicator_events
+  def core_indicator_events
+    start = Time.now
+		key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS
+		json = JsonCache.fetch_data(key) {
+      CoreIndicator.build_event_json.to_json
+		}
+
+    respond_to do |format|
+      format.json { render json: json}
+    end
+		logger.debug "@ time to render core indicator events json: #{Time.now-start} seconds"
+  end
 
 	#################################################
 	##### event menu
