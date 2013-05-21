@@ -321,17 +321,6 @@ ka:
       follow: "თქვენ შეგიძლიათ მიადევნოთ თვალყური სამომავლო განახლებებს Twitter-ზე  (#gvote ან  @jsgeorgia) ან Facebook-ზე შემდეგ მისამართზე http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: ინდიკატორები
-  pages:
-    edit:
-      title: Editing Page
-    index:
-      title: Pages
-    new:
-      title: New Page
-    show:
-      title: Page Details
-    view:
-      title:
   messages:
     new:
       title: დაგვიკავშირდით
@@ -368,16 +357,6 @@ ka:
       title: New News
     show:
       title: News Details
-  menu_live_events:
-    edit:
-      title: Editing Live Event Menu
-    index:
-      title: Menu Live Events
-      no_data: I am sorry, but at this time there are no menu live event records.
-    new:
-      title: New Live Event Menu
-    show:
-      title: Live Event Menu Details
   admin:
     index:
       title: Administration Section
@@ -597,4 +576,25 @@ ka:
         title: New Indicator Group
       show:
         title: Indicator Group Details
+    menu_live_events:
+      edit:
+        title: Editing Live Event Menu
+      index:
+        title: Menu Live Events
+        no_data: I am sorry, but at this time there are no menu live event records.
+      new:
+        title: New Live Event Menu
+      show:
+        title: Live Event Menu Details
+    pages:
+      edit:
+        title: Editing Page
+      index:
+        title: Pages
+      new:
+        title: New Page
+      show:
+        title: Page Details
+      view:
+        title:
 

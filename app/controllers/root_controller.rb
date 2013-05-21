@@ -3,6 +3,68 @@ class RootController < ApplicationController
 	require 'ostruct'
   require 'data_archive'
 
+  ################
+  ## actions for pages
+  ################
+  
+  def about
+    @page = Page.with_translations(I18n.locale).find_by_name("about")
+
+		if @page.present?
+		  if params[:layout].present?
+				render :action => "page", :layout => params[:layout]
+		  else
+		    respond_to do |format|
+		      format.html { render action: "page" }
+		      format.json { render json: @page }
+		    end
+			end
+		else
+			# no page was found, send back to home
+			redirect_to root_path
+		end
+  end
+
+  def data_source
+    @page = Page.with_translations(I18n.locale).find_by_name("data_source")
+
+		if @page.present?
+		  if params[:layout].present?
+				render :action => "page", :layout => params[:layout]
+		  else
+		    respond_to do |format|
+		      format.html { render action: "page" }
+		      format.json { render json: @page }
+		    end
+			end
+		else
+			# no page was found, send back to home
+			redirect_to root_path
+		end
+  end
+
+  def export_help
+    @page = Page.with_translations(I18n.locale).find_by_name("export_help")
+
+		if @page.present?
+		  if params[:layout].present?
+				render :action => "page", :layout => params[:layout]
+		  else
+		    respond_to do |format|
+		      format.html { render action: "page" }
+		      format.json { render json: @page }
+		    end
+			end
+		else
+			# no page was found, send back to home
+			redirect_to root_path
+		end
+  end
+
+  ################
+  ## index action
+  ################
+
   # GET /
   # GET /.json
 	def index

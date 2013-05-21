@@ -1,5 +1,15 @@
 <% title t('.title') %>
 
+<% if user_signed_in? %>
+<div class="form-actions">
+  <%= link_to t('.new', :default => t("app.buttons.new_news")),
+            new_news_path,
+            :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+    :class => 'btn' %>
+</div>
+<% end %>
+
 <% if @news.nil? || @news.empty? %>
 	<p>
 		<%= t('.no_news') %>
@@ -34,12 +44,4 @@
 <% end %>
 
 
-<% if user_signed_in? %>
-<div class="form-actions">
-  <%= link_to t('.new', :default => t("app.buttons.new_news")),
-            new_news_path,
-            :class => 'btn btn-primary' %>
-	<%= link_to t('app.buttons.admin'), admin_path,
-    :class => 'btn' %>
-</div>
-<% end %>
+

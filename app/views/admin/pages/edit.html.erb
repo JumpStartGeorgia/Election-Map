@@ -1,12 +1,15 @@
 <% title t('.title') %>
 
-<%= render 'form' %>
-
 <div class="form-actions">
-	<%= link_to t('app.buttons.show'), @live_event,
+	<%= link_to t('app.buttons.show'), admin_page_path(@page),
   :class => 'btn' %>
-	<%= link_to t('app.buttons.list'), menu_live_events_path,
+	<%= link_to t('app.buttons.list'), admin_pages_path,
   :class => 'btn' %>
 	<%= link_to t('app.buttons.admin'), admin_path,
   :class => 'btn' %>
 </div>
+
+
+<%= render 'form' %>
+
+

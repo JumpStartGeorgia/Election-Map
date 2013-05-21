@@ -1,5 +1,14 @@
 <% title t('.title') %>
 
+<div class="form-actions">
+	<%= link_to t('app.buttons.edit'), edit_admin_page_path(@page),
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.list'), admin_pages_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
 <p>
   <strong><%= t('app.common.name')%>:</strong>
   <%= @page.name %>
@@ -15,11 +24,4 @@
 </p>
 <%= simple_format(@page.description, {}, :sanitize => false) %>
 
-<div class="form-actions">
-	<%= link_to t('app.buttons.edit'), edit_page_path(@page),
-  :class => 'btn btn-primary' %>
-	<%= link_to t('app.buttons.list'), pages_path,
-  :class => 'btn' %>
-	<%= link_to t('app.buttons.admin'), admin_path,
-  :class => 'btn' %>
-</div>
+

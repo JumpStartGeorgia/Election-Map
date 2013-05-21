@@ -1,0 +1,33 @@
+<% title t('.title') %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.new_pages'), new_admin_page_path,
+  :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
+<table class="table table-striped">
+<thead>
+  <tr>
+    <th><%= t('app.common.name')%></th>
+    <th><%= t('app.common.title')%></th>
+    <th><%= t('app.common.description')%></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+<% @pages.each do |page| %>
+  <tr>
+    <td><%= link_to page.name, admin_page_path(page) %></td>
+    <td><%= page.title %></td>
+    <td><%= page.description %></td>
+    <td><%= link_to t('app.buttons.edit'), edit_admin_page_path(page), :class => 'btn btn-mini' %></td>
+    <td><%= link_to t('app.buttons.delete'), admin_page_path(page), :confirm => t('app.msgs.delete_confirm'), :method => :delete,
+    :class => 'btn btn-mini btn-danger' %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+

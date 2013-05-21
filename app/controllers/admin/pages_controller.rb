@@ -1,26 +1,5 @@
-class PagesController < ApplicationController
-  before_filter :authenticate_user!, :except => [:view]
-
-
-  # GET /pages/view/:name
-  # GET /pages/view/:name.json
-  def view
-    @page = Page.with_translations(I18n.locale).find_by_name(params[:name])
-
-		if @page.nil?
-			# no page was found, send back to home
-			redirect_to root_path
-		else
-		  if !params[:layout].nil?
-				render :layout => params[:layout]
-		  else
-		    respond_to do |format|
-		      format.html # show.html.erb
-		      format.json { render json: @page }
-		    end
-			end
-		end
-  end
+class Admin::PagesController < ApplicationController
+  before_filter :authenticate_user!
 
   # GET /pages
   # GET /pages.json
@@ -73,7 +52,7 @@ class PagesController < ApplicationController
       if @page.save
 				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.page'))
 				send_status_update(msg)
-        format.html { redirect_to @page, notice: page }
+        format.html { redirect_to admin_page_path(@page), notice: page }
         format.json { render json: @page, status: :created, location: @page }
       else
         format.html { render action: "new" }
@@ -91,7 +70,7 @@ class PagesController < ApplicationController
       if @page.update_attributes(params[:page])
 				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.page'))
 				send_status_update(msg)
-        format.html { redirect_to @page, notice: msg }
+        format.html { redirect_to admin_page_path(@page), notice: msg }
         format.json { head :ok }
       else
         format.html { render action: "edit" }
@@ -109,7 +88,7 @@ class PagesController < ApplicationController
 		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.page'))
 		send_status_update(msg)
     respond_to do |format|
-      format.html { redirect_to pages_url }
+      format.html { redirect_to admin_	pages_url }
       format.json { head :ok }
     end
   end

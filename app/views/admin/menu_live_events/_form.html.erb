@@ -1,4 +1,4 @@
-<%= semantic_form_for(@live_event) do |f| %>
+<%= semantic_form_for([:admin,@live_event]) do |f| %>
 	<%= f.error_messages %>
 
 	<%= f.inputs do %>
@@ -12,6 +12,6 @@
 	<div class="form-actions">
 	  <%= f.submit nil, :class => 'btn btn-success' %>
 	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
-	  <%= link_to t('app.buttons.cancel'), menu_live_events_path, :class => 'btn btn-mini btn-warning' %>
+	  <%= link_to t('app.buttons.cancel'), admin_menu_live_events_path, :class => 'btn btn-mini btn-warning' %>
 	</div>
 <% end %>

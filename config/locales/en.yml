@@ -321,17 +321,6 @@ en:
       follow: "You can follow future updates on Twitter at #gvote or @jsgeorgia or on Facebook at http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: Indicators
-  pages:
-    edit:
-      title: Editing Page
-    index:
-      title: Pages
-    new:
-      title: New Page
-    show:
-      title: Page Details
-    view:
-      title:
   messages:
     new:
       title: Contact Us
@@ -367,16 +356,6 @@ en:
       title: New News
     show:
       title: News Details
-  menu_live_events:
-    edit:
-      title: Editing Live Event Menu
-    index:
-      title: Menu Live Events
-      no_data: I am sorry, but at this time there are no menu live event records.
-    new:
-      title: New Live Event Menu
-    show:
-      title: Live Event Menu Details
   admin:
     index:
       title: Administration Section
@@ -593,4 +572,25 @@ en:
         title: New Indicator Group
       show:
         title: Indicator Group Details
+    menu_live_events:
+      edit:
+        title: Editing Live Event Menu
+      index:
+        title: Menu Live Events
+        no_data: I am sorry, but at this time there are no menu live event records.
+      new:
+        title: New Live Event Menu
+      show:
+        title: Live Event Menu Details
+    pages:
+      edit:
+        title: Editing Page
+      index:
+        title: Pages
+      new:
+        title: New Page
+      show:
+        title: Page Details
+      view:
+        title:
 

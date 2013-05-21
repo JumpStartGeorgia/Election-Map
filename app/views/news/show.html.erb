@@ -1,5 +1,19 @@
 <% title t('.title') %>
 
+<% if user_signed_in? %>
+<div class="form-actions">
+  <%= link_to t('.edit', :default => t("app.buttons.edit")),
+              edit_news_path(@news), :class => 'btn' %>
+  <%= link_to t('.back', :default => t("app.buttons.list")),
+              news_index_path, :class => 'btn'  %>
+  <%= link_to t('.new', :default => t("app.buttons.new_news")),
+            new_news_path,
+            :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+    :class => 'btn' %>
+</div>
+<% end %>
+
 <p>
   <strong><%= t('app.common.news_type')%>:</strong>
   <%= @news.news_type %>
@@ -20,16 +34,4 @@
 </p>
 <%= simple_format(@news.description, {}, :sanitize => false) %>
 
-<% if user_signed_in? %>
-<div class="form-actions">
-  <%= link_to t('.edit', :default => t("app.buttons.edit")),
-              edit_news_path(@news), :class => 'btn' %>
-  <%= link_to t('.back', :default => t("app.buttons.list")),
-              news_index_path, :class => 'btn'  %>
-  <%= link_to t('.new', :default => t("app.buttons.new_news")),
-            new_news_path,
-            :class => 'btn btn-primary' %>
-	<%= link_to t('app.buttons.admin'), admin_path,
-    :class => 'btn' %>
-</div>
-<% end %>
+

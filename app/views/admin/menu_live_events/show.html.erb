@@ -1,5 +1,14 @@
 <% title t('.title') %>
 
+<div class="form-actions">
+  <%= link_to t('app.buttons.edit'),
+              edit_admin_menu_live_event_path(@live_event), :class => 'btn' %>
+  <%= link_to t('app.buttons.list'),
+              admin_menu_live_events_path, :class => 'btn'  %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
 <p>
   <strong><%= t('app.common.name') %>:</strong>
   <%= "#{@live_event.event.name} (#{l @live_event.event.event_date})" %>
@@ -17,11 +26,4 @@
   <%= l @live_event.data_available_at, :format => :long if @live_event.data_available_at %>
 </p>
 
-<div class="form-actions">
-  <%= link_to t('app.buttons.edit'),
-              edit_menu_live_event_path(@live_event), :class => 'btn' %>
-  <%= link_to t('app.buttons.list'),
-              menu_live_events_path, :class => 'btn'  %>
-	<%= link_to t('app.buttons.admin'), admin_path,
-  :class => 'btn' %>
-</div>
+

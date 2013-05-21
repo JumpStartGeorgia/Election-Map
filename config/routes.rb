@@ -63,6 +63,8 @@ ElectionMap::Application.routes.draw do
 	        get :export_name_change
 			  end
 		  end
+      resources :menu_live_events
+  	  resources :pages
 
   	  resources :shape_types
 	    resources :shapes do
@@ -78,16 +80,12 @@ ElectionMap::Application.routes.draw do
 
 		end
 
-
-
-    resources :menu_live_events
     resources :news
-	  resources :pages
-
-
-
 
     # root
+    match '/about', :to => 'root#about', :as => :about, :via => :get
+    match '/data_source', :to => 'root#data_source', :as => :data_source, :via => :get
+    match '/export_help', :to => 'root#export_help', :as => :export_help, :via => :get
 		match '/export', :to => 'root#export', :as => :export, :via => :post, :defaults => {:format => 'svg'}
 		match '/routing_error', :to => 'root#routing_error'
 		match '/download/csv/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data_csv, :via => :get, :defaults => {:format => 'csv'}
@@ -96,7 +94,6 @@ ElectionMap::Application.routes.draw do
 		match '/contact' => 'messages#new', :as => 'contact', :via => :get
 		match '/contact' => 'messages#create', :as => 'contact', :via => :post
 		match '/contact_success' => 'messages#success', :as => 'contact_success', :via => :get
-		match '/pages/view/:name(/:layout)', :to => 'pages#view', :as => :view_pages, :via => :get
 		match '/shape_types/event/:event_id', :to => 'shape_types#by_event', :as => :shape_types_by_event, :via => :get, :defaults => {:format => 'json'}
 		match '/indicators/event/:event_id/shape_type/:shape_type_id', :to => 'indicators#by_event_shape_type', :as => :indicators_by_event_shape_type, :via => :get, :defaults => {:format => 'json'}
 		match '/event_indicator_relationships/render_js_blocks/:id/:type/:counter', :to => 'event_indicator_relationships#render_js_blocks', :via => :get, :defaults => {:format => 'json'}

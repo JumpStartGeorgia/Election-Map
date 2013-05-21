@@ -1,4 +1,4 @@
-<%= semantic_form_for @page do |f| %>
+<%= semantic_form_for([:admin, @page]) do |f| %>
 	<%= f.error_messages %>
 
 	<%= f.inputs do %>
@@ -12,7 +12,7 @@
 				<h3><%= t("app.language.#{trans.locale}") %></h3>
 
 				<%= translation.input :title %>
-				<%= translation.input :description, :as => :text %>
+				<%= translation.input :description, :as => :text, :input_html => {:rows => 4} %>
 				<%= translation.hidden_field :locale , :value => trans.locale %>
 			</div>
 
@@ -22,6 +22,6 @@
 	<div class="form-actions">
 	  <%= f.submit nil, :class => 'btn btn-success' %>
 	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
-	  <%= link_to t('app.buttons.cancel'), pages_path, :class => 'btn btn-mini btn-warning' %>
+	  <%= link_to t('app.buttons.cancel'), admin_pages_path, :class => 'btn btn-mini btn-warning' %>
 	</div>
 <% end %>
