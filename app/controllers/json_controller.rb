@@ -474,23 +474,39 @@ class JsonController < ApplicationController
       event_type = indicator["event_types"].select{|x| x["id"].to_s == params[:event_type_id]}.first
       if event_type.present? && event_type["events"].present?
         data = []
+        shapes = nil
+        # get the ids of the shapes for the provided common id/name if provided
+        if params[:shape_type_id].present? && params[:common_id].present? && params[:common_name].present?
+          shapes = Shape.by_common_and_events(params[:shape_type_id], params[:common_id], params[:common_name], event_type["events"].map{|x| x["id"]})
+        end
+
         event_type["events"].each do |event|
-		      key = FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA.gsub("[parent_id]", event["shape_id"].to_s)
-					      .gsub("[locale]", I18n.locale.to_s)
-		            .gsub("[event_id]", event["id"].to_s)
-		            .gsub("[indicator_type_id]", indicator["type_id"].to_s)
-		            .gsub("[shape_type_id]", event["shape_type_id"].to_s)
-				        .gsub("[data_set_id]", event["data_set_id"].to_s)
-		      x = JSON.parse(JsonCache.fetch_data(key) {
-			      Datum.build_summary_json(event["shape_id"], event["shape_type_id"], event["id"], 
-                  indicator["type_id"], event["data_set_id"], event["data_type"]).to_json
-		      })
+          shape_id = event["shape_id"].to_s
+          shape_type_id = event["shape_type_id"].to_s
+          s_index = shapes.present? ? shapes.index{|x| x[:event_id].to_s == event["id"].to_s} : nil
+          if shapes && s_index.present?
+            shape_id = shapes[s_index][:shape_id].to_s
+            shape_type_id = shapes[s_index][:shape_type_id].to_s
+          end
+
+          if shape_id.present? && shape_type_id.present?
+		        key = FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA.gsub("[parent_id]", shape_id)
+					        .gsub("[locale]", I18n.locale.to_s)
+		              .gsub("[event_id]", event["id"].to_s)
+		              .gsub("[indicator_type_id]", indicator["type_id"].to_s)
+		              .gsub("[shape_type_id]", shape_type_id)
+				          .gsub("[data_set_id]", event["data_set_id"].to_s)
+		        x = JSON.parse(JsonCache.fetch_data(key) {
+			        Datum.build_summary_json(shape_id, shape_type_id, event["id"], 
+                    indicator["type_id"], event["data_set_id"], event["data_type"]).to_json
+		        })
+          end
           # add event info
           y = Hash.new
           y[:event] = Hash.new
           y[:event][:id] = event["id"]
           y[:event][:name] = event["name"]
-          z = x["shape_data"][0].select{|z| z.has_key?("summary_data")}
+          z = x["shape_data"][0].select{|z| z.has_key?("summary_data")} if x.present?
           y[:data] = z.present? ? z.first["summary_data"]["data"] : nil
           data << y
         end

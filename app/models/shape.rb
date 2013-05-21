@@ -2,6 +2,7 @@ class Shape < ActiveRecord::Base
   translates :common_id, :common_name
   has_ancestry
 
+  has_many :events
   has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type
   accepts_nested_attributes_for :shape_translations
@@ -38,6 +39,30 @@ class Shape < ActiveRecord::Base
 		end
 	end
 
+  # returns [{event_id, shape_type_id, shape_id}, {}, ...]
+  def self.by_common_and_events(shape_type_id, common_id, common_name, event_ids)
+    x = []
+    if common_id.present? && common_name.present? && event_ids.present? && shape_type_id.present?
+      Event.select("events.id, events.shape_id").where(:id => event_ids).each do |event|
+        h = Hash.new
+        x << h
+        h[:event_id] = event.id
+        h[:shape_type_id] = nil
+        h[:shape_id] = nil
+        if event.shape_id.present?
+          shape = Shape.find(event.shape_id).subtree.select("shapes.id")
+                  .joins(:shape_translations)
+                  .where(["shapes.shape_type_id = ? and shape_translations.common_id = ? and shape_translations.common_name = ? and shape_translations.locale = ?", 
+                    shape_type_id, common_id, common_name, I18n.locale])
+          if shape.present?
+            h[:shape_type_id] = shape_type_id
+            h[:shape_id] = shape.first.id
+          end
+        end
+      end
+    end
+    return x
+  end
 
 	# create the properly formatted json string
 	def self.build_json(shape_id, shape_type_id)
