@@ -64,6 +64,7 @@ ElectionMap::Application.routes.draw do
 			  end
 		  end
       resources :menu_live_events
+      resources :news
   	  resources :pages
 
   	  resources :shape_types
@@ -80,9 +81,9 @@ ElectionMap::Application.routes.draw do
 
 		end
 
-    resources :news
 
     # root
+    match '/news', :to => 'root#news', :as => :news, :via => :get
     match '/about', :to => 'root#about', :as => :about, :via => :get
     match '/data_source', :to => 'root#data_source', :as => :data_source, :via => :get
     match '/export_help', :to => 'root#export_help', :as => :export_help, :via => :get

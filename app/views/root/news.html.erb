@@ -1,0 +1,26 @@
+<% title t('.title') %>
+
+<% if @news.nil? || @news.empty? %>
+	<p>
+		<%= t('.no_news') %>
+	</p>
+<% else %>
+	<% @news.each do |news| %>
+		<div id="news_item">
+			<h3>
+				<%= l Date.new(news.date_posted.year, news.date_posted.month, news.date_posted.day), :format => :long %>
+			</h3>
+			<%= simple_format news.description, {}, :sanitize => false %>
+			<% if news.news_type == News::NEWS_TYPES[:data_archive] && !news.data_archive_folder.nil? && !news.data_archive_folder.empty? %>
+				<p>
+					<%= link_to t('.data_archives_link'), data_archive_path(news.data_archive_folder), :class => "btn btn-mini" %>
+				</p>
+			<% end %>
+		</div>
+	<% end %>
+
+	<%= page_navigation_links @news %>
+<% end %>
+
+
+

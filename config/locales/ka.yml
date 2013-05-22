@@ -321,6 +321,10 @@ ka:
       follow: "თქვენ შეგიძლიათ მიადევნოთ თვალყური სამომავლო განახლებებს Twitter-ზე  (#gvote ან  @jsgeorgia) ან Facebook-ზე შემდეგ მისამართზე http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: ინდიკატორები
+    news:
+      title: სიახლეები
+      data_archives_link: მონაცემთა არქივის ნახვა
+      no_news: ვწუხვართ, მაგრამ ამ დროისთვის ახალი ინფორმაცია არ მოიპოვება.
   messages:
     new:
       title: დაგვიკავშირდით
@@ -346,17 +350,6 @@ ka:
       title: მონაცემთა არქივი
       view_all: სრული მონაცემთა არქივის ნახვა
       no_archive: ვწუხვართ, მაგრამ მოთხოვნილი მონაცემები ვერ მოიძებნა.
-  news:
-    edit:
-      title: Editing News
-    index:
-      title: სიახლეები
-      data_archives_link: მონაცემთა არქივის ნახვა
-      no_news: ვწუხვართ, მაგრამ ამ დროისთვის ახალი ინფორმაცია არ მოიპოვება.
-    new:
-      title: New News
-    show:
-      title: News Details
   admin:
     index:
       title: Administration Section
@@ -392,6 +385,7 @@ ka:
       cache_summary_data: Summary Data Cache
       menu_live_events: Schedule Live Events Menu
       load_data_data_sets: Manage Datasets
+      news: News
     cache:
       clear_all:
         title: Clear All Cache
@@ -597,4 +591,15 @@ ka:
         title: Page Details
       view:
         title:
+    news:
+      edit:
+        title: Editing News
+      index:
+        title: სიახლეები
+        data_archives_link: მონაცემთა არქივის ნახვა
+        no_news: ვწუხვართ, მაგრამ ამ დროისთვის ახალი ინფორმაცია არ მოიპოვება.
+      new:
+        title: New News
+      show:
+        title: News Details
 

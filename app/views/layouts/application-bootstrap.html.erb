@@ -90,7 +90,7 @@
 
 		        <div class="header-nav-collapse nav-collapse">
 		          <ul class="nav pull-right">
-								<li><%= link_to t(".news"), news_index_path %></li>
+								<li><%= link_to t(".news"), news_path %></li>
 								<li><%= link_to t(".data_archives"), data_archives_path %></li>
 								<% I18n.available_locales.each do |locale| %>
 									<% if locale != I18n.locale %>
@@ -224,7 +224,7 @@
 							</li>
 							<li class="spacer">|</li>
 							<li>
-								<%= link_to t(".news"), news_index_path %>
+								<%= link_to t(".news"), news_path %>
 							</li>
 							<li class="spacer">|</li>
 							<li>

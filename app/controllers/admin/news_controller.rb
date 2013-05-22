@@ -1,4 +1,4 @@
-class NewsController < ApplicationController
+class Admin::NewsController < ApplicationController
   before_filter :authenticate_user!, :except => [:index]
 	require 'data_archive'
 
@@ -13,7 +13,6 @@ class NewsController < ApplicationController
     end
   end
 
-=begin
   # GET /news/1
   # GET /news/1.json
   def show
@@ -24,7 +23,6 @@ class NewsController < ApplicationController
       format.json { render json: @news }
     end
   end
-=end
 
   # GET /news/new
   # GET /news/new.json
@@ -74,7 +72,7 @@ class NewsController < ApplicationController
       if @news.save
 				msg = I18n.t('app.msgs.success_created', :obj => I18n.t('app.common.news'))
 				send_status_update(msg)
-        format.html { redirect_to news_index_path, notice: msg }
+        format.html { redirect_to admin_news_index_path, notice: msg }
         format.json { render json: @news, status: :created, location: @news }
       else
 				# turn the datetime picker js on
@@ -98,7 +96,7 @@ class NewsController < ApplicationController
       if @news.update_attributes(params[:news])
 				msg = I18n.t('app.msgs.success_updated', :obj => I18n.t('app.common.news'))
 				send_status_update(msg)
-        format.html { redirect_to news_index_path, notice: msg }
+        format.html { redirect_to admin_news_index_path, notice: msg }
         format.json { head :ok }
       else
 				# turn the datetime picker js on
@@ -122,7 +120,7 @@ class NewsController < ApplicationController
 		msg = I18n.t('app.msgs.success_deleted', :obj => I18n.t('app.common.news'))
 		send_status_update(msg)
     respond_to do |format|
-      format.html { redirect_to news_index_url }
+      format.html { redirect_to admin_news_index_url }
       format.json { head :ok }
     end
   end

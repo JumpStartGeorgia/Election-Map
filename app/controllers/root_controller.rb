@@ -61,6 +61,15 @@ class RootController < ApplicationController
 		end
   end
 
+  def news
+    @news = News.recent.with_translations(I18n.locale).paginate(:page => params[:page])
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @news }
+    end
+  end
+
   ################
   ## index action
   ################
