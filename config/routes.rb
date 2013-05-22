@@ -9,12 +9,18 @@ ElectionMap::Application.routes.draw do
 		devise_for :users, :path_names => {:sign_in => 'login', :sign_out => 'logout'}
 
 		namespace :admin do
+      # cache
 	    match '/cache/clear_all' => 'cache#clear_all', :via => [:get, :post]
   		match '/cache/clear_memory' => 'cache#clear_memory', :via => [:get, :post]
 	    match '/cache/clear_files', :to => 'cache#clear_files', :via => [:get, :post]
 	    match '/cache/custom_event_indicators', :to => 'cache#custom_event_indicators', :via => [:get, :post]
 	    match '/cache/default_custom_event', :to => 'cache#default_custom_event', :via => [:get, :post]
 	    match '/cache/summary_data', :to => 'cache#summary_data', :via => [:get, :post]
+
+		  # data archives
+		  match '/data_archives', :to => 'data_archives#index', :via => :get
+		  match '/data_archives/new', :to => 'data_archives#new', :via => [:get, :post]
+		  match '/data_archives/:data_archive_folder', :to => 'data_archives#show', :via => :get
 
 	    resources :core_indicators do
 	      collection do
@@ -83,6 +89,8 @@ ElectionMap::Application.routes.draw do
 
 
     # root
+    match '/data_archives', :to => 'root#data_archives', :as => :data_archives, :via => :get
+    match '/data_archives/:data_archive_folder', :to => 'root#data_archive', :as => :data_archive, :via => :get
     match '/news', :to => 'root#news', :as => :news, :via => :get
     match '/about', :to => 'root#about', :as => :about, :via => :get
     match '/data_source', :to => 'root#data_source', :as => :data_source, :via => :get
@@ -98,13 +106,6 @@ ElectionMap::Application.routes.draw do
 		match '/shape_types/event/:event_id', :to => 'shape_types#by_event', :as => :shape_types_by_event, :via => :get, :defaults => {:format => 'json'}
 		match '/indicators/event/:event_id/shape_type/:shape_type_id', :to => 'indicators#by_event_shape_type', :as => :indicators_by_event_shape_type, :via => :get, :defaults => {:format => 'json'}
 		match '/event_indicator_relationships/render_js_blocks/:id/:type/:counter', :to => 'event_indicator_relationships#render_js_blocks', :via => :get, :defaults => {:format => 'json'}
-
-		# data archives
-		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :get
-		match '/data_archives/new', :to => 'data_archives#new', :as => :data_archives_new, :via => :post
-		match '/data_archives', :to => 'data_archives#index', :as => :data_archives, :via => :get
-		match '/data_archives/:data_archive_folder', :to => 'data_archives#show', :as => :data_archive, :via => :get
-
 
     # routes to root#index
 		match '/event_type/:event_type_id' => 'root#index', :as => 'event_type_map', :via => :get

@@ -70,6 +70,29 @@ class RootController < ApplicationController
     end
   end
 
+  def data_archives
+		@archives = available_archives.paginate(:page => params[:page])
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @news }
+    end
+  end
+
+  def data_archive
+		@archive = available_archives.select{|x| x["folder"] == params[:data_archive_folder]}
+		if @archive.present?
+			@archive = @archive.first
+		else
+			@archive = nil
+		end
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @news }
+    end
+  end
+
   ################
   ## index action
   ################

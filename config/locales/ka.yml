@@ -325,6 +325,13 @@ ka:
       title: სიახლეები
       data_archives_link: მონაცემთა არქივის ნახვა
       no_news: ვწუხვართ, მაგრამ ამ დროისთვის ახალი ინფორმაცია არ მოიპოვება.
+    data_archives:
+      title: მონაცემთა არქივი
+      no_archives: ვწუხვართ, მაგრამ ამ დროისთვის მონაცემთა არქივი არ მოიპოვება.
+    data_archive:
+      title: მონაცემთა არქივი
+      view_all: სრული მონაცემთა არქივის ნახვა
+      no_archive: ვწუხვართ, მაგრამ მოთხოვნილი მონაცემები ვერ მოიძებნა.
   messages:
     new:
       title: დაგვიკავშირდით
@@ -336,20 +343,6 @@ ka:
       message: შეტყობინება
     success:
       title: დაგვიკავშირდით
-  data_archives:
-    new:
-      title: Create a new Data Archive set of files
-      explanation: "A Data Archive is a ZIP archive of all event data in four formats: English - CSV, English - XLS, Georgian - CSV, Georgian XLS.  Each ZIP file contains one spreadsheet file per event."
-      size: This will take about 5mb of disk space.
-      time: This will take about 30 minutes.
-      created: The data archive files have been created.
-    index:
-      title: მონაცემთა არქივი
-      no_archives: ვწუხვართ, მაგრამ ამ დროისთვის მონაცემთა არქივი არ მოიპოვება.
-    show:
-      title: მონაცემთა არქივი
-      view_all: სრული მონაცემთა არქივის ნახვა
-      no_archive: ვწუხვართ, მაგრამ მოთხოვნილი მონაცემები ვერ მოიძებნა.
   admin:
     index:
       title: Administration Section
@@ -602,4 +595,18 @@ ka:
         title: New News
       show:
         title: News Details
+    data_archives:
+      new:
+        title: Create a new Data Archive set of files
+        explanation: "A Data Archive is a ZIP archive of all event data in four formats: English - CSV, English - XLS, Georgian - CSV, Georgian XLS.  Each ZIP file contains one spreadsheet file per event."
+        size: This will take about 5mb of disk space.
+        time: This will take about 30 minutes.
+        created: The data archive files have been created.
+      index:
+        title: მონაცემთა არქივი
+        no_archives: ვწუხვართ, მაგრამ ამ დროისთვის მონაცემთა არქივი არ მოიპოვება.
+      show:
+        title: მონაცემთა არქივი
+        view_all: სრული მონაცემთა არქივის ნახვა
+        no_archive: ვწუხვართ, მაგრამ მოთხოვნილი მონაცემები ვერ მოიძებნა.
 

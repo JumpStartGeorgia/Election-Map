@@ -325,6 +325,13 @@ en:
       title: News
       data_archives_link: View Data Archive
       no_news: I am sorry, but at this time we do not have any news.
+    data_archives:
+      title: Data Archives
+      no_archives: I am sorry, but at this time we do not have any data archives.
+    data_archive:
+      title: Data Archives
+      view_all: View All Data Archive Records
+      no_archive: I am sorry, but the requested data archive could not be found.
   messages:
     new:
       title: Contact Us
@@ -336,19 +343,6 @@ en:
       message: Message
     success:
       title: Contact Us
-  data_archives:
-    new:
-      title: Create a new Data Archive set of files
-      size: This will take about 5mb of disk space.
-      time: This will take about 30 minutes.
-      created: The data archive files have been created.
-    index:
-      title: Data Archives
-      no_archives: I am sorry, but at this time we do not have any data archives.
-    show:
-      title: Data Archives
-      view_all: View All Data Archive Records
-      no_archive: I am sorry, but the requested data archive could not be found.
   admin:
     index:
       title: Administration Section
@@ -598,4 +592,17 @@ en:
         title: New News
       show:
         title: News Details
+    data_archives:
+      new:
+        title: Create a new Data Archive set of files
+        size: This will take about 5mb of disk space.
+        time: This will take about 30 minutes.
+        created: The data archive files have been created.
+      index:
+        title: Data Archives
+        no_archives: I am sorry, but at this time we do not have any data archives.
+      show:
+        title: Data Archives
+        view_all: View All Data Archive Records
+        no_archive: I am sorry, but the requested data archive could not be found.
 

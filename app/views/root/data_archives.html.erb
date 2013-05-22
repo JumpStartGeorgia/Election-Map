@@ -1,15 +1,5 @@
 <% title t('.title') %>
 
-<% if user_signed_in? %>
-<div class="form-actions">
-  <%= link_to t('.new', :default => t("app.buttons.new_data_archives")),
-            data_archives_new_path,
-            :class => 'btn btn-primary' %>
-	<%= link_to t('app.buttons.admin'), admin_path,
-    :class => 'btn' %>
-</div>
-<% end %>
-
 <% if @archives.nil? || @archives.empty? %>
 	<p>
 		<%= t('.no_archives') %>

@@ -281,6 +281,35 @@ logger.debug "---********----- shape type cache"
     return duration
   end
 
+	protected
+
+	# get all archives if user logged in,
+  # otherwise, only those that have news posts
+	def available_archives
+		available = []
+		archives = DataArchive.get_archives
+		news = News.data_archives
+
+		if archives && !archives.empty?
+			# now determine which archives have a news story
+			if news && !news.empty?
+				# news items with archives, determine which ones have news story
+				archives.each do |archive|
+					index = news.index{|n| n.data_archive_folder == archive["folder"]}
+					if index || user_signed_in?
+						archive["news"] =  news[index].description if index
+						available << archive
+					end
+				end
+			elsif user_signed_in?
+				# there are no news items with archives
+				available = archives
+			end
+		end
+		return available
+	end
+
+
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier
 		  .exception_notification(request.env, exception)

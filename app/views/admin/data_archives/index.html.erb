@@ -1,0 +1,36 @@
+<% title t('.title') %>
+
+<div class="form-actions">
+  <%= link_to t('.new', :default => t("app.buttons.new_data_archives")),
+            admin_data_archives_new_path,
+            :class => 'btn btn-primary' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+    :class => 'btn' %>
+</div>
+
+<% if @archives.nil? || @archives.empty? %>
+	<p>
+		<%= t('.no_archives') %>
+	</p>
+<% else %>
+	<% @archives.each do |archive| %>
+		<div id="archive_item">
+			<h3><%= archive["date"] %></h3>
+			<%= simple_format archive["news"], {}, :sanitize => false %>
+			<ul id="archive_links" class="clear">
+			<% archive["files"].each do |file| %>
+				<li>
+					<% lang = "app.language.#{file["locale"].downcase}" %>
+					<%= link_to "#{t(lang)} - #{file["file_type"]} (#{number_to_human_size(file["file_size"])})",
+							file["url"], :class => "btn btn-mini" %>
+				</li>
+			<% end %>
+			</ul>
+		</div>
+	<% end %>
+
+	<%= page_navigation_links @archives %>
+<% end %>
+
+
+
