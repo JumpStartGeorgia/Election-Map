@@ -100,7 +100,12 @@ class OtherController < ApplicationController
   end
 
   def indicator
+    # get indicator info
+    data = JSON.parse(get_core_indicator_events)
+    @indicator = data.select{|x| x["id"].to_s == params[:id]}.first
 
+
+    
   end
 
 

@@ -314,17 +314,19 @@ logger.debug "---********----- shape type cache"
 		return available
 	end
 
-  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS = "core_indicator_events"
+  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS = "core_indicator_events_[locale]"
   def get_core_indicator_events
-		json = JsonCache.fetch_data(FILE_CACHE_KEY_CORE_INDICATOR_EVENTS) {
+    key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS.gsub("[locale]", I18n.locale.to_s)
+		json = JsonCache.fetch_data(key) {
       CoreIndicator.build_event_json.to_json
 		}
     return json
   end
 
-  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE = "core_indicator_events_table"
+  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE = "core_indicator_events_table_[locale]"
   def get_core_indicator_events_table
-		json = JsonCache.fetch_data(FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE) {
+    key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE.gsub("[locale]", I18n.locale.to_s)
+		json = JsonCache.fetch_data(key) {
       results = Hash.new
 		  data = JSON.parse(get_core_indicator_events)
 

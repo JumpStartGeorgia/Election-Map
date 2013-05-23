@@ -116,6 +116,7 @@ ElectionMap::Application.routes.draw do
     match '/data_source', :to => 'other#data_source', :as => :data_source, :via => :get
     match '/export_help', :to => 'other#export_help', :as => :export_help, :via => :get
     match '/indicators', :to => 'other#indicators', :as => :indicator_profiles, :via => :get
+    match '/indicators/:id', :to => 'other#indicator', :as => :indicator_profile, :via => :get
 
     # json routes
 		# core indicator events

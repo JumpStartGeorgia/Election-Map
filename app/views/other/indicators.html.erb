@@ -27,7 +27,7 @@
                 <% if index > 2 %>
                   <td>
                     <% if cell %>
-                      <%= link_to('#', :class => 'view_details') do %>
+                      <%= link_to(indicator_profile_path(data[0]), :class => 'view_details') do %>
                         <%= image_tag('magnifier.png') %>
                         <%= t('app.buttons.view') %>
                       <% end %>
@@ -36,7 +36,7 @@
                 <% elsif index > 1 %>
                   <td><%= cell %></td>
                 <% elsif index == 1 %>
-                  <td><%= link_to cell, "#" %></td>
+                  <td><%= link_to cell, indicator_profile_path(data[0]) %></td>
                 <% end %>
               <% end %>
             </tr>
