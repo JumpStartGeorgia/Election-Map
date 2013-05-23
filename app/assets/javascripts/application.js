@@ -42,7 +42,10 @@ $(document).ready(function(){
   $(":input:visible:first").focus();
 
 	// to load pop-up window for export help
-  $("a.fancybox").fancybox();
+  $("a.fancybox").fancybox({
+    transitionIn: 'elastic',
+    transitionOut: 'elastic'
+  });
 
 	// if scrolling make navbar see through
   var fade_after = 10,

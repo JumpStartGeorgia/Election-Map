@@ -320,8 +320,15 @@ ol.standard li {
 	color: #000 !important;
 }
 
+#fancybox_container{
+  width: 425px;
+  padding: 5px 25px;
+}
 #fancybox-content #container h2 {
 	color: #000 !important;
+}
+#fancybox-content #container a {
+  text-decoration: underline;
 }
 
 /* admin page */
