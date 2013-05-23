@@ -129,6 +129,8 @@ en:
       create_cache: Create Cache
       view: View
     msgs:
+      does_not_exist: You tried to access a page that does not exist.
+      not_authorized: You are not authorized to view that page.
       no_data: No Data
       delete_confirm: "Are you sure?"
       upload:
@@ -232,9 +234,17 @@ en:
       visible: Is Visible
       not_visible_hint: "( * - not visible)"
       is_default_view: Default Event to Show on Site Load?
+      placeholder: "placeholder" 
+      placeholder_core_indicator: "placeholder_core_indicator" 
+      placeholder_event_type: "placeholder_event_type" 
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
+  charts:
+    indicator_profile:
+      summary:
+        title: "Rank"
+        rest: "The Rest"
   layouts:
     application-bootstrap:
       title: Georgia Election Data
@@ -338,6 +348,9 @@ en:
     indicators:
       title: Indicators
       no_records: I am sorry, but at this time we do not have any indicators on file.
+    indicator:
+      summary_header: Overall
+      details_header: Details
   messages:
     new:
       title: Contact Us

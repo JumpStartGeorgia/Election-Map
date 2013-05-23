@@ -201,6 +201,10 @@ logger.debug "---********----- shape type cache"
 		  gon.datatable_i18n_url = ""
 		end
 
+
+    gon.placeholder_core_indicator = I18n.t('app.common.placeholder_core_indicator')
+    gon.placeholder_event_type = I18n.t('app.common.placeholder_event_type')
+    gon.indicator_event_type_data_url = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type)
 	end
 
 	# name for summary view type

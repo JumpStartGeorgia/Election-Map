@@ -14,6 +14,7 @@ class OtherController < ApplicationController
 			end
 		else
 			# no page was found, send back to home
+			flash[:info] =  t('app.msgs.does_not_exist')
 			redirect_to root_path
 		end
   end
@@ -32,6 +33,7 @@ class OtherController < ApplicationController
 			end
 		else
 			# no page was found, send back to home
+			flash[:info] =  t('app.msgs.does_not_exist')
 			redirect_to root_path
 		end
   end
@@ -50,6 +52,7 @@ class OtherController < ApplicationController
 			end
 		else
 			# no page was found, send back to home
+			flash[:info] =  t('app.msgs.does_not_exist')
 			redirect_to root_path
 		end
   end
@@ -104,8 +107,19 @@ class OtherController < ApplicationController
     data = JSON.parse(get_core_indicator_events)
     @indicator = data.select{|x| x["id"].to_s == params[:id]}.first
 
-
-    
+    if @indicator.present?
+      gon.indicator_profile = @indicator
+      gon.summary_chart_title = I18n.t('charts.indicator_profile.summary.title')
+      gon.summary_chart_rest = I18n.t('charts.indicator_profile.summary.rest')
+      respond_to do |format|
+        format.html # index.html.erb
+        format.json { render json: @data }
+      end
+    else
+			flash[:info] =  t('app.msgs.does_not_exist')
+			redirect_to indicator_profiles_path
+    end
+  
   end
 
 

@@ -1,2 +1,44 @@
 <% title @indicator.present? ? @indicator["name"] : t('.title') %>
 
+<div id="indicator_profile" class="tabbable">
+  <ul class="nav nav-tabs">
+    <% @indicator["event_types"].each_with_index do |type, index| %>
+      <li class="<%= index == 0 ? 'active' : ''%>">
+        <%= link_to type["name"], "#tab#{type["id"]}", :'data-toggle' => 'tab', :'data-id' => type["id"] %>
+      </li>
+    <% end %>
+  </ul>
+  <div class="tab-content">
+    <% @indicator["event_types"].each_with_index do |type, index| %>
+      <div class="tab-pane <%= index == 0 ? 'active' : ''%>" id="<%= "tab#{type["id"]}" %>">
+
+        <div class="indicator_header row-fluid">
+          <% type["events"][0..2].each do |event| %>
+            <div class="span4">
+              <h2><%= event["name"] %></h2>
+            </div>
+          <% end %>
+        </div>
+
+        <h3><%= t('.summary_header') %></h3>
+
+        <div class="indicator_summary row-fluid">
+          <% type["events"][0..2].each do |event| %>
+            <div class="span4">
+              <div class="indicator_summary_chart" style="min-width: 400px; height: 400px; margin: 0 auto" 
+                data-id="<%= event["id"]%>"></div>
+            </div>
+          <% end %>
+        </div>
+
+        <h3><%= t('.details_header') %></h3>
+
+        <div class="indicator_details">
+
+        </div>
+
+      </div>
+    <% end %>
+  </div>
+</div>
+

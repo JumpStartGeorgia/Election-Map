@@ -4,3 +4,5 @@
 //= require jquery.countdown
 //= require jquery.tipsy
 //= require openlayers
+//= require highcharts
+

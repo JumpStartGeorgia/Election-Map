@@ -1,3 +1,95 @@
+var indicator_profile_data;
+
+function build_indicator_profile_summary_charts(){
+  $('.tab-pane.active .indicator_summary_chart').each(function(){
+    var event_id = $(this).data('id');
+    var indicator_data;
+    for (var i=0;i<indicator_profile_data.length;i++){
+      if (indicator_profile_data[i].event.id.toString() == $(this).data('id')){
+        for (var j=0;j<indicator_profile_data[i].data.length;j++){
+          if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString()){
+            indicator_data = indicator_profile_data[i].data[j];
+            break;
+          }
+        }
+        break;
+      }
+    }  
+
+    if (indicator_data != undefined){
+      $(this).highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: gon.summary_chart_title + ": " + indicator_data.rank
+        },
+/*        tooltip: {
+	        pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+        	percentageDecimals: 1
+        },*/
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                  	percentageDecimals: 1,
+                    formatter: function() {
+                        return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 2) + '%';
+                    }
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'vote share',
+            data: [
+                [indicator_data.indicator_name_abbrv, Number(indicator_data.value)],
+                [gon.summary_chart_rest, 100 - Number(indicator_data.value)]
+            ]
+        }]
+      });
+    }
+  });
+}
+
+function build_indicator_profile_detail_charts(){
+
+}
+
+function build_indicator_profile_charts(){
+  build_indicator_profile_summary_charts();
+  build_indicator_profile_detail_charts();
+}
+
+function get_ind_event_type_data(event_type_id){
+  if (event_type_id == undefined){
+    // it was not passed in so get active event type
+    event_type_id = $('#indicator_profile .nav-tabs li.active a').data('id');
+  }
+  if (event_type_id != undefined){
+    var url = gon.indicator_event_type_data_url.replace(gon.placeholder_core_indicator, gon.indicator_profile.id).replace(gon.placeholder_event_type, event_type_id.toString());
+    $.ajax({
+      type: "GET",
+      url: url,
+      dataType:"json",
+      timeout: 3000,
+      error: function(data) {
+        console.log('error');
+      },
+      success: function(data) {
+        indicator_profile_data = data;
+        build_indicator_profile_charts();
+      }
+    });
+  }
+}
+
 $(document).ready(function() {
 
   $.extend( $.fn.dataTableExt.oStdClasses, {
@@ -52,6 +144,13 @@ $(document).ready(function() {
         });
       }      
     }
+  });
+
+  $(window).bind('load', get_ind_event_type_data());
+
+  // when switch event types, get data for the new events
+  $('#indicator_profile .nav-tabs li a').click(function(){
+    get_ind_event_type_data($(this).data('id'));
   });
 
 });
