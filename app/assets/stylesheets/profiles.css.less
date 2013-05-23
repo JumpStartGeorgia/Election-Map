@@ -1,4 +1,26 @@
-table.profiles{
+#indicator_profile_type_selection{
+  margin-bottom: 20px;
+  .indicator_profile_type_selection_item{
+    display: inline-block;
+    margin-left: 3px;
+    background-color: #fff;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 20px;
+    border: solid #aec9dc 2px;
+    &.active, &:hover{
+      background-color: #aec9dc;
+      cursor: pointer;
+      border: solid #fff 2px;
+    }
+  }
+}
+
+div.profiles{
+  display: none;
+  &.active{
+    display: block;
+  }
   thead tr{
     background-color: #aec9dc;
   }
