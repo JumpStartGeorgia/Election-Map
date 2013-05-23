@@ -26,10 +26,9 @@ function build_indicator_profile_summary_charts(){
         title: {
             text: gon.summary_chart_title + ": " + indicator_data.rank
         },
-/*        tooltip: {
-	        pointFormat: '{series.name}: <b>{point.percentage}%</b>',
-        	percentageDecimals: 1
-        },*/
+        tooltip: {
+	        enabled: false
+        },
         plotOptions: {
             pie: {
                 allowPointSelect: true,
@@ -40,7 +39,7 @@ function build_indicator_profile_summary_charts(){
                     connectorColor: '#000000',
                   	percentageDecimals: 1,
                     formatter: function() {
-                        return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 2) + '%';
+                        return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 1) + '%';
                     }
                 }
             }
