@@ -127,6 +127,7 @@ en:
       download_help: Download Help
       custom_view: View all %{children_shapes} in the %{parent_shape}
       create_cache: Create Cache
+      view: View
     msgs:
       no_data: No Data
       delete_confirm: "Are you sure?"
@@ -321,6 +322,7 @@ en:
       follow: "You can follow future updates on Twitter at #gvote or @jsgeorgia or on Facebook at http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: Indicators
+  other:
     news:
       title: News
       data_archives_link: View Data Archive
@@ -332,6 +334,9 @@ en:
       title: Data Archives
       view_all: View All Data Archive Records
       no_archive: I am sorry, but the requested data archive could not be found.
+    indicators:
+      title: Indicators
+      no_records: I am sorry, but at this time we do not have any indicators on file.
   messages:
     new:
       title: Contact Us

@@ -127,6 +127,7 @@ ka:
       download_help: დახმარება
       custom_view: იხილეთ ყველა %{children_shapes} %{parent_shape}ში
       create_cache: Create Cache
+      view: View
     msgs:
       no_data: არ არის მონაცემი
       delete_confirm: "Are you sure?"
@@ -321,6 +322,7 @@ ka:
       follow: "თქვენ შეგიძლიათ მიადევნოთ თვალყური სამომავლო განახლებებს Twitter-ზე  (#gvote ან  @jsgeorgia) ან Facebook-ზე შემდეგ მისამართზე http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: ინდიკატორები
+  other:
     news:
       title: სიახლეები
       data_archives_link: მონაცემთა არქივის ნახვა
@@ -332,6 +334,9 @@ ka:
       title: მონაცემთა არქივი
       view_all: სრული მონაცემთა არქივის ნახვა
       no_archive: ვწუხვართ, მაგრამ მოთხოვნილი მონაცემები ვერ მოიძებნა.
+    indicators:
+      title: Indicators
+      no_records: I am sorry, but at this time we do not have any indicators on file.
   messages:
     new:
       title: დაგვიკავშირდით

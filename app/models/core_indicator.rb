@@ -82,6 +82,7 @@ class CoreIndicator < ActiveRecord::Base
       json << ind
       ind[:id] = core.id
       ind[:name] = core.name  
+      ind[:name_abbrv] = core.name_abbrv
       ind[:type_id] = core.indicator_type_id    
       event_types = []
       ind[:event_types] = event_types

@@ -1,0 +1,41 @@
+<% title t('.title') %>
+
+<% if @data.present? %>
+
+  <table class="profiles table table-striped table-bordered">
+    <thead>
+      <tr>
+        <% @data["header"].each do |header| %>
+          <th><%= header %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @data["indicator_types"][0]["indicators"].each do |data| %>
+        <tr>
+          <% data.each_with_index do |cell, index| %>
+            <% if index > 2 %>
+              <td>
+                <% if cell %>
+                  <%= link_to('#', :class => 'view_details') do %>
+                    <%= image_tag('magnifier.png') %>
+                    <%= t('app.buttons.view') %>
+                  <% end %>
+                <% end %>
+              </td>
+            <% elsif index > 1 %>
+              <td><%= cell %></td>
+            <% elsif index == 1 %>
+              <td><%= link_to cell, "#" %></td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+<% else %>
+	<p>
+		<%= t('.no_records') %>
+	</p>
+<% end %>

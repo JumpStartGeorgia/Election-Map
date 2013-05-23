@@ -12,6 +12,10 @@ class IndicatorType < ActiveRecord::Base
 
   scope :has_summary, where(:has_summary => true)
 
+  def self.sorted
+    with_translations(I18n.locale).order("indicator_types.sort_order, indicator_type_translations.name")
+  end
+
 	# get all indicators by type for an event and shape type
 	def self.find_by_event_shape_type(event_id, shape_type_id)
 		if event_id.nil? || shape_type_id.nil?

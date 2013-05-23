@@ -281,8 +281,6 @@ logger.debug "---********----- shape type cache"
     return duration
   end
 
-	protected
-
 	# get all archives if user logged in,
   # otherwise, only those that have news posts
 	def available_archives
@@ -309,6 +307,63 @@ logger.debug "---********----- shape type cache"
 		return available
 	end
 
+  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS = "core_indicator_events"
+  def get_core_indicator_events
+		json = JsonCache.fetch_data(FILE_CACHE_KEY_CORE_INDICATOR_EVENTS) {
+      CoreIndicator.build_event_json.to_json
+		}
+    return json
+  end
+
+  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE = "core_indicator_events_table"
+  def get_core_indicator_events_table
+Rails.logger.debug "****** get_core_indicator_events_table start"
+		json = JsonCache.fetch_data(FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE) {
+Rails.logger.debug "****** - cache does not exist, creating"
+      results = Hash.new
+		  data = JSON.parse(get_core_indicator_events)
+
+      # create header
+      header = [I18n.t('app.common.name_abbrv'), I18n.t('app.common.name')]
+      @event_types.each do |type|
+        header << type.name
+      end
+      results[:header] = header
+
+      # create arry for each ind type
+      results[:indicator_types] = []
+      IndicatorType.sorted.each do |type|
+        if data.map{|x| x["type_id"]}.uniq.index(type.id).present?
+          # indicators for this type exist
+          set = Hash.new
+          set[:id] = type.id
+          set[:name] = type.name
+          set[:indicators] = []
+
+          data.select{|x| x["type_id"] == type.id}.each do |x|
+            ind = []
+            set[:indicators] << ind
+            ind << x["id"]
+            ind << x["name_abbrv"]
+            ind << x["name"]
+            @event_types.each do |et|
+              if x["event_types"].select{|y| y["id"] == et.id}.present?
+                ind << true
+              else
+                ind << false
+              end
+            end
+          end
+
+          results[:indicator_types] << set
+        end
+      end
+Rails.logger.debug "****** - results has #{results[:indicator_types].length} records"
+      results.to_json
+		}
+Rails.logger.debug "****** get_core_indicator_events_table end"
+    return json
+  end
 
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier

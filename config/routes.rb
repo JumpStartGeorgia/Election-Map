@@ -89,12 +89,6 @@ ElectionMap::Application.routes.draw do
 
 
     # root
-    match '/data_archives', :to => 'root#data_archives', :as => :data_archives, :via => :get
-    match '/data_archives/:data_archive_folder', :to => 'root#data_archive', :as => :data_archive, :via => :get
-    match '/news', :to => 'root#news', :as => :news, :via => :get
-    match '/about', :to => 'root#about', :as => :about, :via => :get
-    match '/data_source', :to => 'root#data_source', :as => :data_source, :via => :get
-    match '/export_help', :to => 'root#export_help', :as => :export_help, :via => :get
 		match '/export', :to => 'root#export', :as => :export, :via => :post, :defaults => {:format => 'svg'}
 		match '/routing_error', :to => 'root#routing_error'
 		match '/download/csv/event/:event_id/shape_type/:shape_type_id/shape/:shape_id(/event_name/:event_name(/map_title/:map_title(/indicator/:indicator_id)))', :to => 'root#download', :as => :download_data_csv, :via => :get, :defaults => {:format => 'csv'}
@@ -114,10 +108,19 @@ ElectionMap::Application.routes.draw do
 		match '/event_type/:event_type_id/event/:event_id/shape_type/:shape_type_id/shape/:shape_id/indicator_type/:indicator_type_id/view_type/:view_type(/custom_view/:custom_view(/highlight_shape/:highlight_shape))' => 'root#index', :as => 'summary_map', :via => :get
 		match '/event_type/:event_type_id/event/:event_id/indicator_type/:indicator_type_id/view_type/:view_type/change_shape/:change_shape_type/parent_clickable/:parent_shape_clickable(/shape/:shape_id(/shape_type/:shape_type_id(/custom_view/:custom_view)))' => 'root#index', :as => 'summary_shape_level_map', :via => :get
 
+    # other
+    match '/data_archives', :to => 'other#data_archives', :as => :data_archives, :via => :get
+    match '/data_archives/:data_archive_folder', :to => 'other#data_archive', :as => :data_archive, :via => :get
+    match '/news', :to => 'other#news', :as => :news, :via => :get
+    match '/about', :to => 'other#about', :as => :about, :via => :get
+    match '/data_source', :to => 'other#data_source', :as => :data_source, :via => :get
+    match '/export_help', :to => 'other#export_help', :as => :export_help, :via => :get
+    match '/indicators', :to => 'other#indicators', :as => :indicator_profiles, :via => :get
 
     # json routes
 		# core indicator events
 		match '/json/core_indicator_events', :to => 'json#core_indicator_events', :as => :json_core_indicator_events, :via => :get, :defaults => {:format => 'json'}
+		match '/json/core_indicator_events_table', :to => 'json#core_indicator_events_table', :as => :json_core_indicator_events_table, :via => :get, :defaults => {:format => 'json'}
 		# menu
 		match '/json/event_menu', :to => 'json#event_menu', :as => :json_event_menu, :via => :get, :defaults => {:format => 'json'}
 		match '/json/live_event_menu', :to => 'json#live_event_menu', :as => :json_live_event_menu, :via => :get, :defaults => {:format => 'json'}

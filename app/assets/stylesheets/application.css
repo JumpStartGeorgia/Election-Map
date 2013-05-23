@@ -14,6 +14,7 @@
  *= require data_table
  *= require news
  *= require data_archives
+ *= require profiles
   *= require_self
 */
 
