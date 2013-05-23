@@ -4,6 +4,8 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require twitter/bootstrap
+//= require dataTables/jquery.dataTables
+//= require dataTables/jquery.dataTables.bootstrap
 //= require fancybox
 
 //= require utilities
@@ -32,6 +34,7 @@
 //= require map
 //= require_self
 //= require ajax_map
+//= require profiles
 
 
 $(document).ready(function(){

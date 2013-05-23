@@ -194,6 +194,13 @@ logger.debug "---********----- shape type cache"
 #    gon.tile_url = "http://91.212.213.147/new_#{lang}/${z}/${x}/${y}.png"
 		gon.tile_url = "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
     gon.openlayers_img_path = "/assets/img/"
+
+		if I18n.locale == :ka
+		  gon.datatable_i18n_url = "/datatable_ka.txt"
+		else
+		  gon.datatable_i18n_url = ""
+		end
+
 	end
 
 	# name for summary view type
@@ -317,9 +324,7 @@ logger.debug "---********----- shape type cache"
 
   FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE = "core_indicator_events_table"
   def get_core_indicator_events_table
-Rails.logger.debug "****** get_core_indicator_events_table start"
 		json = JsonCache.fetch_data(FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE) {
-Rails.logger.debug "****** - cache does not exist, creating"
       results = Hash.new
 		  data = JSON.parse(get_core_indicator_events)
 
@@ -358,10 +363,8 @@ Rails.logger.debug "****** - cache does not exist, creating"
           results[:indicator_types] << set
         end
       end
-Rails.logger.debug "****** - results has #{results[:indicator_types].length} records"
       results.to_json
 		}
-Rails.logger.debug "****** get_core_indicator_events_table end"
     return json
   end
 

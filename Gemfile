@@ -47,6 +47,8 @@ group :assets do
   gem "therubyracer"
   gem "less-rails"
 	gem "twitter-bootstrap-rails", "~> 2.1.0"
+  gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
+  gem 'jquery-ui-rails'
 end
 
 group :staging do

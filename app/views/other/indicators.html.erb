@@ -2,7 +2,7 @@
 
 <% if @data.present? %>
 
-  <table class="profiles table table-striped table-bordered">
+  <table id="<%= "indicator_profile_#{@data["indicator_types"][0]["id"]}"%>" class="profiles table table-striped table-bordered">
     <thead>
       <tr>
         <% @data["header"].each do |header| %>
