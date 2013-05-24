@@ -13,8 +13,8 @@
       <div class="tab-pane <%= index == 0 ? 'active' : ''%>" id="<%= "tab#{type["id"]}" %>">
 
         <div class="indicator_header row-fluid">
-          <% type["events"][0..3].each do |event| %>
-            <div class="span3">
+          <% type["events"][0..2].each do |event| %>
+            <div class="span4">
               <h2><%= event["name"] %></h2>
             </div>
           <% end %>
@@ -23,8 +23,8 @@
         <h3><%= t('.summary_header') %></h3>
 
         <div class="indicator_summary row-fluid">
-          <% type["events"][0..3].each do |event| %>
-            <div class="span3">
+          <% type["events"][0..2].each do |event| %>
+            <div class="span4">
               <div class="indicator_summary_chart" data-id="<%= event["id"]%>"></div>
             </div>
           <% end %>
@@ -33,7 +33,11 @@
         <h3><%= t('.details_header') %></h3>
 
         <div class="indicator_details">
-
+          <% type["events"][0..2].each do |event| %>
+            <div class="span4">
+              <div class="indicator_detail_chart" data-id="<%= event["id"]%>"></div>
+            </div>
+          <% end %>
         </div>
 
       </div>

@@ -34,7 +34,7 @@
 //= require map
 //= require_self
 //= require ajax_map
-//= require profiles
+//= require indicator_profiles
 
 
 $(document).ready(function(){
