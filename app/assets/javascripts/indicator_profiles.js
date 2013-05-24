@@ -12,34 +12,36 @@ function build_indicator_profile_summary_charts(ths, indicator_data){
       title: {
           text: gon.summary_chart_title + ": " + indicator_data.rank
       },
-      tooltip: {
-        enabled: false
-      },
       credits: {
         enabled: false
       },
+      tooltip: {
+//  	    pointFormat: '<b>{point.percentage}%</b>',
+      	percentageDecimals: 2,
+        formatter: function() {
+            return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 2) + '%';
+        }
+      },
       plotOptions: {
           pie: {
-              allowPointSelect: true,
-              cursor: 'pointer',
-              dataLabels: {
-                  enabled: true,
-                  color: '#000000',
-                  connectorColor: '#000000',
-                	percentageDecimals: 1,
-                  formatter: function() {
-                      return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 2) + '%';
-                  }
-              }
+            dataLabels: {
+                enabled: false
+            },
+            showInLegend: true
           }
       },
+      legend: {
+        labelFormatter: function() {
+          return this.name + ' (' +  Highcharts.numberFormat(this.y, 2) + '%)';
+        }
+      },
       series: [{
-          type: 'pie',
-          name: 'vote share',
-          data: [
-              [indicator_data.indicator_name_abbrv, Number(indicator_data.value)],
-              [gon.summary_chart_rest, 100 - Number(indicator_data.value)]
-          ]
+        type: 'pie',
+        name: 'vote share',
+        data: [
+            [indicator_data.indicator_name_abbrv, Number(indicator_data.value)],
+            [gon.summary_chart_rest, 100 - Number(indicator_data.value)]
+        ]
       }]
     });
   }
@@ -63,7 +65,7 @@ function build_indicator_profile_detail_charts(ths, indicator_name, headers, dat
               overflow: 'justify',
               formatter: function() {
                   if (this.value == indicator_name){
-                    return '<strong>' + this.value + '</strong>';
+                    return '<b>' + this.value + '</b>';
                   } else {
                     return this.value;
                   }
@@ -93,7 +95,7 @@ function build_indicator_profile_detail_charts(ths, indicator_name, headers, dat
                 	percentageDecimals: 2,
                   formatter: function() {
                     if (this.x == indicator_name){
-                      return '<strong>' + Highcharts.numberFormat(this.y, 2) + '%</strong>';
+                      return '<b>' + Highcharts.numberFormat(this.y, 2) + '%</b>';
                     } else {
                       return Highcharts.numberFormat(this.y, 2) + '%';
                     }
