@@ -1,16 +1,15 @@
 <% title @indicator.present? ? @indicator["name"] : t('.title') %>
-
 <div id="indicator_profile" class="tabbable">
   <ul class="nav nav-tabs">
     <% @indicator["event_types"].each_with_index do |type, index| %>
-      <li class="<%= index == 0 ? 'active' : ''%>">
+      <li class="<%= index == @active_index ? 'active' : ''%>">
         <%= link_to type["name"], "#tab#{type["id"]}", :'data-toggle' => 'tab', :'data-id' => type["id"] %>
       </li>
     <% end %>
   </ul>
   <div class="tab-content">
     <% @indicator["event_types"].each_with_index do |type, index| %>
-      <div class="tab-pane <%= index == 0 ? 'active' : ''%>" id="<%= "tab#{type["id"]}" %>">
+      <div class="tab-pane <%= index == @active_index ? 'active' : ''%>" id="<%= "tab#{type["id"]}" %>">
 
         <div class="indicator_header row-fluid">
           <% type["events"][0..2].each do |event| %>

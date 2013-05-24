@@ -45,4 +45,14 @@ module ApplicationHelper
   def page_navigation_links(pages)
     will_paginate(pages, :class => 'pagination', :inner_window => 2, :outer_window => 0, :renderer => BootstrapLinkRenderer, :previous_label => '&larr;'.html_safe, :next_label => '&rarr;'.html_safe)
   end
+
+  def get_event_type_id(name)
+    if name.present? && @event_types.present?
+      index = @event_types.index{|x| x.name == name}
+      if index.present?
+        return @event_types[index].id
+      end
+    end
+  end
+
 end

@@ -10,8 +10,8 @@
     <% end %>
   </div>
 
-  <% @data["indicator_types"].each_with_index do |type, index| %>
-    <div id="<%= "indicator_profile_#{type["id"]}"%>" data-id="<%= type["id"] %>" class="profiles <%= index == 0 ? 'active' : '' %>">
+  <% @data["indicator_types"].each_with_index do |type, type_index| %>
+    <div id="<%= "indicator_profile_#{type["id"]}"%>" data-id="<%= type["id"] %>" class="profiles <%= type_index == 0 ? 'active' : '' %>">
       <table class="table table-striped table-bordered">
         <thead>
           <tr>
@@ -27,7 +27,7 @@
                 <% if index > 2 %>
                   <td>
                     <% if cell %>
-                      <%= link_to(indicator_profile_path(data[0]), :class => 'view_details') do %>
+                      <%= link_to(indicator_profile_path(:id => data[0], :event_type_id => get_event_type_id(@data["header"][index-1])), :class => 'view_details') do %>
                         <%= image_tag('magnifier.png') %>
                         <%= t('app.buttons.view') %>
                       <% end %>

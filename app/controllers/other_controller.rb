@@ -96,6 +96,7 @@ class OtherController < ApplicationController
   def indicators
     # get all indicators and their event info
     @data = JSON.parse(get_core_indicator_events_table)
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @data }
@@ -108,6 +109,13 @@ class OtherController < ApplicationController
     @indicator = data.select{|x| x["id"].to_s == params[:id]}.first
 
     if @indicator.present?
+      # if event type id in url, use it to set the active view
+      @active_index = 0
+      if params[:event_type_id].present?
+        index = @indicator["event_types"].index{|x| x["id"].to_s == params[:event_type_id]}
+        @active_index = index if index.present?
+      end
+
       gon.indicator_profile = @indicator
       gon.summary_chart_title = I18n.t('charts.indicator_profile.summary.title')
       gon.summary_chart_rest = I18n.t('charts.indicator_profile.summary.rest')
