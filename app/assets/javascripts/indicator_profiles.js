@@ -170,7 +170,7 @@ $(document).ready(function() {
       "sWrapper": "dataTables_wrapper form-inline"
   });
 
-  $('#indicator_profile_1 table').dataTable({
+  $('#tab1 table').dataTable({
     "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": false,
@@ -184,7 +184,7 @@ $(document).ready(function() {
     "aLengthMenu": [[20, 40, 60, 80], [20, 40, 60, 80]]
   });
   
-  $('#indicator_profile_2 table').dataTable({
+  $('#tab2 table').dataTable({
     "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": false,

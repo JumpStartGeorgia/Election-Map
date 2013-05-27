@@ -2,50 +2,52 @@
 
 <% if @data.present? %>
 
-  <div id="indicator_profile_type_selection">
-    <% @data["indicator_types"].each_with_index do |type, index| %>
-      <div class="indicator_profile_type_selection_item <%= index == 0 ? 'active' : '' %>" data-id="<%= type["id"] %>">
-        <%= type["name"] %>
-      </div>
-    <% end %>
-  </div>
-
-  <% @data["indicator_types"].each_with_index do |type, type_index| %>
-    <div id="<%= "indicator_profile_#{type["id"]}"%>" data-id="<%= type["id"] %>" class="profiles <%= type_index == 0 ? 'active' : '' %>">
-      <table class="table table-striped table-bordered">
-        <thead>
-          <tr>
-            <% @data["header"].each do |header| %>
-              <th><%= header %></th>
-            <% end %>
-          </tr>
-        </thead>
-        <tbody>
-          <% type["indicators"].each do |data| %>
-            <tr>
-              <% data.each_with_index do |cell, index| %>
-                <% if index > 2 %>
-                  <td>
-                    <% if cell %>
-                      <%= link_to(indicator_profile_path(:id => data[0], :event_type_id => get_event_type_id(@data["header"][index-1])), :class => 'view_details') do %>
-                        <%= image_tag('magnifier.png') %>
-                        <%= t('app.buttons.view') %>
-                      <% end %>
-                    <% end %>
-                  </td>
-                <% elsif index > 1 %>
-                  <td><%= cell %></td>
-                <% elsif index == 1 %>
-                  <td><%= link_to cell, indicator_profile_path(data[0]) %></td>
+  <div id="indicator_profile_type_selection" class="tabbable">
+    <ul class="nav nav-tabs">
+      <% @data["indicator_types"].each_with_index do |type, index| %>
+        <li class="indicator_profile_type_selection_item <%= index == 0 ? 'active' : ''%>">
+          <%= link_to type["name"], "#tab#{type["id"]}", :'data-toggle' => 'tab', :'data-id' => type["id"] %>
+        </li>
+      <% end %>
+    </ul>
+    <div class="tab-content">
+      <% @data["indicator_types"].each_with_index do |type, type_index| %>
+        <div class="profiles tab-pane <%= type_index == 0 ? 'active' : ''%>" id="<%= "tab#{type["id"]}" %>">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <% @data["header"].each do |header| %>
+                  <th><%= header %></th>
                 <% end %>
+              </tr>
+            </thead>
+            <tbody>
+              <% type["indicators"].each do |data| %>
+                <tr>
+                  <% data.each_with_index do |cell, index| %>
+                    <% if index > 2 %>
+                      <td>
+                        <% if cell %>
+                          <%= link_to(indicator_profile_path(:id => data[0], :event_type_id => get_event_type_id(@data["header"][index-1])), :class => 'view_details') do %>
+                            <%= image_tag('magnifier.png') %>
+                            <%= t('app.buttons.view') %>
+                          <% end %>
+                        <% end %>
+                      </td>
+                    <% elsif index > 1 %>
+                      <td><%= cell %></td>
+                    <% elsif index == 1 %>
+                      <td><%= link_to cell, indicator_profile_path(data[0]) %></td>
+                    <% end %>
+                  <% end %>
+                </tr>
               <% end %>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
     </div>
-  <% end %>
-
+  </div>
 <% else %>
 	<p>
 		<%= t('.no_records') %>

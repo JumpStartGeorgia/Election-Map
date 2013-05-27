@@ -1,4 +1,5 @@
 <% title @indicator.present? ? @indicator["name"] : t('.title') %>
+
 <div id="indicator_profile" class="tabbable">
   <ul class="nav nav-tabs">
     <% @indicator["event_types"].each_with_index do |type, index| %>
