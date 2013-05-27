@@ -237,6 +237,9 @@ ka:
       placeholder: "placeholder" # do not translate
       placeholder_core_indicator: "placeholder_core_indicator"  # do not translate
       placeholder_event_type: "placeholder_event_type"  # do not translate
+      placeholder_shape_type_id: "placeholder_shape_type_id"  # do not translate 
+      placeholder_common_id: "placeholder_common_id"  # do not translate 
+      placeholder_common_name: "placeholder_common_name"  # do not translate 
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -245,6 +248,7 @@ ka:
       summary:
         title: "Rank"
         rest: "The Rest"
+        no_data: "No data exists."
   layouts:
     application-bootstrap:
       title: საქართველოს საარჩევნო მონაცემები
@@ -349,6 +353,8 @@ ka:
       title: Indicators
       no_records: I am sorry, but at this time we do not have any indicators on file.
     indicator:
+      district_header: District Filter
+      all_districts_option: All Districts
       summary_header: Overall
       details_header: Details
   messages:

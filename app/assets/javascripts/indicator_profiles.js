@@ -44,11 +44,14 @@ function build_indicator_profile_summary_charts(ths, indicator_data){
         ]
       }]
     });
+  } else if (ths != undefined) {
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
 }
 
 function build_indicator_profile_detail_charts(ths, indicator_name, headers, data){
-  if (ths != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
+  if (ths != undefined && indicator_name != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
     ths.highcharts({
       chart: {
           type: 'bar'
@@ -110,6 +113,9 @@ function build_indicator_profile_detail_charts(ths, indicator_name, headers, dat
         data: data
       }]
     });
+  } else if (ths != undefined) {
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
 }
 
@@ -121,33 +127,42 @@ function build_indicator_profile_charts(){
     var detail_data = [];
     for (var i=0;i<indicator_profile_data.length;i++){
       if (indicator_profile_data[i].event.id.toString() == $(this).data('id')){
-        for (var j=0;j<indicator_profile_data[i].data.length;j++){
-          if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString()){
-            indicator_data = indicator_profile_data[i].data[j];
-            indicator_name = indicator_profile_data[i].data[j].indicator_name;
+        if (indicator_profile_data[i].data == null){
+          detail_headers.push(null);  
+          detail_data.push(null);  
+        } else {
+          for (var j=0;j<indicator_profile_data[i].data.length;j++){
+            if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString()){
+              indicator_data = indicator_profile_data[i].data[j];
+              indicator_name = indicator_profile_data[i].data[j].indicator_name;
+            }
+            detail_headers.push(indicator_profile_data[i].data[j].indicator_name);  
+            detail_data.push({y: Number(indicator_profile_data[i].data[j].value), color: indicator_profile_data[i].data[j].color});  
           }
-          detail_headers.push(indicator_profile_data[i].data[j].indicator_name);  
-          detail_data.push({y: Number(indicator_profile_data[i].data[j].value), color: indicator_profile_data[i].data[j].color});  
         }
         break;
       }
     }  
-    if (indicator_data != undefined){
-console.log(detail_data);
-      build_indicator_profile_summary_charts($(this), indicator_data);
-      var ths_detail = $('.tab-pane.active .indicator_detail_chart[data-id="' + event_id.toString() + '"]')
-      build_indicator_profile_detail_charts(ths_detail, indicator_name, detail_headers, detail_data);
-    }
+
+    build_indicator_profile_summary_charts($(this), indicator_data);
+    var ths_detail = $('.tab-pane.active .indicator_detail_chart[data-id="' + event_id.toString() + '"]')
+    build_indicator_profile_detail_charts(ths_detail, indicator_name, detail_headers, detail_data);
   });
 }
 
-function get_ind_event_type_data(event_type_id){
+function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common_name){
   if (event_type_id == undefined){
     // it was not passed in so get active event type
     event_type_id = $('#indicator_profile .nav-tabs li.active a').data('id');
   }
   if (event_type_id != undefined){
-    var url = gon.indicator_event_type_data_url.replace(gon.placeholder_core_indicator, gon.indicator_profile.id).replace(gon.placeholder_event_type, event_type_id.toString());
+    var url;
+    if (shape_type_id != undefined && common_id != undefined && common_name != undefined){
+      url = gon.json_indicator_event_type_data_url_district_filter.replace(gon.placeholder_core_indicator, gon.indicator_profile.id).replace(gon.placeholder_event_type, event_type_id.toString()).replace(gon.placeholder_shape_type_id, shape_type_id.toString()).replace(gon.placeholder_common_id, common_id).replace(gon.placeholder_common_name, common_name);
+    }else{
+      url = gon.json_indicator_event_type_data_url.replace(gon.placeholder_core_indicator, gon.indicator_profile.id).replace(gon.placeholder_event_type, event_type_id.toString());
+    }
+
     $.ajax({
       type: "GET",
       url: url,
@@ -199,32 +214,20 @@ $(document).ready(function() {
   });
   
 
-  // when indicator type is selected, show appropriate datatable
-  $('.indicator_profile_type_selection_item').click(function(){
-    var ths = $(this);
-    // if the item that was clicked is for the table that is already showing, do nothing
-    var active_table = $('div[id^="indicator_profile_"].active');
-    if (active_table == undefined || $(this).data('id') != active_table.data('id')){
-      // find the table to make active
-      var new_table = $('div[id^="indicator_profile_"][data-id="' + $(this).data('id') + '"]');
-
-      if (new_table != undefined){
-        active_table.fadeOut(300, function(){
-          active_table.removeClass('active');
-          new_table.fadeIn(300);
-          new_table.addClass('active');
-          $('.indicator_profile_type_selection_item').removeClass('active');
-          ths.addClass('active');
-        });
-      }      
-    }
-  });
-
   $(window).bind('load', get_ind_event_type_data());
 
   // when switch event types, get data for the new events
   $('#indicator_profile .nav-tabs li a').click(function(){
     get_ind_event_type_data($(this).data('id'));
+  });
+
+  // when district filter selected, update the charts
+  $('.tab-pane.active select.district_filter_select').change(function(){
+//    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
+//      $(this).empty();
+      var selected_option = $(".tab-pane.active select.district_filter_select option:selected");
+      get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());
+//    });
   });
 
 });

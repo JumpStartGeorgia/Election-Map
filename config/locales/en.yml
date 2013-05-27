@@ -237,6 +237,9 @@ en:
       placeholder: "placeholder" 
       placeholder_core_indicator: "placeholder_core_indicator" 
       placeholder_event_type: "placeholder_event_type" 
+      placeholder_shape_type_id: "placeholder_shape_type_id" 
+      placeholder_common_id: "placeholder_common_id" 
+      placeholder_common_name: "placeholder_common_name" 
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -245,6 +248,7 @@ en:
       summary:
         title: "Rank"
         rest: "The Rest"
+        no_data: "No data exists."
   layouts:
     application-bootstrap:
       title: Georgia Election Data
@@ -349,6 +353,8 @@ en:
       title: Indicators
       no_records: I am sorry, but at this time we do not have any indicators on file.
     indicator:
+      district_header: District Filter
+      all_districts_option: All Districts
       summary_header: Overall
       details_header: Details
   messages:

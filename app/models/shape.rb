@@ -2,7 +2,7 @@ class Shape < ActiveRecord::Base
   translates :common_id, :common_name
   has_ancestry
 
-  has_many :events
+  has_many :eventsshapes
   has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type
   accepts_nested_attributes_for :shape_translations
@@ -62,6 +62,15 @@ class Shape < ActiveRecord::Base
       end
     end
     return x
+  end
+
+  # get unique names for shape type across all shape sets
+  # format: [{shape_type_id, common_id, common_name}]
+  def self.get_unique_common_names(shape_type_ids)
+    x = Shape.joins(:shape_translations).select("distinct shapes.shape_type_id, shape_translations.common_id as c_id, shape_translations.common_name as c_name")
+          .where("shape_translations.common_id != '0' and shapes.shape_type_id in (?) and shape_translations.locale = ?", shape_type_ids, I18n.locale)
+          .order("shape_translations.common_name asc")
+    x.map{|y| {:shape_type_id => y.shape_type_id, :common_id => y.c_id, :common_name => y.c_name}}
   end
 
 	# create the properly formatted json string
