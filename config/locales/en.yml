@@ -353,8 +353,9 @@ en:
       title: Indicators
       no_records: I am sorry, but at this time we do not have any indicators on file.
     indicator:
-      district_header: District Filter
+      district_filter_header: District Filter
       all_districts_option: All Districts
+      event_filter_header: "Election Filter (you will have to scroll down if you select > 3 events)"
       summary_header: Overall
       details_header: Details
   messages:

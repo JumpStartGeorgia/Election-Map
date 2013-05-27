@@ -230,4 +230,18 @@ $(document).ready(function() {
 //    });
   });
 
+
+  // when event filter changes, update what events to show
+  $('.tab-pane.active #event_filter input[name="event_filter_checkboxes"]').change(function(){
+    var event_id = $(this).val();
+    if ($(this).attr("checked") == undefined){
+      // hide this event
+      $('.tab-pane.active .profile_item div[data-id="' + event_id + '"]').removeClass('active');
+    }else{
+      // show this event
+      $('.tab-pane.active .profile_item div[data-id="' + event_id + '"]').addClass('active');
+    }
+  });
 });
+
+

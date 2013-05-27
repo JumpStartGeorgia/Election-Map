@@ -355,6 +355,7 @@ ka:
     indicator:
       district_header: District Filter
       all_districts_option: All Districts
+      event_filter_header: "Election Filter (you will have to scroll down if you select > 3 events)"
       summary_header: Overall
       details_header: Details
   messages:

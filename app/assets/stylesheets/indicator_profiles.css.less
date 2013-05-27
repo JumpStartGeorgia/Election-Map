@@ -1,8 +1,4 @@
 div.profiles{
-  display: none;
-  &.active{
-    display: block;
-  }
   thead tr{
     background-color: #aec9dc;
   }
@@ -23,12 +19,15 @@ div.profiles{
   }
 } 
 
-#indicator_profile .tab-content .tab-pane{
+#indicator_profile .tab-content .tab-pane .profile_item{
   h2 {
     line-height: 24px;
+    text-align: center;
+    margin-top: 20px;
   }
   h3 {
     margin: 20px 0 10px;
+    text-align: center;
   }
 
   span.no_data{
@@ -37,5 +36,16 @@ div.profiles{
     margin-top: 10px;
     padding: 5px 10px;
     font-weight: bold;
+  }
+
+  & > div {
+    display: none;
+    &.active{
+      display: block;
+      margin-left: 2.564102564102564%;
+      &:first-of-type, &:nth-child(4n){
+        margin-left: 0;
+      }
+    }
   }
 }
