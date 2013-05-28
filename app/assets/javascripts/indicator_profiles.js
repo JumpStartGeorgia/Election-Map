@@ -3,9 +3,8 @@ var summary_height = [];
 var detail_height = [];
 var number_events;
 
-function build_indicator_profile_summary_charts(ths, indicator_data){
+function build_result_indicator_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
-console.log('building summary chart');
     ths.highcharts({
       chart: {
           plotBackgroundColor: null,
@@ -65,7 +64,7 @@ console.log('building summary chart');
   }
 }
 
-function build_indicator_profile_detail_charts(ths, indicator_name, headers, data){
+function build_result_indicator_profile_detail_charts(ths, indicator_name, headers, data){
   if (ths != undefined && indicator_name != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
     var chart_height = 400;
     chart_height = 60 * data.length;
@@ -148,7 +147,7 @@ function build_indicator_profile_detail_charts(ths, indicator_name, headers, dat
   }
 }
 
-function build_indicator_profile_charts(){
+function build_results_indicator_profile_charts(){
   $('.tab-pane.active .indicator_summary_chart').each(function(){
     var event_id = $(this).data('id');
     var indicator_data, indicator_name;
@@ -174,12 +173,78 @@ function build_indicator_profile_charts(){
       }
     }  
 
-    build_indicator_profile_summary_charts($(this), indicator_data);
+    build_result_indicator_profile_summary_charts($(this), indicator_data);
     var ths_detail = $('.tab-pane.active .indicator_detail_chart[data-id="' + event_id.toString() + '"]')
-    build_indicator_profile_detail_charts(ths_detail, indicator_name, detail_headers, detail_data);
+    build_result_indicator_profile_detail_charts(ths_detail, indicator_name, detail_headers, detail_data);
 
   });
 }
+
+
+function build_other_indicator_profile_summary_charts(ths, indicator_data){
+  if (ths != undefined && indicator_data != undefined){
+    var value = indicator_data.formatted_value;
+    if (indicator_data.number_format != null && indicator_data.number_format.length > 0){
+      value += indicator_data.number_format;
+    }
+    ths.html("<div class='other_data'>" + indicator_data.indicator_name_abbrv + ": " + value + "</div>");
+  } else if (ths != undefined) {
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
+  }
+}
+
+function build_other_indicator_profile_detail_charts(ths, indicator_name, data){
+  if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0){
+    var value;    
+    for (var i=0; i<data.length; i++){
+      value = data[i].value;
+      if (data[i].number_format != null && data[i].number_format.length > 0){
+        value += data[i].number_format;
+      }
+      ths.append("<div class='other_data'>" + data[i].name + ": " + value + "</div>");
+    }
+  } else if (ths != undefined) {
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
+  }
+}
+
+function build_other_indicator_profile_charts(){
+  $('.tab-pane.active .indicator_summary_chart').each(function(){
+    var event_id = $(this).data('id');
+    var indicator_data, indicator_name;
+    var detail_data = [];
+    for (var i=0;i<indicator_profile_data.length;i++){
+      if (indicator_profile_data[i].event.id.toString() == $(this).data('id')){
+        if (indicator_profile_data[i].data == null){
+          detail_headers.push(null);  
+          detail_data.push(null);  
+        } else {
+          for (var j=0;j<indicator_profile_data[i].data.length;j++){
+            if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString() || 
+                  (gon.indicator_profile.child_ids.length > 0 && gon.indicator_profile.child_ids.indexOf(indicator_profile_data[i].data[j].core_indicator_id) > -1)){
+              indicator_data = indicator_profile_data[i].data[j];
+              indicator_name = indicator_profile_data[i].data[j].indicator_name;
+            }
+            detail_data.push({name: indicator_profile_data[i].data[j].indicator_name, 
+                  value: indicator_profile_data[i].data[j].formatted_value, 
+                  number_format: indicator_profile_data[i].data[j].number_format});  
+          }
+        }
+        break;
+      }
+    }  
+
+    $(this).empty();
+    build_other_indicator_profile_summary_charts($(this), indicator_data);
+    var ths_detail = $('.tab-pane.active .indicator_detail_chart[data-id="' + event_id.toString() + '"]')
+    ths_detail.empty();
+    build_other_indicator_profile_detail_charts(ths_detail, indicator_name, detail_data);
+
+  });
+}
+
 
 function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common_name){
   if (event_type_id == undefined){
@@ -204,7 +269,11 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
       },
       success: function(data) {
         indicator_profile_data = data;
-        build_indicator_profile_charts();
+        if (gon.indicator_profile.type_id == 2){
+          build_results_indicator_profile_charts();
+        } else if (gon.indicator_profile.type_id == 1){
+          build_other_indicator_profile_charts();
+        }
       }
     });
   }
@@ -269,13 +338,10 @@ $(document).ready(function() {
   // when event filter changes, update what events to show
   $('.tab-pane.active #event_filter input[name="event_filter_checkboxes"]').live('change', function(){
     var event_id = $(this).val();
-console.log("event_id = " + event_id);
     if ($(this).attr("checked") == undefined){
-console.log("hiding");
       // hide this event
       $('.tab-pane.active .profile_item div[data-id="' + event_id + '"]').removeClass('active');
     }else{
-console.log("showing");
       // show this event
       $('.tab-pane.active .profile_item div[data-id="' + event_id + '"]').addClass('active');
     }

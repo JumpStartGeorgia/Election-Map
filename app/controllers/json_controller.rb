@@ -588,7 +588,7 @@ class JsonController < ApplicationController
           y[:event][:id] = event["id"]
           y[:event][:name] = event["name"]
           z = x["shape_data"][0].select{|z| z.has_key?("data_item")} if x.present?
-          y[:data] = z.present? ? z : nil
+          y[:data] = z.present? ? z.map{|x| x["data_item"]} : nil
           data << y
         end
       end
