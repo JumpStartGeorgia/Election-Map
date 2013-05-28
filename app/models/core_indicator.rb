@@ -23,9 +23,13 @@ class CoreIndicator < ActiveRecord::Base
 		self.ancestry = nil if self.ancestry && self.ancestry.empty?
 	end
 
-  def self.order_by_type_name
+  def self.order_by_type_name(include_ancestry = false)
+    sort = "core_indicators.indicator_type_id ASC, core_indicator_translations.name ASC"  
+    if include_ancestry
+      sort = "core_indicators.indicator_type_id ASC, core_indicators.ancestry asc, core_indicator_translations.name ASC"
+    end
     with_translations(I18n.locale)
-      .order("core_indicators.indicator_type_id ASC, core_indicator_translations.name ASC")
+      .order(sort)
   end
 
   def name_abbrv_w_parent
@@ -77,39 +81,95 @@ class CoreIndicator < ActiveRecord::Base
     json = []
 
     types = EventType.all
-    CoreIndicator.order_by_type_name.each do |core|
-      ind = Hash.new
-      json << ind
-      ind[:id] = core.id
-      ind[:name] = core.name  
-      ind[:name_abbrv] = core.name_abbrv
-      ind[:type_id] = core.indicator_type_id    
-      event_types = []
-      ind[:event_types] = event_types
-      types.each do |type|
-        # get events ordered by most recent being first
-        events = core.events.select{|x| x.event_type_id == type.id}.sort_by{|x| x[:event_date]}.reverse
-        if events.present?
-          event_type = Hash.new
-          event_types << event_type
-          event_type[:id] = type.id
-          event_type[:name] = type.name
-          event_type[:sort_order] = type.sort_order
-          event_type[:events] = []
-          events.each do |event|
-            e = Hash.new
-            event_type[:events] << e
-            e[:id] = event.id
-            e[:name] = event.name
-            e[:shape_id] = event.shape_id
-            e[:shape_type_id] = event.shape.shape_type_id
-            e[:data_type] = Datum::DATA_TYPE[:official]
-		        dataset = DataSet.current_dataset(event.id, e[:data_type])
-		        if dataset && !dataset.empty?
-			        e[:data_set_id] =  dataset.first.id
-		        else
-			        e[:data_set_id] =  nil
-		        end
+    CoreIndicator.order_by_type_name(true).each do |core|
+      # if the indicators is not a child or is a child and parent does not exist, add
+      if (core.ancestry.nil? || json.index{|x| x[:id].to_s == core.ancestry}.nil?)
+        ind = Hash.new
+        json << ind
+        ind[:id] = core.id
+        ind[:name] = core.name  
+        ind[:name_abbrv] = core.name_abbrv
+        ind[:type_id] = core.indicator_type_id    
+        ind[:child_ids] = []
+        event_types = []
+        ind[:event_types] = event_types
+        types.each do |type|
+          # get events ordered by most recent being first
+          events = core.events.select{|x| x.event_type_id == type.id}.sort_by{|x| x[:event_date]}.reverse
+          if events.present?
+            event_type = Hash.new
+            event_types << event_type
+            event_type[:id] = type.id
+            event_type[:name] = type.name
+            event_type[:sort_order] = type.sort_order
+            event_type[:events] = []
+            events.each do |event|
+              e = Hash.new
+              event_type[:events] << e
+              e[:id] = event.id
+              e[:name] = event.name
+              e[:event_date] = event.event_date
+              e[:shape_id] = event.shape_id
+              e[:shape_type_id] = event.shape.shape_type_id
+              e[:data_type] = Datum::DATA_TYPE[:official]
+		          dataset = DataSet.current_dataset(event.id, e[:data_type])
+		          if dataset && !dataset.empty?
+			          e[:data_set_id] =  dataset.first.id
+		          else
+			          e[:data_set_id] =  nil
+		          end
+            end
+          end
+        end
+      else      
+        # indicators belongs to a parent
+        # add the event types/events from this to the parent
+        index = json.index{|x| x[:id].to_s == core.ancestry}
+        parent = json[index] if index.present?
+        if parent.present?
+          # indicate that this indicator has children
+          parent[:child_ids] << core.id
+          types.each do |type|
+            # get events ordered by most recent being first
+            events = core.events.select{|x| x.event_type_id == type.id}.sort_by{|x| x[:event_date]}.reverse
+            if events.present?
+              # if parent does not have this event type, add it
+              type_index = parent[:event_types].index{|x| x[:id] == type.id}
+              if !type_index.present?
+                # add type
+                event_type = Hash.new
+                parent[:event_types] << event_type
+                event_type[:id] = type.id
+                event_type[:name] = type.name
+                event_type[:sort_order] = type.sort_order
+                event_type[:events] = []
+                # resort the event types
+                parent[:event_types].sort_by!{|x| x[:sort_order]}
+              end
+
+              type_index = parent[:event_types].index{|x| x[:id] == type.id}
+
+              # add events
+              events.each do |event|
+                e = Hash.new
+                parent[:event_types][type_index][:events] << e
+                e[:id] = event.id
+                e[:name] = event.name
+                e[:event_date] = event.event_date
+                e[:shape_id] = event.shape_id
+                e[:shape_type_id] = event.shape.shape_type_id
+                e[:data_type] = Datum::DATA_TYPE[:official]
+		            dataset = DataSet.current_dataset(event.id, e[:data_type])
+		            if dataset && !dataset.empty?
+			            e[:data_set_id] =  dataset.first.id
+		            else
+			            e[:data_set_id] =  nil
+		            end
+              end
+
+              # resort the events
+              parent[:event_types][type_index][:events].sort_by!{|x| x[:event_date]}
+            end
           end
         end
       end

@@ -5,6 +5,7 @@ var number_events;
 
 function build_indicator_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
+console.log('building summary chart');
     ths.highcharts({
       chart: {
           plotBackgroundColor: null,
@@ -160,7 +161,8 @@ function build_indicator_profile_charts(){
           detail_data.push(null);  
         } else {
           for (var j=0;j<indicator_profile_data[i].data.length;j++){
-            if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString()){
+            if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString() || 
+                  (gon.indicator_profile.child_ids.length > 0 && gon.indicator_profile.child_ids.indexOf(indicator_profile_data[i].data[j].core_indicator_id) > -1)){
               indicator_data = indicator_profile_data[i].data[j];
               indicator_name = indicator_profile_data[i].data[j].indicator_name;
             }

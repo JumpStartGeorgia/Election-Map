@@ -76,7 +76,6 @@ class Shape < ActiveRecord::Base
 	# create the properly formatted json string
 	def self.build_json(shape_id, shape_type_id)
     json = Hash.new()
-		start = Time.now
 		if shape_id.present? && shape_type_id.present?
 		  shapes = get_shapes_by_type(shape_id, shape_type_id, true)
 
