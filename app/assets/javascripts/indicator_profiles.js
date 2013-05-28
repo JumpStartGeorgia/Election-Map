@@ -211,6 +211,11 @@ function build_other_indicator_profile_detail_charts(ths, indicator_name, data){
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
+  detail_height.push(ths.height());
+  if (detail_height.length == $('.tab-pane.active .profile_item .indicator_detail_chart').length){
+    $(".tab-pane.active .profile_item .indicator_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+  }
+
 }
 
 function build_other_indicator_profile_charts(){
