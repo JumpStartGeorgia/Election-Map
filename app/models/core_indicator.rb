@@ -1,5 +1,5 @@
 class CoreIndicator < ActiveRecord::Base
-  translates :name, :name_abbrv, :description
+  translates :name, :name_abbrv, :description, :summary
   has_ancestry
 
   has_many :core_indicator_translations, :dependent => :destroy
@@ -89,6 +89,7 @@ class CoreIndicator < ActiveRecord::Base
         ind[:id] = core.id
         ind[:name] = core.name  
         ind[:name_abbrv] = core.name_abbrv
+        ind[:summary] = core.summary
         ind[:type_id] = core.indicator_type_id    
         ind[:child_ids] = []
         event_types = []

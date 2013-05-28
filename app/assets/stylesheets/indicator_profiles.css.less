@@ -19,37 +19,48 @@ div.profiles{
   }
 } 
 
-#indicator_profile .tab-content .tab-pane .profile_item{
-  h2 {
-    line-height: 24px;
-    text-align: center;
-    margin-top: 20px;
-    min-height: 75px;
-  }
-  h3 {
-    margin: 20px 0 10px;
-    text-align: center;
-  }
-
-  span.no_data{
-    display: block;
-    text-align: center;
-    margin-top: 10px;
-    padding: 5px 10px;
-    font-weight: bold;
-  }
-
-  & > div {
-    display: none;
-    &.active{
-      display: block;
-      margin-left: 2.564102564102564%;
-      &:nth-child(3n+1){
-        margin-left: 0;
-      }
+#indicator_profile .tab-content .tab-pane {
+  .indicator_profile_filters {
+    h3 span{
+      font-size: 11pt;
+      font-weight: normal;
+    }
+    & > div:last-of-type{
+      text-align: right;
     }
   }
-  table.other_indicator_table tr td:last-of-type{
-    text-align: right;
+  .profile_item{
+    h2 {
+      line-height: 24px;
+      text-align: center;
+      margin-top: 20px;
+      min-height: 75px;
+    }
+    h3 {
+      margin: 20px 0 10px;
+      text-align: center;
+    }
+
+    span.no_data{
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      padding: 5px 10px;
+      font-weight: bold;
+    }
+
+    & > div {
+      display: none;
+      &.active{
+        display: block;
+        margin-left: 2.564102564102564%;
+        &:nth-child(3n+1){
+          margin-left: 0;
+        }
+      }
+    }
+    table.other_indicator_table tr td:last-of-type{
+      text-align: right;
+    }
   }
 }

@@ -195,6 +195,9 @@ en:
       locale: Language
       file_upload: CSV File to Upload
       has_summary: Can Summarize All Indicators in Type
+      summary: Summary
+      core_indicator_summary_hint: "(text that appears on indicator profile page)"
+      core_indicator_description_hint: "(descriptive name that appears in data table)"
       indicator_type: Indicator Group
       number_format: Number Format
       color: Color
@@ -240,6 +243,7 @@ en:
       placeholder_shape_type_id: "placeholder_shape_type_id" 
       placeholder_common_id: "placeholder_common_id" 
       placeholder_common_name: "placeholder_common_name" 
+      summary: Summary
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -355,7 +359,8 @@ en:
     indicator:
       district_filter_header: District Filter
       all_districts_option: All Districts
-      event_filter_header: "Election Filter (you will have to scroll down if you select > 3 events)"
+      event_filter_header: Election Filter
+      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
       summary_header: Overall
       details_header: Details
   messages:

@@ -9,7 +9,8 @@
 
 				<%= translation.input :name %>
 				<%= translation.input :name_abbrv %>
-				<%= translation.input :description %>
+				<%= translation.input :description, :input_html => {:rows => 4}, :hint => t('app.common.core_indicator_description_hint') %>
+				<%= translation.input :summary, :input_html => {:rows => 4}, :hint => t('app.common.core_indicator_summary_hint') %>
 				<%= translation.hidden_field :locale , :value => trans.locale %>
 			</div>
 

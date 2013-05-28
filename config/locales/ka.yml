@@ -195,6 +195,9 @@ ka:
       locale: Language
       file_upload: CSV File to Upload
       has_summary: Can Summarize All Indicators in Type
+      summary: Summary
+      core_indicator_summary_hint: "(text that appears on indicator profile page)"
+      core_indicator_description_hint: "(descriptive name that appears in data table)"
       indicator_type: Indicator Group
       number_format: Number Format
       color: Color
@@ -355,7 +358,8 @@ ka:
     indicator:
       district_header: District Filter
       all_districts_option: All Districts
-      event_filter_header: "Election Filter (you will have to scroll down if you select > 3 events)"
+      event_filter_header: Election Filter
+      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
       summary_header: Overall
       details_header: Details
   messages:

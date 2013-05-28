@@ -1,5 +1,5 @@
 class CoreIndicatorTranslation < ActiveRecord::Base
-  attr_accessible :core_indicator_id, :name, :name_abbrv, :description, :locale
+  attr_accessible :core_indicator_id, :name, :name_abbrv, :description, :locale, :summary
   belongs_to :core_indicator
 
   validates :name, :name_abbrv, :locale, :presence => true
