@@ -23,7 +23,7 @@ function build_result_indicator_profile_summary_charts(ths, indicator_data){
           } 
 
       },
-      colors: [indicator_data.color, "#2884C3"],
+      colors: [indicator_data.color, "#6f6f6f"],
       title: {
           text: gon.summary_chart_title + ": " + indicator_data.rank
       },
