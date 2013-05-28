@@ -77,11 +77,11 @@ class CoreIndicator < ActiveRecord::Base
     end
   end
 
+  # get all core indicators that have a relationship
   def self.build_event_json
     json = []
-
     types = EventType.all
-    CoreIndicator.order_by_type_name(true).each do |core|
+    CoreIndicator.joins(:event_indicator_relationships).order_by_type_name(true).each do |core|
       # if the indicators is not a child or is a child and parent does not exist, add
       if (core.ancestry.nil? || json.index{|x| x[:id].to_s == core.ancestry}.nil?)
         ind = Hash.new
@@ -112,12 +112,12 @@ class CoreIndicator < ActiveRecord::Base
               e[:shape_id] = event.shape_id
               e[:shape_type_id] = event.shape.shape_type_id
               e[:data_type] = Datum::DATA_TYPE[:official]
-		          dataset = DataSet.current_dataset(event.id, e[:data_type])
-		          if dataset && !dataset.empty?
-			          e[:data_set_id] =  dataset.first.id
-		          else
-			          e[:data_set_id] =  nil
-		          end
+	            dataset = DataSet.current_dataset(event.id, e[:data_type])
+	            if dataset && !dataset.empty?
+		            e[:data_set_id] =  dataset.first.id
+	            else
+		            e[:data_set_id] =  nil
+	            end
             end
           end
         end
@@ -159,12 +159,12 @@ class CoreIndicator < ActiveRecord::Base
                 e[:shape_id] = event.shape_id
                 e[:shape_type_id] = event.shape.shape_type_id
                 e[:data_type] = Datum::DATA_TYPE[:official]
-		            dataset = DataSet.current_dataset(event.id, e[:data_type])
-		            if dataset && !dataset.empty?
-			            e[:data_set_id] =  dataset.first.id
-		            else
-			            e[:data_set_id] =  nil
-		            end
+	              dataset = DataSet.current_dataset(event.id, e[:data_type])
+	              if dataset && !dataset.empty?
+		              e[:data_set_id] =  dataset.first.id
+	              else
+		              e[:data_set_id] =  nil
+	              end
               end
 
               # resort the events
