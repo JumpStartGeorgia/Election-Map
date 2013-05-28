@@ -128,9 +128,13 @@ class OtherController < ApplicationController
       gon.placeholder_shape_type_id = I18n.t('app.common.placeholder_shape_type_id')
       gon.placeholder_common_id = I18n.t('app.common.placeholder_common_id')
       gon.placeholder_common_name = I18n.t('app.common.placeholder_common_name')
-      gon.json_indicator_event_type_data_url = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type)
-      gon.json_indicator_event_type_data_url_district_filter = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type, :shape_type_id => gon.placeholder_shape_type_id, :common_id => gon.placeholder_common_id, :common_name => gon.placeholder_common_name)
-
+      if @indicator["type_id"] == 2
+        gon.json_indicator_event_type_data_url = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type)
+        gon.json_indicator_event_type_data_url_district_filter = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type, :shape_type_id => gon.placeholder_shape_type_id, :common_id => gon.placeholder_common_id, :common_name => gon.placeholder_common_name)
+      else
+        gon.json_indicator_event_type_data_url = json_indicator_event_type_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type)
+        gon.json_indicator_event_type_data_url_district_filter = json_indicator_event_type_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type, :shape_type_id => gon.placeholder_shape_type_id, :common_id => gon.placeholder_common_id, :common_name => gon.placeholder_common_name)
+      end
       
       respond_to do |format|
         format.html # index.html.erb

@@ -138,6 +138,7 @@ ElectionMap::Application.routes.draw do
 		match '/json/summary_custom_children_data/:parent_id/shape_type/:shape_type_id/event/:event_id/indicator_type/:indicator_type_id', :to => 'json#summary_custom_children_data', :as => :json_summary_custom_children_data, :via => :get, :defaults => {:format => 'json'}
     # core indicator event type data
 		match '/json/indicator_event_type_summary_data/:core_indicator_id/event_type/:event_type_id(/shape_type/:shape_type_id/common_id/:common_id/common_name/:common_name)', :to => 'json#indicator_event_type_summary_data', :as => :json_indicator_event_type_summary_data, :via => :get, :defaults => {:format => 'json'}
+		match '/json/indicator_event_type_data/:core_indicator_id/event_type/:event_type_id(/shape_type/:shape_type_id/common_id/:common_id/common_name/:common_name)', :to => 'json#indicator_event_type_data', :as => :json_indicator_event_type_data, :via => :get, :defaults => {:format => 'json'}
 
 
 =begin old routes
