@@ -187,7 +187,7 @@ function build_other_indicator_profile_summary_charts(ths, indicator_data){
     if (indicator_data.number_format != null && indicator_data.number_format.length > 0){
       value += indicator_data.number_format;
     }
-    ths.html("<div class='other_data'>" + indicator_data.indicator_name_abbrv + ": " + value + "</div>");
+    ths.html("<table class='other_indicator_table table table-striped table-bordered'><tbody><tr><td>" + indicator_data.indicator_name + "</td><td>" + value + "</td></tr></tbody></table>");
   } else if (ths != undefined) {
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
@@ -197,13 +197,16 @@ function build_other_indicator_profile_summary_charts(ths, indicator_data){
 function build_other_indicator_profile_detail_charts(ths, indicator_name, data){
   if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0){
     var value;    
+    var table = "<table class='other_indicator_table table table-striped table-bordered'><tbody>";
     for (var i=0; i<data.length; i++){
       value = data[i].value;
       if (data[i].number_format != null && data[i].number_format.length > 0){
         value += data[i].number_format;
       }
-      ths.append("<div class='other_data'>" + data[i].name + ": " + value + "</div>");
+      table += "<tr><td>" + data[i].name + "</td><td>" + value + "</td></tr>";
     }
+    table += "</tbody></table>"
+    ths.html(table);
   } else if (ths != undefined) {
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
@@ -218,7 +221,6 @@ function build_other_indicator_profile_charts(){
     for (var i=0;i<indicator_profile_data.length;i++){
       if (indicator_profile_data[i].event.id.toString() == $(this).data('id')){
         if (indicator_profile_data[i].data == null){
-          detail_headers.push(null);  
           detail_data.push(null);  
         } else {
           for (var j=0;j<indicator_profile_data[i].data.length;j++){
@@ -236,10 +238,8 @@ function build_other_indicator_profile_charts(){
       }
     }  
 
-    $(this).empty();
     build_other_indicator_profile_summary_charts($(this), indicator_data);
     var ths_detail = $('.tab-pane.active .indicator_detail_chart[data-id="' + event_id.toString() + '"]')
-    ths_detail.empty();
     build_other_indicator_profile_detail_charts(ths_detail, indicator_name, detail_data);
 
   });
