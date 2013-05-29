@@ -52,6 +52,9 @@ logger.debug "////////////////////////// BROWSER NOT SUPPORTED"
 		end
 	end
 
+  def valid_role?(role)
+    redirect_to root_path, :notice => t('app.msgs.not_authorized') if !current_user || !current_user.role?(role)
+  end
 
   def set_locale
     if params[:locale] and I18n.available_locales.include?(params[:locale].to_sym)

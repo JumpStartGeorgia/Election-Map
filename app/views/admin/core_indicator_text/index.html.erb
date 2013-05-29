@@ -1,0 +1,31 @@
+<% title t('.title') %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
+<table id="core-indicator-text" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th><%= t("app.common.indicator_type") %></th>
+      <th><%= t("app.common.name_abbrv") %></th>
+      <th><%= t("app.common.name") %></th>
+      <th><%= t("app.common.summary") %></th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @core_indicators.each do |core_indicator| %>
+    <tr>
+      <td><%= link_to t('app.buttons.edit'), admin_edit_core_indicator_text_path(:id => core_indicator.id), :class => 'btn btn-mini' %></td>
+      <td><%= core_indicator.indicator_type.name %></td>
+      <td><%= core_indicator.name_abbrv %></td>
+      <td><%= core_indicator.name %></td>
+      <td><%= core_indicator.summary %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+

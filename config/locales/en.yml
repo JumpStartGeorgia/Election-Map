@@ -1,6 +1,8 @@
 # encoding: utf-8
 en:
   activerecord:
+    models:
+      user: User
     attributes:
       data_sets:
         event_id: Event
@@ -244,6 +246,7 @@ en:
       placeholder_common_id: "placeholder_common_id" 
       placeholder_common_name: "placeholder_common_name" 
       summary: Summary
+      added_on: "Added on: %{date}" 
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
@@ -378,6 +381,8 @@ en:
     index:
       title: Administration Section
       basic_header: Basic
+      core_indicator_text: Indicator Profile Text
+      users: Users
       events: Event Names
       shape_types: Shape Types
       event_types: Event Groups
@@ -426,16 +431,19 @@ en:
       custom_event_indicators:
         title: Create Cache for All Custom Event Indicators
         explanation: Create cache files for each indicator in an event that has a custom view (e.g., all indicators at the District level of the 2008 Presidential Election).
+        size: This will take about 500mb of disk space.
         time: This will take about 30 minutes.
         created: The custom event indicator cache files have been created.
       default_custom_event:
         title: Create Cache for Default Custom Event Views
         explanation: Create cache files for the default view of events that have custom views (e.g., viewing distrcits at country level).
+        size: This will take about 40mb of disk space.
         time: This will take about 5 minutes.
         created: The default event cache files have been created.
       summary_data:
         title: Create Cache for Summary Data
         explanation: Create cache files for the data that builds the Overall Results bar charts in the map popup.
+        size: This will take about 150mb of disk space.
         time: This will take about 30 minutes.
         created: The summary data cache files have been created.
     shape_types:
@@ -485,6 +493,11 @@ en:
         title: New Indicator
       show:
         title: Indicator Details
+    core_indicator_text:
+      edit:
+        title: "Editing Profile Text: '%{name}'"
+      index:
+        title: Indicator Profile Text
     data_sets:
       edit:
         title: Editing Dataset

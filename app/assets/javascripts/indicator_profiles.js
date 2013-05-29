@@ -286,39 +286,6 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
 
 $(document).ready(function() {
 
-  $.extend( $.fn.dataTableExt.oStdClasses, {
-      "sWrapper": "dataTables_wrapper form-inline"
-  });
-
-  $('#tab1 table').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
-    "sPaginationType": "bootstrap",
-    "bJQueryUI": false,
-    "bProcessing": true,
-    "bStateSave": true,
-    "bAutoWidth": false,
-    "oLanguage": {
-      "sUrl": gon.datatable_i18n_url
-    },
-    "iDisplayLength": 20,
-    "aLengthMenu": [[20, 40, 60, 80], [20, 40, 60, 80]]
-  });
-  
-  $('#tab2 table').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
-    "sPaginationType": "bootstrap",
-    "bJQueryUI": false,
-    "bProcessing": true,
-    "bStateSave": true,
-    "bAutoWidth": false,
-    "oLanguage": {
-      "sUrl": gon.datatable_i18n_url
-    },
-    "iDisplayLength": 20,
-    "aLengthMenu": [[20, 40, 60, 80], [20, 40, 60, 80]]
-  });
-  
-
   $(window).bind('load', get_ind_event_type_data());
 
   // when switch event types, get data for the new events

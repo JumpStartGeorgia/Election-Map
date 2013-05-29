@@ -90,6 +90,22 @@
 
 		        <div class="header-nav-collapse nav-collapse">
 		          <ul class="nav pull-right">
+                <% if user_signed_in? %>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                          <%= current_user.nickname %>
+                          <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+	                    <li>
+	         		         <%= link_to t('.admin'), admin_path %>
+								      </li>
+	                    <li>
+	         		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
+								      </li>
+    		            </ul>
+                  </li>
+                <% end %>
 								<li><%= link_to t(".indicators"), indicator_profiles_path %></li>
 								<li><%= link_to t(".news"), news_path %></li>
 								<li><%= link_to t(".data_archives"), data_archives_path %></li>
@@ -151,26 +167,6 @@
                     <% end %>
                   <% end %>
               </div>
-              <% if user_signed_in? %>
-		          <div class="pull-right">
-		            <ul>
-	                <li class="dropdown">
-	                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	                        <%= current_user.email %>
-	                        <b class="caret"></b>
-	                  </a>
-	                  <ul class="dropdown-menu">
-		                  <li>
-		       		         <%= link_to t('.admin'), admin_path %>
-									    </li>
-		                  <li>
-		       		         <%= link_to t('.sign_out'), destroy_user_session_path, :method => :delete %>
-									    </li>
-    		            </ul>
-                  </li>
-                </ul>
-		          </div>
-              <% end %>
            </div>
         </div>
         <%= render :partial => "layouts/event_menu_tabs" %>

@@ -1,5 +1,8 @@
 class Admin::DataController < ApplicationController
   before_filter :authenticate_user!
+  before_filter do |controller_instance|
+    controller_instance.send(:valid_role?, User::ROLES[:admin])
+  end
 #	cache_sweeper :datum_sweeper, :only => [:upload]
 
   # GET /data/upload

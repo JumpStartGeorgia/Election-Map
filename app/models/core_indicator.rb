@@ -77,11 +77,15 @@ class CoreIndicator < ActiveRecord::Base
     end
   end
 
+  def self.for_profiles
+    joins(:event_indicator_relationships).order_by_type_name(true)
+  end
+
   # get all core indicators that have a relationship
   def self.build_event_json
     json = []
     types = EventType.all
-    CoreIndicator.joins(:event_indicator_relationships).order_by_type_name(true).each do |core|
+    CoreIndicator.for_profiles.each do |core|
       # if the indicators is not a child or is a child and parent does not exist, add
       if (core.ancestry.nil? || json.index{|x| x[:id].to_s == core.ancestry}.nil?)
         ind = Hash.new

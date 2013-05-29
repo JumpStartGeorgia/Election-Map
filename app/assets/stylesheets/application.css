@@ -258,6 +258,18 @@ ol.standard li {
 		height: 100%;
 }
 
+/* menu drop down */
+.navbar .nav li.dropdown > .dropdown-toggle .caret {
+  border-top-color: #fff;
+  border-bottom-color: #fff;
+}
+.nav .dropdown .dropdown-menu li a{
+  color: #000 !important;
+}
+.nav .dropdown .dropdown-menu li a:hover{
+  color: #fff !important;
+}
+
 /* Map Box */
 #map-title
 {
@@ -357,7 +369,8 @@ ul.select-form-language li a{
 }
 div.multilanguage {
 	border-radius: 8px;
-	padding-left: 10px;
+	padding: 10px;
+  margin-bottom: 10px;
 }
 
 ul.select-form-language li#tab-en {

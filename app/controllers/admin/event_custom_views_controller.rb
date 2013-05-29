@@ -1,5 +1,8 @@
 class Admin::EventCustomViewsController < ApplicationController
   before_filter :authenticate_user!
+  before_filter do |controller_instance|
+    controller_instance.send(:valid_role?, User::ROLES[:admin])
+  end
 	cache_sweeper :event_custom_view_sweeper, :only => [:create, :update, :destroy]
 
   def index

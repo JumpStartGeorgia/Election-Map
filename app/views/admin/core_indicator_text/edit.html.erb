@@ -1,0 +1,12 @@
+<% title t('.title', :name => @core_indicator.name) %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.list'), admin_core_indicator_text_path,
+  :class => 'btn' %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
+<%= render 'form' %>
+
+

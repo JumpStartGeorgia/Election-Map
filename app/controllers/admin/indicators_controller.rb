@@ -1,6 +1,9 @@
 # encoding: utf-8
 class Admin::IndicatorsController < ApplicationController
   before_filter :authenticate_user!
+  before_filter do |controller_instance|
+    controller_instance.send(:valid_role?, User::ROLES[:admin])
+  end
 	cache_sweeper :indicator_sweeper, :only => [:upload, :change_name]
 
   # GET /indicators/upload

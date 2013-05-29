@@ -1,6 +1,9 @@
 # encoding: utf-8
 class Admin::DataArchivesController < ApplicationController
   before_filter :authenticate_user!, :except => [:index, :show]
+  before_filter do |controller_instance|
+    controller_instance.send(:valid_role?, User::ROLES[:admin])
+  end
   require 'data_archive'
   require 'will_paginate/array'
 

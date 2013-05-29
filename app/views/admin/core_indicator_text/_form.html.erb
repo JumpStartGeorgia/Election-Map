@@ -1,0 +1,22 @@
+<%= semantic_form_for(@core_indicator, :url => admin_edit_core_indicator_text_path(params[:id]), :method => :post) do |f| %>
+	<%= f.error_messages %>
+
+  <% @core_indicator.core_indicator_translations.sort{|x,y| x.locale <=> y.locale}.each do |trans| %>
+		<%= f.fields_for :core_indicator_translations, trans do |translation| %>
+
+			<div id="form-<%= trans.locale %>" class="multilanguage">
+				<h3><%= t("app.language.#{trans.locale}") %></h3>
+
+				<%= translation.input :summary, :input_html => {:rows => 4}, :hint => t('app.common.core_indicator_summary_hint') %>
+				<%= translation.hidden_field :locale , :value => trans.locale %>
+			</div>
+
+		<% end %>
+	<% end %>
+
+	<div class="form-actions">
+	  <%= f.submit nil, :class => 'btn btn-success' %>
+	  <%= f.submit nil, :class => 'btn btn-warning', :type => :reset, :value => t('app.buttons.reset'), :name => :reset %>
+	  <%= link_to t('app.buttons.cancel'), admin_core_indicator_text_path, :class => 'btn btn-mini btn-warning' %>
+	</div>
+<% end %>

@@ -22,6 +22,10 @@ ElectionMap::Application.routes.draw do
 		  match '/data_archives/new', :to => 'data_archives#new', :via => [:get, :post]
 		  match '/data_archives/:data_archive_folder', :to => 'data_archives#show', :via => :get
 
+      # core indicator text
+		  match '/core_indicator_text', :to => 'core_indicator_text#index', :via => :get
+		  match '/core_indicator_text/:id/edit', :to => 'core_indicator_text#edit', :as => 'edit_core_indicator_text', :via => [:get,:post]
+
 	    resources :core_indicators do
 	      collection do
 	        get :colors
@@ -84,7 +88,6 @@ ElectionMap::Application.routes.draw do
 			  end
 		  end
 			resources :users
-
 		end
 
 
