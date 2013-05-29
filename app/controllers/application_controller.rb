@@ -185,6 +185,7 @@ logger.debug "---********----- shape type cache"
 
   def set_default_values
 		@svg_directory_path = File.dirname(__FILE__)+"/../../public/assets/svg/"
+    @shape_type_ids_for_ind_profile = [1,3,7]
   end
 
 	def set_gon_data

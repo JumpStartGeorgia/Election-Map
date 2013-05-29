@@ -344,6 +344,7 @@ en:
       follow: "You can follow future updates on Twitter at #gvote or @jsgeorgia or on Facebook at http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: Indicators
+      view_indicator: view indicator
   other:
     news:
       title: News

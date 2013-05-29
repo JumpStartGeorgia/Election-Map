@@ -98,9 +98,11 @@ div#indicator_menu_scale .toggler {
 	padding: 0;
 	margin: 0;
 }
+
 #indicator_menu_tabs ul.menu_list li{
 	list-style: none;
 	padding: 3px 5px 0px;
+  position: relative;
 }
 
 #indicator_menu_tabs ul.ui-tabs-nav {
@@ -163,8 +165,40 @@ div#indicator_menu_scale ul#legend li span
   border-radius: 3px;
 }
 
-#indicator_menu_tabs ul.menu_list li a.active, #indicator_menu_tabs ul.menu_list li a:hover {
+#indicator_menu_tabs ul.menu_list li a.active, #indicator_menu_tabs ul.menu_list li:hover a {
   background: #0E74B6;
   color: #fff;
   text-decoration: none;
 }
+
+#indicator_menu_tabs ul.menu_list li div.profile_link{
+  display: none;
+	position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#indicator_menu_tabs ul.menu_list li a.active + div.profile_link,
+#indicator_menu_tabs ul.menu_list li:hover div.profile_link{
+  display: block;
+}
+
+#indicator_menu_tabs ul.menu_list li div.profile_link a{
+  background-color: #4b9ed2;
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 5px 4px;
+  margin: 3px 5px 0 0;
+}
+#indicator_menu_tabs ul.menu_list li div.profile_link a:hover{
+  background-color: #e1e1df;
+  color: #0E74B6;  
+}
+
+@media (max-width: 1300px)
+{
+  #indicator_menu_tabs ul.menu_list li div.profile_link a span{
+    display: none;
+  }
+}
+

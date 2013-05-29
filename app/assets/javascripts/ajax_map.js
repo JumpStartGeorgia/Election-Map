@@ -348,7 +348,7 @@ $(function(){
 	}
 
 	// add click functions to all indicator menu items
-	var jq_indicators = $("#indicator_menu_scale .menu_list a")
+	var jq_indicators = $("#indicator_menu_scale .menu_list a.menu_list_link")
 	jq_indicators.click(function(){
 		var link = $(this).attr('href'),
 				title = $(this).attr('title'),

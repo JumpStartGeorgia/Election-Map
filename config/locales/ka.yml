@@ -344,6 +344,7 @@ ka:
       follow: "თქვენ შეგიძლიათ მიადევნოთ თვალყური სამომავლო განახლებებს Twitter-ზე  (#gvote ან  @jsgeorgia) ან Facebook-ზე შემდეგ მისამართზე http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: ინდიკატორები
+      view_indicator: view indicator
   other:
     news:
       title: სიახლეები

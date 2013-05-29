@@ -17,7 +17,7 @@
 						  <% if indicator_type.has_summary %>
 							  <li>
 								  <% is_active = indicator_type.id.to_s == params[:indicator_type_id].to_s &&
-											  @summary_view_type_name == params[:view_type] ? "active" : "not_active" %>
+											  @summary_view_type_name == params[:view_type] ? "menu_list_link active" : "menu_list_link  not_active" %>
 
 								  <%= link_to indicator_type.summary_name,
 									  summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil, :highlight_shape => nil)),
@@ -28,11 +28,19 @@
 						  <% indicator_type.core_indicators.each do |core| %>
 							  <% core.indicators.each do |indicator| %>
 									<% if indicator.visible? %>
-										<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "active" : "not_active" %>
+										<% is_active = indicator.id.to_s == params[:indicator_id].to_s ? "menu_list_link  active" : "menu_list_link  not_active" %>
 										<li>
 											<%= link_to core.name_abbrv_w_parent, indicator_map_path(params.merge(:indicator_id => indicator.id,
 												:view_type => nil, :indicator_type_id => nil, :highlight_shape => nil)),
 												:title => core.description_w_parent, :class => is_active %>
+                      <% if @shape_type_ids_for_ind_profile.index(@child_shape_type_id).present? %>
+                        <div class="profile_link">
+                          <%= link_to(indicator_profile_path(:id => core.id, :event_type_id => params[:event_type_id]), :target => :blank, :title => t('.view_indicator')) do %>
+                            <%= image_tag('magnifier.png') %>
+                            <span><%= t('.view_indicator') %></span>
+                          <% end %>
+                        </div>
+                      <% end %>
 										</li>
 								  <% end %>
 							  <% end %>
