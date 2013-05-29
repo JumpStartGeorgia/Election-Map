@@ -23,6 +23,7 @@
 									  summary_map_path(params.merge(:indicator_type_id => indicator_type.id, :view_type => @summary_view_type_name, :indicator_id => nil, :highlight_shape => nil)),
 
 									  :class => is_active %>
+                  <div class="arrow-left"></div>
 							  </li>
 						  <% end %>
 						  <% indicator_type.core_indicators.each do |core| %>
@@ -41,6 +42,7 @@
                           <% end %>
                         </div>
                       <% end %>
+                      <div class="arrow-left"></div>
 										</li>
 								  <% end %>
 							  <% end %>

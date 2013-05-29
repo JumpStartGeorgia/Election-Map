@@ -195,6 +195,25 @@ div#indicator_menu_scale ul#legend li span
   color: #0E74B6;  
 }
 
+
+#indicator_menu_tabs ul.menu_list li div.arrow-left{
+  position: absolute;
+  top: 0;
+  left: 0;
+	width: 0; 
+	height: 0; 
+	border-top: 12px solid transparent;
+	border-bottom: 12px solid transparent; 
+	border-right: 5px solid #0E74B6; 
+  margin: 3px 0 0 0;
+  display: none;
+}
+
+#indicator_menu_tabs ul.menu_list li a.active + div.arrow-left,
+#indicator_menu_tabs ul.menu_list li:hover div.arrow-left{
+  display: block;
+}
+
 @media (max-width: 1300px)
 {
   #indicator_menu_tabs ul.menu_list li div.profile_link a span{
