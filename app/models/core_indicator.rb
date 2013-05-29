@@ -78,7 +78,10 @@ class CoreIndicator < ActiveRecord::Base
   end
 
   def self.for_profiles
-    joins(:event_indicator_relationships).order_by_type_name(true)
+#TODO
+    # hard code the shape type ids for now
+    shape_type_ids = [1,3,7]
+    joins(:event_indicator_relationships, :indicators).where("indicators.shape_type_id in (?)", shape_type_ids).order_by_type_name(true)
   end
 
   # get all core indicators that have a relationship
