@@ -10,7 +10,7 @@ function build_result_indicator_profile_summary_charts(ths, indicator_data){
           plotBackgroundColor: null,
           plotBorderWidth: null,
           plotShadow: false,
-          height: 400,
+          height: 250,
           events: {
             load: function(event) {
               // save the height and after all details loaded, reset height for all detail chart containers
