@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  shape_type_id: 1
+  common_id: MyString
+  common_name: MyString
+  summary: MyText
+
+two:
+  shape_type_id: 1
+  common_id: MyString
+  common_name: MyString
+  summary: MyText

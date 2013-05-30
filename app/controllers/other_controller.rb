@@ -116,7 +116,7 @@ class OtherController < ApplicationController
         @active_index = index if index.present?
       end
 
-      @districts = Shape.get_unique_common_names([3,7])
+      @districts = UniqueShapeName.get_districts_by_hash
 
       gon.indicator_profile = @indicator
       gon.summary_chart_title = I18n.t('charts.indicator_profile.summary.title')

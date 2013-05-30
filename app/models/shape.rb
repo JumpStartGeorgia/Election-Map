@@ -2,7 +2,6 @@ class Shape < ActiveRecord::Base
   translates :common_id, :common_name
   has_ancestry
 
-  has_many :eventsshapes
   has_many :shape_translations, :dependent => :destroy
   belongs_to :shape_type
   accepts_nested_attributes_for :shape_translations

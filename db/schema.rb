@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130529073330) do
+ActiveRecord::Schema.define(:version => 20130530074607) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
@@ -441,6 +441,28 @@ ActiveRecord::Schema.define(:version => 20130529073330) do
 
   add_index "shapes", ["ancestry"], :name => "index_shapes_on_ancestry"
   add_index "shapes", ["shape_type_id"], :name => "index_shapes_on_shape_type_id"
+
+  create_table "unique_shape_name_translations", :force => true do |t|
+    t.integer  "unique_shape_name_id"
+    t.string   "locale"
+    t.string   "common_id"
+    t.string   "common_name"
+    t.text     "summary"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "unique_shape_name_translations", ["common_name"], :name => "index_unique_shape_name_translations_on_common_name"
+  add_index "unique_shape_name_translations", ["locale"], :name => "index_unique_shape_name_translations_on_locale"
+  add_index "unique_shape_name_translations", ["unique_shape_name_id"], :name => "index_841001d740d76e471f2982d9cccb87818c42d3ad"
+
+  create_table "unique_shape_names", :force => true do |t|
+    t.integer  "shape_type_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "unique_shape_names", ["shape_type_id"], :name => "index_unique_shape_names_on_shape_type_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "", :null => false
