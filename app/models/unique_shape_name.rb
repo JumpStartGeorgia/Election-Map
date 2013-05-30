@@ -16,7 +16,65 @@ class UniqueShapeName < ActiveRecord::Base
     where(:shape_type_id => ids)
   end
 
-  def self.get_districts_by_hash
+  def self.get_districts
     by_shape_types([3,7]).sorted
+  end
+
+  def self.build_event_json
+    json = []
+
+    shapes = UniqueShapeName.get_districts
+    types = EventType.with_public_events
+
+    shapes.each do |shape|
+      s = Hash.new
+      json << s
+      s[:shape_type_id] = shape.shape_type_id
+      s[:common_id] = shape.common_id
+      s[:common_name] = shape.common_name
+      s[:summary] = shape.summary
+      event_types = []
+      s[:event_types] = event_types
+      
+      types.each do |type|
+        # get events ordered by most recent being first
+        events = type.events.sort_by{|x| x.event_date}.reverse
+        if events.present?
+          # see if this shape is in any of these events
+          matches = Shape.by_common_and_events(shape.shape_type_id, shape.common_id, shape.common_name, events.map{|x| x.id})
+          matches.delete_if{|x| x[:shape_type_id].nil?}
+          if matches.present?
+            # found match so add event type and events
+            event_type = Hash.new
+            event_types << event_type
+            event_type[:id] = type.id
+            event_type[:name] = type.name
+            event_type[:sort_order] = type.sort_order
+            event_type[:events] = []
+            matches.each do |match|
+              # get event
+              event = events.select{|x| x.id == match[:event_id]}.first
+              if event.present?
+                e = Hash.new
+                event_type[:events] << e
+                e[:id] = event.id
+                e[:name] = event.name
+                e[:event_date] = event.event_date
+                e[:shape_id] = event.shape_id
+                e[:shape_type_id] = event.shape.shape_type_id
+                e[:data_type] = Datum::DATA_TYPE[:official]
+	              dataset = DataSet.current_dataset(event.id, e[:data_type])
+	              if dataset && !dataset.empty?
+		              e[:data_set_id] =  dataset.first.id
+	              else
+		              e[:data_set_id] =  nil
+	              end
+              end
+            end
+          end
+        end
+      end
+    end
+    return json
   end
 end
