@@ -13,6 +13,15 @@ class User < ActiveRecord::Base
     where("role != ?", ROLES[:admin])
   end
 
+  def self.admin_emails
+    emails = []
+    x = select('email').where(:role => ROLES[:admin])
+    if x.present?
+      emails = x.map{|x| x.email}
+    end
+    return emails
+  end
+
 	# if no role is supplied, default to the basic user role
 	def check_for_role
 		self.role = ROLES[:user] if self.role.nil?
