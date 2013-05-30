@@ -318,6 +318,9 @@ logger.debug "---********----- shape type cache"
 		return available
 	end
 
+  ########################
+  ## get data from cache
+  ########################
   FILE_CACHE_KEY_CORE_INDICATOR_EVENTS = "core_indicator_events_[locale]"
   def get_core_indicator_events
     key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS.gsub("[locale]", I18n.locale.to_s)
@@ -373,6 +376,17 @@ logger.debug "---********----- shape type cache"
 		}
     return json
   end
+
+  FILE_CACHE_KEY_SHAPE_EVENTS = "shape_events_[locale]"
+  def get_shape_events
+    key = FILE_CACHE_KEY_SHAPE_EVENTS.gsub("[locale]", I18n.locale.to_s)
+		json = JsonCache.fetch_data(key) {
+      UniqueShapeName.build_event_json.to_json
+		}
+    return json
+  end
+
+
 
 	def render_not_found(exception)
 		ExceptionNotifier::Notifier

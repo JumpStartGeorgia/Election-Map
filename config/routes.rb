@@ -125,6 +125,9 @@ ElectionMap::Application.routes.draw do
 		# core indicator events
 		match '/json/core_indicator_events', :to => 'json#core_indicator_events', :as => :json_core_indicator_events, :via => :get, :defaults => {:format => 'json'}
 		match '/json/core_indicator_events_table', :to => 'json#core_indicator_events_table', :as => :json_core_indicator_events_table, :via => :get, :defaults => {:format => 'json'}
+		# shape events
+		match '/json/shape_events', :to => 'json#shape_events', :as => :json_shape_events, :via => :get, :defaults => {:format => 'json'}
+		match '/json/shape_events_table', :to => 'json#shape_events_table', :as => :json_shape_events_table, :via => :get, :defaults => {:format => 'json'}
 		# menu
 		match '/json/event_menu', :to => 'json#event_menu', :as => :json_event_menu, :via => :get, :defaults => {:format => 'json'}
 		match '/json/live_event_menu', :to => 'json#live_event_menu', :as => :json_live_event_menu, :via => :get, :defaults => {:format => 'json'}

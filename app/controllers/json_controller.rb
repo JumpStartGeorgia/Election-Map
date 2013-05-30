@@ -63,6 +63,45 @@ class JsonController < ApplicationController
   end
 
 	#################################################
+	##### shape events
+	#################################################
+  # GET /json/shape_events
+  def shape_events
+    start = Time.now
+
+    # action is in app controller
+		json = get_shape_events
+
+    respond_to do |format|
+      format.json { render json: json}
+    end
+		logger.debug "@ time to render shape events json: #{Time.now-start} seconds"
+  end
+
+  # GET /json/shape_events_table
+  # format: 
+  # [
+  #  {header => []},
+  #  {indicator_types => [
+  #   {id, name, indicators => [
+  #     [id, name abbrv, name, et1, et2, et3, ...],  
+  #     [id, name abbrv, name, et1, et2, et3, ...],  
+  #   ]}
+  #  ]},
+  # ]
+  def shape_events_table
+    start = Time.now
+
+    # action is in app controller
+		json = get_shape_events_table
+
+    respond_to do |format|
+      format.json { render json: json}
+    end
+		logger.debug "@ time to render shape events table json: #{Time.now-start} seconds"
+  end
+
+	#################################################
 	##### event menu
 	#################################################
   # GET /:locale/json/event_menu

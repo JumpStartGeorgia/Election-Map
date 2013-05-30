@@ -298,7 +298,7 @@ $(document).ready(function() {
   });
 
   // when district filter selected, update the charts
-  $('.tab-pane.active select.district_filter_select').change(function(){
+  $('.tab-pane.active select.district_filter_select').live('change', function(){
 //    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
 //      $(this).empty();
       var selected_option = $(".tab-pane.active select.district_filter_select option:selected");
