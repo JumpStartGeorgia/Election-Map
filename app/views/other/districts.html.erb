@@ -1,0 +1,40 @@
+<% title t('.title') %>
+
+<% if @data.present? %>
+
+  <div id="district_profiles">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <% @data["header"].each do |header| %>
+            <th><%= header %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @data["districts"].each do |data| %>
+          <tr>
+            <% data.each_with_index do |cell, index| %>
+              <% if index > 1 %>
+                <td>
+                  <% if cell %>
+                    <%= link_to(district_profile_path(:id => data[0], :event_type_id => get_event_type_id(@data["header"][index-1])), :class => 'view_details') do %>
+                      <%= image_tag('magnifier.png') %>
+                      <%= t('app.buttons.view') %>
+                    <% end %>
+                  <% end %>
+                </td>
+              <% elsif index == 1 %>
+                <td><%= link_to cell, district_profile_path(data[0]) %></td>
+              <% end %>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+	<p>
+		<%= t('.no_records') %>
+	</p>
+<% end %>

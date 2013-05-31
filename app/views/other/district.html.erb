@@ -1,0 +1,70 @@
+<% title @district.present? ? @district["common_name"] : t('.title') %>
+
+<div id="district_profile" class="tabbable">
+
+  <% if @district["summary"].present? %>
+    <div id="district_summary">
+      <%= simple_format(@district["summary"]) %>
+      <hr />
+    </div>
+  <% end %>
+
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      <% @district["event_types"].each_with_index do |type, index| %>
+        <li class="<%= index == @active_index ? 'active' : ''%>">
+          <%= link_to type["name"], "#tab#{type["id"]}", :'data-toggle' => 'tab', :'data-id' => type["id"] %>
+        </li>
+      <% end %>
+    </ul>
+    <div class="tab-content">
+      <% @district["event_types"].each_with_index do |type, index| %>
+        <div class="tab-pane <%= index == @active_index ? 'active' : ''%>" id="<%= "tab#{type["id"]}" %>">
+
+          <div class="row-fluid district_profile_filters">
+            <div class="span9 clear" id="event_filter">
+              <h3>
+                <%= t('.event_filter_header') %>
+                <% if type["events"].length > 3 %>
+                  <span><%= t('.event_filter_gt_3') %></span>
+                <% end %>
+              </h3>
+              <% type["events"].each_with_index do |event, e_index| %>
+                <div style="float: left; padding: 2px 4px; margin: 2px 4px;">
+                  <label for="<%= "event_#{event["id"]}" %>">
+                    <%= check_box_tag "event_filter_checkboxes", event["id"], e_index < 3 ? true : false, :id => "event_#{event["id"]}" %>
+                    <%= event["name"] %>
+                  </label>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="profile_item row-fluid">
+            <% type["events"].each_with_index do |event, e_index| %>
+              <div class="span4 <%= e_index < 3 ? 'active' : ''%>" data-id="<%= event["id"]%>">
+                <div class="district_header">
+                  <h2><%= event["name"] %></h2>
+                </div>
+
+                <h3><%= t('.summary_header') %></h3>
+
+                <div class="district_summary">
+                  <div class="district_summary_chart" data-id="<%= event["id"]%>"></div>
+                </div>
+
+                <h3><%= t('.details_header') %></h3>
+
+                <div class="district_details">
+                  <div class="district_detail_chart" data-id="<%= event["id"]%>"></div>
+                </div>
+
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

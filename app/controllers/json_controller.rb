@@ -63,22 +63,22 @@ class JsonController < ApplicationController
   end
 
 	#################################################
-	##### shape events
+	##### district events
 	#################################################
-  # GET /json/shape_events
-  def shape_events
+  # GET /json/district_events
+  def district_events
     start = Time.now
 
     # action is in app controller
-		json = get_shape_events
+		json = get_district_events
 
     respond_to do |format|
       format.json { render json: json}
     end
-		logger.debug "@ time to render shape events json: #{Time.now-start} seconds"
+		logger.debug "@ time to render district events json: #{Time.now-start} seconds"
   end
 
-  # GET /json/shape_events_table
+  # GET /json/district_events_table
   # format: 
   # [
   #  {header => []},
@@ -88,16 +88,16 @@ class JsonController < ApplicationController
   #   ]}
   #  ]},
   # ]
-  def shape_events_table
+  def district_events_table
     start = Time.now
 
     # action is in app controller
-		json = get_shape_events_table
+		json = get_district_events_table
 
     respond_to do |format|
       format.json { render json: json}
     end
-		logger.debug "@ time to render shape events table json: #{Time.now-start} seconds"
+		logger.debug "@ time to render district events table json: #{Time.now-start} seconds"
   end
 
 	#################################################

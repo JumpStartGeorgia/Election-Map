@@ -252,11 +252,11 @@ en:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
   charts:
+    no_data: "No data exists."
     indicator_profile:
       summary:
         title: "Rank"
         rest: "The Rest"
-        no_data: "No data exists."
   layouts:
     application-bootstrap:
       title: Georgia Election Data
@@ -275,6 +275,7 @@ en:
       news: News
       data_archives: Data Archives
       indicators: Indicators
+      districts: Districts
     ajax_data_table:
       links: Click on a data point to view it on the map.
       sorting: Sort multiple columns simultaneously by holding down the SHIFT key and selecting each column header you would like to sort.
@@ -364,6 +365,14 @@ en:
     indicator:
       district_filter_header: District Filter
       all_districts_option: All Districts
+      event_filter_header: Election Filter
+      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
+      summary_header: Overall
+      details_header: Details
+    districts:
+      title: Districts
+      no_records: I am sorry, but at this time we do not have any districts on file.
+    district:
       event_filter_header: Election Filter
       event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
       summary_header: Overall

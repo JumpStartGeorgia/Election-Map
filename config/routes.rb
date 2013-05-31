@@ -120,14 +120,16 @@ ElectionMap::Application.routes.draw do
     match '/export_help', :to => 'other#export_help', :as => :export_help, :via => :get
     match '/indicators', :to => 'other#indicators', :as => :indicator_profiles, :via => :get
     match '/indicators/:id', :to => 'other#indicator', :as => :indicator_profile, :via => :get
+    match '/districts', :to => 'other#districts', :as => :district_profiles, :via => :get
+    match '/districts/:id', :to => 'other#district', :as => :district_profile, :via => :get
 
     # json routes
 		# core indicator events
 		match '/json/core_indicator_events', :to => 'json#core_indicator_events', :as => :json_core_indicator_events, :via => :get, :defaults => {:format => 'json'}
 		match '/json/core_indicator_events_table', :to => 'json#core_indicator_events_table', :as => :json_core_indicator_events_table, :via => :get, :defaults => {:format => 'json'}
-		# shape events
-		match '/json/shape_events', :to => 'json#shape_events', :as => :json_shape_events, :via => :get, :defaults => {:format => 'json'}
-		match '/json/shape_events_table', :to => 'json#shape_events_table', :as => :json_shape_events_table, :via => :get, :defaults => {:format => 'json'}
+		# district events
+		match '/json/district_events', :to => 'json#district_events', :as => :json_district_events, :via => :get, :defaults => {:format => 'json'}
+		match '/json/district_events_table', :to => 'json#district_events_table', :as => :json_district_events_table, :via => :get, :defaults => {:format => 'json'}
 		# menu
 		match '/json/event_menu', :to => 'json#event_menu', :as => :json_event_menu, :via => :get, :defaults => {:format => 'json'}
 		match '/json/live_event_menu', :to => 'json#live_event_menu', :as => :json_live_event_menu, :via => :get, :defaults => {:format => 'json'}
@@ -145,6 +147,9 @@ ElectionMap::Application.routes.draw do
     # core indicator event type data
 		match '/json/indicator_event_type_summary_data/:core_indicator_id/event_type/:event_type_id(/shape_type/:shape_type_id/common_id/:common_id/common_name/:common_name)', :to => 'json#indicator_event_type_summary_data', :as => :json_indicator_event_type_summary_data, :via => :get, :defaults => {:format => 'json'}
 		match '/json/indicator_event_type_data/:core_indicator_id/event_type/:event_type_id(/shape_type/:shape_type_id/common_id/:common_id/common_name/:common_name)', :to => 'json#indicator_event_type_data', :as => :json_indicator_event_type_data, :via => :get, :defaults => {:format => 'json'}
+    # shape event type data
+		match '/json/district_event_type_summary_data/:common_id/event_type/:event_type_id', :to => 'json#district_event_type_summary_data', :as => :json_district_event_type_summary_data, :via => :get, :defaults => {:format => 'json'}
+#		match '/json/district_event_type_data/:core_indicator_id/event_type/:event_type_id(/shape_type/:shape_type_id/common_id/:common_id/common_name/:common_name)', :to => 'json#indicator_event_type_data', :as => :json_indicator_event_type_data, :via => :get, :defaults => {:format => 'json'}
 
 
 =begin old routes

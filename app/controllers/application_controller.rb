@@ -377,24 +377,24 @@ logger.debug "---********----- shape type cache"
     return json
   end
 
-  FILE_CACHE_KEY_SHAPE_EVENTS = "shape_events_[locale]"
-  def get_shape_events
-    key = FILE_CACHE_KEY_SHAPE_EVENTS.gsub("[locale]", I18n.locale.to_s)
+  FILE_CACHE_KEY_DISTRICT_EVENTS = "district_events_[locale]"
+  def get_district_events
+    key = FILE_CACHE_KEY_DISTRICT_EVENTS.gsub("[locale]", I18n.locale.to_s)
 		json = JsonCache.fetch_data(key) {
       UniqueShapeName.build_event_json.to_json
 		}
     return json
   end
 
-  FILE_CACHE_KEY_SHAPE_EVENTS_TABLE = "shape_events_table_[locale]"
-  def get_shape_events_table
-    key = FILE_CACHE_KEY_SHAPE_EVENTS_TABLE.gsub("[locale]", I18n.locale.to_s)
+  FILE_CACHE_KEY_DISTRICT_EVENTS_TABLE = "district_events_table_[locale]"
+  def get_district_events_table
+    key = FILE_CACHE_KEY_DISTRICT_EVENTS_TABLE.gsub("[locale]", I18n.locale.to_s)
 		json = JsonCache.fetch_data(key) {
       results = Hash.new
-		  data = JSON.parse(get_shape_events)
+		  data = JSON.parse(get_district_events)
 
       # create header
-      header = [I18n.t('app.common.district')]
+      header = [I18n.t('app.common.name')]
       @event_types.each do |type|
         header << type.name
       end
