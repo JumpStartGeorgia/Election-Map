@@ -20,6 +20,8 @@ class UniqueShapeName < ActiveRecord::Base
     by_shape_types([3,7]).sorted
   end
 
+
+  # format: [{shape_type_id, common_id, common_name, summary, event_types => [id, name, sort_order, events => [id, name, event_date, shape_id, data_type, data_set_id]]}]
   def self.build_event_json
     json = []
 

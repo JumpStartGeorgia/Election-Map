@@ -85,6 +85,7 @@ class CoreIndicator < ActiveRecord::Base
   end
 
   # get all core indicators that have a relationship
+  # format: [{id, name, name_abbrv, summary, type_id, child_ids, event_types => [id, name, sort_order, events => [id, name, event_date, shape_id, data_type, data_set_id]]}]
   def self.build_event_json
     json = []
     types = EventType.all

@@ -386,6 +386,42 @@ logger.debug "---********----- shape type cache"
     return json
   end
 
+  FILE_CACHE_KEY_SHAPE_EVENTS_TABLE = "shape_events_table_[locale]"
+  def get_shape_events_table
+    key = FILE_CACHE_KEY_SHAPE_EVENTS_TABLE.gsub("[locale]", I18n.locale.to_s)
+		json = JsonCache.fetch_data(key) {
+      results = Hash.new
+		  data = JSON.parse(get_shape_events)
+
+      # create header
+      header = [I18n.t('app.common.district')]
+      @event_types.each do |type|
+        header << type.name
+      end
+      results[:header] = header
+
+      # create array for each district
+      results[:districts] = []
+      if data.present?
+        data.each do |x|
+          district = []
+          results[:districts] << district
+          district << x["common_id"]
+          district << x["common_name"]
+          @event_types.each do |et|
+            if x["event_types"].select{|y| y["id"] == et.id}.present?
+              district << true
+            else
+              district << false
+            end
+          end
+        end
+      end
+      results.to_json
+		}
+    return json
+  end
+
 
 
 	def render_not_found(exception)

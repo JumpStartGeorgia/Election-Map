@@ -247,6 +247,7 @@ ka:
       placeholder_common_name: "placeholder_common_name"  # do not translate 
       summary: Summary
       added_on: "Added on: %{date}" 
+      district: District
   contact_mailer:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"

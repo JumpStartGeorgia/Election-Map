@@ -82,10 +82,9 @@ class JsonController < ApplicationController
   # format: 
   # [
   #  {header => []},
-  #  {indicator_types => [
-  #   {id, name, indicators => [
-  #     [id, name abbrv, name, et1, et2, et3, ...],  
-  #     [id, name abbrv, name, et1, et2, et3, ...],  
+  #  {districts => [
+  #     [common id, common name, et1, et2, et3, ...],  
+  #     [common id, common name, et1, et2, et3, ...],  
   #   ]}
   #  ]},
   # ]
