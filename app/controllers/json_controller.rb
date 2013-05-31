@@ -637,6 +637,115 @@ class JsonController < ApplicationController
     end
   end
 
+
+	#################################################
+	##### for the district and event type, get each event summary data 
+  ##### format: [{event, data}, {event, data}, ...]
+	#################################################
+  def district_event_type_summary_data
+    data = nil
+    districts = JSON.parse(get_district_events)
+    district = districts.select{|x| x["common_id"] == params[:common_id]}.first
+    if district.present?
+      event_type = district["event_types"].select{|x| x["id"].to_s == params[:event_type_id]}.first
+      if event_type.present? && event_type["events"].present?
+        data = []
+        # get the ids of the shapes for the district common id/name
+        shapes = Shape.by_common_and_events(district[:shape_type_id], district[:common_id], district[:common_name], event_type["events"].map{|x| x["id"]})
+
+        event_type["events"].each do |event|
+          shape_id = event["shape_id"].to_s
+          shape_type_id = event["shape_type_id"].to_s
+          s_index = shapes.present? ? shapes.index{|x| x[:event_id].to_s == event["id"].to_s} : nil
+          if shapes && s_index.present?
+            shape_id = shapes[s_index][:shape_id].to_s
+            shape_type_id = shapes[s_index][:shape_type_id].to_s
+          end
+
+          if shape_id.present? && shape_type_id.present?
+		        key = FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA.gsub("[parent_id]", shape_id)
+					        .gsub("[locale]", I18n.locale.to_s)
+		              .gsub("[event_id]", event["id"].to_s)
+		              .gsub("[indicator_type_id]", indicator["type_id"].to_s)
+		              .gsub("[shape_type_id]", shape_type_id)
+				          .gsub("[data_set_id]", event["data_set_id"].to_s)
+		        x = JSON.parse(JsonCache.fetch_data(key) {
+			        Datum.build_summary_json(shape_id, shape_type_id, event["id"], 
+                    indicator["type_id"], event["data_set_id"], event["data_type"]).to_json
+		        })
+          end
+          # add event info
+          y = Hash.new
+          y[:event] = Hash.new
+          y[:event][:id] = event["id"]
+          y[:event][:name] = event["name"]
+          z = x["shape_data"][0].select{|z| z.has_key?("summary_data")} if x.present?
+          y[:data] = z.present? ? z.first["summary_data"]["data"] : nil
+          data << y
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.json { render json: data.to_json}
+    end
+  end
+
+	#################################################
+	##### for the district and event type, get each event data 
+  ##### format: [{event, data}, {event, data}, ...]
+	#################################################
+  def district_event_type_data
+    data = nil
+    districts = JSON.parse(get_district_events)
+    district = districts.select{|x| x["common_id"] == params[:common_id]}.first
+    if district.present?
+      event_type = district["event_types"].select{|x| x["id"].to_s == params[:event_type_id]}.first
+      if event_type.present? && event_type["events"].present?
+        data = []
+        # get the ids of the shapes for the district common id/name
+        shapes = Shape.by_common_and_events(district[:shape_type_id], district[:common_id], district[:common_name], event_type["events"].map{|x| x["id"]})
+
+        event_type["events"].each do |event|
+          shape_id = event["shape_id"].to_s
+          shape_type_id = event["shape_type_id"].to_s
+          s_index = shapes.present? ? shapes.index{|x| x[:event_id].to_s == event["id"].to_s} : nil
+          if shapes && s_index.present?
+            shape_id = shapes[s_index][:shape_id].to_s
+            shape_type_id = shapes[s_index][:shape_type_id].to_s
+          end
+=begin
+          # get the indicator for this event and shape type 
+          indicator_id = Indicator.find_by_event_shape_type(event["id"],shape_type_id).where(:core_indicator_id => params[:core_indicator_id]).map{|x| x.id}.first
+
+          if shape_id.present? && shape_type_id.present? && indicator_id.present?
+		        key = FILE_CACHE_KEY_CUSTOM_CHILDREN_DATA.gsub("[parent_id]", shape_id)
+					        .gsub("[locale]", I18n.locale.to_s)
+		              .gsub("[event_id]", event["id"].to_s)
+    			        .gsub("[indicator_id]", indicator_id.to_s)
+		              .gsub("[shape_type_id]", shape_type_id)
+				          .gsub("[data_set_id]", event["data_set_id"].to_s)
+		        x = JSON.parse(JsonCache.fetch_data(key) {
+			        Datum.build_json(shape_id, shape_type_id, indicator_id, event["data_set_id"], event["data_type"]).to_json
+		        })
+          end
+=end
+          # add event info
+          y = Hash.new
+          y[:event] = Hash.new
+          y[:event][:id] = event["id"]
+          y[:event][:name] = event["name"]
+          z = x["shape_data"][0].select{|z| z.has_key?("data_item")} if x.present?
+          y[:data] = z.present? ? z.map{|x| x["data_item"]} : nil
+          data << y
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.json { render json: data.to_json}
+    end
+  end
 protected
 	# if a data set id is not passed in, use the current dataset
 	def get_data_set_id(event_id, data_type)

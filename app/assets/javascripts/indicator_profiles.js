@@ -298,24 +298,24 @@ $(document).ready(function() {
   });
 
   // when district filter selected, update the charts
-  $('.tab-pane.active select.district_filter_select').live('change', function(){
+  $('#indicator_profile .tab-pane.active select.district_filter_select').live('change', function(){
 //    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
 //      $(this).empty();
-      var selected_option = $(".tab-pane.active select.district_filter_select option:selected");
+      var selected_option = $("#indicator_profile .tab-pane.active select.district_filter_select option:selected");
       get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());
 //    });
   });
 
 
   // when event filter changes, update what events to show
-  $('.tab-pane.active #event_filter input[name="event_filter_checkboxes"]').live('change', function(){
+  $('#indicator_profile .tab-pane.active #event_filter input[name="event_filter_checkboxes"]').live('change', function(){
     var event_id = $(this).val();
     if ($(this).attr("checked") == undefined){
       // hide this event
-      $('.tab-pane.active .profile_item div[data-id="' + event_id + '"]').removeClass('active');
+      $('#indicator_profile .tab-pane.active .profile_item div[data-id="' + event_id + '"]').removeClass('active');
     }else{
       // show this event
-      $('.tab-pane.active .profile_item div[data-id="' + event_id + '"]').addClass('active');
+      $('#indicator_profile .tab-pane.active .profile_item div[data-id="' + event_id + '"]').addClass('active');
     }
   });
 });

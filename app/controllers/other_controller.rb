@@ -173,25 +173,16 @@ class OtherController < ApplicationController
         @active_index = index if index.present?
       end
 
-=begin
       gon.district_profile = @district
       gon.summary_chart_title = I18n.t('charts.indicator_profile.summary.title')
       gon.summary_chart_rest = I18n.t('charts.indicator_profile.summary.rest')
       gon.chart_no_data = I18n.t('charts.no_data')
 
-      gon.placeholder_core_indicator = I18n.t('app.common.placeholder_core_indicator')
       gon.placeholder_event_type = I18n.t('app.common.placeholder_event_type')
-      gon.placeholder_shape_type_id = I18n.t('app.common.placeholder_shape_type_id')
       gon.placeholder_common_id = I18n.t('app.common.placeholder_common_id')
-      gon.placeholder_common_name = I18n.t('app.common.placeholder_common_name')
-      if @district["type_id"] == 2
-        gon.json_indicator_event_type_data_url = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type)
-        gon.json_indicator_event_type_data_url_district_filter = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type, :shape_type_id => gon.placeholder_shape_type_id, :common_id => gon.placeholder_common_id, :common_name => gon.placeholder_common_name)
-      else
-        gon.json_indicator_event_type_data_url = json_indicator_event_type_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type)
-        gon.json_indicator_event_type_data_url_district_filter = json_indicator_event_type_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type, :shape_type_id => gon.placeholder_shape_type_id, :common_id => gon.placeholder_common_id, :common_name => gon.placeholder_common_name)
-      end
-=end      
+      gon.json_district_event_type_data_url = json_district_event_type_summary_data_path(:common_id => gon.placeholder_common_id, :event_type_id => gon.placeholder_event_type)
+#      gon.json_district_event_type_data_url = json_district_event_type_data_path(:common_id => gon.placeholder_common_id, :event_type_id => gon.placeholder_event_type)
+
       respond_to do |format|
         format.html # index.html.erb
         format.json { render json: @data }
