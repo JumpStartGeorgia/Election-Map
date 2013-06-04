@@ -240,6 +240,7 @@ en:
       not_visible_hint: "( * - not visible)"
       is_default_view: Default Event to Show on Site Load?
       placeholder: "placeholder" 
+      placeholder_indicator: "placeholder_indicator" 
       placeholder_core_indicator: "placeholder_core_indicator" 
       placeholder_event_type: "placeholder_event_type" 
       placeholder_shape_type_id: "placeholder_shape_type_id" 

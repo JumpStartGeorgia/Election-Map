@@ -240,6 +240,7 @@ ka:
       not_visible_hint: "( * - not visible)"
       is_default_view: Default Event to Show on Site Load?
       placeholder: "placeholder" # do not translate
+      placeholder_indicator: "placeholder_indicator"  # do not translate
       placeholder_core_indicator: "placeholder_core_indicator"  # do not translate
       placeholder_event_type: "placeholder_event_type"  # do not translate
       placeholder_shape_type_id: "placeholder_shape_type_id"  # do not translate 

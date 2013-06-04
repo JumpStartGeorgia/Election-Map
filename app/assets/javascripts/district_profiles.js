@@ -116,7 +116,7 @@ function get_district_event_type_data(event_type_id, shape_type_id){
     event_type_id = $('#district_profile .nav-tabs li.active a').data('id');
   }
   if (event_type_id != undefined){
-    var url = gon.json_district_event_type_data_url.replace(gon.placeholder_common_id, gon.district_profile.common_id).replace(gon.placeholder_event_type, event_type_id.toString());
+    var url = gon.json_district_event_type_data_url.replace(gon.placeholder_event_type, event_type_id.toString());
 
     $.ajax({
       type: "GET",

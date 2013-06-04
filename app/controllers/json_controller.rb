@@ -666,12 +666,12 @@ class JsonController < ApplicationController
 		        key = FILE_CACHE_KEY_SUMMARY_CUSTOM_CHILDREN_DATA.gsub("[parent_id]", shape_id)
 					        .gsub("[locale]", I18n.locale.to_s)
 		              .gsub("[event_id]", event["id"].to_s)
-		              .gsub("[indicator_type_id]", indicator["type_id"].to_s)
+		              .gsub("[indicator_type_id]", params["indicator_type_id"])
 		              .gsub("[shape_type_id]", shape_type_id)
 				          .gsub("[data_set_id]", event["data_set_id"].to_s)
 		        x = JSON.parse(JsonCache.fetch_data(key) {
 			        Datum.build_summary_json(shape_id, shape_type_id, event["id"], 
-                    indicator["type_id"], event["data_set_id"], event["data_type"]).to_json
+                    params["indicator_type_id"], event["data_set_id"], event["data_type"]).to_json
 		        })
           end
           # add event info
@@ -714,7 +714,7 @@ class JsonController < ApplicationController
             shape_id = shapes[s_index][:shape_id].to_s
             shape_type_id = shapes[s_index][:shape_type_id].to_s
           end
-=begin
+
           # get the indicator for this event and shape type 
           indicator_id = Indicator.find_by_event_shape_type(event["id"],shape_type_id).where(:core_indicator_id => params[:core_indicator_id]).map{|x| x.id}.first
 
@@ -729,7 +729,7 @@ class JsonController < ApplicationController
 			        Datum.build_json(shape_id, shape_type_id, indicator_id, event["data_set_id"], event["data_type"]).to_json
 		        })
           end
-=end
+
           # add event info
           y = Hash.new
           y[:event] = Hash.new
@@ -746,6 +746,9 @@ class JsonController < ApplicationController
       format.json { render json: data.to_json}
     end
   end
+
+
+
 protected
 	# if a data set id is not passed in, use the current dataset
 	def get_data_set_id(event_id, data_type)

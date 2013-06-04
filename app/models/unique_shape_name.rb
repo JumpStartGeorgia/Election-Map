@@ -52,11 +52,31 @@ class UniqueShapeName < ActiveRecord::Base
             event_type[:id] = type.id
             event_type[:name] = type.name
             event_type[:sort_order] = type.sort_order
+            event_type[:has_summary] = false
+            event_type[:default_indicator_id] = nil
             event_type[:events] = []
             matches.each do |match|
               # get event
               event = events.select{|x| x.id == match[:event_id]}.first
               if event.present?
+
+                # if the default indicator for this event type is not set, find it
+                if event_type[:default_indicator_id].nil?
+                  # use this event to find out the default indicator and save for event type
+                  # - assuming all events in this type have same default indicator
+                  ind_types = IndicatorType.find_by_event_shape_type(match[:event_id], shape.shape_type_id)
+                  if ind_types.present?
+                    if ind_types.first.has_summary 
+                      # has summary
+                      event_type[:has_summary] = true
+                      event_type[:default_indicator_id] = ind_types.first.id
+                    else
+                      # does not have summary, save first indicator
+                      event_type[:default_indicator_id] = ind_types.first.core_indicators.first.id
+                    end
+                  end
+                end
+
                 e = Hash.new
                 event_type[:events] << e
                 e[:id] = event.id

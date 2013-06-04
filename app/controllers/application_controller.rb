@@ -321,7 +321,7 @@ logger.debug "---********----- shape type cache"
   ########################
   ## get data from cache
   ########################
-  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS = "core_indicator_events_[locale]"
+  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS = "profiles/core_indicator_events_[locale]"
   def get_core_indicator_events
     key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS.gsub("[locale]", I18n.locale.to_s)
 		json = JsonCache.fetch_data(key) {
@@ -330,7 +330,7 @@ logger.debug "---********----- shape type cache"
     return json
   end
 
-  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE = "core_indicator_events_table_[locale]"
+  FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE = "profiles/core_indicator_events_table_[locale]"
   def get_core_indicator_events_table
     key = FILE_CACHE_KEY_CORE_INDICATOR_EVENTS_TABLE.gsub("[locale]", I18n.locale.to_s)
 		json = JsonCache.fetch_data(key) {
@@ -377,7 +377,7 @@ logger.debug "---********----- shape type cache"
     return json
   end
 
-  FILE_CACHE_KEY_DISTRICT_EVENTS = "district_events_[locale]"
+  FILE_CACHE_KEY_DISTRICT_EVENTS = "profiles/district_events_[locale]"
   def get_district_events
     key = FILE_CACHE_KEY_DISTRICT_EVENTS.gsub("[locale]", I18n.locale.to_s)
 		json = JsonCache.fetch_data(key) {
@@ -386,7 +386,7 @@ logger.debug "---********----- shape type cache"
     return json
   end
 
-  FILE_CACHE_KEY_DISTRICT_EVENTS_TABLE = "district_events_table_[locale]"
+  FILE_CACHE_KEY_DISTRICT_EVENTS_TABLE = "profiles/district_events_table_[locale]"
   def get_district_events_table
     key = FILE_CACHE_KEY_DISTRICT_EVENTS_TABLE.gsub("[locale]", I18n.locale.to_s)
 		json = JsonCache.fetch_data(key) {

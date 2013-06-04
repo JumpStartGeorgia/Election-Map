@@ -179,9 +179,19 @@ class OtherController < ApplicationController
       gon.chart_no_data = I18n.t('charts.no_data')
 
       gon.placeholder_event_type = I18n.t('app.common.placeholder_event_type')
-      gon.placeholder_common_id = I18n.t('app.common.placeholder_common_id')
-      gon.json_district_event_type_data_url = json_district_event_type_summary_data_path(:common_id => gon.placeholder_common_id, :event_type_id => gon.placeholder_event_type)
-#      gon.json_district_event_type_data_url = json_district_event_type_data_path(:common_id => gon.placeholder_common_id, :event_type_id => gon.placeholder_event_type)
+      gon.placeholder_indicator = I18n.t('app.common.placeholder_indicator')
+      gon.placeholder_core_indicator = I18n.t('app.common.placeholder_core_indicator')
+
+      if @district["event_types"][@active_index]["has_summary"]
+        gon.json_district_event_type_data_url = json_district_event_type_summary_data_path(:common_id => params[:id], 
+              :event_type_id => gon.placeholder_event_type, 
+              :indicator_type_id => @district["event_types"][@active_index]["default_indicator_id"])
+      else
+        gon.json_district_event_type_data_url = json_district_event_type_data_path(:common_id => params[:id], 
+              :event_type_id => gon.placeholder_event_type, 
+              :core_indicator_id => @district["event_types"][@active_index]["default_indicator_id"])
+      end
+
 
       respond_to do |format|
         format.html # index.html.erb
