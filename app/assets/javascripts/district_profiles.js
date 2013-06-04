@@ -75,6 +75,78 @@ function build_result_district_profile_summary_charts(ths, headers, data){
   }
 }
 
+function build_result_district_profile_detail_charts(ths, headers, data){
+  if (ths != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
+    var chart_height = 400;
+    chart_height = 60 * data.length;
+    ths.highcharts({
+      chart: {
+          type: 'bar',
+          spacingRight: 20, 
+          height: chart_height,
+          events: {
+            load: function(event) {
+              // save the height and after all details loaded, reset height for all detail chart containers
+              // so floating wraps nicely
+              detail_height.push(this.options.chart.height);
+              if (detail_height.length == $('.tab-pane.active .profile_item .district_detail_chart').length){
+                $(".tab-pane.active .profile_item .district_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+              }
+            }
+          } 
+      },
+      title: {
+          text: null
+      },
+      xAxis: {
+          categories: headers,
+          title: {
+              text: null
+          },
+          labels: {
+              overflow: 'justify'
+          }
+      },
+      yAxis: {
+          min: 0,
+          title: {
+              text: null
+          },  
+          gridLineWidth: 0,
+          labels: {
+              enabled: false
+          }
+      },
+      tooltip: {
+          enabled: false
+      },
+      legend: {
+        enabled: false
+      },
+      plotOptions: {
+          bar: {
+              dataLabels: {
+                  enabled: true,
+                	percentageDecimals: 2,
+                  formatter: function() {
+                    return Highcharts.numberFormat(this.y, 2) + '%';
+                  }
+              }
+          }
+      },
+      credits: {
+          enabled: false
+      },
+      series: [{
+        data: data
+      }]
+    });
+  } else if (ths != undefined) {
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
+  }
+}
+
 function build_results_district_profile_charts(){
   $('#district_profile .tab-pane.active .district_summary_chart').each(function(){
     var event_id = $(this).data('id');
@@ -89,7 +161,7 @@ function build_results_district_profile_charts(){
           detail_data.push(null);  
         } else {
           for (var j=0;j<district_profile_data[i].data.length;j++){
-            if (district_profile_data[i].data[j].value >= "5"){
+            if (Number(district_profile_data[i].data[j].value) >= 5){
               summary_headers.push(district_profile_data[i].data[j].indicator_name);
               summary_data.push({y: Number(district_profile_data[i].data[j].value), color: district_profile_data[i].data[j].color});  
             }

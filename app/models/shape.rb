@@ -42,7 +42,7 @@ class Shape < ActiveRecord::Base
   def self.by_common_and_events(shape_type_id, common_id, common_name, event_ids)
     x = []
     if common_id.present? && common_name.present? && event_ids.present? && shape_type_id.present?
-      Event.select("events.id, events.shape_id").where(:id => event_ids).each do |event|
+      Event.select("events.id, events.shape_id").where(:id => event_ids).order("events.event_date desc").each do |event|
         h = Hash.new
         x << h
         h[:event_id] = event.id
