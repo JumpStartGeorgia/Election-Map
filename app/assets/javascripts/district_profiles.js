@@ -197,7 +197,7 @@ function build_other_district_profile_summary_charts(ths, indicator_data){
 function build_other_district_profile_detail_charts(ths, indicator_name, data){
   if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0){
     var value;    
-    var table = "<table class='district_indicator_table table table-striped table-bordered'><tbody>";
+    var table = "<table class='other_district_table table table-striped table-bordered'><tbody>";
     for (var i=0; i<data.length; i++){
       value = data[i].value;
       if (data[i].number_format != null && data[i].number_format.length > 0){
@@ -283,7 +283,6 @@ function get_district_event_type_data(ths_event_type){
     });
   }
 }
-
 $(document).ready(function() {
 
   $(window).bind('load', get_district_event_type_data());
@@ -295,6 +294,16 @@ $(document).ready(function() {
     detail_height = [];
 
     get_district_event_type_data($(this));
+  });
+
+  // when indicator filter selected, update the charts
+  $('#district_profile .tab-pane.active select.indicator_filter_select').live('change', function(){
+//    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
+//      $(this).empty();
+      var selected_index = $(this).prop("selectedIndex");
+      var selected_option = $(this).children()[selected_index];
+      get_district_event_type_data($('#district_profile .nav-tabs li.active a'));
+//    });
   });
 
   // when event filter changes, update what events to show

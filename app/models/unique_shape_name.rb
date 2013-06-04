@@ -55,6 +55,30 @@ class UniqueShapeName < ActiveRecord::Base
             event_type[:has_summary] = false
             event_type[:default_indicator_id] = nil
             event_type[:events] = []
+            event_type[:indicator_types] = []
+
+            # add all indicators that are in this event type
+            indicators = IndicatorType.find_by_events_shape_type(matches.map{|x| x[:event_id]}, shape.shape_type_id)
+            if indicators.present?
+              indicators.each do |ind_type|
+                i_type = Hash.new
+                event_type[:indicator_types] << i_type
+                i_type[:id] = ind_type.id
+                i_type[:has_summary] = ind_type.has_summary
+                i_type[:name] = ind_type.name
+                i_type[:summary_name] = ind_type.summary_name
+                i_type[:indicators] = []
+                ind_type.core_indicators.each do |core|
+                  core_ind = Hash.new
+                  i_type[:indicators] << core_ind
+                  core_ind[:id] = core.id
+                  core_ind[:name_abbrv] = core.name_abbrv_w_parent  
+                  core_ind[:name] = core.description_w_parent
+                end
+              end
+            end
+
+            # add events
             matches.each do |match|
               # get event
               event = events.select{|x| x.id == match[:event_id]}.first

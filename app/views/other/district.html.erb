@@ -39,6 +39,26 @@
                 </div>
               <% end %>
             </div>
+
+            <% if type["indicator_types"].present? %>
+              <div class="span3">  
+                <h3><%= t('.indicator_filter_header') %></h3>
+
+                <div class="indicator_filter">
+                  <select id="indicator_filter_<%= type["id"]%>" class="indicator_filter_select" data-id="<%= type["id"]%>">
+                    <% type["indicator_types"].each do |type| %>
+                      <option value="0" disabled="disabled" class="option_disabled"><%= type["name"] %></option>
+                      <% if type["has_summary"] == true %>
+                        <option value="0" data-id="<%= type["id"]%>"><%= type["summary_name"] %></option>
+                      <% end %>
+                      <% type["indicators"].each do |indicator| %>
+                        <option value="<%= indicator["id"]%>" title="<%= indicator["name"]%>"><%= indicator["name_abbrv"] %></option>
+                      <% end %>
+                    <% end %>
+                  </select>
+                </div>
+              </div>
+            <% end %>
           </div>
 
           <div class="profile_item row-fluid">
