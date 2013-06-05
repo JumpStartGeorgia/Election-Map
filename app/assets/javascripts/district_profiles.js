@@ -5,6 +5,9 @@ var number_events;
 
 function build_result_district_profile_summary_charts(ths, summary_colors, summary_data){
   if (ths != undefined && summary_colors != undefined && summary_colors.length > 1 && summary_data != undefined && summary_data.length > 1){
+    // reset height
+    ths.height('auto');
+
     // add the rest values
     var sum = 0;
     for (var i=0; i<summary_data.length;i++){
@@ -63,6 +66,9 @@ function build_result_district_profile_summary_charts(ths, summary_colors, summa
       }]
     });
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
@@ -143,6 +149,9 @@ function build_result_district_profile_summary_charts(ths, headers, data){
 
 function build_result_district_profile_detail_charts(ths, headers, data){
   if (ths != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
+    // reset height
+    ths.height('auto');
+
     var chart_height = 400;
     chart_height = 60 * data.length;
     ths.highcharts({
@@ -208,6 +217,9 @@ function build_result_district_profile_detail_charts(ths, headers, data){
       }]
     });
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
@@ -253,12 +265,18 @@ function build_results_district_profile_charts(){
 
 function build_other_district_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
+    // reset height
+    ths.height('auto');
+
     var value = indicator_data.formatted_value;
     if (indicator_data.number_format != null && indicator_data.number_format.length > 0){
       value += indicator_data.number_format;
     }
     ths.html("<table class='other_district_table table table-striped table-bordered'><tbody><tr><td>" + indicator_data.indicator_name + "</td><td>" + value + "</td></tr></tbody></table>");
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
@@ -266,6 +284,9 @@ function build_other_district_profile_summary_charts(ths, indicator_data){
 
 function build_other_district_profile_detail_charts(ths, indicator_name, data){
   if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0){
+    // reset height
+    ths.height('auto');
+
     var value;    
     var table = "<table class='other_district_table table table-striped table-bordered'><tbody>";
     for (var i=0; i<data.length; i++){
@@ -278,19 +299,26 @@ function build_other_district_profile_detail_charts(ths, indicator_name, data){
     table += "</tbody></table>"
     ths.html(table);
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
+
   detail_height.push(ths.height());
   if (detail_height.length == $('.tab-pane.active .profile_item .district_detail_chart').length){
     $(".tab-pane.active .profile_item .district_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
   }
 
 }
-function build_other_district_profile_charts(){
+function build_other_district_profile_charts(indicator_id){
   $('.tab-pane.active .district_summary_chart').each(function(){
     var event_id = $(this).data('id');
     var ind_id = $(this).data('indicator-id');
+    if (indicator_id != undefined){
+      ind_id = indicator_id;
+    }
     var indicator_data, indicator_name;
     var detail_data = [];
     for (var i=0;i<district_profile_data.length;i++){
@@ -299,7 +327,7 @@ function build_other_district_profile_charts(){
           detail_data.push(null);  
         } else {
           for (var j=0;j<district_profile_data[i].data.length;j++){
-            if (district_profile_data[i].data[j].core_indicator_id.toString() == ind_id){
+            if (district_profile_data[i].data[j].core_indicator_id != null && district_profile_data[i].data[j].core_indicator_id.toString() == ind_id){
               indicator_data = district_profile_data[i].data[j];
               indicator_name = district_profile_data[i].data[j].indicator_name;
             }
@@ -321,17 +349,26 @@ function build_other_district_profile_charts(){
 
 
 
-function get_district_event_type_data(ths_event_type){
+function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
   if (ths_event_type == undefined){
     // it was not passed in so get active event type
     ths_event_type = $('#district_profile .nav-tabs li.active a');
   }
   if (ths_event_type != undefined){
     var url;
-    if (ths_event_type.data('summary') == true){
-      var url = gon.json_district_event_type_summary_data_url.replace(gon.placeholder_event_type, ths_event_type.data('id')).replace(gon.placeholder_indicator, ths_event_type.data('indicator-id'));
+    var ind_id = ths_event_type.data('indicator-id');
+    if (indicator_id != undefined){
+      ind_id = indicator_id;
+    }
+    var summary = ths_event_type.data('summary');
+    if (is_summary != undefined){
+      summary = is_summary;
+    }
+
+    if (summary == true){
+      var url = gon.json_district_event_type_summary_data_url.replace(gon.placeholder_event_type, ths_event_type.data('id')).replace(gon.placeholder_indicator, ind_id);
     } else {
-      var url = gon.json_district_event_type_data_url.replace(gon.placeholder_event_type, ths_event_type.data('id')).replace(gon.placeholder_core_indicator, ths_event_type.data('indicator-id'));
+      var url = gon.json_district_event_type_data_url.replace(gon.placeholder_event_type, ths_event_type.data('id')).replace(gon.placeholder_core_indicator, ind_id);
     }
 
     $.ajax({
@@ -344,10 +381,10 @@ function get_district_event_type_data(ths_event_type){
       },
       success: function(data) {
         district_profile_data = data;
-        if (ths_event_type.data('summary') == true){
+        if (summary){
           build_results_district_profile_charts();
         } else {
-          build_other_district_profile_charts();
+          build_other_district_profile_charts(ind_id);
         }
       }
     });
@@ -371,11 +408,22 @@ $(document).ready(function() {
 
   // when indicator filter selected, update the charts
   $('#district_profile .tab-pane.active select.indicator_filter_select').live('change', function(){
+    // reset height array so the new charts can be resized correctly
+    summary_height = []; 
+    detail_height = [];
+
 //    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
 //      $(this).empty();
       var selected_index = $(this).prop("selectedIndex");
       var selected_option = $(this).children()[selected_index];
-      get_district_event_type_data($('#district_profile .nav-tabs li.active a'));
+      var id = $(selected_option).val();
+      var summary = false;
+      // if this is the summary option, get the indicator type id
+      if (id == "0"){
+        summary = true;
+        id = $(selected_option).data('id');
+      }
+      get_district_event_type_data($('#district_profile .nav-tabs li.active a'), summary, id);
 //    });
   });
 

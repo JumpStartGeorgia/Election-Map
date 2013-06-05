@@ -5,6 +5,9 @@ var number_events;
 
 function build_result_indicator_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
+    // reset height
+    ths.height('auto');
+
     ths.highcharts({
       chart: {
           plotBackgroundColor: null,
@@ -59,6 +62,9 @@ function build_result_indicator_profile_summary_charts(ths, indicator_data){
       }]
     });
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
@@ -66,6 +72,9 @@ function build_result_indicator_profile_summary_charts(ths, indicator_data){
 
 function build_result_indicator_profile_detail_charts(ths, indicator_name, headers, data){
   if (ths != undefined && indicator_name != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
+    // reset height
+    ths.height('auto');
+
     var chart_height = 400;
     chart_height = 60 * data.length;
     ths.highcharts({
@@ -142,6 +151,9 @@ function build_result_indicator_profile_detail_charts(ths, indicator_name, heade
       }]
     });
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
@@ -183,12 +195,18 @@ function build_results_indicator_profile_charts(){
 
 function build_other_indicator_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
+    // reset height
+    ths.height('auto');
+
     var value = indicator_data.formatted_value;
     if (indicator_data.number_format != null && indicator_data.number_format.length > 0){
       value += indicator_data.number_format;
     }
     ths.html("<table class='other_indicator_table table table-striped table-bordered'><tbody><tr><td>" + indicator_data.indicator_name + "</td><td>" + value + "</td></tr></tbody></table>");
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
@@ -196,6 +214,9 @@ function build_other_indicator_profile_summary_charts(ths, indicator_data){
 
 function build_other_indicator_profile_detail_charts(ths, indicator_name, data){
   if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0){
+    // reset height
+    ths.height('auto');
+
     var value;    
     var table = "<table class='other_indicator_table table table-striped table-bordered'><tbody>";
     for (var i=0; i<data.length; i++){
@@ -208,6 +229,9 @@ function build_other_indicator_profile_detail_charts(ths, indicator_name, data){
     table += "</tbody></table>"
     ths.html(table);
   } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }

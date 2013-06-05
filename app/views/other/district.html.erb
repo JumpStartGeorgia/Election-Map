@@ -47,7 +47,7 @@
                 <div class="indicator_filter">
                   <select id="indicator_filter_<%= type["id"]%>" class="indicator_filter_select" data-id="<%= type["id"]%>">
                     <% type["indicator_types"].each do |type| %>
-                      <option value="0" disabled="disabled" class="option_disabled"><%= type["name"] %></option>
+                      <option value="-1" disabled="disabled" class="option_disabled"><%= type["name"] %></option>
                       <% if type["has_summary"] == true %>
                         <option value="0" data-id="<%= type["id"]%>"><%= type["summary_name"] %></option>
                       <% end %>
