@@ -26,6 +26,10 @@ ElectionMap::Application.routes.draw do
 		  match '/core_indicator_text', :to => 'core_indicator_text#index', :via => :get
 		  match '/core_indicator_text/:id/edit', :to => 'core_indicator_text#edit', :as => 'edit_core_indicator_text', :via => [:get,:post]
 
+      # unique shape name text
+		  match '/shape_text', :to => 'shape_text#index', :via => :get
+		  match '/shape_text/:id/edit', :to => 'shape_text#edit', :as => 'edit_shape_text', :via => [:get,:post]
+
 	    resources :core_indicators do
 	      collection do
 	        get :colors

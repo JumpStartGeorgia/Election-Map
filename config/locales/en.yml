@@ -3,6 +3,8 @@ en:
   activerecord:
     models:
       user: User
+      unique_shape_name: Shape
+      core_indicator: Core Indicator
     attributes:
       data_sets:
         event_id: Event
@@ -198,6 +200,7 @@ en:
       file_upload: CSV File to Upload
       has_summary: Can Summarize All Indicators in Type
       summary: Summary
+      shape_text_summary_hint: "(text that appears on district profile page)"
       core_indicator_summary_hint: "(text that appears on indicator profile page)"
       core_indicator_description_hint: "(descriptive name that appears in data table)"
       indicator_type: Indicator Group
@@ -395,6 +398,7 @@ en:
       title: Administration Section
       basic_header: Basic
       core_indicator_text: Indicator Profile Text
+      shape_text: District Profile Text
       users: Users
       events: Event Names
       shape_types: Shape Types
@@ -662,4 +666,9 @@ en:
         title: Data Archives
         view_all: View All Data Archive Records
         no_archive: I am sorry, but the requested data archive could not be found.
+    shape_text:
+      edit:
+        title: "Editing Profile Text: '%{name}'"
+      index:
+        title: District Profile Text
 

@@ -1,0 +1,29 @@
+<% title t('.title') %>
+
+<div class="form-actions">
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
+<table id="shape-text" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th></th>
+      <th><%= t("app.common.common_id") %></th>
+      <th><%= t("app.common.common_name") %></th>
+      <th><%= t("app.common.summary") %></th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @shape_text.each do |shape| %>
+    <tr>
+      <td><%= link_to t('app.buttons.edit'), admin_edit_shape_text_path(:id => shape.id), :class => 'btn btn-mini' %></td>
+      <td><%= shape.common_id %></td>
+      <td><%= shape.common_name %></td>
+      <td><%= simple_format shape.summary %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+

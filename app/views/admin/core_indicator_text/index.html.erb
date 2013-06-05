@@ -22,7 +22,7 @@
       <td><%= core_indicator.indicator_type.name %></td>
       <td><%= core_indicator.name_abbrv %></td>
       <td><%= core_indicator.name %></td>
-      <td><%= core_indicator.summary %></td>
+      <td><%= simple_format core_indicator.summary %></td>
     </tr>
   <% end %>
   </tbody>

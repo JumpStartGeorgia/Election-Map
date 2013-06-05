@@ -1,7 +1,7 @@
 class Admin::CoreIndicatorTextController < ApplicationController
   before_filter :authenticate_user!
   before_filter do |controller_instance|
-    controller_instance.send(:valid_role?, User::ROLES[:indicator_editor])
+    controller_instance.send(:valid_role?, User::ROLES[:profile_editor])
   end
 	cache_sweeper :core_indicator_sweeper, :only => [:create, :update, :destroy]
 
@@ -29,8 +29,6 @@ class Admin::CoreIndicatorTextController < ApplicationController
             format.html { redirect_to admin_core_indicator_text_path, notice: msg }
             format.json { head :ok }
           else
-		        @core_indicators = CoreIndicator.all
-    logger.debug "++++++++ errors = #{@core_indicator.errors.inspect}"
             format.html { render action: "edit" }
             format.json { render json: @core_indicator.errors, status: :unprocessable_entity }
           end

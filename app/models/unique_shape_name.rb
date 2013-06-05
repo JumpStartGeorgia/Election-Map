@@ -20,6 +20,12 @@ class UniqueShapeName < ActiveRecord::Base
     by_shape_types([3,7]).sorted
   end
 
+  def self.for_profiles
+#TODO
+    # hard code the shape type ids for now
+    shape_type_ids = [3,7]
+    where("unique_shape_names.shape_type_id in (?)", shape_type_ids).sorted
+  end
 
   # format: [{shape_type_id, common_id, common_name, summary, event_types => [id, name, sort_order, events => [id, name, event_date, shape_id, data_type, data_set_id]]}]
   def self.build_event_json
