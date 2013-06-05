@@ -341,10 +341,10 @@ $(document).ready(function() {
     var event_id = $(this).val();
     if ($(this).attr("checked") == undefined){
       // hide this event
-      $('#indicator_profile .tab-pane.active .profile_item div[data-id="' + event_id + '"]').removeClass('active');
+      $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
     }else{
       // show this event
-      $('#indicator_profile .tab-pane.active .profile_item div[data-id="' + event_id + '"]').addClass('active');
+      $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
     }
 
     // re-assign height of summary/detail chart for those events showing
@@ -352,21 +352,29 @@ $(document).ready(function() {
     summary_height = [];
     ////// summary
     // get the heights of each visible summary chart
-    $('.tab-pane.active .profile_item div.active div.indicator_summary_chart').each(function(){
+    $('.tab-pane.active .profile_item > div.active div.indicator_summary_chart').each(function(){
       $(this).height('auto');
       summary_height.push($(this).height());
     });
     // update heights to max height of visible detail charts
-    $('.tab-pane.active .profile_item div.active div.indicator_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
+    $('.tab-pane.active .profile_item > div.active div.indicator_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
 
     ////// detail
     // get the heights of each visible detail chart
-    $('.tab-pane.active .profile_item div.active div.indicator_detail_chart').each(function(){
+    $('.tab-pane.active .profile_item > div.active div.indicator_detail_chart').each(function(){
       $(this).height('auto');
       detail_height.push($(this).height());
     });
     // update heights to max height of visible detail charts
-    $('.tab-pane.active .profile_item div.active div.indicator_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+    $('.tab-pane.active .profile_item > div.active div.indicator_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+
+    // re-assign the no-left-margin class to every third item that is showing
+    $('.tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
+    $('.tab-pane.active .profile_item > div.active').each(function(index){
+      if (index%3 == 0){
+        $(this).addClass('no-left-margin');
+      }
+    });
 
   });
 });

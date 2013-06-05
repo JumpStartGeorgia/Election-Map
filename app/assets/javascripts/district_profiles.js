@@ -432,10 +432,10 @@ $(document).ready(function() {
     var event_id = $(this).val();
     if ($(this).attr("checked") == undefined){
       // hide this event
-      $('#district_profile .tab-pane.active .profile_item div[data-id="' + event_id + '"]').removeClass('active');
+      $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
     }else{
       // show this event
-      $('#district_profile .tab-pane.active .profile_item div[data-id="' + event_id + '"]').addClass('active');
+      $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
     }
 
     // re-assign height of summary/detail chart for those events showing
@@ -443,23 +443,29 @@ $(document).ready(function() {
     summary_height = [];
     ////// summary
     // get the heights of each visible summary chart
-    $('#district_profile .tab-pane.active .profile_item div.active div.district_summary_chart').each(function(){
+    $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function(){
       $(this).height('auto');
       summary_height.push($(this).height());
     });
-console.log("current summary heights = " + summary_height);
     // update heights to max height of visible detail charts
-    $('#district_profile .tab-pane.active .profile_item div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
+    $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
 
     ////// detail
     // get the heights of each visible detail chart
-    $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function(){
+    $('#district_profile .tab-pane.active .profile_item > div.active div.district_detail_chart').each(function(){
       $(this).height('auto');
       detail_height.push($(this).height());
     });
-console.log("current detail heights = " + detail_height);
     // update heights to max height of visible detail charts
     $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+
+    // re-assign the no-left-margin class to every third item that is showing
+    $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
+    $('#district_profile .tab-pane.active .profile_item > div.active').each(function(index){
+      if (index%3 == 0){
+        $(this).addClass('no-left-margin');
+      }
+    });
   });
 });
 
