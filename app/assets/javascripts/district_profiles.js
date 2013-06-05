@@ -392,81 +392,84 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
 }
 $(document).ready(function() {
 
-  $(window).bind('load', get_district_event_type_data());
+  if (gon.district_profile){
 
-  // when switch event types, get data for the new events
-  $('#district_profile .nav-tabs li a').click(function(){
-    // reset height array so the new charts can be resized correctly
-    summary_height = []; 
-    detail_height = [];
+    $(window).bind('load', get_district_event_type_data());
 
-    // if charts do not already exist, load them
-    if ($('#district_profile .tab-content #tab' + $(this).data('id') + ' .district_summary_chart:first').html().length == 0){
-      get_district_event_type_data($(this));
-    }
-  });
+    // when switch event types, get data for the new events
+    $('#district_profile .nav-tabs li a').click(function(){
+      // reset height array so the new charts can be resized correctly
+      summary_height = []; 
+      detail_height = [];
 
-  // when indicator filter selected, update the charts
-  $('#district_profile .tab-pane.active select.indicator_filter_select').live('change', function(){
-    // reset height array so the new charts can be resized correctly
-    summary_height = []; 
-    detail_height = [];
-
-//    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
-//      $(this).empty();
-      var selected_index = $(this).prop("selectedIndex");
-      var selected_option = $(this).children()[selected_index];
-      var id = $(selected_option).val();
-      var summary = false;
-      // if this is the summary option, get the indicator type id
-      if (id == "0"){
-        summary = true;
-        id = $(selected_option).data('id');
-      }
-      get_district_event_type_data($('#district_profile .nav-tabs li.active a'), summary, id);
-//    });
-  });
-
-  // when event filter changes, update what events to show
-  $('#district_profile .tab-pane.active #event_filter input[name="event_filter_checkboxes"]').live('change', function(){
-    var event_id = $(this).val();
-    if ($(this).attr("checked") == undefined){
-      // hide this event
-      $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
-    }else{
-      // show this event
-      $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
-    }
-
-    // re-assign height of summary/detail chart for those events showing
-    detail_height = [];
-    summary_height = [];
-    ////// summary
-    // get the heights of each visible summary chart
-    $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function(){
-      $(this).height('auto');
-      summary_height.push($(this).height());
-    });
-    // update heights to max height of visible detail charts
-    $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
-
-    ////// detail
-    // get the heights of each visible detail chart
-    $('#district_profile .tab-pane.active .profile_item > div.active div.district_detail_chart').each(function(){
-      $(this).height('auto');
-      detail_height.push($(this).height());
-    });
-    // update heights to max height of visible detail charts
-    $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
-
-    // re-assign the no-left-margin class to every third item that is showing
-    $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
-    $('#district_profile .tab-pane.active .profile_item > div.active').each(function(index){
-      if (index%3 == 0){
-        $(this).addClass('no-left-margin');
+      // if charts do not already exist, load them
+      if ($('#district_profile .tab-content #tab' + $(this).data('id') + ' .district_summary_chart:first').html().length == 0){
+        get_district_event_type_data($(this));
       }
     });
-  });
+
+    // when indicator filter selected, update the charts
+    $('#district_profile .tab-pane.active select.indicator_filter_select').live('change', function(){
+      // reset height array so the new charts can be resized correctly
+      summary_height = []; 
+      detail_height = [];
+
+  //    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
+  //      $(this).empty();
+        var selected_index = $(this).prop("selectedIndex");
+        var selected_option = $(this).children()[selected_index];
+        var id = $(selected_option).val();
+        var summary = false;
+        // if this is the summary option, get the indicator type id
+        if (id == "0"){
+          summary = true;
+          id = $(selected_option).data('id');
+        }
+        get_district_event_type_data($('#district_profile .nav-tabs li.active a'), summary, id);
+  //    });
+    });
+
+    // when event filter changes, update what events to show
+    $('#district_profile .tab-pane.active #event_filter input[name="event_filter_checkboxes"]').live('change', function(){
+      var event_id = $(this).val();
+      if ($(this).attr("checked") == undefined){
+        // hide this event
+        $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
+      }else{
+        // show this event
+        $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
+      }
+
+      // re-assign height of summary/detail chart for those events showing
+      detail_height = [];
+      summary_height = [];
+      ////// summary
+      // get the heights of each visible summary chart
+      $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function(){
+        $(this).height('auto');
+        summary_height.push($(this).height());
+      });
+      // update heights to max height of visible detail charts
+      $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
+
+      ////// detail
+      // get the heights of each visible detail chart
+      $('#district_profile .tab-pane.active .profile_item > div.active div.district_detail_chart').each(function(){
+        $(this).height('auto');
+        detail_height.push($(this).height());
+      });
+      // update heights to max height of visible detail charts
+      $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+
+      // re-assign the no-left-margin class to every third item that is showing
+      $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
+      $('#district_profile .tab-pane.active .profile_item > div.active').each(function(index){
+        if (index%3 == 0){
+          $(this).addClass('no-left-margin');
+        }
+      });
+    });
+  }
 });
 
 
