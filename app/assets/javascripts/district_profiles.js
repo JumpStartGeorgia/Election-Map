@@ -3,6 +3,71 @@ var summary_height = [];
 var detail_height = [];
 var number_events;
 
+function build_result_district_profile_summary_charts(ths, summary_colors, summary_data){
+  if (ths != undefined && summary_colors != undefined && summary_colors.length > 1 && summary_data != undefined && summary_data.length > 1){
+    // add the rest values
+    var sum = 0;
+    for (var i=0; i<summary_data.length;i++){
+      sum += summary_data[i][1];
+    }
+    summary_colors.push("#6f6f6f");
+    summary_data.push([gon.summary_chart_rest, 100-sum]);
+    ths.highcharts({
+      chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false,
+          height: 250,
+          events: {
+            load: function(event) {
+              // save the height and after all details loaded, reset height for all detail chart containers
+              // so floating wraps nicely
+              summary_height.push(this.options.chart.height);
+              if (summary_height.length == $('.tab-pane.active .profile_item .district_summary_chart').length){
+                $(".tab-pane.active .profile_item .district_summary_chart").each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
+              }
+            }
+          } 
+
+      },
+      colors: summary_colors,
+      title: {
+          text: null
+      },
+      credits: {
+        enabled: false
+      },
+      tooltip: {
+      	percentageDecimals: 2,
+        formatter: function() {
+            return '<b>'+ this.point.name +'</b>: '+ Highcharts.numberFormat(this.percentage, 2) + '%';
+        }
+      },
+      plotOptions: {
+          pie: {
+            dataLabels: {
+                enabled: false
+            },
+            showInLegend: true
+          }
+      },
+      legend: {
+        labelFormatter: function() {
+          return this.name + ' (' +  Highcharts.numberFormat(this.y, 2) + '%)';
+        }
+      },
+      series: [{
+        type: 'pie',
+        name: 'vote share',
+        data: summary_data
+      }]
+    });
+  } else if (ths != undefined) {
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
+  }
+}
+/*
 function build_result_district_profile_summary_charts(ths, headers, data){
   if (ths != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
     var chart_height = 400;
@@ -74,6 +139,7 @@ function build_result_district_profile_summary_charts(ths, headers, data){
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
 }
+*/
 
 function build_result_district_profile_detail_charts(ths, headers, data){
   if (ths != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
@@ -152,6 +218,7 @@ function build_results_district_profile_charts(){
     var event_id = $(this).data('id');
     var summary_headers = [];
     var summary_data = [];
+    var summary_colors = [];
     var detail_headers = [];
     var detail_data = [];
     for (var i=0;i<district_profile_data.length;i++){
@@ -162,8 +229,10 @@ function build_results_district_profile_charts(){
         } else {
           for (var j=0;j<district_profile_data[i].data.length;j++){
             if (Number(district_profile_data[i].data[j].value) >= 5){
-              summary_headers.push(district_profile_data[i].data[j].indicator_name);
-              summary_data.push({y: Number(district_profile_data[i].data[j].value), color: district_profile_data[i].data[j].color});  
+//              summary_headers.push(district_profile_data[i].data[j].indicator_name);
+//              summary_data.push({y: Number(district_profile_data[i].data[j].value), color: district_profile_data[i].data[j].color});  
+                summary_data.push([district_profile_data[i].data[j].indicator_name, Number(district_profile_data[i].data[j].value)]);
+                summary_colors.push(district_profile_data[i].data[j].color);
             }
             detail_headers.push(district_profile_data[i].data[j].indicator_name);  
             detail_data.push({y: Number(district_profile_data[i].data[j].value), color: district_profile_data[i].data[j].color});  
@@ -173,7 +242,8 @@ function build_results_district_profile_charts(){
       }
     }  
 
-    build_result_district_profile_summary_charts($(this), summary_headers, summary_data);
+//    build_result_district_profile_summary_charts($(this), summary_headers, summary_data);
+    build_result_district_profile_summary_charts($(this), summary_colors, summary_data);
     var ths_detail = $('#district_profile .tab-pane.active .district_detail_chart[data-id="' + event_id.toString() + '"]')
     build_result_district_profile_detail_charts(ths_detail, detail_headers, detail_data);
 
