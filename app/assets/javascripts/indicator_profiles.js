@@ -294,15 +294,20 @@ $(document).ready(function() {
     summary_height = []; 
     detail_height = [];
 
-    get_ind_event_type_data($(this).data('id'));
+    // if charts do not already exist, load them
+    if ($('#indicator_profile .tab-content #tab' + $(this).data('id') + ' .indicator_summary_chart:first').html().length == 0){
+      get_ind_event_type_data($(this).data('id'));
+    }
   });
 
   // when district filter selected, update the charts
   $('#indicator_profile .tab-pane.active select.district_filter_select').live('change', function(){
 //    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
 //      $(this).empty();
-      var selected_option = $("#indicator_profile .tab-pane.active select.district_filter_select option:selected");
-      get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());
+//        var selected_option = $("#indicator_profile .tab-pane.active select.district_filter_select option:selected");
+        var selected_index = $(this).prop("selectedIndex");
+        var selected_option = $(this).children()[selected_index];
+        get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());
 //    });
   });
 

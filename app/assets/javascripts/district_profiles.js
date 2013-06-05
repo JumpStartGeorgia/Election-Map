@@ -363,7 +363,10 @@ $(document).ready(function() {
     summary_height = []; 
     detail_height = [];
 
-    get_district_event_type_data($(this));
+    // if charts do not already exist, load them
+    if ($('#district_profile .tab-content #tab' + $(this).data('id') + ' .district_summary_chart:first').html().length == 0){
+      get_district_event_type_data($(this));
+    }
   });
 
   // when indicator filter selected, update the charts
