@@ -88,12 +88,12 @@ div#indicator_menu_scale .toggler {
 
 #indicator_menu_tabs{
 	font-size: 9pt;
-	height: 250px;
+	height: 210px;
 	overflow: hidden;
 	padding: 0;
 }
 #indicator_menu_tabs div.indicator_links {
-	height: 205px;
+	height: 175px;
 	overflow: auto;
 	padding: 0;
 	margin: 0;
@@ -130,33 +130,85 @@ div#indicator_menu_scale .toggler {
 }
 
 /* indicator scales */
-div#indicator_menu_scale div#legend_container{
-	display: none;
-	background-color: #fff;
-	color: #000;
-	padding: 0.5em;
+div#indicator_menu_scale {
+  div#legend_container{
+	  display: none;
+	  background-color: #fff;
+	  color: #000;
+	  padding: 0.5em;
+
+    ul#legend li{
+      line-height: normal;
+	    font-size: 12px;
+	    font-family: Arial;
+      margin: 2px 4px;
+      float: left;
+      cursor: default;
+      span
+      {
+          display: block;
+          float: left;
+          width: 15px;
+          height: 15px;
+          margin-right: 4px;
+		      border: none;
+      }
+    }
+  }
+
+  div#map_popup_container{
+	  display: none;
+	  background-color: #fff;
+	  color: #000;
+    margin-top: 5px;
+	  padding: 0.5em;
+
+    h3.map_popup_title1{
+      margin: -0.5em -0.5em 0 -0.5em;
+    }
+    h4.map_popup_title_precincts{
+      margin: 0 -0.5em 0;
+    	padding: 12px 5px 5px;
+      background-color: rgba(51, 51, 51, 0.8);
+      color: #fff;
+    }
+
+    .map_popup_footer{
+      margin-top: 5px;
+      font-size: 11px;
+    }
+
+    table {
+      margin-bottom: 0;
+      tr {
+        td {
+          &.map_popup_table_cell1{
+            padding-left: 0;
+            padding-right: 0;
+            width: 10px;
+          }
+          &.map_popup_table_cell2{
+            width: 50%;
+          }
+          &.map_popup_table_cell3{
+          }
+          &.map_popup_table_cell4{
+            width: 25%;
+            padding-left: 0;
+            padding-right: 0;
+            div {
+              padding: 0;
+              margin: 0;
+              background-color: #5c81a3;
+            }
+          }
+        }
+      }
+    }
+  }
 }
-div#indicator_menu_scale ul#legend li{
-    line-height: normal;
-		font-size: 12px;
-		font-family: Arial;
-    margin: 2px 4px;
-    float: left;
-    cursor: default;
-}
 
-div#indicator_menu_scale ul#legend li span
-{
-    display: block;
-    float: left;
-    width: 15px;
-    height: 15px;
-    margin-right: 4px;
-		border: none;
-}
-
-
-
+/* menu tabs */
 #indicator_menu_tabs ul.menu_list li a {
   padding: 3px 5px 4px;
   display: block;

@@ -57,9 +57,16 @@
 	<% if !indicators_exist %>
 	  <div class="toggle">
 	<% end %>
-	<div id="legend_container" class="clear">
-		<ul id="legend">
-		</ul>
-	</div>
-	  </div><!--.toggler-->
+
+  <div id="legend_container" class="clear">
+    <ul id="legend">
+    </ul>
+  </div>
+
+  <div id="map_popup_container" class="clear">
+  </div>
+
+	<% if !indicators_exist %>
+    </div><!--.toggler-->
+  <% end %>
 </div>

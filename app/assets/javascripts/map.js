@@ -8,7 +8,7 @@ if (gon.openlayers){
 	scale_nodata['name'] = gon.no_data_text;
 	scale_nodata['color'] = color_nodata;
 	var opacity = "0.6";
-	var map_opacity = "0.5";
+	var map_opacity = "0.7";
 	var minZoom = 7;
 	var map_width_indicators_fall = 667;
 
@@ -33,18 +33,6 @@ if (gon.openlayers){
 
 	// Function called from body tag
 	function map_init(){
-/*
-		// add no data to scales
-		if (gon.indicator_scale_colors && gon.indicator_scales){
-			gon.indicator_scale_colors.splice(0,0,color_nodata);
-			gon.indicator_scales.splice(0,0,scale_nodata);
-		}
-
-		// if gon.indicator_number_format has a value, save it
-		if (gon.indicator_number_format){
-			number_format = gon.indicator_number_format;
-		}
-*/
 		var options = {
 		  projection: WGS84_google_mercator,
 		  displayProjection: WGS84,
@@ -101,7 +89,8 @@ if (gon.openlayers){
 		});
 
 		// include tileOptions to avoid getting cross-origin image load errors
-		map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity, tileOptions: {crossOriginKeyword: null} });
+//		map_layer = new OpenLayers.Layer.OSM("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity, tileOptions: {crossOriginKeyword: null} });
+		map_layer = new OpenLayers.Layer.XYZ("baseMap", gon.tile_url, {isBaseLayer: true, opacity: map_opacity, tileOptions: {crossOriginKeyword: null} });
 
 		vector_parent = new OpenLayers.Layer.Vector("Base Layer", {styleMap: vectorBaseStyle});
 
@@ -237,10 +226,6 @@ if (gon.openlayers){
 					// move the title_location into the data json
 					json_shape_data.title_location = feature.attributes.title_location;
 
-					// if this is summary set indicator description from gon variable
-      		if (json_data["view_type"] == gon.summary_view_type_name) {
-      		  json_data["indicator"]["description"] = gon.summary_indicator_description
-    		  }
 				}
 			}
 		}
@@ -315,36 +300,6 @@ if (gon.openlayers){
 		}
 	}
 
-/* old
-	// load the features for the children into the vector_child layer
-	function load_vector_child(resp){
-		if (resp.success()){
-		  vector_child.addFeatures(resp.features);
-
-//			// if this is live data, highlight the shapes that are not complete
-//			if (gon.data_type == gon.data_type_live) {
-//				build_live_data_points(resp.features);
-//			}
-
-		  // if this is summary view, populate gon.indicator_scales and colors with names from json file
-		  populate_summary_data();
-			// now that the child vector is loaded, lets show the legend
-		  draw_legend();
-			// now load the values for the hidden form
-			load_hidden_form();
-
-			// indicate that the child layer has loaded
-			// - do not wait for the datatable to be loaded
-			$("div#map").trigger("child_layer_loaded");
-
-			// load the table of data below the map
-      load_data_table();
-
-		} else {
-		  console.log('vector_child - no features found');
-		}
-	}
-*/
 	// record that the parent vector layer was loaded
 	$("div#map").bind("parent_layer_loaded", function(event){
 		vector_parent_loaded = true;
@@ -468,46 +423,7 @@ if (gon.openlayers){
 		$('#legend_container').slideDown(500);
 	}
 
-/* old
-	function draw_legend()
-	{
-		var legend = $('#legend');
 
-		if (gon.view_type == gon.summary_view_type_name) {
-		  // create legend
-		  for (var i=0; i<gon.indicator_scales.length; i++)
-		  {
-		    legend.append('<li><span style="background-color: ' + gon.indicator_scale_colors[i] + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + gon.indicator_scales[i].name + '</li>');
-			}
-		} else  if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
-			var color = "";
-			for (var i=0; i<gon.indicator_scales.length; i++){
-				// if the scale has a color, use it, otherwise use app color
-				if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
-					color = gon.indicator_scales[i].color;
-				} else {
-					color = gon.indicator_scale_colors[i];
-				}
-
-		    legend.append('<li><span style="background-color: ' + color + '; opacity: ' + opacity + '; filter:alpha(opacity=' + (parseFloat(opacity)*100) + ');"></span> ' + format_number(gon.indicator_scales[i].name) + '</li>');
-			}
-		} else {
-			// no legend
-			legend.innerHTML = "";
-		}
-
-		// show the indicator descritpion if provided
-		if (gon.indicator_description) {
-			$('#indicator_description').append(gon.indicator_description);
-			$('#indicator_description').slideDown(500);
-		} else {
-			$('#indicator_description').innerHTML = "";
-			$('#indicator_description').hide(0);
-		}
-
-		$('#legend_container').slideDown(500);
-	}
-*/
 	// build the color mapping for the indicators
 	function build_indicator_scale_styles() {
 		var rules = [];
@@ -574,73 +490,7 @@ if (gon.openlayers){
 
 		  return new OpenLayers.StyleMap({'default': theme, 'select': {'fillOpacity': 0.9, 'strokeColor': '#000','strokeWidth': 2}});
 	}
-/* old
-	function build_indicator_scale_styles() {
-		var rules = [];
-		var theme = new OpenLayers.Style({
-		    fillColor: "#cfce9d",
-		    strokeColor: "#444444",
-		    strokeWidth: 1,
-		    cursor: "pointer",
-		    fillOpacity: opacity
-		});
-		if (gon.indicator_scales && gon.indicator_scales.length > 0 && gon.indicator_scale_colors && gon.indicator_scale_colors.length > 0){
 
-			// look at each scale and create the builder
-			for (var i=0; i<gon.indicator_scales.length; i++){
-				var isFirst = i==1 ? true : false // remember if this is the first record (we want i=1 cause i=0 is no data)
-				var name = gon.indicator_scales[i].name;
-				var color = "";
-				// if the scale has a color, use it, otherwise use app color
-				if (gon.indicator_scales[i].color && gon.indicator_scales[i].color.length > 0){
-					color = gon.indicator_scales[i].color;
-				} else {
-					color = gon.indicator_scale_colors[i];
-				}
-
-				// look in the name for >, <, or -
-				// - if find => create appropriate comparison filter
-				// - else use ==
-				var indexG = name.indexOf(">");
-				var indexL = name.indexOf("<");
-				var indexB = name.indexOf("-");
-				if (indexG >= 0) {
-					// set to >
-					if (indexG == 0){
-						rules.push(build_rule(color, OpenLayers.Filter.Comparison.GREATER_THAN, name.slice(1)));
-					}
-					else if (indexG == name.length-1) {
-						rules.push(build_rule(color, OpenLayers.Filter.Comparison.GREATER_THAN, name.slice(0, indexG-1)));
-					}
-					else {
-						// > is in middle of string.  can not handle
-					}
-				} else if (indexL >= 0) {
-					// set to <
-					if (indexL == 0){
-						rules.push(build_rule(color, OpenLayers.Filter.Comparison.LESS_THAN, name.slice(1)));
-					}
-					else if (indexL == name.length-1) {
-						rules.push(build_rule(color, OpenLayers.Filter.Comparison.LESS_THAN, name.slice(0, indexL-1)));
-					}
-					else {
-						// > is in middle of string.  can not handle
-					}
-				} else if (indexB >= 0) {
-					// set to between
-					rules.push(build_rule(color, OpenLayers.Filter.Comparison.BETWEEN, name.slice(0, indexB), name.slice(indexB+1), isFirst));
-				} else {
-					// set to '='
-					rules.push(build_rule(color, OpenLayers.Filter.Comparison.EQUAL_TO, name));
-				}
-			}
-
-		  theme.addRules(rules);
-		}
-
-		  return new OpenLayers.StyleMap({'default':theme, 'select': {'fillOpacity': 0.9, 'strokeColor': '#000','strokeWidth': 2}});
-	}
-*/
 
 	function build_rule(color, type, value1, value2, isFirst){
 		if (value1 && parseInt(value1)) {
@@ -888,20 +738,32 @@ if (gon.openlayers){
 		    "cursor": "pointer"
 		  }).click(close_button_func);
 		}
-
 	}
+
+  // generate the popup for the selected feature
+  function create_popup(feature){
+console.log('creating popup');
+    $('#map_popup_container').fadeOut(100);
+    $('#map_popup_container').empty();
+
+    $('#map_popup_container').html(build_popup(getShapeData(feature)));
+    $('#map_popup_container').fadeIn(100);
+  }
 
 	// show the popups
 	function hover_handler (feature)
 	{
 		// Create the popup
-		makeFeaturePopup(feature);
+//		makeFeaturePopup(feature);
+    create_popup(feature);
 	}
 
 	// hide the popups
 	function mouseout_handler (feature)
 	{
-		removeFeaturePopups();
+//		removeFeaturePopups();
+    $('#map_popup_container').fadeOut(100);
+    $('#map_popup_container').empty();
 	}
 
 
