@@ -750,6 +750,16 @@ console.log('creating popup');
     $('#map_popup_container').empty();
 
     $('#map_popup_container').html(build_popup(getShapeData(feature)));
+
+    // adjust the table column widths
+    if (json_data_has_summary){
+      $('div#map_popup_container td.map_popup_table_cell2').width('50%');
+      $('div#map_popup_container td.map_popup_table_cell4').width('25%');
+    }else{
+      $('div#map_popup_container td.map_popup_table_cell2').width('auto');
+      $('div#map_popup_container td.map_popup_table_cell4').width('auto');
+    }
+
     $('#map_popup_container').fadeIn(100);
   }
 

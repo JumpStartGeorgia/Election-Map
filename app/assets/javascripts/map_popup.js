@@ -1,11 +1,10 @@
-var asdf;
+var json_data_has_summary = false;
 function build_popup_title(json){
   var html = "";
-asdf = json;
+
   for(var index=0;index<json.length;index++){
     if (json[index].hasOwnProperty("shape_values"))
     {
-console.log('creating title');
       // determine which title to use
       html += "<h3 class='map_popup_title1'>" + json[index].shape_values.title_location + "</h3>";
 
@@ -29,7 +28,6 @@ function build_popup_footer(json){
   for(var index=0;index<json.length;index++){
     if (json[index].hasOwnProperty("footnote"))
     {
-console.log('creating footer');
       html += "<div class='map_popup_footer'>" + json[index].footnote.indicator_name + "</div>";
       break;
     }
@@ -96,6 +94,7 @@ function build_popup_table(json){
         started_table = true;
       }
       html += build_popup_table_summary_data(json[index].summary_data.data);
+      json_data_has_summary = true;
     }
     else if (json[index].hasOwnProperty("data_item"))
     {
