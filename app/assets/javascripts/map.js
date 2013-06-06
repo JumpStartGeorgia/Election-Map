@@ -745,7 +745,6 @@ if (gon.openlayers){
 
   // generate the popup for the selected feature
   function create_popup(feature){
-console.log('creating popup');
     $('#map_popup_container').empty();
 
     $('#map_popup_container').html(build_popup(getShapeData(feature)));

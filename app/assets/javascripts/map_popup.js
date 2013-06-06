@@ -85,13 +85,14 @@ function build_popup_table_top(){
 function build_popup_table(json){
   var html = "";
   var started_table = false;
+  var has_summary = false;
 
   for(var index=0;index<json.length;index++){
     if (json[index].hasOwnProperty("summary_data"))
     {
       if (!started_table){
         html += build_popup_table_top();
-        started_table = true;
+        has_summary = true;
       }
       html += build_popup_table_summary_data(json[index].summary_data.data);
       json_data_has_summary = true;
@@ -109,6 +110,8 @@ function build_popup_table(json){
   if (html.length > 0){
     html += "</tbody></table>";
   }
+
+  json_data_has_summary = has_summary;
 
   return html;
 }
