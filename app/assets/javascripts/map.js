@@ -746,7 +746,6 @@ if (gon.openlayers){
   // generate the popup for the selected feature
   function create_popup(feature){
 console.log('creating popup');
-    $('#map_popup_container').fadeOut(100);
     $('#map_popup_container').empty();
 
     $('#map_popup_container').html(build_popup(getShapeData(feature)));
@@ -759,8 +758,8 @@ console.log('creating popup');
       $('div#map_popup_container td.map_popup_table_cell2').width('auto');
       $('div#map_popup_container td.map_popup_table_cell4').width('auto');
     }
-
-    $('#map_popup_container').fadeIn(100);
+    // make sure the popup is visible
+    $('#map_popup_container').show();
   }
 
 	// show the popups
@@ -775,8 +774,7 @@ console.log('creating popup');
 	function mouseout_handler (feature)
 	{
 //		removeFeaturePopups();
-    $('#map_popup_container').fadeOut(100);
-    $('#map_popup_container').empty();
+    $('#map_popup_container').hide();
 	}
 
 
