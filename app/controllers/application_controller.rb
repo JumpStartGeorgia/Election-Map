@@ -196,8 +196,13 @@ logger.debug "---********----- shape type cache"
     lang = I18n.locale.to_s == 'ka' ? 'ka' : 'en'
 #    gon.tile_url = "http://tile.mapspot.ge/new_#{lang}/${z}/${x}/${y}.png"
 #    gon.tile_url = "http://91.212.213.147/new_#{lang}/${z}/${x}/${y}.png"
-#		gon.tile_url = "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
-    gon.tile_url = "http://a.tiles.mapbox.com/v3/jsgeorgia.map-e254jl56/${z}/${x}/${y}.png"
+    if Rails.env.development?
+  		gon.tile_url = "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
+      gon.is_development = true
+    else
+      gon.tile_url = "http://a.tiles.mapbox.com/v3/jsgeorgia.map-e254jl56/${z}/${x}/${y}.png"
+    end
+
     gon.openlayers_img_path = "/assets/img/"
 
 		if I18n.locale == :ka

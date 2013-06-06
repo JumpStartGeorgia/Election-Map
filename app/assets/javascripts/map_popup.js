@@ -1,23 +1,22 @@
+var asdf;
 function build_popup_title(json){
   var html = "";
-
+asdf = json;
   for(var index=0;index<json.length;index++){
     if (json[index].hasOwnProperty("shape_values"))
     {
 console.log('creating title');
       // determine which title to use
-      var title = typeof json[index].shape_values.title_abbrv !== "undefined" &&
-        json[index].shape_values.title_abbrv instanceof String &&
-        json[index].shape_values.title_abbrv.length > 0 ? json[index].shape_values.title_abbrv : json.title;
-
       html += "<h3 class='map_popup_title1'>" + json[index].shape_values.title_location + "</h3>";
-
-      // don't need this title for it already exists above the legend
-      // html += "<h3 class='map_popup_title2'>" + title + "</h3>";
 
 	    if (json[index].shape_values.title_precincts_completed !== null){
         html += "<h4 class='map_popup_title_precincts'>" + json[index].shape_values.title_precincts_completed + "</h4>";
       }
+
+      if (json[index].shape_values.value == gon.no_data_text){
+        html += "<div class='map_popup_no_data'>" + gon.no_data_text + "</div>";
+      }
+
       break;
     }
   }
