@@ -59,8 +59,53 @@ div.profiles{
         }
       }
     }
-    table.other_indicator_table tr td:last-of-type{
+/*    table.other_indicator_table tr td:last-of-type{
       text-align: right;
+    }*/
+
+    .map_popup_no_data{
+    	padding: 12px 5px 5px;
+    }
+
+    .map_popup_footer{
+      margin-top: 5px;
+      font-size: 11px;
+    }
+
+    table {
+      margin-bottom: 0;
+      tr {
+        td {
+          padding: 6px;
+          &.map_popup_table_cell1{
+            padding-left: 0;
+            padding-right: 0;
+            width: 10px;
+          }
+          &.map_popup_table_cell2{
+            width: 50%;
+            &.highlight{
+              font-weight: bold;
+            }
+          }
+          &.map_popup_table_cell3{
+            width: auto;
+            &.highlight{
+              font-weight: bold;
+            }
+          }
+          &.map_popup_table_cell4{
+            width: 25%;
+            padding-left: 0;
+            padding-right: 0;
+            div {
+              padding: 0;
+              margin: 0;
+              background-color: #5c81a3;
+            }
+          }
+        }
+      }
     }
   }
 }

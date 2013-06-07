@@ -567,8 +567,7 @@ class JsonController < ApplicationController
           y[:event] = Hash.new
           y[:event][:id] = event["id"]
           y[:event][:name] = event["name"]
-          z = x["shape_data"][0].select{|z| z.has_key?("summary_data")} if x.present?
-          y[:data] = z.present? ? z.first["summary_data"]["data"] : nil
+          y[:data] = x.present? ? x["shape_data"][0] : nil
           data << y
         end
       end
@@ -625,8 +624,7 @@ class JsonController < ApplicationController
           y[:event] = Hash.new
           y[:event][:id] = event["id"]
           y[:event][:name] = event["name"]
-          z = x["shape_data"][0].select{|z| z.has_key?("data_item")} if x.present?
-          y[:data] = z.present? ? z.map{|x| x["data_item"]} : nil
+          y[:data] = x.present? ? x["shape_data"][0] : nil
           data << y
         end
       end
@@ -679,8 +677,7 @@ class JsonController < ApplicationController
           y[:event] = Hash.new
           y[:event][:id] = event["id"]
           y[:event][:name] = event["name"]
-          z = x["shape_data"][0].select{|z| z.has_key?("summary_data")} if x.present?
-          y[:data] = z.present? ? z.first["summary_data"]["data"] : nil
+          y[:data] = x.present? ? x["shape_data"][0] : nil
           data << y
         end
       end
@@ -735,8 +732,7 @@ class JsonController < ApplicationController
           y[:event] = Hash.new
           y[:event][:id] = event["id"]
           y[:event][:name] = event["name"]
-          z = x["shape_data"][0].select{|z| z.has_key?("data_item")} if x.present?
-          y[:data] = z.present? ? z.map{|x| x["data_item"]} : nil
+          y[:data] = x.present? ? x["shape_data"][0] : nil
           data << y
         end
       end

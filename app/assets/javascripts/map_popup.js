@@ -1,12 +1,16 @@
 var json_data_has_summary = false;
+var popup_table_row_highlight;
+
 function build_popup_title(json){
   var html = "";
-
+console.log(json);
   for(var index=0;index<json.length;index++){
     if (json[index].hasOwnProperty("shape_values"))
     {
       // determine which title to use
-      html += "<h3 class='map_popup_title1'>" + json[index].shape_values.title_location + "</h3>";
+      if (json[index].shape_values.title_location !== null){
+        html += "<h3 class='map_popup_title1'>" + json[index].shape_values.title_location + "</h3>";
+      }
 
 	    if (json[index].shape_values.title_precincts_completed !== null){
         html += "<h4 class='map_popup_title_precincts'>" + json[index].shape_values.title_precincts_completed + "</h4>";
@@ -43,9 +47,18 @@ function build_popup_table_summary_data(json){
 
     html += "<td class='map_popup_table_cell1' style='background-color: " + json[i].color + "'>&nbsp;</td>";
 
-    html += "<td class='map_popup_table_cell2'>" + json[i].indicator_name + "</td>";
+    html += "<td class='map_popup_table_cell2 ";
 
-    html += "<td class='map_popup_table_cell3'>" + json[i].formatted_value+(json[i].number_format === null ? '' : json[i].number_format) + "</td>";
+    if (popup_table_row_highlight !== null && json[i].indicator_name == popup_table_row_highlight){
+      html += "highlight";
+    }
+    html += "'>" + json[i].indicator_name + "</td>";
+
+    html += "<td class='map_popup_table_cell3 "; 
+    if (popup_table_row_highlight !== null && json[i].indicator_name == popup_table_row_highlight){
+      html += "highlight";
+    }
+    html += "'>" + json[i].formatted_value+(json[i].number_format === null ? '' : json[i].number_format) + "</td>";
 
     html += "<td class='map_popup_table_cell4'>";
     if (!isNaN(json[i].value)){
@@ -66,9 +79,17 @@ function build_popup_table_data_item(json){
 
     html += "<td class='map_popup_table_cell1'></td>";
 
-    html += "<td class='map_popup_table_cell2'>" + json.indicator_name + "</td>";
+    html += "<td class='map_popup_table_cell2 ";
+    if (popup_table_row_highlight !== null && json.indicator_name == popup_table_row_highlight){
+      html += "highlight";
+    }
+    html += "'>" + json.indicator_name + "</td>";
 
-    html += "<td class='map_popup_table_cell3'>" + json.formatted_value+(json.number_format === null ? '' : json.number_format) + "</td>";
+    html += "<td class='map_popup_table_cell3 ";
+    if (popup_table_row_highlight !== null && json.indicator_name == popup_table_row_highlight){
+      html += "highlight";
+    }
+    html += "'>" + json.formatted_value+(json.number_format === null ? '' : json.number_format) + "</td>";
 
     html += "<td class='map_popup_table_cell4'></td>";
 
@@ -92,10 +113,10 @@ function build_popup_table(json){
     {
       if (!started_table){
         html += build_popup_table_top();
-        has_summary = true;
+        started_table = true;
       }
       html += build_popup_table_summary_data(json[index].summary_data.data);
-      json_data_has_summary = true;
+      has_summary = true;
     }
     else if (json[index].hasOwnProperty("data_item"))
     {

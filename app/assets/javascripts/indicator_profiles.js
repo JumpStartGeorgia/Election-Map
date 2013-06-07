@@ -3,7 +3,7 @@ var summary_height = [];
 var detail_height = [];
 var number_events;
 
-function build_result_indicator_profile_summary_charts(ths, indicator_data){
+function build_summary_indicator_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
     // reset height
     ths.height('auto');
@@ -69,8 +69,8 @@ function build_result_indicator_profile_summary_charts(ths, indicator_data){
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
 }
-
-function build_result_indicator_profile_detail_charts(ths, indicator_name, headers, data){
+/* old bar charts
+function build_summary_indicator_profile_detail_charts(ths, indicator_name, headers, data){
   if (ths != undefined && indicator_name != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
     // reset height
     ths.height('auto');
@@ -158,42 +158,76 @@ function build_result_indicator_profile_detail_charts(ths, indicator_name, heade
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
 }
+*/
 
-function build_results_indicator_profile_charts(){
+function build_summary_indicator_profile_detail_charts(ths, indicator_name, data){
+  if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0 && data[0] !== null){
+    // reset height
+    ths.height('auto');
+
+    // indicate which row to highlight
+    popup_table_row_highlight = indicator_name;
+
+    // create the table
+    ths.html(build_popup(data));
+
+  } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
+  }
+
+  detail_height.push(ths.height());
+  if (detail_height.length == $('.tab-pane.active .profile_item .indicator_detail_chart').length){
+    $(".tab-pane.active .profile_item .indicator_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+  }
+}
+
+function build_summary_indicator_profile_charts(){
   $('.tab-pane.active .indicator_summary_chart').each(function(){
     var event_id = $(this).data('id');
-    var indicator_data, indicator_name;
+    var indicator_data, indicator_name, ind;
     var detail_headers = [];
     var detail_data = [];
     for (var i=0;i<indicator_profile_data.length;i++){
       if (indicator_profile_data[i].event.id.toString() == $(this).data('id')){
         if (indicator_profile_data[i].data == null){
-          detail_headers.push(null);  
+//          detail_headers.push(null);  
           detail_data.push(null);  
         } else {
           for (var j=0;j<indicator_profile_data[i].data.length;j++){
-            if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString() || 
-                  (gon.indicator_profile.child_ids.length > 0 && gon.indicator_profile.child_ids.indexOf(indicator_profile_data[i].data[j].core_indicator_id) > -1)){
-              indicator_data = indicator_profile_data[i].data[j];
-              indicator_name = indicator_profile_data[i].data[j].indicator_name;
+            if (indicator_profile_data[i].data[j].hasOwnProperty("summary_data")){
+              for (var k=0;k<indicator_profile_data[i].data[j].summary_data.data.length;k++){
+                ind = indicator_profile_data[i].data[j].summary_data.data[k];
+                if (ind.core_indicator_id.toString() == gon.indicator_profile.id.toString() || 
+                      (gon.indicator_profile.child_ids.length > 0 && gon.indicator_profile.child_ids.indexOf(ind.core_indicator_id) > -1)){
+                  indicator_data = ind;
+                  indicator_name = ind.indicator_name;
+                }
+//                detail_headers.push(ind.indicator_name);  
+//                detail_data.push({y: Number(ind.value), color: ind.color});  
+              }
+              break;
             }
-            detail_headers.push(indicator_profile_data[i].data[j].indicator_name);  
-            detail_data.push({y: Number(indicator_profile_data[i].data[j].value), color: indicator_profile_data[i].data[j].color});  
           }
+          detail_data = indicator_profile_data[i].data;
         }
         break;
       }
     }  
 
-    build_result_indicator_profile_summary_charts($(this), indicator_data);
+    build_summary_indicator_profile_summary_charts($(this), indicator_data);
     var ths_detail = $('.tab-pane.active .indicator_detail_chart[data-id="' + event_id.toString() + '"]')
-    build_result_indicator_profile_detail_charts(ths_detail, indicator_name, detail_headers, detail_data);
+//    build_summary_indicator_profile_detail_charts(ths_detail, indicator_name, detail_headers, detail_data);
+    build_summary_indicator_profile_detail_charts(ths_detail, indicator_name, detail_data);
 
   });
 }
 
 
-function build_other_indicator_profile_summary_charts(ths, indicator_data){
+function build_item_indicator_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
     // reset height
     ths.height('auto');
@@ -210,9 +244,10 @@ function build_other_indicator_profile_summary_charts(ths, indicator_data){
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
-}
 
-function build_other_indicator_profile_detail_charts(ths, indicator_name, data){
+}
+/* old
+function build_item_indicator_profile_detail_charts(ths, indicator_name, data){
   if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0){
     // reset height
     ths.height('auto');
@@ -239,10 +274,38 @@ function build_other_indicator_profile_detail_charts(ths, indicator_name, data){
   if (detail_height.length == $('.tab-pane.active .profile_item .indicator_detail_chart').length){
     $(".tab-pane.active .profile_item .indicator_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
   }
+}
+*/
 
+function build_item_indicator_profile_detail_charts(ths, indicator_name, data){
+  if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0 && data[0] !== null){
+    // reset height
+    ths.height('auto');
+
+    // indicate which row to highlight
+    popup_table_row_highlight = indicator_name;
+
+    // create the table
+    ths.html(build_popup(data));
+
+    // reset col width
+    ths.find('td.map_popup_table_cell2').width('auto');
+    ths.find('td.map_popup_table_cell4').width('auto');
+
+  } else if (ths != undefined) {
+    // reset height
+    ths.height('auto');
+
+    // show no data message
+    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
+  }
+  detail_height.push(ths.height());
+  if (detail_height.length == $('.tab-pane.active .profile_item .indicator_detail_chart').length){
+    $(".tab-pane.active .profile_item .indicator_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+  }
 }
 
-function build_other_indicator_profile_charts(){
+function build_item_indicator_profile_charts(){
   $('.tab-pane.active .indicator_summary_chart').each(function(){
     var event_id = $(this).data('id');
     var indicator_data, indicator_name;
@@ -253,23 +316,29 @@ function build_other_indicator_profile_charts(){
           detail_data.push(null);  
         } else {
           for (var j=0;j<indicator_profile_data[i].data.length;j++){
-            if (indicator_profile_data[i].data[j].core_indicator_id.toString() == gon.indicator_profile.id.toString() || 
-                  (gon.indicator_profile.child_ids.length > 0 && gon.indicator_profile.child_ids.indexOf(indicator_profile_data[i].data[j].core_indicator_id) > -1)){
-              indicator_data = indicator_profile_data[i].data[j];
-              indicator_name = indicator_profile_data[i].data[j].indicator_name;
+            if (indicator_profile_data[i].data[j].hasOwnProperty("data_item")){
+              ind = indicator_profile_data[i].data[j].data_item;
+              if (ind.core_indicator_id.toString() == gon.indicator_profile.id.toString() || 
+                    (gon.indicator_profile.child_ids.length > 0 && gon.indicator_profile.child_ids.indexOf(ind.core_indicator_id) > -1)){
+                indicator_data = ind;
+                indicator_name = ind.indicator_name;
+                break;
+              }
+//              detail_data.push({name: ind.indicator_name, 
+//                  value: ind.formatted_value, 
+//                  number_format: ind.number_format});  
             }
-            detail_data.push({name: indicator_profile_data[i].data[j].indicator_name, 
-                  value: indicator_profile_data[i].data[j].formatted_value, 
-                  number_format: indicator_profile_data[i].data[j].number_format});  
           }
+          detail_data = indicator_profile_data[i].data;
         }
         break;
       }
     }  
 
-    build_other_indicator_profile_summary_charts($(this), indicator_data);
+
+    build_item_indicator_profile_summary_charts($(this), indicator_data);
     var ths_detail = $('.tab-pane.active .indicator_detail_chart[data-id="' + event_id.toString() + '"]')
-    build_other_indicator_profile_detail_charts(ths_detail, indicator_name, detail_data);
+    build_item_indicator_profile_detail_charts(ths_detail, indicator_name, detail_data);
 
   });
 }
@@ -299,9 +368,9 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
       success: function(data) {
         indicator_profile_data = data;
         if (gon.indicator_profile.type_id == 2){
-          build_results_indicator_profile_charts();
-        } else if (gon.indicator_profile.type_id == 1){
-          build_other_indicator_profile_charts();
+          build_summary_indicator_profile_charts();
+        } else {
+          build_item_indicator_profile_charts();
         }
       }
     });
