@@ -122,6 +122,7 @@ class OtherController < ApplicationController
       gon.summary_chart_title = I18n.t('charts.indicator_profile.summary.title')
       gon.summary_chart_rest = I18n.t('charts.indicator_profile.summary.rest')
       gon.chart_no_data = I18n.t('charts.no_data')
+      gon.profile_table_indicator_header = I18n.t('app.common.indicator')
 
       gon.placeholder_core_indicator = I18n.t('app.common.placeholder_core_indicator')
       gon.placeholder_event_type = I18n.t('app.common.placeholder_event_type')
@@ -179,6 +180,7 @@ class OtherController < ApplicationController
       gon.summary_chart_title = I18n.t('charts.indicator_profile.summary.title')
       gon.summary_chart_rest = I18n.t('charts.indicator_profile.summary.rest')
       gon.chart_no_data = I18n.t('charts.no_data')
+      gon.profile_table_indicator_header = I18n.t('app.common.indicator')
 
       gon.placeholder_event_type = I18n.t('app.common.placeholder_event_type')
       gon.placeholder_indicator = I18n.t('app.common.placeholder_indicator')

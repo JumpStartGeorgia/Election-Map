@@ -1,8 +1,27 @@
+
+
+
 $(document).ready(function(){
 
   $.extend( $.fn.dataTableExt.oStdClasses, {
       "sWrapper": "dataTables_wrapper form-inline"
   });
+
+  // to be able to sort the jquery datatable build in the function below
+  $.extend( $.fn.dataTableExt.oSort, {
+	  "formatted-num-pre": function ( a ) {
+		  a = (a === "-" || a === "") ? 0 : a.replace( /[^\d\-\.%]/g, "" );
+		  return parseFloat( a );
+	  },
+
+	  "formatted-num-asc": function ( a, b ) {
+		  return a - b;
+	  },
+
+	  "formatted-num-desc": function ( a, b ) {
+		  return b - a;
+	  }
+  } );
 
   $('#tab1 table').dataTable({
     "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
@@ -45,7 +64,7 @@ $(document).ready(function(){
     "iDisplayLength": 20,
     "aLengthMenu": [[20, 40, 60, 80], [20, 40, 60, 80]]
   });
-  
+
   $('#core-indicator-text').dataTable({
     "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
@@ -82,3 +101,5 @@ $(document).ready(function(){
 
 
 });
+
+

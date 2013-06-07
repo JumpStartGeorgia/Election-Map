@@ -373,6 +373,7 @@ ka:
       event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
       summary_header: Overall
       details_header: Details
+      table_header: Table of All Data
     districts:
       title: Districts
       no_records: I am sorry, but at this time we do not have any districts on file.
@@ -382,6 +383,7 @@ ka:
       event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
       summary_header: Overall
       details_header: Details
+      table_header: Table of All Data
   messages:
     new:
       title: დაგვიკავშირდით

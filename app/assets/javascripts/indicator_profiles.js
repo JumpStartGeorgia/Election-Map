@@ -3,6 +3,149 @@ var summary_height = [];
 var detail_height = [];
 var number_events;
 
+function build_indicator_profile_table(json_data){
+  if (json_data != undefined){
+    // holds rows that will be used to create table
+    var rows = [];
+    // holds list of unique indicators
+    // the index of the indicator + 1 = the array of values for that indicator in rows
+    var indicators = []; 
+    var row, ind, ind_index, footnote;
+
+    // create the header row
+    row = new Array(json_data.length+1);
+    rows.push(row);
+    row[0] = gon.profile_table_indicator_header;
+    for (var i=0;i<json_data.length;i++){
+      row[i+1] = json_data[i].event.name;      
+    }
+    
+    // add data rows
+    // format: [ [ind, event 1 name, event 2 name, etc], [ind 1, event 1 value, event 2, value, etc ], [ind 2, event 1 value, event 2, value, etc ], etc. ]
+    // for each event
+    for (var i=0;i<json_data.length;i++){
+      // for each data item/summary
+      for (var j=0;j<json_data[i].data.length;j++){
+        if (json_data[i].data[j].hasOwnProperty("summary_data")){
+          for (var k=0;k<json_data[i].data[j].summary_data.data.length;k++){
+            ind = json_data[i].data[j].summary_data.data[k];
+
+            // see if this is a new indicator 
+            ind_index = indicators.indexOf(ind.indicator_name)
+            if (ind_index == -1){
+              // add the new indicator to the list
+              indicators.push(ind.indicator_name);
+              ind_index = indicators.length-1;            
+              // create a new row for this indicator
+              row = new Array(json_data.length+1);
+              rows.push(row);
+              row[0] = ind.indicator_name;
+            }
+
+            // add value
+            rows[ind_index+1][i+1] = ind.formatted_value+(ind.number_format === null ? '' : ind.number_format);
+          }
+        } else if (json_data[i].data[j].hasOwnProperty("data_item")){
+          ind = json_data[i].data[j].data_item;
+          // see if this is a new indicator 
+          ind_index = indicators.indexOf(ind.indicator_name)
+          if (ind_index == -1){
+            // add the new indicator to the list
+            indicators.push(ind.indicator_name);
+            ind_index = indicators.length-1;            
+            // create a new row for this indicator
+            row = new Array(json_data.length+1);
+            rows.push(row);
+            row[0] = ind.indicator_name;
+          }
+
+          // add value
+          rows[ind_index+1][i+1] = ind.formatted_value+(ind.number_format === null ? '' : ind.number_format);
+
+        } else if (json_data[i].data[j].hasOwnProperty("footnote") && footnote == undefined){
+          footnote = json_data[i].data[j].footnote.indicator_name;
+        }
+      }
+    }  
+  
+    // now build table using rows array
+    if (rows.length > 1){
+      var html = "";
+
+      html += "<table class='table table-striped table-bordered'>";
+
+      // add header
+      html += "<thead>";
+      html += "<tr>";
+
+      for (var j=0;j<rows[0].length;j++){
+        html += "<th>";
+        if (rows[0][j] !== undefined){
+          html += rows[0][j];
+        }
+        html += "</th>";
+      }
+      html += "</tr>";
+      html += "</thead>";
+
+      // add rows
+      html += "<tbody>";
+      for (var i=1;i<rows.length;i++){
+        html += "<tr>";
+
+        for (var j=0;j<rows[i].length;j++){
+          html += "<td>";
+          if (rows[i][j] !== undefined){
+            html += rows[i][j];
+          }
+          html += "</td>";
+        }
+
+        html += "</tr>";
+      }
+
+      if (footnote !== undefined){
+        html += "<tfoot><tr><td colspan='" + rows[0].length + "'>" + footnote + "</td></tr></tfoot>";
+      }
+
+      html += "</tbody></table>";
+      
+
+      $('.tab-pane.active .indicator_table').html(html);
+
+      // build col sorting array so formatted numbers are sorted properly
+      col_sort = new Array(rows[0].length);
+      for(var i=0;i<col_sort.length;i++){
+        if (i==0){
+          col_sort[i] = null
+        }else{
+          col_sort[i] = { "sType": "formatted-num" }
+        }
+      }
+
+      // add datatable fn
+      $('.tab-pane.active .indicator_table table').dataTable({
+        "sDom": "<'row-fluid'<'span6'><'span6'f>r>t",    
+        "bLengthChange": false,
+        "bJQueryUI": false,
+        "bProcessing": true,
+        "bStateSave": true,
+        "bAutoWidth": false,
+        "oLanguage": {
+          "sUrl": gon.datatable_i18n_url
+        },
+        "aoColumns": col_sort,
+        "iDisplayLength" : rows.length
+      });
+    } else {
+
+    }
+  } else {
+
+
+  }
+}
+
 function build_summary_indicator_profile_summary_charts(ths, indicator_data){
   if (ths != undefined && indicator_data != undefined){
     // reset height
@@ -372,6 +515,7 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
         } else {
           build_item_indicator_profile_charts();
         }
+        build_indicator_profile_table(data);
       }
     });
   }

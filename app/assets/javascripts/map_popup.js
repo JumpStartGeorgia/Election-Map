@@ -3,7 +3,7 @@ var popup_table_row_highlight;
 
 function build_popup_title(json){
   var html = "";
-console.log(json);
+
   for(var index=0;index<json.length;index++){
     if (json[index].hasOwnProperty("shape_values"))
     {
