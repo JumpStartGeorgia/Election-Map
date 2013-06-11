@@ -10,7 +10,14 @@ function build_indicator_profile_table(json_data){
     // holds list of unique indicators
     // the index of the indicator + 1 = the array of values for that indicator in rows
     var indicators = []; 
+    // holds list of events ids so can assign to table cells
+    var event_ids = new Array(json_data.length);
     var row, ind, ind_index, footnote;
+
+    // get event ids
+    for (var i=0;i<json_data.length;i++){
+      event_ids[i] = json_data[i].event.id;      
+    }
 
     // create the header row
     row = new Array(json_data.length+1);
@@ -79,7 +86,17 @@ function build_indicator_profile_table(json_data){
       html += "<tr>";
 
       for (var j=0;j<rows[0].length;j++){
-        html += "<th>";
+        html += "<th";
+        // only show the first 3 events by default
+        if (j < 4){
+          html += " class='active'";
+        }
+        // add event id
+        if (j > 0){
+          html += " data-id='" + event_ids[j-1] + "'"
+        }
+        html += ">";
+
         if (rows[0][j] !== undefined){
           html += rows[0][j];
         }
@@ -94,7 +111,17 @@ function build_indicator_profile_table(json_data){
         html += "<tr>";
 
         for (var j=0;j<rows[i].length;j++){
-          html += "<td>";
+          html += "<td";
+          // only show the first 3 events by default
+          if (j < 4){
+            html += " class='active'";
+          }
+          // add event id
+          if (j > 0){
+            html += " data-id='" + event_ids[j-1] + "'"
+          }
+          html += ">";
+
           if (rows[i][j] !== undefined){
             html += rows[i][j];
           }
@@ -511,9 +538,13 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
       success: function(data) {
         indicator_profile_data = data;
         if (gon.indicator_profile.type_id == 2){
+          // there are charts, so show chart container
+          $('#indicator_profile .tab-pane.active .chart_container').show();
           build_summary_indicator_profile_charts();
         } else {
-          build_item_indicator_profile_charts();
+          // build_item_indicator_profile_charts();
+          // no charts, so hide chart container
+          $('#indicator_profile .tab-pane.active .chart_container').hide();
         }
         build_indicator_profile_table(data);
       }
@@ -552,14 +583,28 @@ $(document).ready(function() {
 
 
     // when event filter changes, update what events to show
-    $('#indicator_profile .tab-pane.active #event_filter input[name="event_filter_checkboxes"]').live('change', function(){
+    $('#indicator_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"]').live('change', function(){
       var event_id = $(this).val();
       if ($(this).attr("checked") == undefined){
         // hide this event
         $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
+
+        // hide this column in datatable
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').removeClass('active');
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').removeClass('active');
+
+        // make sure all checkboxes with this id are not checked
+        $('#indicator_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", false);
       }else{
         // show this event
         $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
+
+        // show this column in datatable
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').addClass('active');
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').addClass('active');
+
+        // make sure all checkboxes with this id are not checked
+        $('#indicator_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", true);
       }
 
       // re-assign height of summary/detail chart for those events showing

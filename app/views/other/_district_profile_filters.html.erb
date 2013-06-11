@@ -1,0 +1,39 @@
+            <div class="row-fluid district_profile_filters">
+              <div class="span9 clear event_filter">
+                <h3>
+                  <%= t('.event_filter_header') %>
+                  <% if type["events"].length > 3 %>
+                    <span><%= t('.event_filter_gt_3') %></span>
+                  <% end %>
+                </h3>
+                <% type["events"].each_with_index do |event, e_index| %>
+                  <div class="event_filter_checkbox">
+                    <label for="<%= "event_#{event["id"]}_#{index}" %>">
+                      <%= check_box_tag "event_filter_checkboxes", event["id"], e_index < 3 ? true : false, :id => "event_#{event["id"]}_#{index}" %>
+                      <%= event["name"] %>
+                    </label>
+                  </div>
+                <% end %>
+              </div>
+
+              <% if type["indicator_types"].present? %>
+                <div class="span3">  
+                  <h3><%= t('.indicator_filter_header') %></h3>
+
+                  <div class="indicator_filter">
+                    <select id="indicator_filter_<%= type["id"]%>" class="indicator_filter_select" data-id="<%= type["id"]%>">
+                      <% type["indicator_types"].each do |type| %>
+                        <option value="-1" disabled="disabled" class="option_disabled"><%= type["name"] %></option>
+                        <% if type["has_summary"] == true %>
+                          <option value="0" data-id="<%= type["id"]%>"><%= type["summary_name"] %></option>
+                        <% end %>
+                        <% type["indicators"].each do |indicator| %>
+                          <option value="<%= indicator["id"]%>" title="<%= indicator["name"]%>"><%= indicator["name_abbrv"] %></option>
+                        <% end %>
+                      <% end %>
+                    </select>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+

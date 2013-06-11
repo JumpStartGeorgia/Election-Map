@@ -10,7 +10,14 @@ function build_district_profile_table(json_data){
     // holds list of unique indicators
     // the index of the indicator + 1 = the array of values for that indicator in rows
     var indicators = []; 
+    // holds list of events ids so can assign to table cells
+    var event_ids = new Array(json_data.length);
     var row, ind, ind_index, footnote;
+
+    // get event ids
+    for (var i=0;i<json_data.length;i++){
+      event_ids[i] = json_data[i].event.id;      
+    }
 
     // create the header row
     row = new Array(json_data.length+1);
@@ -78,7 +85,17 @@ function build_district_profile_table(json_data){
       html += "<tr>";
 
       for (var j=0;j<rows[0].length;j++){
-        html += "<th>";
+        html += "<th";
+        // only show the first 3 events by default
+        if (j < 4){
+          html += " class='active'";
+        }
+        // add event id
+        if (j > 0){
+          html += " data-id='" + event_ids[j-1] + "'"
+        }
+        html += ">";
+
         if (rows[0][j] !== undefined){
           html += rows[0][j];
         }
@@ -93,7 +110,17 @@ function build_district_profile_table(json_data){
         html += "<tr>";
 
         for (var j=0;j<rows[i].length;j++){
-          html += "<td>";
+          html += "<td";
+          // only show the first 3 events by default
+          if (j < 4){
+            html += " class='active'";
+          }
+          // add event id
+          if (j > 0){
+            html += " data-id='" + event_ids[j-1] + "'"
+          }
+          html += ">";
+
           if (rows[i][j] !== undefined){
             html += rows[i][j];
           }
@@ -337,7 +364,7 @@ function build_summary_district_profile_charts(){
             if (district_profile_data[i].data[j].hasOwnProperty("summary_data")){
               for (var k=0;k<district_profile_data[i].data[j].summary_data.data.length;k++){
                 ind = district_profile_data[i].data[j].summary_data.data[k];
-                if (Number(ind.value) >= 5){
+                if (Number(ind.value) >= 3){
                     summary_data.push([ind.indicator_name, Number(ind.value)]);
                     summary_colors.push(ind.color);
                 }
@@ -556,9 +583,13 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
       success: function(data) {
         district_profile_data = data;
         if (summary){
+          // there are charts, so show chart container
+          $('#district_profile .tab-pane.active .chart_container').show(300);
           build_summary_district_profile_charts();
         } else {
-          build_item_district_profile_charts(ind_id);
+          // build_item_district_profile_charts(ind_id);
+          // no charts, so hide chart container
+          $('#district_profile .tab-pane.active .chart_container').hide(300);
         }
         build_district_profile_table(data);
       }
@@ -605,14 +636,28 @@ $(document).ready(function() {
     });
 
     // when event filter changes, update what events to show
-    $('#district_profile .tab-pane.active #event_filter input[name="event_filter_checkboxes"]').live('change', function(){
+    $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"]').live('change', function(){
       var event_id = $(this).val();
       if ($(this).attr("checked") == undefined){
         // hide this event
         $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
+
+        // hide this column in datatable
+        $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').removeClass('active');
+        $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').removeClass('active');
+
+        // make sure all checkboxes with this id are not checked
+        $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", false);
       }else{
         // show this event
         $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
+
+        // show this column in datatable
+        $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').addClass('active');
+        $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').addClass('active');
+
+        // make sure all checkboxes with this id are not checked
+        $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", true);
       }
 
       // re-assign height of summary/detail chart for those events showing

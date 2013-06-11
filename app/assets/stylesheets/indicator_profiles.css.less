@@ -20,88 +20,82 @@ div.profiles{
 } 
 
 #indicator_profile .tab-content .tab-pane {
-  .indicator_profile_filters {
-    h3 span{
-      font-size: 11pt;
-      font-weight: normal;
-    }
-    & > div:last-of-type{
-      text-align: right;
-    }
-  }
-  .profile_item{
-    h2 {
-      line-height: 24px;
-      text-align: center;
-      margin-top: 20px;
-      min-height: 75px;
-    }
-    h3 {
-      margin: 20px 0 10px;
-      text-align: center;
-    }
+  .chart_container{
+    display: none;
+    .profile_item{
+      h2 {
+        line-height: 24px;
+        text-align: center;
+        margin-top: 20px;
+        min-height: 75px;
+      }
+      h3 {
+        margin: 20px 0 10px;
+        text-align: center;
+      }
 
-    span.no_data{
-      display: block;
-      text-align: center;
-      margin-top: 10px;
-      padding: 5px 10px;
-      font-weight: bold;
-    }
-
-    & > div {
-      display: none;
-      &.active{
+      span.no_data{
         display: block;
-        margin-left: 2.564102564102564%;
-        &.no-left-margin{
-          margin-left: 0;
+        text-align: center;
+        margin-top: 10px;
+        padding: 5px 10px;
+        font-weight: bold;
+      }
+
+      & > div {
+        display: none;
+        &.active{
+          display: block;
+          margin-left: 2.564102564102564%;
+          &.no-left-margin{
+            margin-left: 0;
+          }
         }
       }
-    }
-/*    table.other_indicator_table tr td:last-of-type{
-      text-align: right;
-    }*/
+  /*    table.other_indicator_table tr td:last-of-type{
+        text-align: right;
+      }*/
 
-    .map_popup_no_data{
-    	padding: 12px 5px 5px;
-    }
+      .map_popup_no_data{
+      	padding: 12px 5px 5px;
+      }
 
-    .map_popup_footer{
-      margin-top: 5px;
-      font-size: 11px;
-    }
+      .map_popup_footer{
+        margin-top: 5px;
+        font-size: 11px;
+      }
 
-    table {
-      margin-bottom: 0;
-      tr {
-        td {
-          padding: 6px;
-          &.map_popup_table_cell1{
-            padding-left: 0;
-            padding-right: 0;
-            width: 10px;
-          }
-          &.map_popup_table_cell2{
-            width: 50%;
-            &.highlight{
-              font-weight: bold;
+      table {
+        margin-bottom: 0;
+        tr {
+          td {
+            padding: 6px;
+            &.map_popup_table_cell1{
+              padding-left: 0;
+              padding-right: 0;
+              width: 10px;
             }
-          }
-          &.map_popup_table_cell3{
-            width: auto;
-            &.highlight{
-              font-weight: bold;
+            &.map_popup_table_cell2{
+              width: 50%;
+              &.highlight{
+                font-weight: bold;
+              }
             }
-          }
-          &.map_popup_table_cell4{
-            width: 25%;
-            padding-left: 0;
-            padding-right: 0;
-            div {
-              padding: 0;
-              margin: 0;
-              background-color: #5c81a3;
+            &.map_popup_table_cell3{
+              width: auto;
+              &.highlight{
+                font-weight: bold;
+              }
+            }
+            &.map_popup_table_cell4{
+              width: 25%;
+              padding-left: 0;
+              padding-right: 0;
+              div {
+                padding: 0;
+                margin: 0;
+                background-color: #5c81a3;
+              }
             }
           }
         }
@@ -113,13 +107,37 @@ div.profiles{
     margin: 20px 0 10px;
 
     .indicator_table table {
+      td, th {
+        display: none;
+        &.active {
+          display: table-cell;
+        }
+      }
       thead tr{
         background-color: #aec9dc;
       }
       tfoot tr td {
+        display: table-cell;
         font-size: 11px;
       }
     } 
+  }
+
+  .indicator_profile_filters {
+    h3 span{
+      font-size: 11pt;
+      font-weight: normal;
+    }
+    .event_filter{
+      .event_filter_checkbox{
+        float: left; 
+        padding: 2px 4px; 
+        margin: 2px 4px;
+      }
+    }
+    & > div:last-of-type{
+      text-align: right;
+    }
   }
 
 }

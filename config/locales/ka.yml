@@ -367,23 +367,25 @@ ka:
       title: Indicators
       no_records: I am sorry, but at this time we do not have any indicators on file.
     indicator:
-      district_header: District Filter
-      all_districts_option: All Districts
-      event_filter_header: Election Filter
-      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
       summary_header: Overall
       details_header: Details
       table_header: Table of All Data
+    indicator_profile_filters: 
+      district_filter_header: District Filter
+      all_districts_option: All Districts
+      event_filter_header: Election Filter
+      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
     districts:
       title: Districts
       no_records: I am sorry, but at this time we do not have any districts on file.
     district:
-      indicator_filter_header: Indicator Filter
-      event_filter_header: Election Filter
-      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
       summary_header: Overall
       details_header: Details
       table_header: Table of All Data
+    district_profile_filters:
+      indicator_filter_header: Indicator Filter
+      event_filter_header: Election Filter
+      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
   messages:
     new:
       title: დაგვიკავშირდით
