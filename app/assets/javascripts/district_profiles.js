@@ -631,6 +631,11 @@ $(document).ready(function() {
           summary = true;
           id = $(selected_option).data('id');
         }
+
+        // make sure all select filters have this item selected
+        $('#district_profile .tab-pane.active select.indicator_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+
+        // reload data
         get_district_event_type_data($('#district_profile .nav-tabs li.active a'), summary, id);
   //    });
     });

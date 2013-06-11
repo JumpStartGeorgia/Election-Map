@@ -577,6 +577,11 @@ $(document).ready(function() {
   //        var selected_option = $("#indicator_profile .tab-pane.active select.district_filter_select option:selected");
           var selected_index = $(this).prop("selectedIndex");
           var selected_option = $(this).children()[selected_index];
+
+          // make sure all select filters have this item selected
+          $('#indicator_profile .tab-pane.active select.district_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+
+          // reload the data
           get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());
   //    });
     });
