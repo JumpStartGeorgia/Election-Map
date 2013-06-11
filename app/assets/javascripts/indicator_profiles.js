@@ -132,7 +132,11 @@ function build_indicator_profile_table(json_data){
       }
 
       if (footnote !== undefined){
-        html += "<tfoot><tr><td colspan='" + rows[0].length + "'>" + footnote + "</td></tr></tfoot>";
+        var colspan = 4;
+        if (rows[0].length < 4){
+          colspan = rows[0].length;
+        }
+        html += "<tfoot><tr><td colspan='" + colspan + "'>" + footnote + "</td></tr></tfoot>";
       }
 
       html += "</tbody></table>";
@@ -598,6 +602,12 @@ $(document).ready(function() {
         $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').removeClass('active');
         $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').removeClass('active');
 
+        // update colspan if the table has a footer
+        var tfoot = $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table tfoot tr td');
+        if (tfoot !== undefined){
+          tfoot.attr('colspan', Number(tfoot.attr('colspan'))-1);
+        }
+
         // make sure all checkboxes with this id are not checked
         $('#indicator_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", false);
       }else{
@@ -607,6 +617,12 @@ $(document).ready(function() {
         // show this column in datatable
         $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').addClass('active');
         $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').addClass('active');
+
+        // update colspan if the table has a footer
+        var tfoot = $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table tfoot tr td');
+        if (tfoot !== undefined){
+          tfoot.attr('colspan', Number(tfoot.attr('colspan'))+1);
+        }
 
         // make sure all checkboxes with this id are not checked
         $('#indicator_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", true);
