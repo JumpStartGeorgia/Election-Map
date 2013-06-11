@@ -13,6 +13,8 @@
  *= require jquery.ui.core
  *= require jquery.ui.theme
  *= require dataTables/jquery.dataTables.bootstrap
+ *= require dataTables/extras/TableTools
+ *= require dataTables/extras/TableTools_JUI
  *= require core_indicators
  *= require data_table
  *= require news
@@ -517,3 +519,20 @@ span#hidden_span_width{
   color: #000;
   text-align: center;
 }
+
+
+
+/* jquery datatable basic styles */
+div.dataTables_filter label{
+  text-align: left;
+  float: left;
+}
+div.dataTables_length label{
+  text-align: right;
+  float: right;
+}
+div.DTTT_container{
+  text-align: right;
+  float: right;
+}
+

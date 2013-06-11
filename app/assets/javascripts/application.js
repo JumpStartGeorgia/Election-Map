@@ -6,6 +6,8 @@
 //= require twitter/bootstrap
 //= require dataTables/jquery.dataTables
 //= require dataTables/jquery.dataTables.bootstrap
+//= require dataTables/extras/ZeroClipboard.js
+//= require dataTables/extras/TableTools
 //= require fancybox
 
 //= require utilities

@@ -24,7 +24,7 @@ $(document).ready(function(){
   } );
 
   $('#tab1 table').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
+    "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": false,
     "bProcessing": true,
@@ -38,7 +38,7 @@ $(document).ready(function(){
   });
   
   $('#tab2 table').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
+    "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": false,
     "bProcessing": true,
@@ -52,7 +52,7 @@ $(document).ready(function(){
   });
   
   $('#district_profiles table').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
+    "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": false,
     "bProcessing": true,
@@ -66,7 +66,25 @@ $(document).ready(function(){
   });
 
   $('#core-indicator-text').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
+    "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
+    "sPaginationType": "bootstrap",
+    "bJQueryUI": false,
+    "bProcessing": true,
+    "bStateSave": true,
+    "bAutoWidth": true,
+    "aoColumnDefs": [
+      { 'bSortable': false, 'aTargets': [ 0 ] }
+    ],
+    "aaSorting": [[1, 'asc']],
+    "oLanguage": {
+      "sUrl": gon.datatable_i18n_url
+    },
+    "iDisplayLength": 20,
+    "aLengthMenu": [[20, 40, 60, 80], [20, 40, 60, 80]]
+  });
+
+  $('#district-text').dataTable({
+    "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": false,
     "bProcessing": true,
@@ -84,7 +102,7 @@ $(document).ready(function(){
   });
 
   $('#users-datatable').dataTable({
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",    
+    "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": true,
     "bProcessing": true,

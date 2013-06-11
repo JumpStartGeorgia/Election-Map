@@ -168,9 +168,14 @@ function build_district_profile_table(json_data){
         }
       }
 
+      // create file name for downloads
+      var file_name = $('h1').html();
+      file_name += " - ";
+      file_name += $('ul.nav-tabs li.active a').html();
+
       // add datatable fn
       $('.tab-pane.active .district_table table').dataTable({
-        "sDom": "<'row-fluid'<'span6'><'span6'f>r>t",    
+        "sDom": "<'row-fluid'<'span6'f><'span6'T>r>t",    
         "bLengthChange": false,
         "bJQueryUI": false,
         "bProcessing": true,
@@ -180,7 +185,19 @@ function build_district_profile_table(json_data){
           "sUrl": gon.datatable_i18n_url
         },
         "aoColumns": col_sort,
-        "iDisplayLength" : rows.length
+        "iDisplayLength" : rows.length,
+        "oTableTools": {
+			    "aButtons": [
+            {
+              "sExtends": "csv",
+              "sTitle": file_name + " - csv"
+            },
+            {
+              "sExtends": "xls",
+              "sTitle": file_name + " - xls"
+            }
+			    ]
+		    }
       });
     } else {
 
