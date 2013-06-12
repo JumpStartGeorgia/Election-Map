@@ -31,6 +31,20 @@ if (gon.openlayers){
 	OpenLayers.ImgPath = gon.openlayers_img_path;
 
 
+  function resize_map(){
+    var minHeight = 500,//full_height($('#indicator_menu_scale')),
+    offsetTop = $('#map-container').offset().top,
+    workHeight = $(window).innerHeight(),
+    footnoteHeight = full_height($('#footnote')),
+    marginBottom = 10,
+    mapHeight = workHeight - offsetTop - footnoteHeight - marginBottom;
+    if (mapHeight < minHeight)
+    {
+      mapHeight = minHeight;
+    }
+    $('#map').css('height', mapHeight);
+  }
+
 	// Function called from body tag
 	function map_init(){
 		var options = {
@@ -56,18 +70,7 @@ if (gon.openlayers){
 
 
     /* ADJUSTING MAP HEIGHT */
-    var minHeight = 500,//full_height($('#indicator_menu_scale')),
-    offsetTop = $('#map-container').offset().top,
-    workHeight = $(window).innerHeight(),
-    footnoteHeight = full_height($('#footnote')),
-    marginBottom = 10,
-    mapHeight = workHeight - offsetTop - footnoteHeight - marginBottom;
-    if (mapHeight < minHeight)
-    {
-      mapHeight = minHeight;
-    }
-    $('#map').css('height', mapHeight);
-
+    resize_map();
 
 		map = new OpenLayers.Map('map', options);
 
@@ -949,4 +952,10 @@ if (gon.openlayers){
 	}
 
 
+  // when the window resizes, redraw the map to fit the new window size
+  window.onresize = function()
+  {
+    resize_map();
+		set_map_extent();
+  }
 }
