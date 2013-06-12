@@ -218,23 +218,22 @@ function build_summary_indicator_profile_summary_charts(ths, indicator_data){
 
     ths.highcharts({
       chart: {
-          plotBackgroundColor: null,
-          plotBorderWidth: null,
-          plotShadow: false,
-          height: 250,
-          events: {
-            load: function(event) {
-              // save the height and after all details loaded, reset height for all detail chart containers
-              // so floating wraps nicely
-              summary_height.push(this.options.chart.height);
-              if (summary_height.length == $('.tab-pane.active .profile_item .indicator_summary_chart').length){
-                $(".tab-pane.active .profile_item .indicator_summary_chart").each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
-              }
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        height: 250,
+        events: {
+          load: function(event) {
+            // save the height and after all details loaded, reset height for all detail chart containers
+            // so floating wraps nicely
+            summary_height.push(this.options.chart.height);
+            if (summary_height.length == $('.tab-pane.active .profile_item .indicator_summary_chart').length){
+              $(".tab-pane.active .profile_item .indicator_summary_chart").each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
             }
-          } 
-
+          }
+        } 
       },
-      colors: [indicator_data.color, "#6f6f6f"],
+      colors: [indicator_data.color, "#c9c9c9"],
       title: {
           text: gon.summary_chart_title + ": " + indicator_data.rank
       },
@@ -565,6 +564,8 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
       url = gon.json_indicator_event_type_data_url.replace(gon.placeholder_core_indicator, gon.indicator_profile.id).replace(gon.placeholder_event_type, event_type_id.toString());
     }
 
+    $('#indicator_profile .tab-content .tab-pane.active .profile_loading').fadeIn();
+
     $.ajax({
       type: "GET",
       url: url,
@@ -585,6 +586,7 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
           $('#indicator_profile .tab-pane.active .chart_container').hide();
         }
         build_indicator_profile_table(data);
+        $('#indicator_profile .tab-content .tab-pane.active .profile_loading').fadeOut();
       }
     });
   }
@@ -605,6 +607,9 @@ $(document).ready(function() {
       // if charts do not already exist, load them
       if ($('#indicator_profile .tab-content #tab' + $(this).data('id') + ' .indicator_summary_chart:first').html().length == 0){
         get_ind_event_type_data($(this).data('id'));
+      } else {
+        // make sure the loading style is not showing
+        $('#indicator_profile .tab-content #tab' + $(this).data('id') + ' .profile_loading').hide();
       }
     });
 

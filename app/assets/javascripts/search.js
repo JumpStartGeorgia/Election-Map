@@ -23,21 +23,7 @@ $(document).ready(function(){
 	  }
   } );
 
-  $('#tab1 table').dataTable({
-    "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
-    "sPaginationType": "bootstrap",
-    "bJQueryUI": false,
-    "bProcessing": true,
-    "bStateSave": true,
-    "bAutoWidth": false,
-    "oLanguage": {
-      "sUrl": gon.datatable_i18n_url
-    },
-    "iDisplayLength": 20,
-    "aLengthMenu": [[20, 40, 60, 80], [20, 40, 60, 80]]
-  });
-  
-  $('#tab2 table').dataTable({
+  $('.indicator_profiles table').dataTable({
     "sDom": "<'row-fluid'<'span6'f><'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",    
     "sPaginationType": "bootstrap",
     "bJQueryUI": false,

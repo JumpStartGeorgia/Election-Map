@@ -536,3 +536,7 @@ div.DTTT_container{
   float: right;
 }
 
+/* highcharts basic styles */
+.highcharts-container hr{
+  margin: 0;
+}

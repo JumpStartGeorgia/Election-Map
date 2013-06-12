@@ -22,6 +22,8 @@
       <% @district["event_types"].each_with_index do |type, index| %>
         <div class="tab-pane <%= index == @active_index ? 'active' : ''%>" id="<%= "tab#{type["id"]}" %>" >
 
+          <div class="profile_loading"></div>
+
           <div class="chart_container" >
             <%= render :partial => 'other/district_profile_filters', :locals => {:type => type, :index => 1} %>
 
@@ -50,10 +52,11 @@
                 </div>
               <% end %>
             </div>
+
+            <hr />
           </div>
 
           <div class="district_table_container">
-            <h3><%= t('.table_header') %></h3>
 
             <%= render :partial => 'other/district_profile_filters', :locals => {:type => type, :index => 2} %>
 

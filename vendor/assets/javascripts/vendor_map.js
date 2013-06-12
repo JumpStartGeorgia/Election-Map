@@ -5,4 +5,5 @@
 //= require jquery.tipsy
 //= require openlayers
 //= require highcharts
+//= require highcharts-exporting
 

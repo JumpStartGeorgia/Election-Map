@@ -369,7 +369,6 @@ en:
     indicator:
       summary_header: Overall
       details_header: Details
-      table_header: Table of All Data
     indicator_profile_filters: 
       district_filter_header: District Filter
       all_districts_option: All Districts
@@ -381,7 +380,6 @@ en:
     district:
       summary_header: Overall
       details_header: Details
-      table_header: Table of All Data
     district_profile_filters:
       indicator_filter_header: Indicator Filter
       event_filter_header: Election Filter

@@ -217,7 +217,7 @@ function build_summary_district_profile_summary_charts(ths, summary_colors, summ
     for (var i=0; i<summary_data.length;i++){
       sum += summary_data[i][1];
     }
-    summary_colors.push("#6f6f6f");
+    summary_colors.push("#c9c9c9");
     summary_data.push([gon.summary_chart_rest, 100-sum]);
     ths.highcharts({
       chart: {
@@ -608,6 +608,8 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
       var url = gon.json_district_event_type_data_url.replace(gon.placeholder_event_type, ths_event_type.data('id')).replace(gon.placeholder_core_indicator, ind_id);
     }
 
+    $('#district_profile .tab-content .tab-pane.active .profile_loading').fadeIn();
+
     $.ajax({
       type: "GET",
       url: url,
@@ -628,6 +630,7 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
           $('#district_profile .tab-pane.active .chart_container').hide(300);
         }
         build_district_profile_table(data);
+        $('#district_profile .tab-content .tab-pane.active .profile_loading').fadeOut();
       }
     });
   }
@@ -647,6 +650,9 @@ $(document).ready(function() {
       // if charts do not already exist, load them
       if ($('#district_profile .tab-content #tab' + $(this).data('id') + ' .district_summary_chart:first').html().length == 0){
         get_district_event_type_data($(this));
+      } else {
+        // make sure the loading style is not showing
+        $('#district_profile .tab-content #tab' + $(this).data('id') + ' .profile_loading').hide();
       }
     });
 
