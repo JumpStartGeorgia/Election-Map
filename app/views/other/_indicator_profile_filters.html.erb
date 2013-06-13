@@ -23,7 +23,7 @@
                     <select id="district_filter_<%= type["id"]%>" class="district_filter_select" data-id="<%= type["id"]%>">
                       <option value="0" selected="selected"><%= t('.all_districts_option') %></option>
                       <% @districts.each_with_index do |district, d_index| %>
-                        <option value="<%= d_index%>" data-id="<%= district.common_id %>" data-shape-type-id="<%= district.shape_type_id %>"><%= district.common_name %></option>
+                        <option value="<%= d_index+1%>" data-id="<%= district.common_id %>" data-shape-type-id="<%= district.shape_type_id %>"><%= district.common_name %></option>
                       <% end %>
                     </select>
                   </div>
