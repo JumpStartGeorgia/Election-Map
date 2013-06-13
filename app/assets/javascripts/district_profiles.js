@@ -267,7 +267,14 @@ function build_summary_district_profile_summary_charts(ths, summary_colors, summ
         type: 'pie',
         name: 'vote share',
         data: summary_data
-      }]
+      }],
+      lang: {
+        downloadPNG: gon.highcharts_downloadPNG,
+        downloadJPEG: gon.highcharts_downloadJPEG,
+        downloadPDF: gon.highcharts_downloadPDF,
+        downloadSVG: gon.highcharts_downloadSVG,
+        printChart: gon.highcharts_printChart
+      }
     });
   } else if (ths != undefined) {
     // reset height

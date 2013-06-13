@@ -124,11 +124,19 @@ class OtherController < ApplicationController
       gon.chart_no_data = I18n.t('charts.no_data')
       gon.profile_table_indicator_header = I18n.t('app.common.indicator')
 
+      # text for print and export buttons in highcharts
+      gon.highcharts_downloadPNG = t('highcharts.downloadPNG')
+      gon.highcharts_downloadJPEG = t('highcharts.downloadJPEG')
+      gon.highcharts_downloadPDF = t('highcharts.downloadPDF')
+      gon.highcharts_downloadSVG = t('highcharts.downloadSVG')
+      gon.highcharts_printChart = t('highcharts.printChart')
+
       gon.placeholder_core_indicator = I18n.t('app.common.placeholder_core_indicator')
       gon.placeholder_event_type = I18n.t('app.common.placeholder_event_type')
       gon.placeholder_shape_type_id = I18n.t('app.common.placeholder_shape_type_id')
       gon.placeholder_common_id = I18n.t('app.common.placeholder_common_id')
       gon.placeholder_common_name = I18n.t('app.common.placeholder_common_name')
+
       if @indicator["type_id"] == 2
         gon.json_indicator_event_type_data_url = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type)
         gon.json_indicator_event_type_data_url_district_filter = json_indicator_event_type_summary_data_path(:core_indicator_id => gon.placeholder_core_indicator, :event_type_id => gon.placeholder_event_type, :shape_type_id => gon.placeholder_shape_type_id, :common_id => gon.placeholder_common_id, :common_name => gon.placeholder_common_name)
@@ -181,6 +189,13 @@ class OtherController < ApplicationController
       gon.summary_chart_rest = I18n.t('charts.indicator_profile.summary.rest')
       gon.chart_no_data = I18n.t('charts.no_data')
       gon.profile_table_indicator_header = I18n.t('app.common.indicator')
+
+      # text for print and export buttons in highcharts
+      gon.highcharts_downloadPNG = t('highcharts.downloadPNG')
+      gon.highcharts_downloadJPEG = t('highcharts.downloadJPEG')
+      gon.highcharts_downloadPDF = t('highcharts.downloadPDF')
+      gon.highcharts_downloadSVG = t('highcharts.downloadSVG')
+      gon.highcharts_printChart = t('highcharts.printChart')
 
       gon.placeholder_event_type = I18n.t('app.common.placeholder_event_type')
       gon.placeholder_indicator = I18n.t('app.common.placeholder_indicator')

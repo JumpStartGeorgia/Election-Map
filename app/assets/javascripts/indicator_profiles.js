@@ -266,7 +266,14 @@ function build_summary_indicator_profile_summary_charts(ths, indicator_data){
             [indicator_data.indicator_name_abbrv, Number(indicator_data.value)],
             [gon.summary_chart_rest, 100 - Number(indicator_data.value)]
         ]
-      }]
+      }],
+      lang: {
+        downloadPNG: gon.highcharts_downloadPNG,
+        downloadJPEG: gon.highcharts_downloadJPEG,
+        downloadPDF: gon.highcharts_downloadPDF,
+        downloadSVG: gon.highcharts_downloadSVG,
+        printChart: gon.highcharts_printChart
+      }
     });
   } else if (ths != undefined) {
     // reset height
