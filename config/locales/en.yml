@@ -4,7 +4,7 @@ en:
     models:
       user: User
       unique_shape_name: Shape
-      core_indicator: Core Indicator
+      core_indicator: Unique Indicator
     attributes:
       data_sets:
         event_id: Event
@@ -175,7 +175,7 @@ en:
       no: No
       important: Important
       indicator: Indicator
-      core_indicator: Core Indicator
+      core_indicator: Unique Indicator
       data: Data
       event_custom_view: Event Custom View
       event_indicator_relationship: Event Indicator Relationship

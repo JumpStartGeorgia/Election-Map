@@ -4,7 +4,7 @@ ka:
     models:
       user: User
       unique_shape_name: Shape
-      core_indicator: Core Indicator
+      core_indicator: Unique Indicator
     attributes:
       data_sets:
         event_id: Event
@@ -175,7 +175,7 @@ ka:
       no: არა
       important: Important
       indicator: Indicator
-      core_indicator: Core Indicator
+      core_indicator: Unique Indicator
       data: Data
       event_custom_view: Event Custom View
       event_indicator_relationship: Event Indicator Relationship
@@ -262,11 +262,11 @@ ka:
     subject_new_message: "[Georgia Election Data] Contact Form"
     subject_status_update: "[Georgia Election Data (%{env})] Status Update"
   charts:
-    no_data: "No data exists."
+    no_data: "მონაცემები არ არსებობს."
     indicator_profile:
       summary:
-        title: "Rank"
-        rest: "The Rest"
+        title: "რანგი"
+        rest: "დანარჩენი"
   layouts:
     application-bootstrap:
       title: საქართველოს საარჩევნო მონაცემები
@@ -284,8 +284,8 @@ ka:
       header: არჩევნები
       news: სიახლეები
       data_archives: მონაცემთა არქივი
-      indicators: Indicators
-      districts: Districts
+      indicators: მაჩვენებლები
+      districts: ოლქები
     ajax_data_table:
       links: რუკის სანახავად დააჭირეთ მონაცემების ღილაკს.
       sorting: "ერთდროულად რამდენიმე სვეტის სორტირებისთვის გეჭიროთ ღილაკი \"SHIFT\" და აირჩიეთ შესაბამისი სვეტების სათაურები"
@@ -356,7 +356,7 @@ ka:
       follow: "თქვენ შეგიძლიათ მიადევნოთ თვალყური სამომავლო განახლებებს Twitter-ზე  (#gvote ან  @jsgeorgia) ან Facebook-ზე შემდეგ მისამართზე http://www.facebook.com/JumpStartGeorgia."
     indicator_menu_scales:
       indicator_header: ინდიკატორები
-      view_indicator: view indicator
+      view_indicator: მაჩვენებლის ნახვა
   other:
     news:
       title: სიახლეები
@@ -370,26 +370,26 @@ ka:
       view_all: სრული მონაცემთა არქივის ნახვა
       no_archive: ვწუხვართ, მაგრამ მოთხოვნილი მონაცემები ვერ მოიძებნა.
     indicators:
-      title: Indicators
-      no_records: I am sorry, but at this time we do not have any indicators on file.
+      title: მაჩვენებლები
+      no_records: სამწუხაროდ ამჟამად არ გვაქვს მაჩვენებლები ფაილზე.
     indicator:
-      summary_header: Overall
-      details_header: Details
+      summary_header: სრული
+      details_header: დეტალები
     indicator_profile_filters: 
-      district_filter_header: District Filter
-      all_districts_option: All Districts
-      event_filter_header: Election Filter
-      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
+      district_filter_header: ოლქის ფილტრი
+      all_districts_option: ყველა ოლქი
+      event_filter_header: არჩევნების ფილტრი
+      event_filter_gt_3: "(თუ 3 მოვლენაზე მეტს შეარჩევთ მოგიწევთ ჩამოშლა)"
     districts:
-      title: Districts
-      no_records: I am sorry, but at this time we do not have any districts on file.
+      title: ოლქები
+      no_records: სამწუხაროდ ამჟამად არ გვაქვს ოლქები ფაილზე.
     district:
-      summary_header: Overall
-      details_header: Details
+      summary_header: სრული
+      details_header: დეტალები
     district_profile_filters:
-      indicator_filter_header: Indicator Filter
-      event_filter_header: Election Filter
-      event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
+      indicator_filter_header: მაჩვენებლის ფილტრი
+      event_filter_header: არჩევნების ფილტრი
+      event_filter_gt_3: "(თუ 3 მოვლენაზე მეტს შეარჩევთ მოგიწევთ ჩამოშლა)"
   messages:
     new:
       title: დაგვიკავშირდით

@@ -224,7 +224,7 @@ function build_summary_district_profile_summary_charts(ths, summary_colors, summ
           plotBackgroundColor: null,
           plotBorderWidth: null,
           plotShadow: false,
-          height: 250,
+          height: 250 + 18*summary_colors.length,
           events: {
             load: function(event) {
               // save the height and after all details loaded, reset height for all detail chart containers
@@ -261,7 +261,10 @@ function build_summary_district_profile_summary_charts(ths, summary_colors, summ
       legend: {
         labelFormatter: function() {
           return this.name + ' (' +  Highcharts.numberFormat(this.y, 2) + '%)';
-        }
+        },
+        layout: 'vertical',
+        itemMarginTop: 2,
+        itemMarginBottom: 2
       },
       series: [{
         type: 'pie',
@@ -408,7 +411,7 @@ function build_summary_district_profile_charts(){
               for (var k=0;k<district_profile_data[i].data[j].summary_data.data.length;k++){
                 ind = district_profile_data[i].data[j].summary_data.data[k];
                 if (Number(ind.value) >= 3){
-                    summary_data.push([ind.indicator_name, Number(ind.value)]);
+                    summary_data.push([ind.indicator_name_abbrv, Number(ind.value)]);
                     summary_colors.push(ind.color);
                 }
 //                detail_headers.push(ind.indicator_name);  
@@ -642,11 +645,38 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
     });
   }
 }
+
+// re-assign height of summary/detail chart for those events showing
+function adjust_district_profile_height(){
+  detail_height = [];
+  summary_height = [];
+  ////// summary
+  // get the heights of each visible summary chart
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function(){
+    $(this).height('auto');
+    summary_height.push($(this).height());
+  });
+  // update heights to max height of visible detail charts
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
+
+  ////// detail
+  // get the heights of each visible detail chart
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_detail_chart').each(function(){
+    $(this).height('auto');
+    detail_height.push($(this).height());
+  });
+  // update heights to max height of visible detail charts
+  $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+}
+
 $(document).ready(function() {
 
   if (gon.district_profile){
 
     $(window).bind('load', get_district_event_type_data());
+    $(window).resize(function(){
+      adjust_district_profile_height()
+    });
 
     // when switch event types, get data for the new events
     $('#district_profile .nav-tabs li a').click(function(){
@@ -726,26 +756,8 @@ $(document).ready(function() {
         $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", true);
       }
 
-      // re-assign height of summary/detail chart for those events showing
-      detail_height = [];
-      summary_height = [];
-      ////// summary
-      // get the heights of each visible summary chart
-      $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function(){
-        $(this).height('auto');
-        summary_height.push($(this).height());
-      });
-      // update heights to max height of visible detail charts
-      $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
-
-      ////// detail
-      // get the heights of each visible detail chart
-      $('#district_profile .tab-pane.active .profile_item > div.active div.district_detail_chart').each(function(){
-        $(this).height('auto');
-        detail_height.push($(this).height());
-      });
-      // update heights to max height of visible detail charts
-      $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+      // adjust the height of the blocks
+      adjust_district_profile_height();
 
       // re-assign the no-left-margin class to every third item that is showing
       $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
