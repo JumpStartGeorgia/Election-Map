@@ -694,6 +694,9 @@ $(document).ready(function() {
     });
 
     // apply chosen jquery to filters
+    $('select[id^="event_filter_"]').each(function(){
+      $(this).chosen({width: "100%"});
+    });
     $('select[id^="indicator_filter_"]').each(function(){
       $(this).chosen({width: $(this).innerWidth().toString() + "px"});
     });
@@ -727,6 +730,61 @@ $(document).ready(function() {
     });
 
     // when event filter changes, update what events to show
+    $('#district_profile .tab-pane.active .event_filter select').live('change', function(){
+      // loop through each option in this select and show/hide as appropriate
+      var event_id;
+      $(this).children().each(function(){
+        event_id = $(this).val();
+        if ($(this).prop("selected") == true){
+          // show this event
+          $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
+
+          // show this column in datatable
+          $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').addClass('active');
+          $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').addClass('active');
+
+          // update colspan if the table has a footer
+          var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
+          if (tfoot !== undefined){
+            tfoot.attr('colspan', Number(tfoot.attr('colspan'))+1);
+          }
+
+          // make sure all checkboxes with this id are not checked
+          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+        }else{
+          // hide this event
+          $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
+
+          // hide this column in datatable
+          $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').removeClass('active');
+          $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').removeClass('active');
+
+          // update colspan if the table has a footer
+          var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
+          if (tfoot !== undefined){
+            tfoot.attr('colspan', Number(tfoot.attr('colspan'))-1);
+          }
+
+          // make sure all checkboxes with this id are not checked
+          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", false);
+          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+        }
+      });
+
+      // adjust the height of the blocks
+      adjust_district_profile_height();
+
+      // re-assign the no-left-margin class to every third item that is showing
+      $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
+      $('#district_profile .tab-pane.active .profile_item > div.active').each(function(index){
+        if (index%3 == 0){
+          $(this).addClass('no-left-margin');
+        }
+      });
+    });
+
+/*
     $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"]').live('change', function(){
       var event_id = $(this).val();
       if ($(this).attr("checked") == undefined){
@@ -774,6 +832,7 @@ $(document).ready(function() {
         }
       });
     });
+*/
   }
 });
 

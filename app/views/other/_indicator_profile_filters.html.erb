@@ -6,6 +6,14 @@
                     <span><%= t('.event_filter_gt_3') %></span>
                   <% end %>
                 </h3>
+                <select id="event_filter_<%= "#{type["name"]}_#{index}" %>" class="event_filter_select chzn-select" multiple data-id="<%= type["id"]%>">
+                  <% type["events"].each_with_index do |event, e_index| %>
+                    <option value="<%= event["id"] %>" <%= e_index < 3 ? "selected='selected'" : "" %> id="<%= "event_#{event["id"]}_#{index}" %>">
+                      <%= event["name"] %>
+                    </option>
+                  <% end %>
+                </select>
+<!--
                 <% type["events"].each_with_index do |event, e_index| %>
                   <div class="event_filter_checkbox">
                     <label for="<%= "event_#{event["id"]}_#{index}" %>">
@@ -14,6 +22,7 @@
                     </label>
                   </div>
                 <% end %>
+-->
               </div>
               <% if @districts.present? %>
                 <div class="span3">  
