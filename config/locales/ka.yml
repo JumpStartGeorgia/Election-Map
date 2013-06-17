@@ -2,30 +2,30 @@
 ka:
   activerecord:
     models:
-      user: User
-      unique_shape_name: Shape
-      core_indicator: Unique Indicator
+      user: მომხმარებელი
+      unique_shape_name: ფორმა (shape)
+      core_indicator: უნიკალური მაჩვენებელი
     attributes:
       data_sets:
-        event_id: Event
-        data_type: Data Type
-        precincts_completed: "Precincts Completed (#)"
+        event_id: მოვლენები
+        data_type: მონაცემთა ტიპი
+        precincts_completed: "უბნები დასრულებულია (#)"
         precincts_total: "Total Precincts (#)"
-        precincts_percentage: "Precincts Completed (%)"
-        timestamp: Time Event Data Reported
-        show_to_public: Make Public?
+        precincts_percentage: "უბნები დასრულებულია (%)"
+        timestamp: დროის მონაცემთა ინფორმაცია
+        show_to_public: გახდეს საჯარო?
       events:
-        is_default_view: Default Event to Show on Site Load?
+        is_default_view: განსაზღვრული მოვლენა, რომ გამოჩნდეს საიტის ჩატვირთვისას?
   models:
     live_data:
       msgs:
-        event_hint: "* - event has live data"
+        event_hint: "* - მოვლენას აქვს განახლებადი მონაცემები"
     data_set:
       msgs:
-        dataset_not_save: The dataset record could not be created for this file.
-        missing_params: Not all parameters were provided to save the record.
-        failed_set_event_flag: The Has Official/Live Data flag could not be set for the event.
-        events_not_match: Row %{row_num} - The Event selected in the web form does not match the Event in the spreadshseet.
+        dataset_not_save: მოცემული ფაილისთვის ვერ შეიქმნა მონაცემთა ნაკრების ჩანაწერი.
+        missing_params: ჩანაწერის შესანახად ყველა პარამეტრი არ იყო დაკმაყოფილებული.
+        failed_set_event_flag: მოვლენის მონაცემთა ტიპების ოფციები ვერ შეიქმნება.
+        events_not_match: რიგი %{row_num} - ვების ფორმაში შერჩეული მოვლენა არ შეესაბამება სფრედშითის მოვლენას.
     datum:
       header:
         event: არჩევნები
@@ -33,59 +33,59 @@ ka:
         map_level_id: "[Level] საიდენტიფიკაციო ნომერი"
         map_level_name: "[Level] დასახელება"
       msgs:
-        no_event_db: The event was not found in the database.
-        indicator_not_found: Indicator %{name} could not be found.
-        indicator_not_found_with_data: Row %{row_num} - Indicator %{name} could not be found and data was provided for it.
-        no_shape_spreadsheet: Row %{row_num} - The shape type was not found in the spreadsheet.
-        no_shape_db: Row %{row_num} - The shape type was not found in the database.
-        missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
-        not_valid: Row %{row_num} is not valid.
-        already_exists: Row %{row_num} already exists in the database.
-        failed_set_event_flag: Row %{row_num} - The Has Official Data flag could not be sent for the event.
+        no_event_db: მონაცემთა ბაზაში მოვლენა არ მოიძებნა.
+        indicator_not_found: მაჩვენებელი %{name} არ მოიძებნა.
+        indicator_not_found_with_data: რიგი %{row_num} - მაჩვენებელი %{name} არ მოიძებნა და მონაცემები მოწოდებული იქნა ამისთვის.
+        no_shape_spreadsheet: რიგი %{row_num} - ფორმის (shape) ტიპი არ მოიძებნა სფრედშითში.
+        no_shape_db: რიგი %{row_num} - ფორმის (shape) ტიპი არ მოიძებნა მონაცემთა ბაზაში.
+        missing_data_spreadsheet: რიგი %{row_num} - ჩანაწერის შესანახად სავალდებულო მონაცემი აკლია.
+        not_valid: რიგი %{row_num} არასწორია.
+        already_exists: რიგი %{row_num} უკვე არსებობს მონაცემთა ბაზაში.
+        failed_set_event_flag: რიგი %{row_num} - მოვლენის მონაცემთა ტიპების ოფციები ვერ გაიგზავნება.
     indicator:
       msgs:
-        no_event_shape_spreadsheet: Row %{row_num} - The event, shape type, indicator type, and/or indicator name was not found in the spreadsheet.
-        no_event_shape_db: Row %{row_num} - The event, shape type, indicator type, and/or indicator name was not found in the database.
-        missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
-        indicator_not_found: Row %{row_num} - The indicator could not be found.
-        not_valid: Row %{row_num} is not valid.
-        already_exists: Row %{row_num} already exists in the database.
-        scales_out_range: Row %{row_num} must have between 3 and 13 indicator scales.
-        missing_paramters: Not all parameters were provided to create the download.
-        no_indicators: No Indicators where found for the selected event.
-        no_event_trans: No translation records for the Event name were found.
-        no_shape_type_trans: No translations records for the Shape Types were found.
-        no_shape_type_trans: No translations records for the Indicator Groups were found.
-        no_core_parent: Row %{row_num} parent indicator could not be found.
+        no_event_shape_spreadsheet: რიგი %{row_num} - მოვლენა, ფორმის (shape) ტიპი, მაჩვენებლის ტიპი, და/ან მაჩვენებლის სახელი არ მოიძებნა სფრედშითში.
+        no_event_shape_db: რიგი %{row_num} - მოვლენა, ფორმის (shape) ტიპი, მაჩვენებლის ტიპი, და/ან მაჩვენებლის სახელი არ მოიძებნა მონაცემთა ბაზაში.
+        missing_data_spreadsheet: რიგი %{row_num} - ჩანაწერის შესანახად სავალდებულო მონაცემი აკლია.
+        indicator_not_found: რიგი %{row_num} - მაჩვენებელი ვერ მოიძებნა.
+        not_valid: რიგი %{row_num} არასწორია.
+        already_exists: რიგი %{row_num} უკვე არსებობს მონაცემთა ბაზაში.
+        scales_out_range: რიგი %{row_num} უნდა ჰქონდეს 3-დან 13 შორის მაჩვენებელთა შკალა.
+        missing_paramters: ჩამოტვირთვის შესაქმნელად ყველა პარამეტრი არ იყო მოწოდებული.
+        no_indicators: შერჩეული მოვლენისთვის არ მოიძებნა მაჩვენებლები.
+        no_event_trans: მოვლენის სახელის თარგმანის ჩანაწერი არ მოიძებნა.
+        no_shape_type_trans: ფორმის (Shape) ტიპის თარგმანის ჩანაწერი არ მოიძებნა.
+        no_shape_type_trans: მაჩვენებლის ჯგუფების თარგმანის ჩანაწერი არ მოიძებნა.
+        no_core_parent: რიგი %{row_num} მთავარი მაჩვენებელი არ მოიძებნა.
     indicator_scale:
       msgs:
-        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type or indicator type was not found in the spreadsheet.
-        no_event_shape_db: Row %{row_num} - The event or shape type or indicator type was not found in the database.
-        missing_data_spreadsheet: Row %{row_num} - Indicator Name is missing and is required to save the record.
-        indicator_not_found: Row %{row_num} - The indicator could not be found.
-        not_valid: Row %{row_num} is not valid.
-        colors_scales_out_range: "Row %{row_num} must have colors for every scale or, if no color provided, can only have between 3 and 13 indicator scales."
-        not_exists: Indicator at Row %{row_num} does not exist in the database.
-        already_exists: Indicator at Row %{row_num} already has scales in the database.
-        missing_paramters: Not all parameters were provided to create the download.
-        no_indicators: No Indicators where found for the selected event.
-        no_event_trans: No translation records for the Event name were found.
-        no_shape_type_trans: No translations records for the Shape Types were found.
-        no_shape_type_trans: No translations records for the Indicator Groups were found.
+        no_event_shape_spreadsheet: რიგი %{row_num} - მოვლენა ან ფორმის (shape) ტიპი ან მაჩვენებლის ტიპი არ მოიძებნა სფრედშითში.
+        no_event_shape_db: რიგი %{row_num} - მოვლენა ან ფორმის (shape) ტიპი ან მაჩვენებლის ტიპი არ მოიძებნა მონაცემთა ბაზაში.
+        missing_data_spreadsheet: რიგი %{row_num} - Indicator Name is missing and is required to save the record.
+        indicator_not_found: რიგი %{row_num} - მაჩვენებლის სახელი აკლია და სავალდებულოა ჩანაწერის შესანახად.
+        not_valid: რიგი %{row_num} არასწორია.
+        colors_scales_out_range: "რიგი %{row_num} უნდა ჰქონდეს ფერი ყველა შკალისთვის ან თუ არ აქვს ფერი შეიძლება ჰქონდეს მხოლოდ 3-დან 13 შორის მაჩვნებელის შკალა."
+        not_exists: ინდიკატორი %{row_num} რიგში არ არსებობს მონაცემთა ბაზაში.
+        already_exists: მაჩვენებელს %{row_num} რიგში უკვე აქბს შკალა მონაცემთა ბაზაში.
+        missing_paramters: ჩამოტვირთვის შესაქმნელად ყველა პარამეტრი არაა.
+        no_indicators: შერჩეული მოვლენის მაჩვენებლები არ მოიძებნა.
+        no_event_trans: მოვლენის სახელის თარგმანის ჩანაწერი არ მოიძებნა.
+        no_shape_type_trans: ფორმის (shape) ტიპის თარგმანის ჩანაწერები არ მოიძებნა.
+        no_shape_type_trans: მაჩვენებელთა ჯგუფის თარგმანის ჩანაწერები არ მოიძებნა.
     shape:
       msgs:
-        no_event_shape_spreadsheet: Row %{row_num} - The event or shape type was not found in the spreadsheet.
-        no_event_shape_db: Row %{row_num} - The event or shape type was not found in the database.
-        missing_data_spreadsheet: Row %{row_num} - Data is missing that is required to save the record.
-        not_update_event: Row %{row_num} - The event could not be updated to indicate this row is the root.
-        indicator_not_found: Row %{row_num} - The indicator could not be found.
-        root_not_valid: Row %{row_num} - The record for the root row could not be saved.
-        root_shape_not_found: Row %{row_num} - The root shape for this event was not found.
-        root_already_exists: Row %{row_num} - The root record already exists.
-        parent_shape_not_found: Row %{row_num} - The parent shape could not be found.
-        parent_shape_type_not_found: Row %{row_num} - The parent shape type could not be found.
-        not_valid: Row %{row_num} is not valid.
-        already_exists: Row %{row_num} already exists in the database.
+        no_event_shape_spreadsheet: რიგი %{row_num} - მოვლენის ან ფორმის ტიპი არ მოიძებნა სფრედშითში.
+        no_event_shape_db: რიგი %{row_num} - მოვლენა ან ფორმის (shape) ტიპი არ მოიძებნა მონაცემთა ბაზაში.
+        missing_data_spreadsheet: რიგი %{row_num} - ჩანაწერის შესანახად სავალდებულო მონაცემი აკლია.
+        not_update_event: რიგი %{row_num} - მოვლენა ვერ განახლდა რომ ეჩვენებინა, რომ ეს რიგი არის მთავარი.
+        indicator_not_found: რიგი %{row_num} - მაჩვენებელი არ მოიძებნა.
+        root_not_valid: რიგი %{row_num} - მთავარი რიგის შესახებ ჩანაწერი არ შეინახა.
+        root_shape_not_found: რიგი %{row_num} - ამ მოვლენის მთავარი ფორმა (shape) არ მოიძებნა.
+        root_already_exists: რიგი %{row_num} - მთავარი ჩანაწერი უკვე არსებობს.
+        parent_shape_not_found: რიგი %{row_num} - მთავარი ფორმა (shape) არ მოიძებნა.
+        parent_shape_type_not_found: რიგი %{row_num} - The parent shape type could not be found.
+        not_valid: რიგი %{row_num} არასწორია.
+        already_exists: რიგი %{row_num} უკვე არსებობს მონაცემთა ბაზაში.
   app:
     language:
       en: English
