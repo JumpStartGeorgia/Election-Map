@@ -1,7 +1,7 @@
 #indicator_menu_scale {
   position: absolute;
-  right: 30px;
-  margin-top: 25px;
+  right: 38px;
+  margin-top: 8px;
 	z-index: 1005;
 }
 
@@ -88,22 +88,32 @@ div#indicator_menu_scale .toggler {
 
 #indicator_menu_tabs{
 	font-size: 9pt;
+/*
 	height: 210px;
 	overflow: hidden;
+*/
 	padding: 0;
 }
 #indicator_menu_tabs div.indicator_links {
-	height: 175px;
-	overflow: auto;
-	padding: 0;
-	margin: 0;
+  padding: 0px;
+  margin: 0px;
+  margin-left: -14px;
+  padding-left: 14px;
+  overflow: auto;
+
+  ul.menu_list {
+	  padding: 0px;
+	  margin: 0px;
+	  height: 175px;
+
+    li {
+	    list-style: none;
+	    padding: 3px 5px 0px;
+      position: relative;
+    }
+  }
 }
 
-#indicator_menu_tabs ul.menu_list li{
-	list-style: none;
-	padding: 3px 5px 0px;
-  position: relative;
-}
 
 #indicator_menu_tabs ul.ui-tabs-nav {
   background: #e1e1df;
@@ -223,9 +233,15 @@ div#indicator_menu_scale {
 #indicator_menu_tabs ul.menu_list li a {
   padding: 3px 5px 4px;
   display: block;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 1px;
+  -webkit-border-top-right-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  -moz-border-radius: 1px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+  border-radius: 1px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 
 #indicator_menu_tabs ul.menu_list li a.active, #indicator_menu_tabs ul.menu_list li:hover a {
@@ -257,30 +273,77 @@ div#indicator_menu_scale {
   background-color: #e1e1df;
   color: #0E74B6;  
 }
-
-
-#indicator_menu_tabs ul.menu_list li div.arrow-left{
-  position: absolute;
-  top: 0;
-  left: 0;
-	width: 0; 
-	height: 0; 
-	border-top: 12px solid transparent;
-	border-bottom: 12px solid transparent; 
-	border-right: 5px solid #0E74B6; 
-  margin: 3px 0 0 0;
-  display: none;
+#indicator_menu_tabs ul.menu_list li div.profile_link a img{
+  vertical-align: middle;
 }
 
-#indicator_menu_tabs ul.menu_list li a.active + div.arrow-left,
-#indicator_menu_tabs ul.menu_list li:hover div.arrow-left{
-  display: block;
+
+#indicator_menu_tabs ul.menu_list li {
+  a {
+    &::before {
+      position: absolute;
+      top: 3px;
+      left: 0px;
+	    width: 5px;
+	    height: 25px;
+	    background: #0E74B6;
+      display: none;
+      content: '';
+    }
+  }
+
+  div.arrow-left {
+    position: absolute;
+    top: 3px;
+    left: -15px;
+	  width: 0px;
+	  height: 0px;
+	  border-top: 12px solid transparent;
+	  border-bottom: 13px solid transparent;
+	  border-right: 15px solid #0E74B6;
+    display: none;
+    content: '';
+  }
+
+  &:hover a, a.active {
+    &::before {
+      display: block;
+    }
+    & ~ .arrow-left {
+      display: block;
+    }
+  }
 }
 
 @media (max-width: 1300px)
 {
   #indicator_menu_tabs ul.menu_list li div.profile_link a span{
     display: none;
+  }
+}
+
+
+@media (max-width: 1150px)
+{
+  div#indicator_menu_scale h3, h3#indicator_description {
+    padding-top: 5px;
+    padding-bottom: 6px;
+    font-size: 13px;
+  }
+  div#indicator_menu_scale div#map_popup_container {
+    padding-bottom: 1px;
+  }
+  #indicator_menu_tabs div.indicator_links {
+    height: 145px;
+  }
+/*
+  #indicator_menu_tabs {
+    height: 171px;
+  }
+*/
+  #indicator_menu_tabs ul.ui-tabs-nav li a {
+    padding-bottom: 5px;
+    padding-top: 3px;
   }
 }
 
