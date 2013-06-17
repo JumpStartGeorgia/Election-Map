@@ -21,15 +21,16 @@
                   <h3><%= t('.indicator_filter_header') %></h3>
 
                   <div class="indicator_filter">
-                    <select id="indicator_filter_<%= type["id"]%>" class="indicator_filter_select" data-id="<%= type["id"]%>">
+                    <select id="indicator_filter_<%= "#{type["name"]}_#{index}" %>" class="indicator_filter_select chzn-select" data-id="<%= type["id"]%>">
                       <% type["indicator_types"].each do |type| %>
-                        <option value="-1" disabled="disabled" class="option_disabled"><%= type["name"] %></option>
-                        <% if type["has_summary"] == true %>
-                          <option value="0" data-id="<%= type["id"]%>"><%= type["summary_name"] %></option>
-                        <% end %>
-                        <% type["indicators"].each do |indicator| %>
-                          <option value="<%= indicator["id"]%>" title="<%= indicator["name"]%>"><%= indicator["name_abbrv"] %></option>
-                        <% end %>
+                        <optgroup label="<%= type["name"] %>">
+                          <% if type["has_summary"] == true %>
+                            <option value="0" data-id="<%= type["id"]%>"><%= type["summary_name"] %></option>
+                          <% end %>
+                          <% type["indicators"].each do |indicator| %>
+                            <option value="<%= indicator["id"]%>" title="<%= indicator["name"]%>"><%= indicator["name_abbrv"] %></option>
+                          <% end %>
+                        </optgroup>
                       <% end %>
                     </select>
                   </div>

@@ -6,4 +6,5 @@
 //= require openlayers
 //= require highcharts
 //= require highcharts-exporting
+//= require chosen.jquery.min
 

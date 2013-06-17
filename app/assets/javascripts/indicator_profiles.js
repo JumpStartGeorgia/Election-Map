@@ -649,6 +649,11 @@ $(document).ready(function() {
       }
     });
 
+    // apply chosen jquery to filters
+    $('select[id^="district_filter_"]').each(function(){
+      $(this).chosen({width: $(this).innerWidth().toString() + "px"});
+    });
+
     // when district filter selected, update the charts
     $('#indicator_profile .tab-pane.active select.district_filter_select').live('change', function(){
   //    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
@@ -659,6 +664,7 @@ $(document).ready(function() {
 
           // make sure all select filters have this item selected
           $('#indicator_profile .tab-pane.active select.district_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+          $('#indicator_profile .tab-pane.active select.district_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
 
           // reload the data
           get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());

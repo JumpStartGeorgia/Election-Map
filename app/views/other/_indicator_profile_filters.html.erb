@@ -20,7 +20,7 @@
                   <h3><%= t('.district_filter_header') %></h3>
 
                   <div class="district_filter">
-                    <select id="district_filter_<%= type["id"]%>" class="district_filter_select" data-id="<%= type["id"]%>">
+                    <select id="district_filter_<%= "#{type["name"]}_#{index}" %>" class="district_filter_select chzn-select" data-id="<%= type["id"]%>">
                       <option value="0" selected="selected"><%= t('.all_districts_option') %></option>
                       <% @districts.each_with_index do |district, d_index| %>
                         <option value="<%= d_index+1%>" data-id="<%= district.common_id %>" data-shape-type-id="<%= district.shape_type_id %>"><%= district.common_name %></option>

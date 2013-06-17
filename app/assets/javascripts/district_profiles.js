@@ -693,6 +693,11 @@ $(document).ready(function() {
       }
     });
 
+    // apply chosen jquery to filters
+    $('select[id^="indicator_filter_"]').each(function(){
+      $(this).chosen({width: $(this).innerWidth().toString() + "px"});
+    });
+
     // when indicator filter selected, update the charts
     $('#district_profile .tab-pane.active select.indicator_filter_select').live('change', function(){
       // reset height array so the new charts can be resized correctly
@@ -702,7 +707,8 @@ $(document).ready(function() {
   //    $('#district_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
   //      $(this).empty();
         var selected_index = $(this).prop("selectedIndex");
-        var selected_option = $(this).children()[selected_index];
+        // have to do children.children because using optgroups
+        var selected_option = $(this).children().children()[selected_index];
         var id = $(selected_option).val();
         var summary = false;
         // if this is the summary option, get the indicator type id
@@ -713,6 +719,7 @@ $(document).ready(function() {
 
         // make sure all select filters have this item selected
         $('#district_profile .tab-pane.active select.indicator_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+        $('#district_profile .tab-pane.active select.indicator_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
 
         // reload data
         get_district_event_type_data($('#district_profile .nav-tabs li.active a'), summary, id);
