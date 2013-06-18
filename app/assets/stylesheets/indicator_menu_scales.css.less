@@ -188,6 +188,25 @@ div#indicator_menu_scale {
     	padding: 12px 5px 5px;
     }
 
+    table, .map_popup_no_data {
+      &::before {
+        position: absolute;
+        left: -21px;
+        top: 30%;
+        width: 0px;
+        height: 0px;
+        border-top: 16px solid transparent;
+        border-bottom: 16px solid transparent;
+        border-right: 14px solid #fff;
+        display: block;
+        content: '';
+      }
+      position: relative;
+    }
+    .map_popup_no_data::before {
+      top: 12%;
+    }
+
     .map_popup_footer{
       margin-top: 5px;
       font-size: 11px;
