@@ -31,11 +31,12 @@ if (gon.openlayers){
 	OpenLayers.ImgPath = gon.openlayers_img_path;
 
 
-  function resize_map(){
+  function resize_map ()
+  {
     var minHeight = 500,//full_height($('#indicator_menu_scale')),
     offsetTop = $('#map-container').offset().top,
     workHeight = $(window).innerHeight(),
-    footnoteHeight = full_height($('#footnote')),
+    footnoteHeight = $('#footnote').outerHeight(true),
     marginBottom = 10,
     mapHeight = workHeight - offsetTop - footnoteHeight - marginBottom;
     if (mapHeight < minHeight)
@@ -85,7 +86,7 @@ if (gon.openlayers){
 		  var zoomLevel = map.zoom;
 			// if the window width is small enough so that that indicators have fallen below the map,
 			// the country view of the map is to wide for the default minZoom
-			if (window_width() < map_width_indicators_fall)
+			if ($(window).width() < map_width_indicators_fall)
 				minZoom = 6;
 		  if (zoomLevel < minZoom)
 		    map.zoomTo(minZoom);
@@ -166,10 +167,11 @@ if (gon.openlayers){
 
 	}
 
-	function set_map_extent() {
+	function set_map_extent ()
+	{
 		if (vecotr_parent_bounds !== undefined){
 		  map.zoomToExtent(vecotr_parent_bounds);
-		  winW = window_width();
+		  winW = $(window).width();
 			if (winW > map_width_indicators_fall){
 				// the indicator window is on top of the map if width > 600
 				// so adjust the map to account for the indicator window
@@ -956,6 +958,6 @@ if (gon.openlayers){
   window.onresize = function()
   {
     resize_map();
-		set_map_extent();
+		setTimeout(set_map_extent, 1);
   }
 }

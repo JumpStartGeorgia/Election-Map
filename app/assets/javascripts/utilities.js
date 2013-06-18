@@ -160,6 +160,8 @@ function remove_query_parameter(url, name, name2){
 	return new_url;
 }
 
+/*
+
 function full_height (element)
 {
   if (element.length == 0)
@@ -184,7 +186,6 @@ function full_height (element)
   return h;
 }
 
-
 function window_width ()
 {
   var winW;
@@ -202,3 +203,4 @@ function window_width ()
   }
   return winW;
 }
+*/
