@@ -10,8 +10,6 @@
  *= require tipsy
  *= require indicator_menu_scales
  *= require formtastic-bootstrap
- *= require jquery.ui.core
- *= require jquery.ui.theme
  *= require dataTables/jquery.dataTables.bootstrap
  *= require dataTables/extras/TableTools
  *= require dataTables/extras/TableTools_JUI
