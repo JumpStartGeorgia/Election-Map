@@ -677,6 +677,9 @@ $(document).ready(function() {
 
     // when event filter changes, update what events to show
     $('#indicator_profile .tab-pane.active .event_filter select').live('change', function(){
+
+      var yd = $(this).next().offset().top - $(window).scrollTop();
+
       // loop through each option in this select and show/hide as appropriate
       var event_id;
       $(this).children().each(function(){
@@ -718,9 +721,8 @@ $(document).ready(function() {
         }
       });
 
-
       // adjust the height of the blocks
-      adjust_indicator_profile_height()
+      adjust_indicator_profile_height();
 
       // re-assign the no-left-margin class to every third item that is showing
       $('.tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
@@ -729,6 +731,10 @@ $(document).ready(function() {
           $(this).addClass('no-left-margin');
         }
       });
+
+      // reset scroll
+      window.scrollTo($(window).scrollLeft(), $(this).next().offset().top - yd);
+
     });
 /*
     $('#indicator_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"]').live('change', function(){
