@@ -178,7 +178,7 @@ en:
       core_indicator: Unique Indicator
       data: Data
       event_custom_view: Event Custom View
-      event_indicator_relationship: Event Indicator Relationship
+      event_indicator_relationship: Event Indicator Popup
       indicator_scale: Indicator Scale
       news: News
       shape: Shape
@@ -212,10 +212,10 @@ en:
       at_shape_type: At This Shape View
       custom_shape_type: Show These Shapes
       is_default_view: Use as Default
-      num_indicator_types: "# Indicator Groups with Relationships"
-      num_indicators: "# Indicators with Relationships"
-      indicator_relationship: Indicator with Relationship
-      indicator_type_relationship: Indicator Group with Relationship
+      num_indicator_types: "# Indicator Groups with Popups"
+      num_indicators: "# Indicators with Popups"
+      indicator_relationship: Popup for Indicator
+      indicator_type_relationship: Popup for Indicator Group
       winner: Winner
       overall_placement: Overall Placement
       total_participants: Total Subjects
@@ -545,13 +545,13 @@ en:
         title: New Event Custom View
     event_indicator_relationships:
       edit:
-        title: Editing Event Indicator Relationship
+        title: Editing Event Indicator Popup
       index:
-        title: Events with Indicator Relationships
+        title: Events with Indicator Popups
       new:
-        title: New Event Indicator Relationship
+        title: New Event Indicator Popup
       show:
-        title: Event Indicator Relationship
+        title: Event Indicator Popup
     events:
       edit:
         title: Editing Event

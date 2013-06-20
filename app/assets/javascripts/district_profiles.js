@@ -147,7 +147,8 @@ function build_district_profile_table(json_data){
       $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + datatable_first_column_value + '"]').addClass('active');
       $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + datatable_first_column_value + '"]').addClass('active');
       // event columns
-      $('#district_profile .tab-pane.active .district_table_container .event_filter input[name="event_filter_checkboxes"]:checked').each(function(){
+//      $('#district_profile .tab-pane.active .district_table_container .event_filter input[name="event_filter_checkboxes"]:checked').each(function(){
+      $('#district_profile .tab-pane.active .district_table_container .event_filter select.event_filter_select option:selected').each(function(){
         $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + $(this).val() + '"]').addClass('active');
         $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + $(this).val() + '"]').addClass('active');
       });

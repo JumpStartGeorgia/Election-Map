@@ -149,7 +149,8 @@ function build_indicator_profile_table(json_data){
       $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + datatable_first_column_value + '"]').addClass('active');
       $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + datatable_first_column_value + '"]').addClass('active');
       // event columns
-      $('#indicator_profile .tab-pane.active .indicator_table_container .event_filter input[name="event_filter_checkboxes"]:checked').each(function(){
+//      $('#indicator_profile .tab-pane.active .indicator_table_container .event_filter input[name="event_filter_checkboxes"]:checked').each(function(){
+      $('#indicator_profile .tab-pane.active .indicator_table_container .event_filter select.event_filter_select option:selected').each(function(){
         $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + $(this).val() + '"]').addClass('active');
         $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + $(this).val() + '"]').addClass('active');
       });
@@ -629,6 +630,15 @@ $(document).ready(function() {
 
   if (gon.indicator_profile){
 
+    // apply chosen jquery to filters
+    $('select[id^="event_filter_"]').each(function(){
+      $(this).chosen({width: "100%"});
+    });
+    $('select[id^="district_filter_"]').each(function(){
+      $(this).chosen({width: $(this).innerWidth().toString() + "px"});
+    });
+
+
     $(window).bind('load', get_ind_event_type_data());
     $(window).resize(function(){
       adjust_indicator_profile_height()
@@ -647,14 +657,6 @@ $(document).ready(function() {
         // make sure the loading style is not showing
         $('#indicator_profile .tab-content #tab' + $(this).data('id') + ' .profile_loading').hide();
       }
-    });
-
-    // apply chosen jquery to filters
-    $('select[id^="event_filter_"]').each(function(){
-      $(this).chosen({width: "100%"});
-    });
-    $('select[id^="district_filter_"]').each(function(){
-      $(this).chosen({width: $(this).innerWidth().toString() + "px"});
     });
 
     // when district filter selected, update the charts
