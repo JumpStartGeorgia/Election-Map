@@ -1,0 +1,17 @@
+select[id^="event_filter_"] + div {
+  position: relative;
+  & > ul {
+    padding-right: 20px !important;
+  }
+  &::after {
+    position: absolute;
+    right: 9px;
+    top: 41%;
+    content: '';
+    display: block;
+    border-width: 5px 3px 0px 3px;
+    border-color: transparent;
+    border-top-color: grey;
+    border-style: solid;
+  }
+}
