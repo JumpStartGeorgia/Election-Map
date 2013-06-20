@@ -10,7 +10,7 @@ ka:
         event_id: მოვლენები
         data_type: მონაცემთა ტიპი
         precincts_completed: "უბნები დასრულებულია (#)"
-        precincts_total: "Total Precincts (#)"
+        precincts_total: "სულ საარჩევნო უბანი (#)"
         precincts_percentage: "უბნები დასრულებულია (%)"
         timestamp: დროის მონაცემთა ინფორმაცია
         show_to_public: გახდეს საჯარო?
@@ -83,7 +83,7 @@ ka:
         root_shape_not_found: რიგი %{row_num} - ამ მოვლენის მთავარი ფორმა (shape) არ მოიძებნა.
         root_already_exists: რიგი %{row_num} - მთავარი ჩანაწერი უკვე არსებობს.
         parent_shape_not_found: რიგი %{row_num} - მთავარი ფორმა (shape) არ მოიძებნა.
-        parent_shape_type_not_found: რიგი %{row_num} - The parent shape type could not be found.
+        parent_shape_type_not_found: რიგი %{row_num} - მთავარი ფორმის (shape) ტიპი არ მოიძებნა.
         not_valid: რიგი %{row_num} არასწორია.
         already_exists: რიგი %{row_num} უკვე არსებობს მონაცემთა ბაზაში.
   app:
