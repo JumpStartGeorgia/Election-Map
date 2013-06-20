@@ -93,82 +93,82 @@ ka:
     buttons:
       back: უკან დაბრუნება
       list: ყველას ნახვა
-      admin: Admin Section
+      admin: ადმინის სექცია
       delete: წაშლა
       edit: დამუშავება
-      show: Show
+      show: ჩვენება
       cancel: გაუქმება
-      update: Update
-      save: Save
-      create: Create
+      update: განახლება
+      save: შენახვა
+      create: შექმნა
       reset: გადატვირთვა
-      remove: Remove
-      add_indicator: Add Indicator
-      add_indicator_type: Add Indicator Group
-      new_data: New Datum
-      new_event_types: New Event Group
-      new_events: New Event
-      new_custom_views: New Event Custom View
-      new_indicator_relationships_core: Add Indicator
-      new_indicator_relationships_type: Add Indicator Group
-      new_indicator_scales: New Indicator Scale
-      new_indicator_types: New Indicator Group
-      new_indicators: New Indicator
-      new_core_indicators: New Indicator
-      new_locales: New Language
-      new_pages: New Page
-      new_shape_types: New Shape Type
-      new_shapes: New Shape
-      new_news: New News
-      new_data_archives: New Data Archive
-      new_menu_live_events: New Menu Live Events
-      new_data_sets: Upload Event Data
-      upload_csv: Process CSV File
+      remove: წაშლა
+      add_indicator: მაჩვენებლის დამატება
+      add_indicator_type: მაჩვენებელთა ჯგუფის დამატება
+      new_data: ახალი მონაცემი
+      new_event_types: ახალი მოვლენების ჯგუფი
+      new_events: ახალი მოვლენა
+      new_custom_views: ახალი მოვლენის პერსონიფიცირებული ხედი
+      new_indicator_relationships_core: მაჩვენებლის დამატება
+      new_indicator_relationships_type: მაჩვენებელთა ჯგუფის დამატება
+      new_indicator_scales: ახალ ინდიკატორთა შკალა
+      new_indicator_types: ახალ ინდიკატორთა ჯგუფი
+      new_indicators: ახალი ინდიკატორი
+      new_core_indicators: ახალი ინდიკატორი
+      new_locales: ახალი ენა
+      new_pages: ახალი გვერდი
+      new_shape_types: ახალი ფორმის (Shape) ტიპი
+      new_shapes: ახალი ფორმა (Shape)
+      new_news: უახლესი ამბები
+      new_data_archives: ახალი მონაცემთა არქივი
+      new_menu_live_events: ახალი განახლებადი მოვლენების მენიუ
+      new_data_sets: მოვლენათა მონაცემების ატვირთვა
+      upload_csv: CSV ფაილის დამუშავება
       download_xls: ჩამოტვირთეთ XLS რუქა ფაილი
       download_csv: ჩამოტვირთეთ CSV რუქა ფაილი
       download_data: ჩამოტვირთეთ რუქა
       download_map: ჩამოტვირთეთ მონაცემები
       download_help: დახმარება
       custom_view: იხილეთ ყველა %{children_shapes} %{parent_shape}ში
-      create_cache: Create Cache
-      view: View
+      create_cache: ქეშ მეხსიერების შექმნა
+      view: ნახვა
     msgs:
       does_not_exist: თქვენ ცდილობთ იხილოთ გვერდი, რომელიც არ არსებობს.
       not_authorized: თქვენ არ გაქვთ უფლება იხილოთ ეს გვერდი.
       no_data: არ არის მონაცემი
-      delete_confirm: "Are you sure?"
+      delete_confirm: დარწმუნებული ხართ?
       upload:
-        no_file: You must select a file to upload.
-        success: "Your file '%{file_name}' was successfully processed!"
-        error: "Errors were encountered with '%{file_name}' and no records were saved.  The problem was the following: %{msg}"
-        wrong_format: "Your file '%{file_name}' must be a CSV or tab-delimited txt format."
+        no_file: თქვენ უნდა შეარჩიოთ ფაილი ასატვირთად
+        success: "ფაილი '%{file_name}' წარმატებით დამუშავდა!"
+        error: "შეცდომები დაფიქსირდა ფაილთან '%{file_name}' დაკავშირებით და ჩანაწერები არ შეინახა. პრობლემა იყო შემდეგი: %{msg}"
+        wrong_format: "ფაილი '%{file_name}' უნდა იყოს CSV ან tab-delimited txt ფორმატში."
       download:
-        unknow_event: The selected event could not be found.
-        no_records: "No Indicator data was found for the event '%{event_name}'."
-        error: "Errors were encountered creating the download file for the event '%{event_name}'.  The problem was the following: %{msg}"
+        unknow_event: შერჩეული მოვლენა არ მოიძებნა.
+        no_records: "მაჩვენებელთა მონაცემები არ მოიძებნა მოვლენისთვის '%{event_name}'."
+        error: "შეცდომები დაფიქსირდა '%{event_name}' მოვლენის ჩამოსატვირთი ფაილის შექმნის დროს. პრობლემა იყო შემდეგი: %{msg}"
       message_sent: თქვენი შეტყობინება გაგზავნილია! მადლობა რომ დაგვიკავშირდით.
-      core_indicator_color_share: "If no color provided and indicator belongs to another indicator, the other indicatr's color will be used"
+      core_indicator_color_share: "თუ ფერი არ არის უზრუნველყოფილი და მაჩვენებელი ეკუთვნის სხვა მაჩვენებელს გამოყენებული იქნება სხვა ინდიკატორის ფერი."
       map_summary_legend_title: "%{shape_type} გამარჯვებულები"
       indicator_summary_link: "%{name} შემაჯამებელი"
-      has_summary_hint: "If Has Summary is true, an indicator link will be available that will show which indicators that belong to this indicator type won each shape area."
-      sort_order_hint: "Sort order is ascending so 1 will be first, 2 second, etc."
-      delete_shapes_success: "The shape records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
-      delete_shapes_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
-      delete_data_success_1: "The data records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}' and Indicator - '%{indicator}'."
-      delete_data_success_2: "The data records were successfully deleted for Event - '%{event}' and Shape Level - '%{shape_type}'."
-      delete_data_success_3: "The data records were successfully deleted for Event - '%{event}'."
-      delete_data_fail: "Errors were encountered while processing your request.  The problem was teh following: %{msg}"
-      missing_parameters: Pleaes provide data for all fields before submitting.
-      select_event: Select Event First
-      select_shape_type: Select Shape Level First
-      no_data_download: No data was found to download.
-      success_created: "%{obj} was successfully created."
-      success_updated: "%{obj} was successfully updated."
-      success_deleted: "%{obj} was successfully deleted."
-      cache_cleared: "The memory and file cache were cleared because of the following: %{action}"
-      dataset_cache_files_created: The default cache files for the dataset were successfully created.
-      dataset_cache_files_failed: An error occurred while creating the default cache files for the dataset.
-      event_indicator_relationships_missing_params: Please provide all parameters to edit a record.
+      has_summary_hint: "მონაცემთა ტიპის შეჯამება არის მართალი, ხელმისაწვდომი იქნება მაჩვენებლის ბმული, რომელიც აჩვენებს რომელმა მაჩვენებლებმა, რომლებიც აკუთვნის ამ მაჩვენებლის ტიპს, მიიღო თითოეული ფორმის ადგილი."
+      sort_order_hint: "დალაგებულია ზრდის მიხედვით ასე რომ 1 იქნებ პირველი, 2 მეორე და ა.შ."
+      delete_shapes_success: "ფორმის ჩანაწერები წარმატებით წაიშალა მოვლენისთვის %{event}' და ფორმის დონისთვის - '%{shape_type}'"
+      delete_shapes_fail: "შეცდომები დაფიქსირდა თქვენი მოთხოვნის დამუშავებისას. პრობლემა იყო შემდეგი: %{msg}"
+      delete_data_success_1: "მონაცემთა ჩანაწერები წარმატებით წაიშალა მოვლენისთვის '%{event}' და ფორმის დონისთვის - '%{shape_type}' და მაჩვენებლისთვის '%{indicator}'."
+      delete_data_success_2: "მონაცემთა ჩანაწერები წარმატებით წაიშალა მოვლენისთვის '%{event}' და ფორმის დონისთვის - '%{shape_type}'."
+      delete_data_success_3: "მონაცემთა ჩანაწერები წარმატებით წაიშალა მოვლენისთვის '%{event}'."
+      delete_data_fail: "შეცდომები დაფიქსირდა თქვენი მოთხოვნის დამუშავებისას. პრობლემა იყო შემდეგი: %{msg}"
+      missing_parameters: გთხოვთ წარდგენამდე უზრუნველყოთ მონაცემები ყველა ველისთვის.
+      select_event: შეარჩიეთ მოვლენა პირველი
+      select_shape_type: შეარჩიეთ ფორმის დონე პირველი
+      no_data_download: მონაცემები არ მოიძებნა ჩამოსატვირთად.
+      success_created: "%{obj} წარმატებით შეიქნა"
+      success_updated: "%{obj} წარმატებით განახლდა"
+      success_deleted: "%{obj} წარმატებით წაიშალა"
+      cache_cleared: "მეხსიერება და ფაილის ქეშ მეხსიერების ფაილი გასუფთავდა შემდეგის გამო: %{action}"
+      dataset_cache_files_created: სტანდარტული ქეშ მეხსიერების ფაილი წარმატებით შეიქმნა მონაცემთა ნაკრებისთვის.
+      dataset_cache_files_failed: შეცდომა მოხდა მონაცემთა ნაკრებისთვის სტანდარტული ქეშ მეხსიერების ფაილის შექმნისას.
+      event_indicator_relationships_missing_params: გთხოვთ უზრუნველყოთ ყველა პარამეტრი ჩანაწერის რედაქტირებისთვის.
     common:
       app_name: საქართველოს საარჩევნო მონაცემები
       yes: დიახ
