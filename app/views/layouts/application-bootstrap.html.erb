@@ -185,6 +185,11 @@
 									</div>
 								<% end %>
 
+								<% if (params[:controller] == "other" && params[:action] == "indicator") || (params[:controller] == "other" && params[:action] == "district") %>
+                  <%= render "other/profile_navigation" %>
+                <% end %>
+
+
 								<% if !(params[:controller] == "root" && params[:action] == "index") %>
                    <h1><%= yield(:title) %></h1>
                 <% end %>

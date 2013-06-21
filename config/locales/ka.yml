@@ -390,6 +390,9 @@ ka:
       indicator_filter_header: მაჩვენებლის ფილტრი
       event_filter_header: არჩევნების ფილტრი
       event_filter_gt_3: "(თუ 3 მოვლენაზე მეტს შეარჩევთ მოგიწევთ ჩამოშლა)"
+    profile_navigation: 
+      districts: ყველა ოლქი
+      indicators: ყველა მაჩვენებელი
   messages:
     new:
       title: დაგვიკავშირდით

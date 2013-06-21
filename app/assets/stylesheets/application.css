@@ -539,3 +539,23 @@ div.DTTT_container{
 .highcharts-container hr{
   margin: 0;
 }
+
+
+/* profile navigation */
+#profile_navigation{
+  background-color: #fff;
+  border-bottom: dashed 1px #ccc;
+  padding: 5px 25px;
+  margin: -8px -25px 20px;
+  font-size: 14px;
+}
+#profile_navigation a{
+  padding: 4px 8px;
+}
+
+@media (max-width: 979px) {
+  #profile_navigation{
+    padding: 5px 25px;
+    margin: -20px -25px 20px;
+  }
+}

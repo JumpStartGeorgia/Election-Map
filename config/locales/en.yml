@@ -390,6 +390,9 @@ en:
       indicator_filter_header: Indicator Filter
       event_filter_header: Election Filter
       event_filter_gt_3: "(you will have to scroll down if you select more than 3 events)"
+    profile_navigation: 
+      districts: All Districts
+      indicators: All Indicators
   messages:
     new:
       title: Contact Us
