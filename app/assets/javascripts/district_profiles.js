@@ -1,7 +1,40 @@
 var district_profile_data;
-var summary_height = [];
-var detail_height = [];
 var number_events;
+
+// re-assign height of summary/detail chart for those events showing
+function adjust_district_profile_height(){
+  var header_height = [];
+  var summary_height = [];
+  var detail_height = [];
+
+  ////// header
+  // get the heights of each header
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_header').each(function(){
+    $(this).height('auto');
+    header_height.push($(this).height());
+  });
+  // update heights to max height of visible detail charts
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_header').each(function() { $(this).height(Math.max.apply(Math, header_height)); });
+
+  ////// summary
+  // get the heights of each visible summary chart
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function(){
+    $(this).height('auto');
+    summary_height.push($(this).height());
+  });
+  // update heights to max height of visible detail charts
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
+
+  ////// detail
+  // get the heights of each visible detail chart
+  $('#district_profile .tab-pane.active .profile_item > div.active div.district_detail_chart').each(function(){
+    $(this).height('auto');
+    detail_height.push($(this).height());
+  });
+  // update heights to max height of visible detail charts
+  $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
+}
+
 
 function build_district_profile_table(json_data){
   if (json_data != undefined){
@@ -147,7 +180,6 @@ function build_district_profile_table(json_data){
       $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + datatable_first_column_value + '"]').addClass('active');
       $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + datatable_first_column_value + '"]').addClass('active');
       // event columns
-//      $('#district_profile .tab-pane.active .district_table_container .event_filter input[name="event_filter_checkboxes"]:checked').each(function(){
       $('#district_profile .tab-pane.active .district_table_container .event_filter select.event_filter_select option:selected').each(function(){
         $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + $(this).val() + '"]').addClass('active');
         $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + $(this).val() + '"]').addClass('active');
@@ -175,7 +207,7 @@ function build_district_profile_table(json_data){
       file_name += $('ul.nav-tabs li.active a').html();
 
       // add datatable fn
-      $('.tab-pane.active .district_table table').dataTable({
+      $('#district_profile .tab-pane.active .district_table table').dataTable({
         "sDom": "<'row-fluid'<'span6'f><'span6'T>r>t",    
         "bLengthChange": false,
         "bJQueryUI": false,
@@ -222,21 +254,10 @@ function build_summary_district_profile_summary_charts(ths, summary_colors, summ
     summary_data.push([gon.summary_chart_rest, 100-sum]);
     ths.highcharts({
       chart: {
-          plotBackgroundColor: null,
-          plotBorderWidth: null,
-          plotShadow: false,
-          height: 250 + 18*summary_colors.length,
-          events: {
-            load: function(event) {
-              // save the height and after all details loaded, reset height for all detail chart containers
-              // so floating wraps nicely
-              summary_height.push(this.options.chart.height);
-              if (summary_height.length == $('.tab-pane.active .profile_item .district_summary_chart').length){
-                $(".tab-pane.active .profile_item .district_summary_chart").each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
-              }
-            }
-          } 
-
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        height: 250 + 18*summary_colors.length
       },
       colors: summary_colors,
       title: {
@@ -289,86 +310,6 @@ function build_summary_district_profile_summary_charts(ths, summary_colors, summ
   }
 }
 
-/* old
-function build_summary_district_profile_detail_charts(ths, headers, data){
-  if (ths != undefined && headers != undefined && headers.length > 0 && data != undefined && data.length > 0){
-    // reset height
-    ths.height('auto');
-
-    var chart_height = 400;
-    chart_height = 60 * data.length;
-    ths.highcharts({
-      chart: {
-          type: 'bar',
-          spacingRight: 20, 
-          height: chart_height,
-          events: {
-            load: function(event) {
-              // save the height and after all details loaded, reset height for all detail chart containers
-              // so floating wraps nicely
-              detail_height.push(this.options.chart.height);
-              if (detail_height.length == $('.tab-pane.active .profile_item .district_detail_chart').length){
-                $(".tab-pane.active .profile_item .district_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
-              }
-            }
-          } 
-      },
-      title: {
-          text: null
-      },
-      xAxis: {
-          categories: headers,
-          title: {
-              text: null
-          },
-          labels: {
-              overflow: 'justify'
-          }
-      },
-      yAxis: {
-          min: 0,
-          title: {
-              text: null
-          },  
-          gridLineWidth: 0,
-          labels: {
-              enabled: false
-          }
-      },
-      tooltip: {
-          enabled: false
-      },
-      legend: {
-        enabled: false
-      },
-      plotOptions: {
-          bar: {
-              dataLabels: {
-                  enabled: true,
-                	percentageDecimals: 2,
-                  formatter: function() {
-                    return Highcharts.numberFormat(this.y, 2) + '%';
-                  }
-              }
-          }
-      },
-      credits: {
-          enabled: false
-      },
-      series: [{
-        data: data
-      }]
-    });
-  } else if (ths != undefined) {
-    // reset height
-    ths.height('auto');
-
-    // show no data message
-    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
-  }
-}
-*/
-
 function build_summary_district_profile_detail_charts(ths, data){
   if (ths != undefined && data != undefined && data.length > 0 && data[0] !== null){
     // reset height
@@ -385,10 +326,6 @@ function build_summary_district_profile_detail_charts(ths, data){
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
 
-  detail_height.push(ths.height());
-  if (detail_height.length == $('.tab-pane.active .profile_item .district_detail_chart').length){
-    $(".tab-pane.active .profile_item .district_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
-  }
 }
 
 
@@ -404,7 +341,6 @@ function build_summary_district_profile_charts(){
     for (var i=0;i<district_profile_data.length;i++){
       if (district_profile_data[i].event.id.toString() == $(this).data('id')){
         if (district_profile_data[i].data == null){
-//          detail_headers.push(null);  
           detail_data.push(null);  
         } else {
           for (var j=0;j<district_profile_data[i].data.length;j++){
@@ -415,8 +351,6 @@ function build_summary_district_profile_charts(){
                     summary_data.push([ind.indicator_name_abbrv, Number(ind.value)]);
                     summary_colors.push(ind.color);
                 }
-//                detail_headers.push(ind.indicator_name);  
-//                detail_data.push({y: Number(ind.value), color: ind.color});  
               }
               break;
             }
@@ -426,32 +360,10 @@ function build_summary_district_profile_charts(){
         break;
       }
     }  
-/*
 
-    for (var i=0;i<district_profile_data.length;i++){
-      if (district_profile_data[i].event.id.toString() == $(this).data('id')){
-        if (district_profile_data[i].data == null){
-          detail_headers.push(null);  
-          detail_data.push(null);  
-        } else {
-          for (var j=0;j<district_profile_data[i].data.length;j++){
-            if (Number(district_profile_data[i].data[j].value) >= 5){
-                summary_data.push([district_profile_data[i].data[j].indicator_name, Number(district_profile_data[i].data[j].value)]);
-                summary_colors.push(district_profile_data[i].data[j].color);
-            }
-            detail_headers.push(district_profile_data[i].data[j].indicator_name);  
-            detail_data.push({y: Number(district_profile_data[i].data[j].value), color: district_profile_data[i].data[j].color});  
-          }
-        }
-        break;
-      }
-    }  
-*/
     build_summary_district_profile_summary_charts($(this), summary_colors, summary_data);
     var ths_detail = $('#district_profile .tab-pane.active .district_detail_chart[data-id="' + event_id.toString() + '"]')
-//    build_summary_district_profile_detail_charts(ths_detail, detail_headers, detail_data);
     build_summary_district_profile_detail_charts(ths_detail, detail_data);
-
   });
 }
 
@@ -475,38 +387,6 @@ function build_item_district_profile_summary_charts(ths, indicator_data){
   }
 }
 
-/* old
-function build_item_district_profile_detail_charts(ths, indicator_name, data){
-  if (ths != undefined && indicator_name != undefined && data != undefined && data.length > 0){
-    // reset height
-    ths.height('auto');
-
-    var value;    
-    var table = "<table class='other_district_table table table-striped table-bordered'><tbody>";
-    for (var i=0; i<data.length; i++){
-      value = data[i].value;
-      if (data[i].number_format != null && data[i].number_format.length > 0){
-        value += data[i].number_format;
-      }
-      table += "<tr><td>" + data[i].name + "</td><td>" + value + "</td></tr>";
-    }
-    table += "</tbody></table>"
-    ths.html(table);
-  } else if (ths != undefined) {
-    // reset height
-    ths.height('auto');
-
-    // show no data message
-    ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
-  }
-
-  detail_height.push(ths.height());
-  if (detail_height.length == $('.tab-pane.active .profile_item .district_detail_chart').length){
-    $(".tab-pane.active .profile_item .district_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
-  }
-
-}
-*/
 
 function build_item_district_profile_detail_charts(ths, data){
   if (ths != undefined && data != undefined && data.length > 0 && data[0] !== null){
@@ -527,15 +407,12 @@ function build_item_district_profile_detail_charts(ths, data){
     // show no data message
     ths.html("<span class='no_data'>" + gon.chart_no_data + "</span>");
   }
-  detail_height.push(ths.height());
-  if (detail_height.length == $('.tab-pane.active .profile_item .district_detail_chart').length){
-    $(".tab-pane.active .profile_item .district_detail_chart").each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
-  }
+
 }
 
 
 function build_item_district_profile_charts(indicator_id){
-  $('.tab-pane.active .district_summary_chart').each(function(){
+  $('#district_profile .tab-pane.active .district_summary_chart').each(function(){
     var event_id = $(this).data('id');
     var ind_id = $(this).data('indicator-id');
     if (indicator_id != undefined){
@@ -556,9 +433,6 @@ function build_item_district_profile_charts(indicator_id){
                 indicator_name = ind.indicator_name;
                 break;
               }
-//              detail_data.push({name: ind.indicator_name, 
-//                  value: ind.formatted_value, 
-//                  number_format: ind.number_format});  
             }
           }
           detail_data = district_profile_data[i].data;
@@ -567,29 +441,8 @@ function build_item_district_profile_charts(indicator_id){
       }
     }  
 
-/*
-    for (var i=0;i<district_profile_data.length;i++){
-      if (district_profile_data[i].event.id.toString() == $(this).data('id')){
-        if (district_profile_data[i].data == null){
-          detail_data.push(null);  
-        } else {
-          for (var j=0;j<district_profile_data[i].data.length;j++){
-            if (district_profile_data[i].data[j].core_indicator_id != null && district_profile_data[i].data[j].core_indicator_id.toString() == ind_id){
-              indicator_data = district_profile_data[i].data[j];
-              indicator_name = district_profile_data[i].data[j].indicator_name;
-            }
-            detail_data.push({name: district_profile_data[i].data[j].indicator_name, 
-                  value: district_profile_data[i].data[j].formatted_value, 
-                  number_format: district_profile_data[i].data[j].number_format});  
-          }
-        }
-        break;
-      }
-    }  
-*/
     build_item_district_profile_summary_charts($(this), indicator_data);
-    var ths_detail = $('.tab-pane.active .district_detail_chart[data-id="' + event_id.toString() + '"]')
-//    build_item_district_profile_detail_charts(ths_detail, indicator_name, detail_data);
+    var ths_detail = $('#district_profile .tab-pane.active .district_detail_chart[data-id="' + event_id.toString() + '"]')
     build_item_district_profile_detail_charts(ths_detail, detail_data);
 
   });
@@ -641,33 +494,13 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
           $('#district_profile .tab-pane.active .chart_container').hide(300);
         }
         build_district_profile_table(data);
+
+        adjust_district_profile_height();
+
         $('#district_profile .tab-content .tab-pane.active .profile_loading').fadeOut();
       }
     });
   }
-}
-
-// re-assign height of summary/detail chart for those events showing
-function adjust_district_profile_height(){
-  detail_height = [];
-  summary_height = [];
-  ////// summary
-  // get the heights of each visible summary chart
-  $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function(){
-    $(this).height('auto');
-    summary_height.push($(this).height());
-  });
-  // update heights to max height of visible detail charts
-  $('#district_profile .tab-pane.active .profile_item > div.active div.district_summary_chart').each(function() { $(this).height(Math.max.apply(Math, summary_height)); });
-
-  ////// detail
-  // get the heights of each visible detail chart
-  $('#district_profile .tab-pane.active .profile_item > div.active div.district_detail_chart').each(function(){
-    $(this).height('auto');
-    detail_height.push($(this).height());
-  });
-  // update heights to max height of visible detail charts
-  $('#district_profile .tab-pane.active .profile_item div.active div.district_detail_chart').each(function() { $(this).height(Math.max.apply(Math, detail_height)); });
 }
 
 $(document).ready(function() {
@@ -679,12 +512,16 @@ $(document).ready(function() {
       adjust_district_profile_height()
     });
 
+    // apply chosen jquery to filters
+    $('select[id^="event_filter_"]').each(function(){
+      $(this).chosen({width: "100%"});
+    });
+    $('select[id^="indicator_filter_"]').each(function(){
+      $(this).chosen({width: $(this).innerWidth().toString() + "px"});
+    });
+
     // when switch event types, get data for the new events
     $('#district_profile .nav-tabs li a').click(function(){
-      // reset height array so the new charts can be resized correctly
-      summary_height = []; 
-      detail_height = [];
-
       // if charts do not already exist, load them
       if ($('#district_profile .tab-content #tab' + $(this).data('id') + ' .district_summary_chart:first').html().length == 0){
         get_district_event_type_data($(this));
@@ -694,20 +531,8 @@ $(document).ready(function() {
       }
     });
 
-    // apply chosen jquery to filters
-    $('select[id^="event_filter_"]').each(function(){
-      $(this).chosen({width: "100%"});
-    });
-    $('select[id^="indicator_filter_"]').each(function(){
-      $(this).chosen({width: $(this).innerWidth().toString() + "px"});
-    });
-
     // when indicator filter selected, update the charts
     $('#district_profile .tab-pane.active select.indicator_filter_select').live('change', function(){
-      // reset height array so the new charts can be resized correctly
-      summary_height = []; 
-      detail_height = [];
-
   //    $('#district_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
   //      $(this).empty();
         var selected_index = $(this).prop("selectedIndex");
@@ -784,56 +609,6 @@ $(document).ready(function() {
         }
       });
     });
-
-/*
-    $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"]').live('change', function(){
-      var event_id = $(this).val();
-      if ($(this).attr("checked") == undefined){
-        // hide this event
-        $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
-
-        // hide this column in datatable
-        $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').removeClass('active');
-        $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').removeClass('active');
-
-        // update colspan if the table has a footer
-        var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
-        if (tfoot !== undefined){
-          tfoot.attr('colspan', Number(tfoot.attr('colspan'))-1);
-        }
-
-        // make sure all checkboxes with this id are not checked
-        $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", false);
-      }else{
-        // show this event
-        $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
-
-        // show this column in datatable
-        $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').addClass('active');
-        $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').addClass('active');
-
-        // update colspan if the table has a footer
-        var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
-        if (tfoot !== undefined){
-          tfoot.attr('colspan', Number(tfoot.attr('colspan'))+1);
-        }
-
-        // make sure all checkboxes with this id are not checked
-        $('#district_profile .tab-pane.active .event_filter input[name="event_filter_checkboxes"][value="' + event_id + '"]').prop("checked", true);
-      }
-
-      // adjust the height of the blocks
-      adjust_district_profile_height();
-
-      // re-assign the no-left-margin class to every third item that is showing
-      $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
-      $('#district_profile .tab-pane.active .profile_item > div.active').each(function(index){
-        if (index%3 == 0){
-          $(this).addClass('no-left-margin');
-        }
-      });
-    });
-*/
   }
 });
 
