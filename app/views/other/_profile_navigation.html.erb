@@ -1,11 +1,13 @@
 <div id="profile_navigation">
   <% if params[:controller] == "other" && params[:action] == "indicator" %>
     <%= link_to indicator_profiles_path do %>
-      < <%= t('.indicators') %>
+      <%= image_tag("shape_arrow.png") %>
+      <%= t('.indicators') %>
     <% end %>
   <% elsif params[:controller] == "other" && params[:action] == "district" %>
     <%= link_to district_profiles_path do %>
-      < <%= t('.districts') %>
+      <%= image_tag("shape_arrow.png") %>
+      <%= t('.districts') %>
     <% end %>
   <% end %>
 </div>

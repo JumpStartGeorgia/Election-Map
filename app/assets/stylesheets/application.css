@@ -547,10 +547,11 @@ div.DTTT_container{
   border-bottom: dashed 1px #ccc;
   padding: 5px 25px;
   margin: -8px -25px 20px;
-  font-size: 14px;
+  font-size: 13px;
 }
 #profile_navigation a{
   padding: 4px 8px;
+  color: #4C525E;
 }
 
 @media (max-width: 979px) {
