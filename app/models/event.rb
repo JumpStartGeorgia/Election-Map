@@ -92,4 +92,53 @@ class Event < ActiveRecord::Base
 		.where(:indicator_types => {:has_summary => true})
 		.order("events.id")
 	end
+
+  # clone the entire event and its translations
+  def self.clone_for_event(event_id)
+    e = Event.find_by_id(event_id)
+    if e.present?
+      event = Event.new(:shape_id => e.shape_id, :event_type_id => e.event_type_id, 
+        :event_date => e.event_date, :is_default_view => false,
+  		  :has_official_data => e.has_official_data, :has_live_data => e.has_live_data)
+      e.event_translations.each do |trans|
+        event.event_translations.build(:locale => trans.locale, :name => trans.name, 
+            :name_abbrv => trans.name_abbrv, :description => trans.description)
+      end
+      event.save
+    end
+  end
+
+
+  # copy everything from an existing event into into a new event
+  # copy: indicators, relationships, custom event views
+  def clone_event_components(event_id)
+    if event_id.present?
+      Event.transaction do
+        # create indicators and the scales
+        indicators = Indicator.includes(:indicator_scales => :indicator_scale_translations)
+          .where(:indicators => {:event_id => event_id, :ancestry => nil})
+        if indicators.present?
+          indicators.each do |ind|
+            ind.clone_for_event(self.id)
+          end          
+        end        
+
+        # create relationships
+        relationships = EventIndicatorRelationship.where(:event_id => event_id)
+        if relationships.present?
+          relationships.each do |rel|
+            rel.clone_for_event(self.id)
+          end
+        end
+
+        # create custom views
+        views = EventCustomView.includes(:event_custom_view_translations).where(:event_id => event_id)
+        if views.present?
+          views.each do |view|
+            view.clone_for_event(self.id)
+          end
+        end
+      end
+    end
+  end
 end

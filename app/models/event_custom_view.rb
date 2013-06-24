@@ -13,4 +13,15 @@ class EventCustomView < ActiveRecord::Base
     where(:event_id => event_id, :descendant_shape_type_id => descendant_shape_type_id) if event_id && descendant_shape_type_id
   end
 
+
+  def clone_for_event(event_id)
+    if event_id.present?
+      new_view = EventCustomView.new(:event_id => event_id, :shape_type_id => self.shape_type_id, 
+            :descendant_shape_type_id => self.descendant_shape_type_id, :is_default_view => self.is_default_view)
+      self.event_custom_view_translations.each do |trans|
+        new_view.event_custom_view_translations.build(:locale => self.locale, :note => self.note)
+      end
+      new_view.save
+    end
+  end
 end

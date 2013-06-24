@@ -27,4 +27,14 @@ class EventIndicatorRelationship < ActiveRecord::Base
 		end
   end
 
+  def clone_for_event(event_id)
+    if event_id.present?
+      EventIndicatorRelationship.create(:event_id => event_id, 
+        :indicator_type_id => self.indicator_type_id, :core_indicator_id => self.core_indicator_id, 
+    		:related_core_indicator_id => self.related_core_indicator_id, :related_indicator_type_id => self.related_indicator_type_id,
+        :visible => self.visible, :sort_order => self.sort_order, :has_openlayers_rule_value => self.has_openlayers_rule_value)
+    end
+  end
+
+  
 end

@@ -39,6 +39,22 @@ class Indicator < ActiveRecord::Base
     self.core_indicator.number_format
   end
 
+  # clone the indicator records and scales
+  def clone_for_event(event_id)
+    if event_id.present?
+      new_ind = Indicator.build(:event_id => event_id, :core_indicator_id => self.core_indicator_id, 
+          :shape_type_id => self.shape_type_id, :visible => self.visible)
+      self.indicator_scales.each do |scale|
+        x = new_ind.indicator_scales.build(:color => scale.color)
+        scale.indicator_scale_translations.each do |trans|
+          x.indicator_scale_translations.build(:locale => trans.locale, :name => trans.name)          
+        end
+      end
+
+      new_ind.save
+    end
+  end
+
 	# the shape_type has changed, get the indicator that
   # matches the indicator from the last shape type
 	def self.find_new_id(old_indicator_id, new_shape_type_id)
