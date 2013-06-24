@@ -502,13 +502,16 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
         district_profile_data = data;
         if (summary){
           // there are charts, so show chart container
-          $('#district_profile .tab-pane.active .chart_container').show(300, function (){ adjust_district_profile_height(); build_summary_district_profile_charts(); });
+          $('#district_profile .tab-pane.active .chart_container').show();
+          build_summary_district_profile_charts();
         } else {
           // build_item_district_profile_charts(ind_id);
           // no charts, so hide chart container
-          $('#district_profile .tab-pane.active .chart_container').hide(300);
+          $('#district_profile .tab-pane.active .chart_container').hide();
         }
         build_district_profile_table(data);
+
+        adjust_district_profile_height(); 
 
         $('#district_profile .tab-content .tab-pane.active .profile_loading').fadeOut();
       }
