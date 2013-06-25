@@ -93,19 +93,23 @@ class Event < ActiveRecord::Base
 		.order("events.id")
 	end
 
-  # clone the entire event and its translations
-  def self.clone_for_event(event_id)
-    e = Event.find_by_id(event_id)
-    if e.present?
-      event = Event.new(:shape_id => e.shape_id, :event_type_id => e.event_type_id, 
-        :event_date => e.event_date, :is_default_view => false,
-  		  :has_official_data => e.has_official_data, :has_live_data => e.has_live_data)
-      e.event_translations.each do |trans|
-        event.event_translations.build(:locale => trans.locale, :name => trans.name, 
-            :name_abbrv => trans.name_abbrv, :description => trans.description)
+  # clone the event and its translations
+  def self.clone_from_event(event_id, event_date)
+    event = nil
+    if event_id.present? && event_date.present?
+      e = Event.find_by_id(event_id)
+      if e.present?
+        event = Event.new(:shape_id => e.shape_id, :event_type_id => e.event_type_id, 
+          :event_date => event_date, :is_default_view => false,
+    		  :has_official_data => e.has_official_data, :has_live_data => e.has_live_data)
+        e.event_translations.each do |trans|
+          event.event_translations.build(:locale => trans.locale, :name => trans.name, 
+              :name_abbrv => trans.name_abbrv, :description => trans.description)
+        end
+        event.save
       end
-      event.save
     end
+    return event
   end
 
 

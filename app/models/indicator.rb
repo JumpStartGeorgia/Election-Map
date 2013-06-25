@@ -39,19 +39,35 @@ class Indicator < ActiveRecord::Base
     self.core_indicator.number_format
   end
 
-  # clone the indicator records and scales
-  def clone_for_event(event_id)
+  def process_clone_indicator(event_id)
+    new_ind = nil
     if event_id.present?
-      new_ind = Indicator.build(:event_id => event_id, :core_indicator_id => self.core_indicator_id, 
+      new_ind = Indicator.new(:event_id => event_id, :core_indicator_id => self.core_indicator_id, 
           :shape_type_id => self.shape_type_id, :visible => self.visible)
       self.indicator_scales.each do |scale|
-        x = new_ind.indicator_scales.build(:color => scale.color)
+        new_scale = new_ind.indicator_scales.build(:color => scale.color)
         scale.indicator_scale_translations.each do |trans|
-          x.indicator_scale_translations.build(:locale => trans.locale, :name => trans.name)          
+          new_scale.indicator_scale_translations.build(:locale => trans.locale, :name => trans.name)          
         end
       end
 
-      new_ind.save
+#TODO
+      # if ind has children, build those too
+      if self.children.present?
+        self.children.each do |child|
+          new_ind.children << child.process_clone_indicator(event_id)
+        end
+      end
+    end
+    return new_ind
+  end
+
+  # clone the indicator records and scales
+  def clone_for_event(event_id)
+    if event_id.present?
+      new_ind = process_clone_indicator(event_id)
+
+#      new_ind.save
     end
   end
 

@@ -1,21 +1,70 @@
 var district_profile_data;
 var number_events;
 
-window.hs = [];
-function get_h (i)
-{
-  hs.push($('#district_profile .tab-pane.active .profile_item > div.active div.district_header').height());
-  if (i <= 50)
-  {
-    setTimeout(get_h, 5, +i + 1);
-  }
-  else
-  {
-    console.log(hs);
-  }
-}
-get_h (0);
+function show_appropriate_district_events(ths){
+  var yd = $(ths).next().offset().top - $(window).scrollTop();
 
+  // loop through each option in this select and show/hide as appropriate
+  var event_id;
+  $(ths).children().each(function(){
+    event_id = $(this).val();
+    if ($(this).prop("selected") == true){
+      // show this event
+      $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
+
+      // show this column in datatable
+      $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').addClass('active');
+      $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').addClass('active');
+
+      // update colspan if the table has a footer
+      var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
+      if (tfoot !== undefined){
+        tfoot.attr('colspan', Number(tfoot.attr('colspan'))+1);
+      }
+
+      // make sure all checkboxes with this id are not checked
+      $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+      $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+    }else{
+      // hide this event
+      $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
+
+      // hide this column in datatable
+      $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').removeClass('active');
+      $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').removeClass('active');
+
+      // update colspan if the table has a footer
+      var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
+      if (tfoot !== undefined){
+        tfoot.attr('colspan', Number(tfoot.attr('colspan'))-1);
+      }
+
+      // make sure all checkboxes with this id are not checked
+      $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", false);
+      $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+    }
+  });
+
+  // adjust the height of the blocks
+  adjust_district_profile_height();
+
+  // re-assign no left margin
+  assign_district_no_left_margin_class();
+
+  // reset scroll
+  window.scrollTo($(window).scrollLeft(), $(ths).next().offset().top - yd);
+
+}
+
+// re-assign the no-left-margin class to every third item that is showing
+function assign_district_no_left_margin_class(){
+  $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
+  $('#district_profile .tab-pane.active .profile_item > div.active').each(function(index){
+    if (index%3 == 0){
+      $(this).addClass('no-left-margin');
+    }
+  });
+}
 
 // re-assign height of summary/detail chart for those events showing
 function adjust_district_profile_height(){
@@ -502,13 +551,20 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
         district_profile_data = data;
         if (summary){
           // there are charts, so show chart container
-          $('#district_profile .tab-pane.active .chart_container').show(300, function (){ adjust_district_profile_height(); build_summary_district_profile_charts(); });
+          $('#district_profile .tab-pane.active .chart_container').show();
+          build_summary_district_profile_charts();
         } else {
           // build_item_district_profile_charts(ind_id);
           // no charts, so hide chart container
           $('#district_profile .tab-pane.active .chart_container').hide(300);
         }
         build_district_profile_table(data);
+
+        adjust_district_profile_height(); 
+
+        assign_district_no_left_margin_class();
+
+        show_appropriate_district_events($('#district_profile .tab-pane.active .event_filter select:first'));
 
         $('#district_profile .tab-content .tab-pane.active .profile_loading').fadeOut();
       }
@@ -519,11 +575,6 @@ function get_district_event_type_data(ths_event_type, is_summary, indicator_id){
 $(document).ready(function() {
 
   if (gon.district_profile){
-
-    $(window).bind('load', get_district_event_type_data());
-    $(window).resize(function(){
-      adjust_district_profile_height()
-    });
 
     // apply chosen jquery to filters
     $('select[id^="event_filter_"]').each(function(){
@@ -546,82 +597,38 @@ $(document).ready(function() {
 
     // when indicator filter selected, update the charts
     $('#district_profile .tab-pane.active select.indicator_filter_select').live('change', function(){
-  //    $('#district_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
-  //      $(this).empty();
-        var selected_index = $(this).prop("selectedIndex");
-        // have to do children.children because using optgroups
-        var selected_option = $(this).children().children()[selected_index];
-        var id = $(selected_option).val();
-        var summary = false;
-        // if this is the summary option, get the indicator type id
-        if (id == "0"){
-          summary = true;
-          id = $(selected_option).data('id');
-        }
+      var selected_index = $(this).prop("selectedIndex");
+      // have to do children.children because using optgroups
+      var selected_option = $(this).children().children()[selected_index];
+      var id = $(selected_option).val();
+      var summary = false;
+      // if this is the summary option, get the indicator type id
+      if (id == "0"){
+        summary = true;
+        id = $(selected_option).data('id');
+      }
 
-        // make sure all select filters have this item selected
-        $('#district_profile .tab-pane.active select.indicator_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
-        $('#district_profile .tab-pane.active select.indicator_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+      // make sure all select filters have this item selected
+      $('#district_profile .tab-pane.active select.indicator_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+      $('#district_profile .tab-pane.active select.indicator_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
 
-        // reload data
-        get_district_event_type_data($('#district_profile .nav-tabs li.active a'), summary, id);
-  //    });
+      // reload data
+      get_district_event_type_data($('#district_profile .nav-tabs li.active a'), summary, id);
     });
 
     // when event filter changes, update what events to show
     $('#district_profile .tab-pane.active .event_filter select').live('change', function(){
-      // loop through each option in this select and show/hide as appropriate
-      var event_id;
-      $(this).children().each(function(){
-        event_id = $(this).val();
-        if ($(this).prop("selected") == true){
-          // show this event
-          $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
-
-          // show this column in datatable
-          $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').addClass('active');
-          $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').addClass('active');
-
-          // update colspan if the table has a footer
-          var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
-          if (tfoot !== undefined){
-            tfoot.attr('colspan', Number(tfoot.attr('colspan'))+1);
-          }
-
-          // make sure all checkboxes with this id are not checked
-          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
-          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
-        }else{
-          // hide this event
-          $('#district_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
-
-          // hide this column in datatable
-          $('#district_profile .tab-pane.active .district_table_container .district_table table th[data-id="' + event_id + '"]').removeClass('active');
-          $('#district_profile .tab-pane.active .district_table_container .district_table table td[data-id="' + event_id + '"]').removeClass('active');
-
-          // update colspan if the table has a footer
-          var tfoot = $('#district_profile .tab-pane.active .district_table_container .district_table table tfoot tr td');
-          if (tfoot !== undefined){
-            tfoot.attr('colspan', Number(tfoot.attr('colspan'))-1);
-          }
-
-          // make sure all checkboxes with this id are not checked
-          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", false);
-          $('#district_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
-        }
-      });
-
-      // adjust the height of the blocks
-      adjust_district_profile_height();
-
-      // re-assign the no-left-margin class to every third item that is showing
-      $('#district_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
-      $('#district_profile .tab-pane.active .profile_item > div.active').each(function(index){
-        if (index%3 == 0){
-          $(this).addClass('no-left-margin');
-        }
-      });
+      show_appropriate_district_events(this);
     });
+
+
+    $(window).load(function(){
+      get_district_event_type_data();
+    });
+    $(window).resize(function(){
+      adjust_district_profile_height();
+    });
+
   }
 });
 

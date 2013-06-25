@@ -2,6 +2,71 @@ var indicator_profile_data;
 var number_events;
 var datatable_first_column_value = "-9999";
 
+function show_appropriate_indicator_events(ths){
+    var yd = $(ths).next().offset().top - $(window).scrollTop();
+
+    // loop through each option in this select and show/hide as appropriate
+    var event_id;
+    $(ths).children().each(function(){
+      event_id = $(this).val();
+      if ($(this).prop("selected") == true){
+        // show this event
+        $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
+
+        // show this column in datatable
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').addClass('active');
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').addClass('active');
+
+        // update colspan if the table has a footer
+        var tfoot = $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table tfoot tr td');
+        if (tfoot !== undefined){
+          tfoot.attr('colspan', Number(tfoot.attr('colspan'))+1);
+        }
+
+        // make sure all checkboxes with this id are not checked
+        $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+        $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+      }else{
+        // hide this event
+        $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
+
+        // hide this column in datatable
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').removeClass('active');
+        $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').removeClass('active');
+
+        // update colspan if the table has a footer
+        var tfoot = $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table tfoot tr td');
+        if (tfoot !== undefined){
+          tfoot.attr('colspan', Number(tfoot.attr('colspan'))-1);
+        }
+
+        // make sure all checkboxes with this id are not checked
+        $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", false);
+        $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+      }
+    });
+
+    // adjust the height of the blocks
+    adjust_indicator_profile_height();
+
+    // re-assign the no-left-margin class to every third item that is showing
+    assign_indicator_no_left_margin_class();
+
+    // reset scroll
+    window.scrollTo($(window).scrollLeft(), $(ths).next().offset().top - yd);
+}
+
+// re-assign the no-left-margin class to every third item that is showing
+function assign_indicator_no_left_margin_class(){
+  $('#indicator_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
+  $('#indicator_profile .tab-pane.active .profile_item > div.active').each(function(index){
+    if (index%3 == 0){
+      $(this).addClass('no-left-margin');
+    }
+  });
+}
+
+
 // re-assign height of summary/detail chart for those events showing
 function adjust_indicator_profile_height(){
   var header_height = [];
@@ -484,7 +549,11 @@ function get_ind_event_type_data(event_type_id, shape_type_id, common_id, common
         }
         build_indicator_profile_table(data);
 
-        adjust_indicator_profile_height()
+        adjust_indicator_profile_height();
+
+        assign_indicator_no_left_margin_class();
+
+        show_appropriate_indicator_events($('#indicator_profile .tab-pane.active .event_filter select:first'));
 
         $('#indicator_profile .tab-content .tab-pane.active .profile_loading').fadeOut();
       }
@@ -504,12 +573,6 @@ $(document).ready(function() {
       $(this).chosen({width: $(this).innerWidth().toString() + "px"});
     });
 
-
-    $(window).bind('load', get_ind_event_type_data());
-    $(window).resize(function(){
-      adjust_indicator_profile_height()
-    });
-
     // when switch event types, get data for the new events
     $('#indicator_profile .nav-tabs li a').click(function(){
       // if charts do not already exist, load them
@@ -523,83 +586,30 @@ $(document).ready(function() {
 
     // when district filter selected, update the charts
     $('#indicator_profile .tab-pane.active select.district_filter_select').live('change', function(){
-  //    $('#indicator_profile .tab-content .tab-pane.active .highcharts-container').fadeOut(300, function(){
-  //      $(this).empty();
-  //        var selected_option = $("#indicator_profile .tab-pane.active select.district_filter_select option:selected");
-          var selected_index = $(this).prop("selectedIndex");
-          var selected_option = $(this).children()[selected_index];
+      var selected_index = $(this).prop("selectedIndex");
+      var selected_option = $(this).children()[selected_index];
 
-          // make sure all select filters have this item selected
-          $('#indicator_profile .tab-pane.active select.district_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
-          $('#indicator_profile .tab-pane.active select.district_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
+      // make sure all select filters have this item selected
+      $('#indicator_profile .tab-pane.active select.district_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
+      $('#indicator_profile .tab-pane.active select.district_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
 
-          // reload the data
-          get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());
-  //    });
+      // reload the data
+      get_ind_event_type_data($(this).data('id'), $(selected_option).data('shape-type-id'), $(selected_option).data('id'), $(selected_option).text());
     });
 
 
     // when event filter changes, update what events to show
     $('#indicator_profile .tab-pane.active .event_filter select').live('change', function(){
-
-      var yd = $(this).next().offset().top - $(window).scrollTop();
-
-      // loop through each option in this select and show/hide as appropriate
-      var event_id;
-      $(this).children().each(function(){
-        event_id = $(this).val();
-        if ($(this).prop("selected") == true){
-          // show this event
-          $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').addClass('active');
-
-          // show this column in datatable
-          $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').addClass('active');
-          $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').addClass('active');
-
-          // update colspan if the table has a footer
-          var tfoot = $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table tfoot tr td');
-          if (tfoot !== undefined){
-            tfoot.attr('colspan', Number(tfoot.attr('colspan'))+1);
-          }
-
-          // make sure all checkboxes with this id are not checked
-          $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", true);
-          $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
-        }else{
-          // hide this event
-          $('#indicator_profile .tab-pane.active .profile_item > div[data-id="' + event_id + '"]').removeClass('active');
-
-          // hide this column in datatable
-          $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table th[data-id="' + event_id + '"]').removeClass('active');
-          $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table td[data-id="' + event_id + '"]').removeClass('active');
-
-          // update colspan if the table has a footer
-          var tfoot = $('#indicator_profile .tab-pane.active .indicator_table_container .indicator_table table tfoot tr td');
-          if (tfoot !== undefined){
-            tfoot.attr('colspan', Number(tfoot.attr('colspan'))-1);
-          }
-
-          // make sure all checkboxes with this id are not checked
-          $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').prop("selected", false);
-          $('#indicator_profile .tab-pane.active select.event_filter_select option[value="' + $(this).val() + '"]').trigger("liszt:updated");
-        }
-      });
-
-      // adjust the height of the blocks
-      adjust_indicator_profile_height();
-
-      // re-assign the no-left-margin class to every third item that is showing
-      $('#indicator_profile .tab-pane.active .profile_item > div.active').removeClass('no-left-margin');
-      $('#indicator_profile .tab-pane.active .profile_item > div.active').each(function(index){
-        if (index%3 == 0){
-          $(this).addClass('no-left-margin');
-        }
-      });
-
-      // reset scroll
-      window.scrollTo($(window).scrollLeft(), $(this).next().offset().top - yd);
-
+      show_appropriate_indicator_events(this);
     });
+
+    $(window).load(function(){
+      get_ind_event_type_data();
+    });
+    $(window).resize(function(){
+      adjust_indicator_profile_height()
+    });
+
   }
 });
 
