@@ -4,6 +4,7 @@ class Admin::DataSetsController < ApplicationController
     controller_instance.send(:valid_role?, User::ROLES[:admin])
   end
 	require 'json_cache'
+	cache_sweeper :data_set_sweeper, :only => [:update, :destroy]
 
 	def create_cache
     start = Time.now

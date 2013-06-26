@@ -1,5 +1,12 @@
 <% title t('.title') %>
 
+<div class="form-actions">
+  <%= link_to t('app.buttons.list'),
+              admin_data_sets_path, :class => 'btn'  %>
+	<%= link_to t('app.buttons.admin'), admin_path,
+  :class => 'btn' %>
+</div>
+
 <% if !@live_events_menu || @live_events_menu.empty?%>
 
   <p><%= t('.no_live_events')%></p>
@@ -58,9 +65,4 @@
   <% end %>
 
 <% end %>
-<div class="form-actions">
-  <%= link_to t('app.buttons.list'),
-              admin_data_sets_path, :class => 'btn'  %>
-	<%= link_to t('app.buttons.admin'), admin_path,
-  :class => 'btn' %>
-</div>
+

@@ -18,7 +18,7 @@ where t.district_id = rd.district_id;
 
 
 # now download the data to csv
-SELECT 'shape', 'common_id', 'common_name', 'Numbers of voters over 99 years old', 'Number of voters between 85 and 99 years old', 'Average age of voters','Number of potential voter duplications', 'Total Voters'
+SELECT 'shape', 'common_id', 'common_name', 'Average age of voters', 'Numbers of voters over 99 years old', 'Number of voters between 85 and 99 years old', 'Total Voters', 'Number of potential voter duplications'
 union
 select * from `2013 feb voter list - csv` where common_id != '' && common_name != ''
 INTO OUTFILE '/var/www/data/upload_voters_list.csv'

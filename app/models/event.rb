@@ -142,6 +142,15 @@ class Event < ActiveRecord::Base
             view.clone_for_event(self.id)
           end
         end
+
+        # create custom shape navigation
+        navs = CustomShapeNavigation.includes(:custom_shape_navigation_translations).where(:event_id => event_id)
+        if navs.present?
+          navs.each do |nav|
+            nav.clone_for_event(self.id)
+          end
+        end
+
       end
     end
   end
