@@ -13,8 +13,8 @@ class Add2013VotersLists < ActiveRecord::Migration
         # update names
         event.event_translations.each do |trans|
           if trans.locale == 'ka'
-            trans.name = '2012 წლის თებერვლის ამომრჩეველთა სია'
-            trans.name_abbrv = '2012 თებერვლის'
+            trans.name = '2013 წლის თებერვლის ამომრჩეველთა სია'
+            trans.name_abbrv = '2013 თებერვლის'
           else
             trans.name = '2013 February Voters List'
             trans.name_abbrv = '2013 February'
