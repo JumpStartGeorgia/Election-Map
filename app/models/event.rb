@@ -114,13 +114,17 @@ class Event < ActiveRecord::Base
 
 
   # copy everything from an existing event into into a new event
+  # - if core indicator ids passed in, only copy those indicators
   # copy: indicators, relationships, custom event views
-  def clone_event_components(event_id)
+  def clone_event_components(event_id, core_indicator_ids=nil)
     if event_id.present?
       Event.transaction do
         # create indicators and the scales
         indicators = Indicator.includes(:indicator_scales => :indicator_scale_translations)
           .where(:indicators => {:event_id => event_id, :ancestry => nil})
+        if core_indicator_ids.present?
+          indicators = indicators.where(:indicators => {:core_indicator_id => core_indicator_ids})
+        end
         if indicators.present?
           indicators.each do |ind|
             ind.clone_for_event(self.id)
@@ -129,6 +133,9 @@ class Event < ActiveRecord::Base
 
         # create relationships
         relationships = EventIndicatorRelationship.where(:event_id => event_id)
+        if core_indicator_ids.present?
+          relationships = relationships.where(["core_indicator_id in (?) or indicator_type_id is not null", core_indicator_ids])
+        end
         if relationships.present?
           relationships.each do |rel|
             rel.clone_for_event(self.id)

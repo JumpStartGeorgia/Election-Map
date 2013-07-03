@@ -52,22 +52,24 @@ class Add2013VotersLists < ActiveRecord::Migration
   def down
     events = Event.where(:event_date => ['2013-05-01', '2013-02-01'])
     if events.present?
-      ids = events.map{|x| x.id}
-      
-      EventIndicatorRelationship.where(:event_id => ids).delete_all
+      Event.transaction do
+        ids = events.map{|x| x.id}
+        
+        EventIndicatorRelationship.where(:event_id => ids).delete_all
 
-      views = EventCustomView.select("id").where(:event_id => ids)
-      EventCustomViewTranslation.where(:event_custom_view_id => views.map{|x| x.id}).delete_all
-      EventCustomView.where(:event_id => ids).delete_all
+        views = EventCustomView.select("id").where(:event_id => ids)
+        EventCustomViewTranslation.where(:event_custom_view_id => views.map{|x| x.id}).delete_all
+        EventCustomView.where(:event_id => ids).delete_all
 
-      indicators = Indicator.select("id").where(:event_id => ids)
-      scales = IndicatorScale.select("id").where(:indicator_id => indicators.map{|x| x.id})
-      IndicatorScaleTranslation.where(:indicator_scale_id => scales.map{|x| x.id}).delete_all
-      IndicatorScale.where(:indicator_id => indicators.map{|x| x.id}).delete_all
-      Indicator.where(:event_id => ids).delete_all
+        indicators = Indicator.select("id").where(:event_id => ids)
+        scales = IndicatorScale.select("id").where(:indicator_id => indicators.map{|x| x.id})
+        IndicatorScaleTranslation.where(:indicator_scale_id => scales.map{|x| x.id}).delete_all
+        IndicatorScale.where(:indicator_id => indicators.map{|x| x.id}).delete_all
+        Indicator.where(:event_id => ids).delete_all
 
-      EventTranslation.where(:event_id => ids).delete_all
-      Event.where(:id => ids).delete_all
+        EventTranslation.where(:event_id => ids).delete_all
+        Event.where(:id => ids).delete_all
+      end
     end
   end
 end

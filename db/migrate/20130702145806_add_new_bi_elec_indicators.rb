@@ -11,7 +11,6 @@ class AddNewBiElecIndicators < ActiveRecord::Migration
       :name_abbrv => 'საინიციატივო ჯგუფი', :description => 'ხმების გადანაწილება, საინიციატივო ჯგუფი (%)')
 
     init_grp_id = core.id
-puts "-------------- id = #{init_grp_id}"
 
     # Ioseb Manjavidze
     core = CoreIndicator.create(:indicator_type_id => 2, :number_format => '%')
