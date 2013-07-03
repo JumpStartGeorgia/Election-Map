@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130625051758) do
+ActiveRecord::Schema.define(:version => 20130702145806) do
 
   create_table "core_indicator_translations", :force => true do |t|
     t.integer  "core_indicator_id"
