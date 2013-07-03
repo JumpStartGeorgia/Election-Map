@@ -16,9 +16,15 @@ update `2013 election bi maj - raw` as t, regions_districts as rd
 set t.region = rd.region,t.district_name = rd.district_name
 where t.district_id = rd.district_id;
 
-# add valid votes
+# add number possible votes
+# - pull numbers from `2012 election parl major - raw`
+update `2013 election bi maj - raw` as new, `2012 election parl major - raw` as old
+set new.num_possible_voters = old.num_possible_voters
+where new.district_id = old.district_id and new.precinct_id = old.precinct_id;
+
+# add num valid votes
 update `2013 election bi maj - raw`
-set num_valid_votes = (num_votes-num_invalid_votes);
+set num_valid_votes = (`Free Georgia` + `National Democratic Party of Georgia` + `United National Movement` + `Movement for Fair Georgia` + `Freedom Party` + `Merab Kostava Society` + `Labour Council of Georgia` + `Labour` + `Georgian Dream` + `Ioseb Manjavidze` + `Zviad Chitishvili` + `Roman Robakidze` + `Zurab Mskhvilidze`);
 
 
 # now download the data to csv
