@@ -36,5 +36,22 @@ class EventIndicatorRelationship < ActiveRecord::Base
     end
   end
 
-  
+  # copy all relationships from an indicator in an event to a different indicator in an event
+  # - if a relationship's related_core_indicator_id = from_core_indicator_id, 
+  #   then replace it with the to_core_indicator_id
+  def self.clone_from_indicator(from_event_id, from_core_indicator_id, to_event_id, to_core_indicator_id)
+    if from_event_id.present? && from_core_indicator_id.present? && to_event_id.present? && to_core_indicator_id.present?
+      # get the previous relationship
+      from = EventIndicatorRelationship.where(:event_id => from_event_id, :core_indicator_id => from_core_indicator_id)
+      if from.present?
+        from.each do |rel|
+          related_core_ind_id = rel.related_core_indicator_id == from_core_indicator_id ? to_core_indicator_id : rel.related_core_indicator_id
+          EventIndicatorRelationship.create(:event_id => to_event_id, 
+            :core_indicator_id => to_core_indicator_id, 
+        		:related_core_indicator_id => related_core_ind_id, :related_indicator_type_id => rel.related_indicator_type_id,
+            :visible => rel.visible, :sort_order => rel.sort_order, :has_openlayers_rule_value => rel.has_openlayers_rule_value)
+        end
+      end
+    end
+  end
 end
