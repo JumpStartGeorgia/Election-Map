@@ -31,11 +31,16 @@ class AddBiElectionEvent < ActiveRecord::Migration
 
         # now create the components for the new indicators
         # - get the new indicators
-        names = ['Ioseb Manjavidze', 'Zviad Chitishvili', 'Roman Robakidze', 'Roman Robakidze']
-        inds = CoreIndicator.includes(:core_indicator_translations).where(:core_indicator_translations => {:locale => 'en', :name => names})
+        names = ['Ioseb Manjavidze', 'Zviad Chitishvili', 'Roman Robakidze', 'Zurab Mskhvilidze']
+        new_inds = CoreIndicator.includes(:core_indicator_translations).where(:core_indicator_translations => {:locale => 'en', :name => names})
         # - create components
-        
-
+        ind_to_clone = inds.select{|x| x.core_indicator_translations.select{|x| x.locale == 'en'}.first.name == 'Free Georgia'}
+        if ind_to_clone.present?
+          new_inds.each do |ind|
+            EventIndicatorRelationship.clone_from_core_indicator(event.id, ind_to_clone.first.id, event.id, ind.id)
+            Indicator.clone_from_core_indicator(event.id, ind_to_clone.first.id, event.id, ind.id)
+          end
+        end
       end
     end
   end

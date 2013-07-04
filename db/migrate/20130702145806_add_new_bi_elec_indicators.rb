@@ -35,7 +35,7 @@ class AddNewBiElecIndicators < ActiveRecord::Migration
     core.parent_id = init_grp_id
     core.save
     core.core_indicator_translations.create(:locale => 'en', :name => 'Roman Robakidze',
-      :name_abbrv => 'Roman Robakidze', :description => 'Vote share Roman Robakidze (%)')
+      :name_abbrv => 'Robakidze', :description => 'Vote share Roman Robakidze (%)')
     core.core_indicator_translations.create(:locale => 'ka', :name => 'რომან რობაქიძე',
       :name_abbrv => 'რობაქიძე', :description => 'ხმების გადანაწილება, რომან რობაქიძე (%)')
 
@@ -43,8 +43,8 @@ class AddNewBiElecIndicators < ActiveRecord::Migration
     core = CoreIndicator.create(:indicator_type_id => 2, :number_format => '%')
     core.parent_id = init_grp_id
     core.save
-    core.core_indicator_translations.create(:locale => 'en', :name => 'Roman Robakidze',
-      :name_abbrv => 'Zurab Mskhvilidze', :description => 'Vote share Zurab Mskhvilidze (%)')
+    core.core_indicator_translations.create(:locale => 'en', :name => 'Zurab Mskhvilidze',
+      :name_abbrv => 'Mskhvilidze', :description => 'Vote share Zurab Mskhvilidze (%)')
     core.core_indicator_translations.create(:locale => 'ka', :name => 'ზურაბ მსხვილიძე',
       :name_abbrv => 'მსხვილიძე', :description => 'ხმების გადანაწილება, ზურაბ მსხვილიძე (%)')
 
@@ -52,7 +52,7 @@ class AddNewBiElecIndicators < ActiveRecord::Migration
 
   def down
     # delete the core indicators
-    names = ['Initiative Group', 'საინიციატივო ჯგუფი', 'Ioseb Manjavidze', 'იოსებ მანჯავიძე', 'Zviad Chitishvili', 'ზვიად ჩიტიშვილი', 'Roman Robakidze', 'რომან რობაქიძე', 'Roman Robakidze', 'ზურაბ მსხვილიძე']
+    names = ['Initiative Group', 'საინიციატივო ჯგუფი', 'Ioseb Manjavidze', 'იოსებ მანჯავიძე', 'Zviad Chitishvili', 'ზვიად ჩიტიშვილი', 'Roman Robakidze', 'რომან რობაქიძე', 'Zurab Mskhvilidze', 'ზურაბ მსხვილიძე']
     inds = CoreIndicatorTranslation.where(:name => names)
     CoreIndicator.where(:id => inds.map{|x| x.core_indicator_id}).destroy_all
   end

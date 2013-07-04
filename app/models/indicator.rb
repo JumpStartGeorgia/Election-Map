@@ -55,12 +55,76 @@ class Indicator < ActiveRecord::Base
       # if parent ind id present, add it to this indicator
       if parent_indicator_id.present?
         new_ind.parent_id = parent_indicator_id
+        new_ind.save
       end
 
       # if ind has children, clone those too
       if self.children.present?
         self.children.each do |child|
-          child.clone_for_event(event_id, self.id)
+          child.clone_for_event(event_id, new_ind.id)
+        end
+      end
+    end
+  end
+
+  # copy all indicators from an indicator in an event to a different indicator in an event
+  def self.clone_from_core_indicator(from_event_id, from_core_indicator_id, to_event_id, to_core_indicator_id)
+    if from_event_id.present? && from_core_indicator_id.present? && to_event_id.present? && to_core_indicator_id.present?
+      # get the previous indicators
+      from = Indicator.includes(:indicator_scales => :indicator_scale_translations)
+              .where(:indicators => {:event_id => from_event_id, :core_indicator_id => from_core_indicator_id})
+              .order("indicators.ancestry") # so records are in order of parent to children
+
+      if from.present?
+        new_inds = []
+
+        # add each indicator
+        from.each do |ind|
+          new_ind = Indicator.create(:event_id => to_event_id, :core_indicator_id => to_core_indicator_id, 
+              :shape_type_id => ind.shape_type_id, :visible => ind.visible)
+          ind.indicator_scales.each do |scale|
+            new_scale = new_ind.indicator_scales.create(:color => scale.color)
+            scale.indicator_scale_translations.each do |trans|
+              new_scale.indicator_scale_translations.create(:locale => trans.locale, :name => trans.name)          
+            end
+          end
+
+          # if ind has parent - produce matching parent for new ind 
+          parent_id = nil
+          if ind.parent_id.present?
+            # look for parent_id in from array
+            match = from.select{|x| x.id == ind.parent_id}
+            if match.present?
+              # now find matching ind in new_inds
+              new_match = new_inds.select{|x| x.shape_type_id == match.first.shape_type_id}
+              if new_match.present?
+                parent_id = new_match.first.id                
+              end
+            else
+              # this ind is not in the from list, 
+              # so see if to_event has matching parent
+              # if so, add it
+              new_parent_ind = Indicator.where(:event_id => to_event_id, :core_indicator_id => ind.parent.core_indicator_id, :shape_type_id => ind.parent.shape_type_id)
+              if new_parent_ind.present?
+                parent_id = new_parent_ind.first.id
+              end
+            end
+
+            if parent_id.blank?
+              puts "**************************************"
+              puts "**************************************"
+              puts " - could not find parent_id for old ind: #{ind.id}; new ind: #{new_ind.id}"
+              puts "**************************************"
+              puts "**************************************"
+            end
+          end
+
+          if parent_id.present?  
+            new_ind.parent_id = parent_id
+            new_ind.save
+          end
+          
+          new_inds << new_ind
         end
       end
     end
