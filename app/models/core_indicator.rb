@@ -10,7 +10,7 @@ class CoreIndicator < ActiveRecord::Base
   has_many :event_indicator_relationships, :dependent => :destroy
   accepts_nested_attributes_for :core_indicator_translations
   attr_accessible :indicator_type_id, :number_format, :color, :ancestry, :core_indicator_translations_attributes
-  attr_accessor :locale, :rank
+  attr_accessor :indicator_name, :indicator_name_unformatted, :indicator_name_abbrv, :rank
 
 	before_validation :reset_ancestry
 
@@ -20,7 +20,7 @@ class CoreIndicator < ActiveRecord::Base
 
 	# if ancestry is '', make it nil
 	def reset_ancestry
-		self.ancestry = nil if self.ancestry && self.ancestry.empty?
+		self.ancestry = nil if self.ancestry.present?
 	end
 	
   def self.order_by_type_name(include_ancestry = false)
@@ -30,6 +30,26 @@ class CoreIndicator < ActiveRecord::Base
     end
     with_translations(I18n.locale)
       .order(sort)
+  end
+  
+  def self.for_csv_processing(ind_name, locale=I18n.locale.to_s)
+    if ind_name.present?
+		  sql = "SELECT ci.id, ci.indicator_type_id, ci.number_format as number_format, cit.name as indicator_name_unformatted, "
+		  sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as indicator_name, "
+		  sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as indicator_name_abbrv, "
+		  sql << "if (ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as color "
+		  sql << "FROM core_indicators as ci "
+		  sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
+		  sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id  "
+		  sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id AND cit_parent.locale = :locale "
+		  sql << "WHERE cit.name = :ind_name AND cit.locale = :locale "
+		  find_by_sql([sql, :ind_name => ind_name, :locale => locale])
+    end
+  end
+
+  def name_w_parent
+    parent_abbrv = self.ancestry.nil? ? "" : " (#{self.parent.name_abbrv})"
+    "#{self.name}#{parent_abbrv}"
   end
 
   def name_abbrv_w_parent
@@ -65,9 +85,9 @@ class CoreIndicator < ActiveRecord::Base
 
 	# if this is a child and no color exist, see if the parent has a color
 	def indicator_color
-	  if !self.color.nil? && !self.color.empty?
+	  if self.color.present?
 	  	self.color
-		elsif !self.ancestry.nil? && !self.parent.color.nil? && !self.parent.color.empty?
+		elsif self.ancestry.present? && self.parent.color.present?
 	  	self.parent.color
 		else
 			nil

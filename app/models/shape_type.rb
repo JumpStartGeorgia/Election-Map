@@ -10,7 +10,8 @@ class ShapeType < ActiveRecord::Base
   attr_accessible :id, :ancestry, :is_precinct, :shape_type_translations_attributes
   attr_accessor :locale
 
-	scope :precincts, where(:is_precinct => true)
+  scope :sorted, with_translations(I18n.locale).order("shape_type_translations.name_singular asc")
+  scope :precincts, where(:is_precinct => true)
 
 	# get all of the shape types assigned to an event, via the event's shape_id
 	def self.by_event(event_id)
