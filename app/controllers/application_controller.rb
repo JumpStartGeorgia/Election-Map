@@ -157,6 +157,11 @@ logger.debug "---********----- event type cache"
 						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
 						:data_type => Datum::DATA_TYPE[:live],
 						:only_path => false))
+					e["href"] = indicator_map_path(
+						:event_id => event.id, :event_type_id => event.event_type_id,
+						:shape_id => event.shape_id, :shape_type_id => event.shape.nil? ? nil : event.shape.shape_type_id,
+						:data_type => Datum::DATA_TYPE[:live],
+						:only_path => false)
 					e["name"] = event.name
 					e["description"] = event.description
           e["data_available_at"] = nil

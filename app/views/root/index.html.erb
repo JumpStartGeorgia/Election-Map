@@ -1,6 +1,57 @@
 <%= content_for :body_id, 'body_landing_page' %>
 
 <div id="landing_page">
+
+  <% if @live_event_menu.length %>
+    <% @live_event_menu[1] = @live_event_menu[0]; %>
+    <div id="live_events_row" class="clearfix events_<%= @live_event_menu.length %>">
+      <div class="header">
+        <%= image_tag 'menu_live.png'; %>
+        <strong><%= t('live_election') %></strong>
+      </div>
+      <% @live_event_menu.each do |event| %>
+        <div class="item">
+          <div class="name"><h4><%= event['name'] %></h4></div>
+          <div class="bars">
+            <ul>
+              <li class="top">
+                <strong>Precincs Reported: </strong>
+                <span class="number">102</span>
+                <div class="bar">
+                  <% percent = '36%'; %>
+                  <div style="width: <%= percent %>; background-color: <%= '#eedea0' %>" title="<%= 'title' %>"></div>
+                  <span style="<%= barchart_no_overflow(percent) %>"><%= percent %></span>
+                </div>
+              </li>
+              <li class="title">
+                <strong>Top 2 candidates overall results: </strong>
+              </li>
+              <li class="bottom">
+                <span>Precincs Reported: </span>
+                <strong class="number">102</strong>
+                <div class="bar">
+                  <% percent = '88%'; %>
+                  <div style="width: <%= percent %>; background-color: <%= '#0170a5' %>" title="<%= 'title' %>"></div>
+                  <span style="<%= barchart_no_overflow(percent) %>"><%= percent %></span>
+                </div>
+              </li>
+              <li class="bottom">
+                <span>Precincs Reported: </span>
+                <strong class="number">102</strong>
+                <div class="bar">
+                  <% percent = '56%'; %>
+                  <div style="width: <%= percent %>; background-color: <%= '#d23d37' %>" title="<%= 'title' %>"></div>
+                  <span style="<%= barchart_no_overflow(percent) %>"><%= percent %></span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="more"><%= link_to t('.show_more'), event['href'] %></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <div id="row1">
     <div>
       <%= image_tag 'landing_map.png', :alt => t('.img_alt') %>
