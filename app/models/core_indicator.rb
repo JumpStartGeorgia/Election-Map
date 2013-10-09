@@ -32,7 +32,22 @@ class CoreIndicator < ActiveRecord::Base
       .order(sort)
   end
   
-  def self.for_csv_processing(ind_name, locale=I18n.locale.to_s)
+  def self.for_csv_processing_by_id(ind_id, locale=I18n.locale.to_s)
+    if ind_id.present?
+		  sql = "SELECT ci.id, ci.indicator_type_id, ci.number_format as number_format, cit.name as indicator_name_unformatted, "
+		  sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as indicator_name, "
+		  sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as indicator_name_abbrv, "
+		  sql << "if (ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as color "
+		  sql << "FROM core_indicators as ci "
+		  sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
+		  sql << "left join core_indicators as ci_parent on ci.ancestry = ci_parent.id  "
+		  sql << "left join core_indicator_translations as cit_parent on ci_parent.id = cit_parent.core_indicator_id AND cit_parent.locale = :locale "
+		  sql << "WHERE ci.id = :ind_id AND cit.locale = :locale "
+		  find_by_sql([sql, :ind_id => ind_id, :locale => locale])
+    end
+  end
+
+  def self.for_csv_processing_by_name(ind_name, locale=I18n.locale.to_s)
     if ind_name.present?
 		  sql = "SELECT ci.id, ci.indicator_type_id, ci.number_format as number_format, cit.name as indicator_name_unformatted, "
 		  sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as indicator_name, "

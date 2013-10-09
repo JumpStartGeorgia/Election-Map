@@ -10,10 +10,10 @@ module DataJson
     n, msg = 0, ""
     event = nil
     shape_types = nil
-    summary_indicator_types = nil
+    summary_indicator_types = Hash.new
     summary_core_indicator_ids = []
     indicators = []
-    core_indicators = []
+    core_indicators = Hash.new
     core_id_index = Hash.new
     idx_shape_type = 0
     idx_common_id = 1
@@ -40,7 +40,9 @@ module DataJson
       end
 
       # get all indicator types that have a summary
-      summary_indicator_types = IndicatorType.has_summary.sorted.map{|x| {:id => x.id, :name => x.name}}
+      I18n.available_locales.each do |locale|
+        summary_indicator_types[locale] = IndicatorType.has_summary.with_translations(locale).map{|x| {:id => x.id, :name => x.name}}
+      end
 
 	    CSV.parse(infile) do |row|
 break if n > 2 
@@ -57,16 +59,37 @@ break if n > 2
             puts "****************indicator index = #{ind_index}"
 
             puts "**************** - get core indicator"
-            core = CoreIndicator.for_csv_processing(row[ind_index], I18n.locale)
+            # use default locale first
+            core_indicators[I18n.locale] = [] if core_indicators[I18n.locale].blank?
+            core = CoreIndicator.for_csv_processing_by_name(row[ind_index], I18n.locale)
 
             if core.blank?
               # indicator not found
-							msg = I18n.t('models.datum.msgs.indicator_not_found', :name => row[ind_index])
-							raise ActiveRecord::Rollback
-							return msg
+					    msg = I18n.t('models.datum.msgs.indicator_not_found', :name => row[ind_index])
+					    raise ActiveRecord::Rollback
+					    return msg
             else
-              core_indicators << core.first
+              core_indicators[I18n.locale] << core.first
+              core_id = core.first.id
               core_id_index[core.first.id.to_s] = ind_index
+            end
+
+            I18n.available_locales.each do |locale|
+              if locale != I18n.locale # default locale already processed
+                core_indicators[locale] = [] if core_indicators[locale].blank?
+
+                core = CoreIndicator.for_csv_processing_by_id(core_id, locale)
+
+                if core.blank?
+                  # indicator not found
+							    msg = I18n.t('models.datum.msgs.indicator_not_found', :name => row[ind_index])
+							    raise ActiveRecord::Rollback
+							    return msg
+                else
+                  core_indicators[locale] << core.first
+                  core_id_index[core.first.id.to_s] = ind_index
+                end
+              end
             end
 
 
@@ -85,9 +108,9 @@ break if n > 2
           end
           
           # create array of core ind ids that should be used in summary
-          if summary_indicator_types.present?
-            summary_indicator_types.each do |type|
-              summary_core_indicator_ids << {:type_id => type[:id], :data => core_indicators.select{|x| x.indicator_type_id == type[:id]}.map{|x| x.id}}
+          if summary_indicator_types[I18n.locale].present?
+            summary_indicator_types[I18n.locale].each do |type|
+              summary_core_indicator_ids << {:type_id => type[:id], :data => core_indicators[I18n.locale].select{|x| x.indicator_type_id == type[:id]}.map{|x| x.id}}
             end
           end
           
@@ -108,60 +131,60 @@ break if n > 2
 
         # build summary json for row
         if summary_core_indicator_ids.present?
-          summary_core_indicator_ids.each do |summary_ids|
-            # order the indicators by value
-            values = []
-            summary_ids[:data].each do |summary_id|
-              values << {:id => summary_id, :index => core_id_index[summary_id.to_s], :value => row[core_id_index[summary_id.to_s]].to_f, :rank => nil}
-            end
-            # sort desc order
-            values.sort!{|x,y| y[:value] <=> x[:value]}
-            
-            # build json
-            summary_json = Hash.new
-            summary_json["data"] = []
-            summary_json["visible"] = true
-            summary_json["has_openlayers_rule_value"] = true
-            summary_json["total_ranks"] = nil
-            summary_json["has_duplicates"] = false
-   
-            # create rank
-            values.each_with_index do |value, i|
-              puts "///////////////////////////////"
-              puts "/// - index = #{i}"
-              value[:rank] = compute_placement(values, value[:value])
+          I18n.available_locales.each do |locale|
+            summary_core_indicator_ids.each do |summary_ids|
+              # order the indicators by value
+              values = []
+              summary_ids[:data].each do |summary_id|
+                values << {:id => summary_id, :index => core_id_index[summary_id.to_s], :value => row[core_id_index[summary_id.to_s]].to_f, :rank => nil}
+              end
+              # sort desc order
+              values.sort!{|x,y| y[:value] <=> x[:value]}
+              
+              # build json
+              summary_json = Hash.new
+              summary_json["data"] = []
+              summary_json["visible"] = true
+              summary_json["has_openlayers_rule_value"] = true
+              summary_json["total_ranks"] = nil
+              summary_json["has_duplicates"] = false
+     
+              # create rank
+              values.each_with_index do |value, i|
+                puts "///////////////////////////////"
+                puts "/// - index = #{i}"
+                value[:rank] = compute_placement(values, value[:value])
 
-              if i == 0
-                summary_json["total_ranks"] = value[:rank][:total]
-                summary_json["has_duplicates"] = value[:rank][:has_duplicates]
+                if i == 0
+                  summary_json["total_ranks"] = value[:rank][:total]
+                  summary_json["has_duplicates"] = value[:rank][:has_duplicates]
+                end
+
+                summary_item = Hash.new
+                summary_json["data"] << summary_item
+                
+                core = core_indicators[locale].select{|x| x.id == value[:id]}.first
+                summary_item["value"] = value[:value].to_s
+                summary_item["formatted_value"] = format_value(value[:value]).to_s
+                summary_item["number_format"] = core.number_format
+                summary_item["rank"] = value[:rank][:rank]
+                summary_item["color"] = core.color
+                ind = indicators[core_id_index[value[:id].to_s]-index_first_ind].select{|x| x.shape_type_id == shape_type.id}.first
+                summary_item["indicator_id"] = ind.present? ? ind.id : nil
+                summary_item["core_indicator_id"] = value[:id]
+                summary_item["indicator_type_id"] = summary_ids[:type_id]
+                summary_item["indicator_type_name"] = summary_indicator_types[locale].select{|x| x[:id] == summary_ids[:type_id]}.map{|x| x[:name]}.first
+                summary_item["has_openlayers_rule_value"] = false
+                summary_item["visible"] = true
+                summary_item["indicator_name_unformatted"] = core[:indicator_name_unformatted]
+                summary_item["indicator_name"] = core[:indicator_name]
+                summary_item["indicator_name_abbrv"] = core[:indicator_name_abbrv]
+                puts "/////////// - end"
               end
 
-              summary_item = Hash.new
-              summary_json["data"] << summary_item
-              
-              core = core_indicators.select{|x| x.id == value[:id]}.first
-              summary_item["value"] = value[:value].to_s
-              summary_item["formatted_value"] = format_value(value[:value]).to_s
-              summary_item["number_format"] = core.number_format
-              summary_item["rank"] = value[:rank][:rank]
-              summary_item["color"] = core.color
-              puts "/// - core_indicators length = #{core_indicators.length}; ind length = #{indicators.length}; index = #{core_id_index[value[:id].to_s]-index_first_ind}"
-              ind = indicators[core_id_index[value[:id].to_s]-index_first_ind].select{|x| x.shape_type_id == shape_type.id}.first
-              
-              summary_item["indicator_id"] = ind.present? ? ind.id : nil
-              summary_item["core_indicator_id"] = value[:id]
-              summary_item["indicator_type_id"] = summary_ids[:type_id]
-              summary_item["indicator_type_name"] = summary_indicator_types.select{|x| x[:id] == summary_ids[:type_id]}.map{|x| x[:name]}.first
-              summary_item["has_openlayers_rule_value"] = false
-              summary_item["visible"] = true
-              summary_item["indicator_name_unformatted"] = core[:indicator_name_unformatted]
-              summary_item["indicator_name"] = core[:indicator_name]
-              summary_item["indicator_name_abbrv"] = core[:indicator_name_abbrv]
-              puts "/////////// - end"
+              puts summary_json            
+
             end
-
-            puts summary_json            
-
           end
         end
 
