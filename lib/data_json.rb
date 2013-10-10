@@ -67,8 +67,6 @@ module DataJson
       puts "****************************************************"
       
 	    data.each do |row|
-#break if n > 1
-
         startRow = Time.now
 	      n += 1
         puts "@@@@@@@@@@@@@@@@@@ processing row #{n}"
@@ -251,6 +249,16 @@ protected
     # build json data for each indicator in row that has data
     json = build_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
 
+    I18n.available_locales.each do |locale|
+      path = "#{Rails.root}/tmp/json/"
+      summary_file = "parent_shape_#{parent_shape_type.id}_child_shape_#{child_shape_type.id}_sumary_#{locale}.json"
+      File.open(path + summary_file, 'w') {|f| f.write(summary_json[locale].to_json)}
+
+      json[locale].each do |item|
+        file = "parent_shape_#{parent_shape_type.id}_child_shape_#{child_shape_type.id}_ind_#{item[0]}_#{locale}.json"
+        File.open(path + file, 'w') {|f| f.write(item[1].to_json)}
+      end
+    end
   end
 
 
@@ -320,6 +328,8 @@ protected
 
 
 
+  # create summary json for each locale
+  # return format: {locale => {}, locale => {}, ...}
   def self.build_summary_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
     summary_json = Hash.new
     
@@ -356,13 +366,14 @@ protected
       end
     end
     
-    puts summary_json[:en].to_json
     return summary_json
   end
 
 
 
 
+  # create json for each locale
+  # return format: {locale => [[ind id, {data}], [ind id, {data}], ...], locale => [[ind id, {data}], [ind id, {data}], ...], ...}
   def self.build_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
     puts "###############################################"
     puts "###############################################"
@@ -371,6 +382,7 @@ protected
     json = Hash.new
 
     I18n.available_locales.each do |locale|
+      json[locale] = []
       # for each indicator, if relationship exists, build it
       @@core_indicators[locale].each do |core|
         puts "###############################################"
@@ -386,17 +398,21 @@ protected
             puts "## core has indicator, creating json for locale #{locale}"
           
             # create json
-            json[locale] = Hash.new
+            ary_item = []
+            ary_item << core.id
+            json_item = Hash.new
+            ary_item << json_item
+            json[locale] << ary_item
             
-        	  json[locale]["indicator"] = Hash.new
-            json[locale]["indicator"]["name"] = core[:indicator_name_unformatted]
-	          json[locale]["indicator"]["name_abbrv"] = core[:indicator_name_abbrv]
-	          json[locale]["indicator"]["description"] = core[:indicator_description]
-	          json[locale]["indicator"]["number_format"] = core.number_format.blank? ? "" : core.number_format
-            json[locale]["indicator"]["scales"] = IndicatorScale.for_indicator(ind.id)
-	          json[locale]["indicator"]["scale_colors"] = IndicatorScale.get_colors(ind.id)
-	          json[locale]["indicator"]["switcher_indicator_id"] = nil
-            json[locale]["view_type"] = "normal"
+        	  json_item["indicator"] = Hash.new
+            json_item["indicator"]["name"] = core[:indicator_name_unformatted]
+	          json_item["indicator"]["name_abbrv"] = core[:indicator_name_abbrv]
+	          json_item["indicator"]["description"] = core[:indicator_description]
+	          json_item["indicator"]["number_format"] = core.number_format.blank? ? "" : core.number_format
+            json_item["indicator"]["scales"] = IndicatorScale.for_indicator(ind.id)
+	          json_item["indicator"]["scale_colors"] = IndicatorScale.get_colors(ind.id)
+	          json_item["indicator"]["switcher_indicator_id"] = nil
+            json_item["view_type"] = "normal"
 
 			      # if this event has a custom view at this level, get indicator id for other shape level
 			      new_indicator = nil
@@ -411,18 +427,17 @@ protected
 			      end
 			      if new_indicator.present?
 				      # is custom view, update switcher indicator id
-				      json[locale]["indicator"]["switcher_indicator_id"] = new_indicator.id
+				      json_item["indicator"]["switcher_indicator_id"] = new_indicator.id
 			      end
 
             # add the data
-            json[locale]["shape_data"] = create_relationship_json(relationships, locale, child_rows, child_shape_type, ind.id, raw_summary_json)
+            json_item["shape_data"] = create_relationship_json(relationships, locale, child_rows, child_shape_type, ind.id, raw_summary_json)
           end
           
         end
       end
     end    
 
-    puts json[:en].to_json
     return json
   end
   
@@ -430,6 +445,7 @@ protected
 
 
   # for each relationship in the rel param, create the appropriate json
+  # return format: [ {data}, {data}, ...]
   def self.create_relationship_json(relationships, locale, rows, shape_type, indicator_id=nil, raw_summary_json=nil, indicator_type_id=nil, is_summary=false)
     all_row_data = []
 
