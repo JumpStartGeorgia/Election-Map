@@ -40,10 +40,59 @@
       .item {
         background: #f6f6f6;
         float: left;
+        position: relative;
+        -webkit-box-sizing: border-box;
+           -moz-box-sizing: border-box;
+              	box-sizing: border-box;
+        @lineheight: 18px;
+        @width1: 56px;
+        &.breaks_1 {
+          @w: @width1 + 0 * @lineheight;
+          padding-left: @w;
+          .name {
+            &, h4 { width: @w; }
+            h4 { margin-left: -@w / 2; }
+          }
+        }
+        &.breaks_2 {
+          @w: @width1 + 1 * @lineheight;
+          padding-left: @w;
+          .name {
+            &, h4 { width: @w; }
+            h4 { margin-left: -@w / 2; }
+          }
+        }
+        &.breaks_3 {
+          @w: @width1 + 2 * @lineheight;
+          padding-left: @w;
+          .name {
+            &, h4 { width: @w; }
+            h4 { margin-left: -@w / 2; top: 55%; }
+          }
+        }
+        &.breaks_4 {
+          @w: @width1 + 3 * @lineheight;
+          padding-left: @w;
+          .name {
+            &, h4 { width: @w; }
+            h4 { margin-left: -@w / 2; }
+          }
+        }
+        &.breaks_5 {
+          @w: @width1 + 4 * @lineheight;
+          padding-left: @w;
+          .name {
+            &, h4 { width: @w; }
+            h4 { margin-left: -@w / 2; }
+          }
+        }
         .name {
           @bg: #e7e7e7;
           background: @bg;
-          position: relative;
+          position: absolute;
+          left: 0px;
+          top: 0px;
+          bottom: 0px;
           float: left;
           &::after {
             display: block;
@@ -55,16 +104,31 @@
             margin-top: -@w;
             border-style: solid;
             border-width: @w 0px @w @w;
-            border-color: transparent #e7e7e7;
+            border-color: transparent @bg;
           }
-          h4{
-            display: inline-block;
+          h4 {
+            line-height: @lineheight;
+            display: block;
+            position: absolute;
+            left: 50%;
             font-weight: bold;
+            white-space: nowrap;
             transform: rotate(270deg);
             -ms-transform: rotate(270deg);
             -webkit-transform: rotate(270deg);
+            top: 0px;
+            bottom: 0px;
+            & > span {
+              display: table;
+              height: 100%;
+              span {
+                display: table-cell;
+                vertical-align: middle;
+              }
+            }
           }
         }
+
         .bars {
           float: left;
           margin-left: 41px;

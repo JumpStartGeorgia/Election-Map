@@ -53,4 +53,20 @@ logger.debug "get_shape_id: no matches found"
 	  end
   end
 
+  def break_elname (name, length_only = false)
+    l = 30
+    words = name.split(/\s/)
+    lines = []#.fill('', 0, words.length)
+    i = 0
+    words.each do |w|
+      lines[i] = lines[i] ||= ''
+      if lines[i].length + w.length > l
+        i += 1
+        lines[i] = ''
+      end
+      lines[i] << w + ' '
+    end
+    return length_only ? lines.length.to_s : lines.join('<br />').html_safe
+  end
+
 end

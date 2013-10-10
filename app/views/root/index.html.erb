@@ -10,8 +10,9 @@
         <strong><%= t('live_election') %></strong>
       </div>
       <% @live_event_menu.each do |event| %>
-        <div class="item">
-          <div class="name"><h4><%= event['name'] %></h4></div>
+        <%# event['name'] = '2008 წლის საპარლამენტო'; %>
+        <div class="item breaks_<%= break_elname(event['name'], true) %>">
+          <div class="name"><h4><span><span><%= break_elname(event['name']) %></span></span></h4></div>
           <div class="bars">
             <ul>
               <li class="top">
