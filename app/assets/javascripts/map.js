@@ -276,6 +276,7 @@ console.log('scaling root summary images');
 			{
 				var json_shape_data = json_data["shape_data"][j][0].shape_values;
 				if (feature.data.id === json_shape_data.shape_id)
+//				if (feature.data.common_id === json_shape_data.common_id && feature.data.common_name === json_shape_data.common_name)
 				{
 					// put the color and value into the feature
 					feature.data.color = json_shape_data.color;
