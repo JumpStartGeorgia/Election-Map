@@ -15,8 +15,8 @@ class IndicatorScale < ActiveRecord::Base
 
   NO_DATA_COLOR = "#CCCCCC"
 
-  def self.no_data_text
-    I18n.t('app.msgs.no_data')
+  def self.no_data_text(locale=I18n.locale)
+    I18n.t('app.msgs.no_data', :locale => locale)
   end
 
   # have to turn this off so csv upload works since adding indicator and scale at same time, no indicator id exists yet
