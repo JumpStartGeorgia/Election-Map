@@ -67,7 +67,7 @@ module DataJson
       puts "****************************************************"
       
 	    data.each do |row|
-break if n > 3 
+#break if n > 1
 
         startRow = Time.now
 	      n += 1
@@ -133,13 +133,11 @@ break if n > 3
           puts "++++++++++++++++++++++++ this shape has a custom shape view"
           custom_shape_views.select{|x| x.shape_type_id == shape_type.id}.each do |custom_shape_view|
             puts "++++++++++++++++++++++++ - processing custom shape view #{custom_shape_view.descendant_shape_type_id}"
-            custom_shape_type_id = custom_shape_view.descendant_shape_type_id
-            custom_shape = @@shape_types.select{|x| x.id == custom_shape_type_id}.first
+            custom_shape = @@shape_types.select{|x| x.id == custom_shape_view.descendant_shape_type_id}.first
+            
             if custom_shape.present?
               # found custom shape, get rows with this custom shape
-              child_rows = data.select{|x| x[@@idx_shape_type] == custom_shape.name_singular && 
-                                x[@@idx_parent_common_id] == row[@@idx_common_id] && 
-                                x[@@idx_parent_common_name] == row[@@idx_common_name]}
+              child_rows = data.select{|x| x[@@idx_shape_type] == custom_shape.name_singular}
 
               puts "++++++++++++++++++++++++ -- found #{child_rows.length} children shape rows for this custom shape"
               process_data_set(shape_type, row, custom_shape, child_rows) if child_rows.present?
@@ -251,7 +249,8 @@ protected
     summary_json = build_summary_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
     
     # build json data for each indicator in row that has data
-  
+    json = build_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
+
   end
 
 
@@ -328,10 +327,10 @@ protected
       @@summary_core_indicator_ids.map{|x| x[:type_id]}.uniq.each do |ind_type_id|
 
         # see if there is a relationship defined for this event and ind type id
-        summary_relationships = EventIndicatorRelationship.where(:event_id => @@event.id, :indicator_type_id => ind_type_id)
+        relationships = EventIndicatorRelationship.where(:event_id => @@event.id, :indicator_type_id => ind_type_id)
 
         
-        if summary_relationships.present?
+        if relationships.present?
           I18n.available_locales.each do |locale|
             index = @@summary_indicator_types[locale].index{|x| x[:id] == ind_type_id}
 
@@ -346,16 +345,12 @@ protected
             summary_json[locale]["indicator"]["scales"] = [{:name => IndicatorScale.no_data_text(locale), :color => IndicatorScale::NO_DATA_COLOR }]
 		        summary_json[locale]["indicator"]["scale_colors"] = [IndicatorScale::NO_DATA_COLOR]
 		        summary_json[locale]["indicator"]["switcher_indicator_id"] = nil
-
-            # indicate this is summary data
             summary_json[locale]["view_type"] = "summary"
 
             # add the data
-            summary_json[locale]["shape_data"] = create_relationship_json(summary_relationships, locale, child_rows, child_shape_type,
+            summary_json[locale]["shape_data"] = create_relationship_json(relationships, locale, child_rows, child_shape_type,
                                                    nil, raw_summary_json, ind_type_id, true)
             
-            # update the shape values with the value correct value
-
           end
         end
       end
@@ -367,6 +362,71 @@ protected
 
 
 
+
+  def self.build_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
+    puts "###############################################"
+    puts "###############################################"
+    puts "###############################################"
+    puts "###############################################"
+    json = Hash.new
+
+    I18n.available_locales.each do |locale|
+      # for each indicator, if relationship exists, build it
+      @@core_indicators[locale].each do |core|
+        puts "###############################################"
+        puts "###############################################"
+        puts "# building json for core = #{core.inspect}"
+        relationships = EventIndicatorRelationship.where(:event_id => @@event.id, :core_indicator_id => core.id)    
+      
+        if relationships.present?
+          puts "# core has relationships"
+          ind = @@indicators[@@core_id_index[core.id.to_s]-@@idx_first_ind].select{|x| x.shape_type_id == child_shape_type.id}.first
+
+          if ind.present?
+            puts "## core has indicator, creating json for locale #{locale}"
+          
+            # create json
+            json[locale] = Hash.new
+            
+        	  json[locale]["indicator"] = Hash.new
+            json[locale]["indicator"]["name"] = core[:indicator_name_unformatted]
+	          json[locale]["indicator"]["name_abbrv"] = core[:indicator_name_abbrv]
+	          json[locale]["indicator"]["description"] = core[:indicator_description]
+	          json[locale]["indicator"]["number_format"] = core.number_format.blank? ? "" : core.number_format
+            json[locale]["indicator"]["scales"] = IndicatorScale.for_indicator(ind.id)
+	          json[locale]["indicator"]["scale_colors"] = IndicatorScale.get_colors(ind.id)
+	          json[locale]["indicator"]["switcher_indicator_id"] = nil
+            json[locale]["view_type"] = "normal"
+
+			      # if this event has a custom view at this level, get indicator id for other shape level
+			      new_indicator = nil
+			      custom_view = EventCustomView.where(:event_id => @@event.id, :shape_type_id => parent_shape_type.id)
+			      if custom_view.present?
+				      new_indicator = Indicator.find_new_id(ind.id, custom_view.first.descendant_shape_type_id)
+			      else
+				      custom_view = EventCustomView.where(:descendant_shape_type_id => child_shape_type.id)
+        			if custom_view.present?
+					      new_indicator = Indicator.find_new_id(ind.id, custom_view.first.shape_type.child_ids.first)
+				      end
+			      end
+			      if new_indicator.present?
+				      # is custom view, update switcher indicator id
+				      json[locale]["indicator"]["switcher_indicator_id"] = new_indicator.id
+			      end
+
+            # add the data
+            json[locale]["shape_data"] = create_relationship_json(relationships, locale, child_rows, child_shape_type, ind.id, raw_summary_json)
+          end
+          
+        end
+      end
+    end    
+
+    puts json[:en].to_json
+    return json
+  end
+  
+  
 
 
   # for each relationship in the rel param, create the appropriate json
@@ -402,10 +462,14 @@ protected
       # create data item/summary json for each item in releationship
       relationships.each do |rel|
         if rel.related_indicator_type_id.present? && rel.related_indicator_type_id == indicator_type_id 
+          puts "============================="
+          puts "============================="
+          puts "= processing ind type relationship for type #{rel.related_indicator_type_id}"
           if raw_summary_json.present?
             # get the summary for this indciator type
-	          data = raw_summary_json[row_index][locale]
+	          data = Marshal.load(Marshal.dump(raw_summary_json[row_index][locale]))
             if data.present?
+              puts "== found raw summary for this row, adding item"
               data["visible"] = rel.visible
               data["has_openlayers_rule_value"] = rel.has_openlayers_rule_value
 
@@ -430,6 +494,8 @@ protected
               
               # update the shape values if this is for summary json
               if is_summary && indicator_type_id.present?
+                puts "============================="
+                puts "==>> using data from this summary to set shape values"
                 shape_values["value"] = results["summary_data"]["data"].first["indicator_name_abbrv"]
                 shape_values["color"] = results["summary_data"]["data"].first["color"]
                 shape_values["title"] = results["summary_data"]["data"].first["indicator_type_name"]
@@ -438,44 +504,147 @@ protected
             end
           end
         elsif rel.related_core_indicator_id.present?
-          # add the data item
-          # find match of col in row for this related indicator
+          puts "============================="
+          puts "============================="
+          puts "= processing core indicator relationship #{rel.related_core_indicator_id}"
           related_index = @@core_id_index[rel.related_core_indicator_id.to_s]
+          core = nil
+          ind = nil
           if related_index.present?
+            puts "== core inds = #{@@core_indicators[locale].map{|x| x.id}}"
+            puts "== index of core indicator is #{related_index}; adjusted index is #{related_index-@@idx_first_ind}"
             core = @@core_indicators[locale][related_index-@@idx_first_ind]
             ind = @@indicators[@@core_id_index[rel.related_core_indicator_id.to_s]-@@idx_first_ind].select{|x| x.shape_type_id == shape_type.id}.first
-            if core.present? && ind.present?
-  						data_item = Hash.new
-  						data_item["data_item"] = {
-                "value" => row[related_index],
-                "formatted_value" => format_value(row[related_index]),
-                "number_format" => core.number_format,
-                "rank" => nil,
-                "color" => nil,
-                "indicator_type_id" => core.indicator_type_id,
-                "indicator_type_name" => @@summary_indicator_types[locale].select{|x| x[:id] == core.indicator_type_id}.map{|x| x[:name]}.first,
-                "core_indicator_id" => rel.related_core_indicator_id,
-                "indicator_id" => ind.present? ? ind.id : nil,
-                "indicator_name_unformatted" => core[:indicator_name_unformatted],
-                "indicator_name" => core[:indicator_name],
-                "indicator_name_abbrv" => core[:indicator_name_abbrv],
-                "has_openlayers_rule_value" => false,
-                "visible" => true
-              }
-			        data_item["data_item"]["visible"] = rel.visible
-			        data_item["data_item"]["has_openlayers_rule_value"] = rel.has_openlayers_rule_value
-  	        	row_data << data_item
-  	        	
-  	        	
-              # update the shape values if this is for data json and this is the indicator the json is for
-              if !is_summary && indicator_id.present? && ind.id == indicator_id
-                shape_values["value"] = data_item["data_item"]["value"]
-                shape_values["number_format"] = data_item["data_item"]["number_format"]
-                shape_values["title"] = data_item["data_item"]["indicator_name"]
-                shape_values["title_abbrv"] = data_item["data_item"]["indicator_name_abbrv"]
-              end  	        	
-            end                  
           end
+          
+          if core.present? && ind.present?
+            puts "== core = #{core.inspect}"
+            puts "== ind = #{ind.inspect}"
+
+            # see if indicator is part of indicator type that has summary
+            # if so, get the summary info so can assign the overall placement and overall winner
+            index = @@summary_core_indicator_ids.index{|x| x[:data].index{|x| x == rel.related_core_indicator_id}}
+            if index.present?
+              puts "== found core indicator in list of summary core indicators"
+              # this indicator is part of a summary
+              # -> find the summary
+	            summary = raw_summary_json[row_index][locale]
+              # get the data for this indicator
+              summary_indicator = summary["data"].select{|x| x["core_indicator_id"] == rel.related_core_indicator_id}.first
+              
+              if summary_indicator.present?
+                puts "== found summary indicator: #{summary_indicator.inspect}"
+    						data_item = Hash.new
+    						data_item["data_item"] = summary_indicator
+							  data_item["data_item"]["visible"] = rel.visible
+							  data_item["data_item"]["has_openlayers_rule_value"] = rel.has_openlayers_rule_value
+    	        	row_data << data_item
+            
+                # add the placement of this indicator
+							  # if value != no data
+							  # if there are duplicate values (e.g., a tie) fix the rank accordingly
+							  if summary_indicator["value"] != I18n.t('app.msgs.no_data', :locale => locale)
+                  puts "=== adding placement of indicator"
+							    #&& data["summary_data"][index]["value"] != "0"
+
+	    						data_item = Hash.new
+	    						data_item["data_item"] = {
+                    "value" => summary_indicator["rank"].to_s,
+                    "formatted_value" => nil,
+                    "number_format" => " / #{summary["total_ranks"]}",
+                    "rank" => nil,
+                    "color" => nil,
+                    "indicator_type_id" => nil,
+                    "indicator_type_name" => summary_indicator["indicator_type_name"],
+                    "core_indicator_id" => nil,
+                    "indicator_id" => nil,
+                    "indicator_name_unformatted" => nil,
+                    "indicator_name" => I18n.t('app.common.overall_placement', :locale => locale),
+                    "indicator_name_abbrv" => I18n.t('app.common.overall_placement', :locale => locale),
+                    "has_openlayers_rule_value" => false,
+                    "visible" => true
+                  }
+                  has_duplicates = summary["has_duplicates"]
+	                data_item["data_item"]["number_format"] += " *" if has_duplicates
+
+	    	        	row_data << data_item
+							  end
+
+                # add total # of indicators in the summary
+                puts "=== adding total # of indicators in summary"
+    						data_item = Hash.new
+    						data_item["data_item"] = {
+                  "value" => summary["data"].length,
+                  "formatted_value" => nil,
+                  "number_format" => nil,
+                  "rank" => nil,
+                  "color" => nil,
+                  "indicator_type_id" => nil,
+                  "indicator_type_name" => summary_indicator["indicator_type_name"],
+                  "core_indicator_id" => nil,
+                  "indicator_id" => nil,
+                  "indicator_name_unformatted" => nil,
+                  "indicator_name" => I18n.t('app.common.total_participants', :locale => locale),
+                  "indicator_name_abbrv" => I18n.t('app.common.total_participants', :locale => locale),
+                  "has_openlayers_rule_value" => false,
+                  "visible" => true
+                }
+    	        	row_data << data_item
+              end
+
+              # add the winner if this record is not it and if value != no data or 0
+						  if summary_indicator["rank"] > 1 &&
+								  summary["data"][0]["value"] != "0" &&
+								  summary["data"][0]["value"] != I18n.t('app.msgs.no_data', :locale => locale)
+
+                puts "=== adding winning indicator"
+                winner = Marshal.load(Marshal.dump(summary["data"][0]))
+
+                winner["indicator_name"].insert(0, "#{I18n.t('app.common.winner', :locale => locale)}: ")
+                winner["indicator_name_abbrv"].insert(0, "#{I18n.t('app.common.winner', :locale => locale)}: ")
+    						data_item = Hash.new
+    						data_item["data_item"] = winner 
+    	        	row_data << data_item
+              end
+            else
+              puts "== core indicator is NOT in summary core indicators"
+              # add the data item
+              if core.present? && ind.present?
+                puts "=== adding item"
+    						data_item = Hash.new
+    						data_item["data_item"] = {
+                  "value" => row[related_index],
+                  "formatted_value" => format_value(row[related_index]),
+                  "number_format" => core.number_format,
+                  "rank" => nil,
+                  "color" => nil,
+                  "indicator_type_id" => core.indicator_type_id,
+                  "indicator_type_name" => @@summary_indicator_types[locale].select{|x| x[:id] == core.indicator_type_id}.map{|x| x[:name]}.first,
+                  "core_indicator_id" => rel.related_core_indicator_id,
+                  "indicator_id" => ind.present? ? ind.id : nil,
+                  "indicator_name_unformatted" => core[:indicator_name_unformatted],
+                  "indicator_name" => core[:indicator_name],
+                  "indicator_name_abbrv" => core[:indicator_name_abbrv],
+                  "has_openlayers_rule_value" => false,
+                  "visible" => true
+                }
+		            data_item["data_item"]["visible"] = rel.visible
+		            data_item["data_item"]["has_openlayers_rule_value"] = rel.has_openlayers_rule_value
+    	        	row_data << data_item
+              end
+            end
+          end
+          
+          # update the shape values if this is for data json and this is the indicator the json is for
+          if !is_summary && indicator_id.present? && ind.id == indicator_id
+            puts "============================="
+            puts "==>> using data from this indicator to set shape values"
+            shape_values["value"] = data_item["data_item"]["value"]
+            shape_values["number_format"] = data_item["data_item"]["number_format"]
+            shape_values["title"] = data_item["data_item"]["indicator_name"]
+            shape_values["title_abbrv"] = data_item["data_item"]["indicator_name_abbrv"]
+          end  	        	
+          
         end
       end
     end

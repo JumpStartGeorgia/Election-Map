@@ -1010,7 +1010,7 @@ Rails.logger.debug "++++++++++++++++++++shape parent id = #{shape.parent_id}"
 			results["indicator"]["scale_colors"] = IndicatorScale.get_colors(indicator.id)
 			results["indicator"]["switcher_indicator_id"] = nil
 
-			# if this event has a custom view at this level, get indicator id for other shape live
+			# if this event has a custom view at this level, get indicator id for other shape level
 			new_indicator = nil
 			custom_view = indicator.event.event_custom_views.where(:shape_type_id => shape_type_id)
 			if custom_view.present?

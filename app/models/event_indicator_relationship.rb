@@ -11,7 +11,7 @@ class EventIndicatorRelationship < ActiveRecord::Base
 	validates :event_id, :sort_order, :presence => true
 	default_scope order("sort_order asc")
 
-  # get all indicator types that are not currently part of an indicator relationship
+  # get all indicator types that are currently part of an indicator relationship
   def self.indicator_type_ids_in_event(event_id)
 		if event_id
 			select("distinct indicator_type_id")
@@ -19,7 +19,7 @@ class EventIndicatorRelationship < ActiveRecord::Base
 		end
   end
 
-  # get all core indicators that are not currently part of an indicator relationship
+  # get all core indicators that are part of an indicator relationship
   def self.core_indicator_ids_in_event(event_id)
 		if event_id
 			select("distinct core_indicator_id")
