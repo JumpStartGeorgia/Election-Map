@@ -7,12 +7,12 @@
     <div id="live_events_row" class="clearfix events_<%= @live_event_menu.length %>">
       <div class="header">
         <%= image_tag 'menu_live.png'; %>
-        <strong><%= t('live_election') %></strong>
+        <strong class="hidden"><span><%= t('live_election') %></span></strong>
       </div>
       <% @live_event_menu.each do |event| %>
-        <%# event['name'] = '2008 წლის საპარლამენტო'; %>
+        <%# event['name'] = ' 2008 წლის საპარლამენტო'; %>
         <div class="item breaks_<%= break_elname(event['name'], true) %>">
-          <div class="name"><h4><span><span><%= break_elname(event['name']) %></span></span></h4></div>
+          <div class="name"><h4><span class="hidden"><span><%= break_elname(event['name']) %></span></span></h4></div>
           <div class="bars">
             <ul>
               <li class="top">

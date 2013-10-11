@@ -26,7 +26,7 @@
         & > strong {
           color: #fff;
           position: absolute;
-          top: 87px;
+          bottom: 30px;
           left: 50%;
           margin-left: -@headerwidth / 2;
           width: @headerwidth;
@@ -35,6 +35,9 @@
           transform: rotate(270deg);
           -ms-transform: rotate(270deg);
           -webkit-transform: rotate(270deg);
+          &.hidden {
+            visibility: hidden;
+          }
         }
       }
       .item {
@@ -50,40 +53,50 @@
           @w: @width1 + 0 * @lineheight;
           padding-left: @w;
           .name {
-            &, h4 { width: @w; }
+            &, h4, h4 > span { width: @w; }
+          /*
             h4 { margin-left: -@w / 2; }
+          */
           }
         }
         &.breaks_2 {
           @w: @width1 + 1 * @lineheight;
           padding-left: @w;
           .name {
-            &, h4 { width: @w; }
+            &, h4, h4 > span { width: @w; }
+          /*
             h4 { margin-left: -@w / 2; }
+          */
           }
         }
         &.breaks_3 {
           @w: @width1 + 2 * @lineheight;
           padding-left: @w;
           .name {
-            &, h4 { width: @w; }
-            h4 { margin-left: -@w / 2; top: 55%; }
+            &, h4, h4 > span { width: @w; }
+          /*
+            h4 { margin-left: -@w / 2; }
+          */
           }
         }
         &.breaks_4 {
           @w: @width1 + 3 * @lineheight;
           padding-left: @w;
           .name {
-            &, h4 { width: @w; }
+            &, h4, h4 > span { width: @w; }
+          /*
             h4 { margin-left: -@w / 2; }
+          */
           }
         }
         &.breaks_5 {
           @w: @width1 + 4 * @lineheight;
           padding-left: @w;
           .name {
-            &, h4 { width: @w; }
+            &, h4, h4 > span { width: @w; }
+          /*
             h4 { margin-left: -@w / 2; }
+          */
           }
         }
         .name {
@@ -110,20 +123,22 @@
             line-height: @lineheight;
             display: block;
             position: absolute;
+          /*
             left: 50%;
+          */
             font-weight: bold;
             white-space: nowrap;
-            transform: rotate(270deg);
-            -ms-transform: rotate(270deg);
-            -webkit-transform: rotate(270deg);
             top: 0px;
             bottom: 0px;
             & > span {
-              display: table;
-              height: 100%;
-              span {
-                display: table-cell;
-                vertical-align: middle;
+              display: block;
+              position: absolute;
+              bottom: 20px;
+              transform: rotate(270deg);
+              -ms-transform: rotate(270deg);
+              -webkit-transform: rotate(270deg);
+              &.hidden {
+                visibility: hidden;
               }
             }
           }
@@ -163,7 +178,7 @@
                   line-height: 11px;
                   top: 0px;
                   bottom: 0px;
-                  margin: 2px 0px 0px 0px;
+                  margin: 2px 0px 0px 2px;
                 }
                 div {
                   height: 100%;

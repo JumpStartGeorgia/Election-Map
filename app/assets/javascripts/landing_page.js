@@ -37,5 +37,22 @@ $(document).ready(function() {
       });
     });
   }
-  
+
+
+
+
+  var span = $('#landing_page #live_events_row .item .name h4 > span');
+  if (span.length)
+  {
+    span.css({bottom: '+=' + (span.parent().height() - +span.children().width()) / 2}).removeClass('hidden');
+  }
+  if ($('html').attr('lang') == 'ka')
+  {
+    var el = $('#landing_page #live_events_row .header > strong');
+    if (el.length)
+    {
+      el.css('bottom', '+=' + ((el.parent().height() - el.siblings().outerHeight(true) - el.children().width()) / 2)).removeClass('hidden');
+    }
+  }
+
 });

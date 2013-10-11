@@ -54,7 +54,7 @@ logger.debug "get_shape_id: no matches found"
   end
 
   def break_elname (name, length_only = false)
-    l = 30
+    l = 26
     words = name.split(/\s/)
     lines = []#.fill('', 0, words.length)
     i = 0
