@@ -66,8 +66,6 @@ module DataJson
       puts "****************************************************"
       
 	    data.each do |row|
-#break if n > 1
-
         startRow = Time.now
 	      n += 1
         puts "@@@@@@@@@@@@@@@@@@ processing row #{n}"
@@ -269,6 +267,16 @@ protected
       end      
     end
 
+    I18n.available_locales.each do |locale|
+      path = "#{Rails.root}/tmp/json/"
+      summary_file = "parent_shape_#{parent_shape_type.id}_child_shape_#{child_shape_type.id}_sumary_#{locale}.json"
+      File.open(path + summary_file, 'w') {|f| f.write(summary_json[locale].to_json)}
+
+      json[locale].each do |item|
+        file = "parent_shape_#{parent_shape_type.id}_child_shape_#{child_shape_type.id}_ind_#{item[0]}_#{locale}.json"
+        File.open(path + file, 'w') {|f| f.write(item[1].to_json)}
+      end
+    end
   end
 
 
@@ -338,6 +346,8 @@ protected
 
 
 
+  # create summary json for each locale
+  # return format: {locale => {}, locale => {}, ...}
   def self.build_summary_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
     summary_json = Hash.new
     
@@ -380,6 +390,8 @@ protected
 
 
 
+  # create json for each locale
+  # return format: {locale => [[ind id, {data}], [ind id, {data}], ...], locale => [[ind id, {data}], [ind id, {data}], ...], ...}
   def self.build_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
     puts "###############################################"
     puts "###############################################"
@@ -390,7 +402,6 @@ protected
     I18n.available_locales.each do |locale|
       data_items = [] 
       json[locale] = data_items
-      
       # for each indicator, if relationship exists, build it
       @@core_indicators[locale].each do |core|
         puts "###############################################"
@@ -451,6 +462,7 @@ protected
 
 
   # for each relationship in the rel param, create the appropriate json
+  # return format: [ {data}, {data}, ...]
   def self.create_relationship_json(relationships, locale, rows, shape_type, indicator_id=nil, raw_summary_json=nil, indicator_type_id=nil, is_summary=false)
     all_row_data = []
 
