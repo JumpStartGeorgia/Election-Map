@@ -491,10 +491,10 @@ class JsonController < ApplicationController
 =end
           if !params[:parent_shape_clickable].nil? && params[:parent_shape_clickable].to_s == "true"
 	          data = Datum.build_summary_json(shape.id, shape.shape_type_id, params[:event_id], params[:indicator_type_id], 
-                    params[:data_set_id], params[:data_type], SUMMARY_LIMIT, false).to_json
+                    params[:data_set_id], params[:data_type], SUMMARY_LIMIT, true).to_json
           elsif shape.has_children?
 	          data = Datum.build_summary_json(shape.id, params[:shape_type_id], params[:event_id], params[:indicator_type_id], 
-                    params[:data_set_id], params[:data_type], SUMMARY_LIMIT, false).to_json
+                    params[:data_set_id], params[:data_type], SUMMARY_LIMIT, true).to_json
           end
 
 			  end

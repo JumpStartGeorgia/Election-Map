@@ -250,6 +250,19 @@ protected
     
     # build json data for each indicator in row that has data
     json = build_json(raw_summary_json, parent_shape_type, parent_row, child_shape_type, child_rows)
+    
+    
+    # write out to file
+    I18n.available_locales.each do |locale|
+      path = "#{Rails.root}/tmp/json/"
+      summary_file = "parent_#{parent_shape_type.id}_shape_#{child_shape_type.id}_summary_#{locale}.json"
+      File.open(path + summary_file, 'w') {|f| f.write(summary_json[locale].to_json)}    
+      
+      json[locale].each do |item|
+        file = "parent_#{parent_shape_type.id}_shape_#{child_shape_type.id}_ind_#{item["indicator"]["id"]}_#{locale}.json"
+        File.open(path + file, 'w') {|f| f.write(item.to_json)}    
+      end      
+    end
 
   end
 
@@ -356,7 +369,6 @@ protected
       end
     end
     
-    puts summary_json[:en].to_json
     return summary_json
   end
 
@@ -371,6 +383,9 @@ protected
     json = Hash.new
 
     I18n.available_locales.each do |locale|
+      data_items = [] 
+      json[locale] = data_items
+      
       # for each indicator, if relationship exists, build it
       @@core_indicators[locale].each do |core|
         puts "###############################################"
@@ -386,17 +401,19 @@ protected
             puts "## core has indicator, creating json for locale #{locale}"
           
             # create json
-            json[locale] = Hash.new
+            data_item = Hash.new
+            data_items << data_item
             
-        	  json[locale]["indicator"] = Hash.new
-            json[locale]["indicator"]["name"] = core[:indicator_name_unformatted]
-	          json[locale]["indicator"]["name_abbrv"] = core[:indicator_name_abbrv]
-	          json[locale]["indicator"]["description"] = core[:indicator_description]
-	          json[locale]["indicator"]["number_format"] = core.number_format.blank? ? "" : core.number_format
-            json[locale]["indicator"]["scales"] = IndicatorScale.for_indicator(ind.id)
-	          json[locale]["indicator"]["scale_colors"] = IndicatorScale.get_colors(ind.id)
-	          json[locale]["indicator"]["switcher_indicator_id"] = nil
-            json[locale]["view_type"] = "normal"
+        	  data_item["indicator"] = Hash.new
+            data_item["indicator"]["id"] = ind.id
+            data_item["indicator"]["name"] = core[:indicator_name_unformatted]
+	          data_item["indicator"]["name_abbrv"] = core[:indicator_name_abbrv]
+	          data_item["indicator"]["description"] = core[:indicator_description]
+	          data_item["indicator"]["number_format"] = core.number_format.blank? ? "" : core.number_format
+            data_item["indicator"]["scales"] = IndicatorScale.for_indicator(ind.id)
+	          data_item["indicator"]["scale_colors"] = IndicatorScale.get_colors(ind.id)
+	          data_item["indicator"]["switcher_indicator_id"] = nil
+            data_item["view_type"] = "normal"
 
 			      # if this event has a custom view at this level, get indicator id for other shape level
 			      new_indicator = nil
@@ -411,18 +428,17 @@ protected
 			      end
 			      if new_indicator.present?
 				      # is custom view, update switcher indicator id
-				      json[locale]["indicator"]["switcher_indicator_id"] = new_indicator.id
+				      data_item["indicator"]["switcher_indicator_id"] = new_indicator.id
 			      end
 
             # add the data
-            json[locale]["shape_data"] = create_relationship_json(relationships, locale, child_rows, child_shape_type, ind.id, raw_summary_json)
+            data_item["shape_data"] = create_relationship_json(relationships, locale, child_rows, child_shape_type, ind.id, raw_summary_json)
           end
           
         end
       end
     end    
 
-    puts json[:en].to_json
     return json
   end
   
@@ -550,7 +566,7 @@ protected
 	    						data_item = Hash.new
 	    						data_item["data_item"] = {
                     "value" => summary_indicator["rank"].to_s,
-                    "formatted_value" => nil,
+                    "formatted_value" => summary_indicator["rank"].to_s,
                     "number_format" => " / #{summary["total_ranks"]}",
                     "rank" => nil,
                     "color" => nil,
@@ -575,7 +591,7 @@ protected
     						data_item = Hash.new
     						data_item["data_item"] = {
                   "value" => summary["data"].length,
-                  "formatted_value" => nil,
+                  "formatted_value" => summary["data"].length,
                   "number_format" => nil,
                   "rank" => nil,
                   "color" => nil,
@@ -647,6 +663,29 @@ protected
           
         end
       end
+
+      # add duplicate footnote if needed
+      if has_duplicates
+				data_item = Hash.new
+				data_item["data_item"] = {
+          "value" => nil,
+          "formatted_value" => nil,
+          "number_format" => nil,
+          "rank" => nil,
+          "color" => nil,
+          "indicator_type_id" => nil,
+          "indicator_type_name" => nil,
+          "core_indicator_id" => nil,
+          "indicator_id" => nil,
+          "indicator_name_unformatted" => nil,
+          "indicator_name" => "* #{I18n.t('app.common.footnote_duplicates', :locale => locale)}",
+          "indicator_name_abbrv" => "* #{I18n.t('app.common.footnote_duplicates', :locale => locale)}",
+          "has_openlayers_rule_value" => false,
+          "visible" => true
+        }
+      	row_data << data_item
+      end
+    
     end
     
     return all_row_data

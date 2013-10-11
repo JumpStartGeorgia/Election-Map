@@ -145,19 +145,35 @@ function build_popup_table(json){
 function build_popup(json){
   var html = "";
 
-  // build the titles
-  html += build_popup_title(json);
+  if (json == undefined){
+    console.log("no json data for popup!");
+  } else {
+    // build the titles
+    html += build_popup_title(json);
 
-  // build the table
-  html += build_popup_table(json);
+    // build the table
+    html += build_popup_table(json);
 
-  // build the footnote
-  html += build_popup_footer(json);
+    // build the footnote
+    html += build_popup_footer(json);
+  }
 
   return html;
 }
 
 
+// if the shape does not have data, show no data message
+function build_popup_no_data(title){
+  var html = "";
+
+  if (title !== null){
+    html += "<h3 class='map_popup_title1'>" + title + "</h3>";
+  }
+
+  html += "<div class='map_popup_no_data'>" + gon.no_data_text + "</div>";
+
+  return html;
+}
 
 function unhighlight_shape(feature, redraw_layer)
 {

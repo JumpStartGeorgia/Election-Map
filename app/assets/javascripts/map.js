@@ -275,8 +275,8 @@ console.log('scaling root summary images');
 			for (var j in json_data["shape_data"])
 			{
 				var json_shape_data = json_data["shape_data"][j][0].shape_values;
-				if (feature.data.id === json_shape_data.shape_id)
-//				if (feature.data.common_id === json_shape_data.common_id && feature.data.common_name === json_shape_data.common_name)
+//				if (feature.data.id === json_shape_data.shape_id)
+				if (feature.data.common_id === json_shape_data.common_id && feature.data.common_name === json_shape_data.common_name)
 				{
 					// put the color and value into the feature
 					feature.data.color = json_shape_data.color;
@@ -733,7 +733,9 @@ console.log('scaling root summary images');
    {
       for(var i in json_data["shape_data"])
       {
-         if (feature_data.data.id === json_data["shape_data"][i][0].shape_values.shape_id)
+ 				 if (feature_data.data.common_id === json_data["shape_data"][i][0].shape_values.common_id && 
+ 				     feature_data.data.common_name === json_data["shape_data"][i][0].shape_values.common_name)
+//         if (feature_data.data.id === json_data["shape_data"][i][0].shape_values.shape_id)
          {
             return json_data["shape_data"][i];
          }
@@ -744,7 +746,12 @@ console.log('scaling root summary images');
   function create_popup(feature){
     $('#map_popup_container').empty();
 
-    $('#map_popup_container').html(build_popup(getShapeData(feature)));
+    var shape_data = getShapeData(feature);
+    if (shape_data == undefined){
+      $('#map_popup_container').html(build_popup_no_data(feature.attributes.title_location));
+    }else {
+      $('#map_popup_container').html(build_popup(shape_data));
+    }
 
     // adjust the table column widths
     if (json_data_has_summary){
