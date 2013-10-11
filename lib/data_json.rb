@@ -24,7 +24,6 @@ module DataJson
 		start = Time.now
     infile = file.read
     n, msg = 0, ""
-#    index_first_ind = 3
 		original_locale = I18n.locale
     I18n.locale = :en
     custom_shape_views = nil
@@ -231,6 +230,8 @@ protected
       end
     end  
     
+    puts msg if msg.present?
+    
     return msg
   end
 
@@ -254,12 +255,16 @@ protected
     
     # write out to file
     I18n.available_locales.each do |locale|
-      path = "#{Rails.root}/tmp/json/"
-      summary_file = "parent_#{parent_shape_type.id}_shape_#{child_shape_type.id}_summary_#{locale}.json"
+      path = "#{Rails.root}/tmp/json/#{@@event.id}/"
+      FileUtils.mkpath(path)
+      summary_file = "parent_#{parent_shape_type.id}_shape_#{child_shape_type.id}_cid_#{parent_row[@@idx_common_id]}_cname_#{parent_row[@@idx_common_name]}_summary_#{locale}.json"
       File.open(path + summary_file, 'w') {|f| f.write(summary_json[locale].to_json)}    
+
+
+
       
       json[locale].each do |item|
-        file = "parent_#{parent_shape_type.id}_shape_#{child_shape_type.id}_ind_#{item["indicator"]["id"]}_#{locale}.json"
+        file = "parent_#{parent_shape_type.id}_shape_#{child_shape_type.id}_cid_#{parent_row[@@idx_common_id]}_cname_#{parent_row[@@idx_common_name]}_ind_#{item["indicator"]["id"]}_#{locale}.json"
         File.open(path + file, 'w') {|f| f.write(item.to_json)}    
       end      
     end

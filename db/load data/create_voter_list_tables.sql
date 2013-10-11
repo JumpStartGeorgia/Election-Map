@@ -102,54 +102,72 @@ cast(`raw`.`precinct_id` as char charset utf8)) AS `precinct_name`,
 from `2013 may voter list - raw` `raw` where (`raw`.`district_id` between 1 and 10) order by `raw`.`district_id`;
 
 
-create view `2013 may voter list - csv` as 
 (select 'Country' AS `shape`,
+null as `parent_common_id`,
+null as `parent_common_name`,
 'Georgia' AS `common_id`,
 'Georgia' AS `common_name`,
-`raw`.`avg_age` as `Average age of voters`,
-`raw`.`greater_99` as `Numbers of voters over 99 years old`,
-`raw`.`85_99` as `Number of voters between 85 and 99 years old`,
-`raw`.`total_voters` as `Total Voters`,
-`raw`.`duplicates` as `Number of potential voter duplications`
-from `2013 may voter list - country` `raw`) union (select 'Region' AS `shape`,
+`raw`.`avg_age` AS `Average age of voters`,
+`raw`.`greater_99` AS `Numbers of voters over 99 years old`,
+`raw`.`85_99` AS `Number of voters between 85 and 99 years old`,
+`raw`.`total_voters` AS `Total Voters`,
+`raw`.`duplicates` AS `Number of potential voter duplications` from `2013 may voter list - country` `raw`) 
+ union 
+ (select 'Region' AS `shape`,
+'Georgia' as `parent_common_id`,
+'Georgia' as `parent_common_name`,
 `raw`.`region` AS `common_id`,
 `raw`.`region` AS `common_name`,
-`raw`.`avg_age` as `Average age of voters`,
-`raw`.`greater_99` as `Numbers of voters over 99 years old`,
-`raw`.`85_99` as `Number of voters between 85 and 99 years old`,
-`raw`.`total_voters` as `Total Voters`,
-`raw`.`duplicates` as `Number of potential voter duplications`
-from `2013 may voter list - region` `raw`) union (select 'District' AS `shape`,
+`raw`.`avg_age` AS `Average age of voters`,
+`raw`.`greater_99` AS `Numbers of voters over 99 years old`,
+`raw`.`85_99` AS `Number of voters between 85 and 99 years old`,
+`raw`.`total_voters` AS `Total Voters`,
+`raw`.`duplicates` AS `Number of potential voter duplications` from `2013 may voter list - region` `raw`) 
+ union 
+(select distinct 'District' AS `shape`,
+rd.region as `parent_common_id`,
+rd.region as `parent_common_name`,
 `raw`.`district_id` AS `common_id`,
 `raw`.`district_name` AS `common_name`,
-`raw`.`avg_age` as `Average age of voters`,
-`raw`.`greater_99` as `Numbers of voters over 99 years old`,
-`raw`.`85_99` as `Number of voters between 85 and 99 years old`,
-`raw`.`total_voters` as `Total Voters`,
-`raw`.`duplicates` as `Number of potential voter duplications`
-from `2013 may voter list - district` `raw`) union (select 'Precinct' AS `shape`,
+`raw`.`avg_age` AS `Average age of voters`,
+`raw`.`greater_99` AS `Numbers of voters over 99 years old`,
+`raw`.`85_99` AS `Number of voters between 85 and 99 years old`,
+`raw`.`total_voters` AS `Total Voters`,
+`raw`.`duplicates` AS `Number of potential voter duplications` from `2013 may voter list - district` `raw`
+inner join regions_districts as rd on rd.district_id = raw.district_id)
+ union 
+ (select distinct 'Precinct' AS `shape`,
+rd.district_id as `parent_common_id`,
+rd.district_name as `parent_common_name`,
 `raw`.`precinct_id` AS `common_id`,
 `raw`.`precinct_name` AS `common_name`,
-`raw`.`avg_age` as `Average age of voters`,
-`raw`.`greater_99` as `Numbers of voters over 99 years old`,
-`raw`.`85_99` as `Number of voters between 85 and 99 years old`,
-`raw`.`total_voters` as `Total Voters`,
-`raw`.`duplicates` as `Number of potential voter duplications`
-from `2013 may voter list - prec` `raw`) union (select 'Tbilisi District' AS `shape`,
+`raw`.`avg_age` AS `Average age of voters`,
+`raw`.`greater_99` AS `Numbers of voters over 99 years old`,
+`raw`.`85_99` AS `Number of voters between 85 and 99 years old`,
+`raw`.`total_voters` AS `Total Voters`,
+`raw`.`duplicates` AS `Number of potential voter duplications` from `2013 may voter list - prec` `raw`
+inner join regions_districts as rd on rd.district_id = raw.district_id) 
+ union 
+ (select 'Tbilisi District' AS `shape`,
+999 as `parent_common_id`,
+'Tbilisi' as `parent_common_name`,
 `raw`.`district_id` AS `common_id`,
 `raw`.`district_name` AS `common_name`,
-`raw`.`avg_age` as `Average age of voters`,
-`raw`.`greater_99` as `Numbers of voters over 99 years old`,
-`raw`.`85_99` as `Number of voters between 85 and 99 years old`,
-`raw`.`total_voters` as `Total Voters`,
-`raw`.`duplicates` as `Number of potential voter duplications`
-from `2013 may voter list - tbilisi district` `raw`) union (select 'Tbilisi Precinct' AS `shape`,
+`raw`.`avg_age` AS `Average age of voters`,
+`raw`.`greater_99` AS `Numbers of voters over 99 years old`,
+`raw`.`85_99` AS `Number of voters between 85 and 99 years old`,
+`raw`.`total_voters` AS `Total Voters`,
+`raw`.`duplicates` AS `Number of potential voter duplications` from `2013 may voter list - tbilisi district` `raw`)
+ union 
+ (select distinct 'Tbilisi Precinct' AS `shape`,
+rd.district_id as `parent_common_id`,
+rd.district_name as `parent_common_name`,
 `raw`.`precinct_id` AS `common_id`,
 `raw`.`precinct_name` AS `common_name`,
-`raw`.`avg_age` as `Average age of voters`,
-`raw`.`greater_99` as `Numbers of voters over 99 years old`,
-`raw`.`85_99` as `Number of voters between 85 and 99 years old`,
-`raw`.`total_voters` as `Total Voters`,
-`raw`.`duplicates` as `Number of potential voter duplications`
-from `2013 may voter list - tbilisi prec` `raw`);
+`raw`.`avg_age` AS `Average age of voters`,
+`raw`.`greater_99` AS `Numbers of voters over 99 years old`,
+`raw`.`85_99` AS `Number of voters between 85 and 99 years old`,
+`raw`.`total_voters` AS `Total Voters`,
+`raw`.`duplicates` AS `Number of potential voter duplications` from `2013 may voter list - tbilisi prec` `raw`
+inner join regions_districts as rd on rd.district_id = raw.district_id) 
 
