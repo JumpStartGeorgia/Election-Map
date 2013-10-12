@@ -53,6 +53,7 @@ class CoreIndicator < ActiveRecord::Base
 		  sql = "SELECT ci.id, ci.indicator_type_id, ci.number_format as number_format, cit.name as indicator_name_unformatted, "
 		  sql << "if (ci.ancestry is null, cit.name, concat(cit.name, ' (', cit_parent.name_abbrv, ')')) as indicator_name, "
 		  sql << "if (ci.ancestry is null, cit.name_abbrv, concat(cit.name_abbrv, ' (', cit_parent.name_abbrv, ')')) as indicator_name_abbrv, "
+		  sql << "if (ci.ancestry is null, cit.description, concat(cit.description, ' (', cit_parent.name, ')')) as indicator_description, "
 		  sql << "if (ci.ancestry is null OR (ci.ancestry is not null AND (ci.color is not null AND length(ci.color)>0)),ci.color,ci_parent.color) as color "
 		  sql << "FROM core_indicators as ci "
 		  sql << "inner join core_indicator_translations as cit on ci.id = cit.core_indicator_id "
